@@ -1,2 +1,12 @@
-- [Permulaan](/id-id/getting-started.md)
+- Persiapan Awal
+  - [Pengenalan](/id-id/getting-started/introduction.md)
+  - [Instalasi](/id-id/getting-started/installation.md)
+- Modules
+  - [User & Role](/id-id/modules/user-and-role.md)
+  - [Master](/id-id/getting-started/installation.md)
+  - [Inventory](/id-id/getting-started/installation.md)
+  - [Asset](/id-id/getting-started/installation.md)
+  - [Point of Sale](/id-id/getting-started/installation.md)
+  - [Service](/id-id/getting-started/installation.md)
+  - [Accounting](/id-id/getting-started/installation.md)
 

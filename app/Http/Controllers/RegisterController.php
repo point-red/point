@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\User;
-use App\Http\Resources\User as UserResource;
+use App\Http\Resources\UserResource as UserResource;
 
 class RegisterController extends Controller
 {

@@ -1,4 +1,4 @@
-# Instalasi
+# Installation
 
 ## Server Requirements
 

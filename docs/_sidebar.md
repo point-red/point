@@ -1,12 +1,3 @@
-- Getting Started
-  - [Introduction](/getting-started/introduction.md)
-  - [Installation](/getting-started/installation.md)
-- Modules
-  - [User & Role](/modules/user-and-role.md)
-  - [Master](/getting-started/installation.md)
-  - [Inventory](/getting-started/installation.md)
-  - [Asset](/getting-started/installation.md)
-  - [Point of Sale](/getting-started/installation.md)
-  - [Service](/getting-started/installation.md)
-  - [Accounting](/getting-started/installation.md)
-
+- Choose a language
+    - [English](/en/) 
+    - [Indonesia](/id/) 

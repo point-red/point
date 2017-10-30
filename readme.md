@@ -6,4 +6,16 @@
 
 > This package still in active development
 
-[API Documentation](https://documenter.getpostman.com/view/421224/pointred/77cf6Pd)
+# About Point
+
+Our mission is to provide exceptional accounting and bookeeping solutions in the most demanding era. 
+
+# Documentation
+
+Point developer documentation can be found at [https://point-red.github.io/point](https://point-red.github.io/point/), if you have feedback or would like to write some user documentation, please let us know by emailing support.
+
+# Security Vulnerabilities
+If you discover a security vulnerability within Point, please send an e-mail to martien@point.red. All security vulnerabilities will be promptly addressed.
+
+
+

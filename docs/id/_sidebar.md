@@ -1,12 +1,1 @@
-- Getting Started
-  - [Introduction](/id/getting-started/introduction.md)
-  - [Installation](/id/getting-started/installation.md)
-- Modules
-  - [User & Role](/id/modules/user-and-role.md)
-  - [Master](/id/getting-started/installation.md)
-  - [Inventory](/id/getting-started/installation.md)
-  - [Asset](/id/getting-started/installation.md)
-  - [Point of Sale](/id/getting-started/installation.md)
-  - [Service](/id/getting-started/installation.md)
-  - [Accounting](/id/getting-started/installation.md)
-
+- Empty Menu

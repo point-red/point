@@ -1,6 +1,8 @@
 - Getting Started
   - [Introduction](/en/getting-started/introduction.md)
   - [Installation](/en/getting-started/installation.md)
+- Usage
+  - [Directory Structure](/en/usage/directory-structure.md)
 - Modules
   - [User & Role](/en/modules/user-and-role.md)
   - [Master](/en/getting-started/installation.md)

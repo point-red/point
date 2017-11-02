@@ -1,4 +1,4 @@
-# Point.RED
+![logo](docs/_media/logo.svg)
 
 [![Build Status](https://travis-ci.org/point-red/point.svg?branch=master)](https://travis-ci.org/point-red/point)
 [![Latest Stable Version](https://poser.pugx.org/point-red/point/v/stable)](https://packagist.org/packages/point-red/point)

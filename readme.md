@@ -1,9 +1,10 @@
-<p align="center">![logo](docs/_media/logo.svg)</p>
+<p align="center"><img src="https://point-red.github.io/point/_media/logo.svg"></p>
+
 <p align="center">
-[![Build Status](https://travis-ci.org/point-red/point.svg?branch=master)](https://travis-ci.org/point-red/point)
-[![Latest Stable Version](https://poser.pugx.org/point-red/point/v/stable)](https://packagist.org/packages/point-red/point)
-[![Latest Unstable Version](https://poser.pugx.org/point-red/point/v/unstable)](https://packagist.org/packages/point-red/point)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0beb7ac9c0f04d7484b7159e45ae3414)](https://www.codacy.com/app/martiendt/point?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=point-red/point&amp;utm_campaign=Badge_Grade)
+<a href="https://travis-ci.org/point-red/point"><img src="https://travis-ci.org/point-red/point.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/point-red/point"><img src="https://poser.pugx.org/point-red/point/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/point-red/point"><img src="https://poser.pugx.org/point-red/point/v/unstable.svg" alt="Unstable Version"></a>
+<a class="badge-align" href="https://www.codacy.com/app/martiendt/point?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=point-red/point&amp;utm_campaign=Badge_Grade"><img src="https://api.codacy.com/project/badge/Grade/0beb7ac9c0f04d7484b7159e45ae3414"/></a>
 </p>
 
 > This package still in active development
@@ -18,6 +19,3 @@ Point developer documentation can be found at [https://point-red.github.io/point
 
 # Security Vulnerabilities
 If you discover a security vulnerability within Point, please send an e-mail to martien@point.red. All security vulnerabilities will be promptly addressed.
-
-
-

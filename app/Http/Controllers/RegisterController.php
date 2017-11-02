@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreUserRequest;
-use App\User;
+use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Resources\UserResource as UserResource;
+use App\User;
 
 class RegisterController extends Controller
 {

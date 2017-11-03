@@ -5,9 +5,11 @@
   - [Directory Structure](/en/usage/directory-structure.md)
 - Modules
   - [User & Role](/en/modules/user-and-role.md)
-  - [Master](/en/getting-started/installation.md)
-  - [Inventory](/en/getting-started/installation.md)
-  - [Asset](/en/getting-started/installation.md)
-  - [Point of Sale](/en/getting-started/installation.md)
-  - [Service](/en/getting-started/installation.md)
-  - [Accounting](/en/getting-started/installation.md)
+  - [Master](/en/modules/installation.md)
+  - [Inventory](/en/modules/installation.md)
+  - [Asset](/en/modules/installation.md)
+  - [Point of Sale](/en/modules/installation.md)
+  - [Service](/en/modules/installation.md)
+  - [Accounting](/en/modules/installation.md)
+- Testing
+  - [Available Assertion](/en/testing/available-assertion.md)

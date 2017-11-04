@@ -27,15 +27,17 @@ class UserTest extends TestCase
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
             'password' => 'secret-password',
-        ], [$this->header])->assertStatus(201);
+        ], [$this->header]);
 
-        $this->assertInstanceOf(User::class, $this->user);
+        $response->assertStatus(201);
     }
 
     /** @test */
     public function user_can_read_single_user()
     {
-        $this->json('GET', 'api/v1/user/'.$this->user->id, [], [$this->header])->assertJson([
+        $response = $this->json('GET', 'api/v1/user/'.$this->user->id, [], [$this->header]);
+
+        $response->assertJson([
             'data' => [
                 'id' => $this->user->id,
                 'name' => $this->user->name,
@@ -49,9 +51,11 @@ class UserTest extends TestCase
     /** @test */
     public function user_can_read_all_user()
     {
-        $this->user = factory(User::class, 2)->create();
+        $this->users = factory(User::class, 2)->create();
 
-        $this->json('GET', 'api/v1/user', [], [$this->header])->assertStatus(200);
+        $response = $this->json('GET', 'api/v1/user', [], [$this->header]);
+
+        $response->assertStatus(200);
     }
 
     /** @test */
@@ -60,7 +64,9 @@ class UserTest extends TestCase
         $response = $this->json('PUT', 'api/v1/user/'.$this->user->id, [
             'name' => 'another name',
             'email' => 'another@email.com',
-        ], [$this->header])->assertJson([
+        ], [$this->header]);
+
+        $response->assertJson([
             'data' => [
                 'id' => $this->user->id,
                 'name' => 'another name',
@@ -76,6 +82,13 @@ class UserTest extends TestCase
     /** @test */
     public function user_can_delete_user()
     {
-        $this->json('DELETE', 'api/v1/user/'.$this->user->id, [], [$this->header])->assertStatus(200);
+        $response = $this->json('DELETE', 'api/v1/user/'.$this->user->id, [], [$this->header]);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('users', [
+            'name' => $this->user->name,
+            'email' => $this->user->email,
+        ]);
     }
 }

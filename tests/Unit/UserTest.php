@@ -29,6 +29,8 @@ class UserTest extends TestCase
             'password' => $this->user->password,
             'remember_token' => $this->user->remember_token,
         ]);
+
+        $this->assertInstanceOf(User::class, $this->user);
     }
 
     /** @test */

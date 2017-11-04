@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class RegisterationTest extends TestCase
 {
@@ -15,10 +15,10 @@ class RegisterationTest extends TestCase
         $response = $this->json('POST', 'api/v1/register', [
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
-            'password' => 'secret-password'
+            'password' => 'secret-password',
         ], [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ]);
 
         $response->assertStatus(201);

@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use App\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Passport\Passport;
 use Tests\TestCase;
+use Laravel\Passport\Passport;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserTest extends TestCase
 {
@@ -26,7 +26,7 @@ class UserTest extends TestCase
         $this->json('POST', 'api/v1/user', [
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
-            'password' => 'secret-password'
+            'password' => 'secret-password',
         ], [$this->header])->assertStatus(201);
 
         $this->assertInstanceOf(User::class, $this->user);
@@ -35,14 +35,14 @@ class UserTest extends TestCase
     /** @test */
     public function user_can_read_single_user()
     {
-        $this->json('GET', 'api/v1/user/' . $this->user->id, [], [$this->header])->assertJson([
-            "data" => [
-                "id" => $this->user->id,
-                "name" => $this->user->name,
-                "email" => $this->user->email,
-                "created_at" => $this->user->created_at,
-                "updated_at" => $this->user->updated_at,
-            ]
+        $this->json('GET', 'api/v1/user/'.$this->user->id, [], [$this->header])->assertJson([
+            'data' => [
+                'id' => $this->user->id,
+                'name' => $this->user->name,
+                'email' => $this->user->email,
+                'created_at' => $this->user->created_at,
+                'updated_at' => $this->user->updated_at,
+            ],
         ]);
     }
 
@@ -57,17 +57,17 @@ class UserTest extends TestCase
     /** @test */
     public function user_can_update_user()
     {
-        $response = $this->json('PUT', 'api/v1/user/' . $this->user->id, [
-            "name" => "another name",
-            "email" => "another@email.com",
+        $response = $this->json('PUT', 'api/v1/user/'.$this->user->id, [
+            'name' => 'another name',
+            'email' => 'another@email.com',
         ], [$this->header])->assertJson([
-            "data" => [
-                "id" => $this->user->id,
-                "name" => "another name",
-                "email" => "another@email.com",
-                "created_at" => $this->user->created_at,
-                "updated_at" => $this->user->updated_at,
-            ]
+            'data' => [
+                'id' => $this->user->id,
+                'name' => 'another name',
+                'email' => 'another@email.com',
+                'created_at' => $this->user->created_at,
+                'updated_at' => $this->user->updated_at,
+            ],
         ]);
 
         $response->assertStatus(200);
@@ -76,6 +76,6 @@ class UserTest extends TestCase
     /** @test */
     public function user_can_delete_user()
     {
-        $this->json('DELETE', 'api/v1/user/' . $this->user->id, [], [$this->header])->assertStatus(200);
+        $this->json('DELETE', 'api/v1/user/'.$this->user->id, [], [$this->header])->assertStatus(200);
     }
 }

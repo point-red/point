@@ -9,7 +9,7 @@ abstract class TestCase extends BaseTestCase
     use CreatesApplication;
 
     /**
-     *  Set up the test
+     *  Set up the test.
      */
     public function setUp()
     {
@@ -21,8 +21,7 @@ abstract class TestCase extends BaseTestCase
 
         $this->header = [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ];
     }
-
 }

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
+use App\Http\Resources\UserResource;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
-use App\Http\Resources\UserResource;
-use App\User;
 
 class UserController extends Controller
 {
@@ -77,7 +77,7 @@ class UserController extends Controller
         User::find($id)->delete();
 
         return response([
-            'message' => 'success delete user : ' . $user->name
+            'message' => 'success delete user : '.$user->name,
         ]);
     }
 }

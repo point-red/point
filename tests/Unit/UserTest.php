@@ -3,9 +3,9 @@
 namespace Tests\Unit;
 
 use App\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Passport\Passport;
 use Tests\TestCase;
+use Laravel\Passport\Passport;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserTest extends TestCase
 {
@@ -37,10 +37,10 @@ class UserTest extends TestCase
         $response = $this->json('POST', 'api/v1/user', [
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
-            'password' => 'secret-password'
+            'password' => 'secret-password',
         ], [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ]);
 
         $response->assertStatus(201);
@@ -48,10 +48,10 @@ class UserTest extends TestCase
         $response = $this->json('POST', 'api/v1/user', [
             'name' => 'John',
             'email' => 'john.moe@gmail.com',
-            'password' => 'secret-password'
+            'password' => 'secret-password',
         ], [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ]);
 
         $response->assertStatus(422);
@@ -63,10 +63,10 @@ class UserTest extends TestCase
         $response = $this->json('POST', 'api/v1/user', [
             'name' => 'John Doe',
             'email' => 'john@gmail.com',
-            'password' => 'secret-password'
+            'password' => 'secret-password',
         ], [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ]);
 
         $response->assertStatus(201);
@@ -74,13 +74,12 @@ class UserTest extends TestCase
         $response = $this->json('POST', 'api/v1/user', [
             'name' => 'John Moe',
             'email' => 'john@gmail.com',
-            'password' => 'secret-password'
+            'password' => 'secret-password',
         ], [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ]);
 
         $response->assertStatus(422);
     }
-
 }

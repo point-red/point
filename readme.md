@@ -16,6 +16,23 @@
 
 Our mission is to provide exceptional accounting and bookeeping solutions in the most demanding era. 
 
+## Quick Start
+
+First you need to install [Composer](https://getcomposer.org/doc/00-intro.md) and [Git](https://git-scm.com/).
+
+After that you can create new point project using composer.
+
+`composer create-project point-red/point point`
+
+Go to your project directory and install dependencies.
+
+```bash
+cd point
+composer install
+```
+
+You are ready to go, please refer to our documentation below for any guide and instruction.
+
 ## Documentation
 
 Point developer documentation can be found at [https://point-red.github.io/point](https://point-red.github.io/point/), if you have feedback or would like to write some user documentation, please let us know by emailing support.

@@ -23,7 +23,7 @@ class UserTest extends TestCase
     /** @test */
     public function user_can_create_user()
     {
-        $this->json('POST', 'api/v1/user', [
+        $response = $this->json('POST', 'api/v1/user', [
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
             'password' => 'secret-password',

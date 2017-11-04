@@ -6,8 +6,8 @@ use Exception;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-trait ApiExceptionHandler {
-
+trait ApiExceptionHandler
+{
     public function apiExceptions($request, Exception $exception)
     {
         if ($exception instanceof NotFoundHttpException) {
@@ -15,11 +15,11 @@ trait ApiExceptionHandler {
                 'error' => [
                     'code' => 404,
                     'message' => 'Http not found',
-                ]
+                ],
             ], 404);
         }
 
-        /**
+        /*
          * Handle a failed validation attempt.
          *
          * @param  \Illuminate\Contracts\Validation\Validator  $validator
@@ -33,7 +33,7 @@ trait ApiExceptionHandler {
                     'code' => 422,
                     'message' => $exception->getMessage(),
                     'errors' => $exception->errors(),
-                ]
+                ],
             ], 422);
         }
 
@@ -41,7 +41,7 @@ trait ApiExceptionHandler {
             'error' => [
                 'code' => $exception->getCode(),
                 'message' => $exception->getMessage(),
-            ]
+            ],
         ], $exception->getCode());
     }
 }

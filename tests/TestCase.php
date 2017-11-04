@@ -15,9 +15,14 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        $this->artisan('migrate:fresh');
+        $this->artisan('migrate');
 
         $this->artisan('passport:install');
+
+        $this->header = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json'
+        ];
     }
 
 }

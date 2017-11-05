@@ -2,21 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserCollection;
 use App\User;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request  $request
+     * @return \App\Http\Resources\UserCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new UserResource(User::paginate(100));
+        $limit = $request->input('limit') ?? 0;
+
+        return new UserCollection(User::paginate($limit));
     }
 
     /**

@@ -66,10 +66,7 @@ class UserTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@gmail.com',
             'password' => 'secret-password',
-        ], [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-        ]);
+        ], [$this->headers]);
 
         $response->assertStatus(201);
 
@@ -77,10 +74,7 @@ class UserTest extends TestCase
             'name' => 'John Moe',
             'email' => 'john@gmail.com',
             'password' => 'secret-password',
-        ], [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-        ]);
+        ], [$this->headers]);
 
         $response->assertStatus(422);
     }

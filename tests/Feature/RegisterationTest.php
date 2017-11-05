@@ -16,7 +16,7 @@ class RegisterationTest extends TestCase
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
             'password' => 'secret-password',
-        ], [$this->header]);
+        ], [$this->headers]);
 
         $response->assertStatus(201);
     }

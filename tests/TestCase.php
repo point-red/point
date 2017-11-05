@@ -19,7 +19,7 @@ abstract class TestCase extends BaseTestCase
 
         $this->artisan('passport:install');
 
-        $this->header = [
+        $this->headers = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];

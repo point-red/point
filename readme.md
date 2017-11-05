@@ -50,10 +50,41 @@ If you discover a security vulnerability within Point, please send an e-mail to 
 - [x] ~~Add API documentation template~~
 - [x] ~~Add unit testing sample~~
 - [x] ~~Add Travis CI~~
-- [ ] Add contributing guide 
-- [ ] Integrate code coverage, review, analytic 
-- [ ] Integrate code style
+- [x] ~~Add contributing guide~~ 
+- [x] ~~Integrate code coverage, review, analytic~~ 
+- [x] ~~Integrate code style~~
 
 > v0.2.x start to design module and database for minimum viable product
+- [ ] Master Person (can be supplier, customer, employee, manager, supervisor, etc)
+- [ ] Master Item (stockable)
+- [ ] Master Service (non stockable)
+- [ ] Master Fixed Assets (can have depreciation)
+- [ ] Master Account (chart of account)
+- [ ] Master Warehouse (multi warehouse per company)
+- [ ] Master Allocation (allocated payment)
 
+- Module :
+- [ ] Inventory
+    - [ ] Purchasing
+    - [ ] Sales
+    - [ ] Inventory Usage
+    - [ ] Stock Opname
+    - [ ] Stock Correction
+    - [ ] Transfer Item between Warehouse
+- [ ] Fixed Assets
+    - [ ] Purchasing
+    - [ ] Sales
+    - [ ] Depreciation
+- [ ] Point of Sales
+- [ ] Manufacture
+- [ ] Finance
+    - [ ] Cash
+    - [ ] Bank
+    - [ ] Cheque
+    - [ ] Payment Order
+    - [ ] Cash Advance
+- [ ] Accounting
+    - [ ] Memo Journal
+     
 > v0.3.x in depth testing and performance check
+- [ ] Prepare for release minimum viable api

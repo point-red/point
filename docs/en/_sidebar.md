@@ -1,3 +1,7 @@
+- Prologue
+  - [Release Notes](/en/prologue/release-notes.md)
+  - [Contribution Guide](/en/prologue/contribution-guide.md)
+  - [API Documentation](https://documenter.getpostman.com/view/421224/pointred/77cf6Pd)
 - Getting Started
   - [Introduction](/en/getting-started/introduction.md)
   - [Installation](/en/getting-started/installation.md)

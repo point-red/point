@@ -16,10 +16,7 @@ class RegisterationTest extends TestCase
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
             'password' => 'secret-password',
-        ], [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-        ]);
+        ], [$this->header]);
 
         $response->assertStatus(201);
     }

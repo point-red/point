@@ -1,3 +1,8 @@
+- Prologue
+  - [Release Notes](/en/prologue/release-notes.md)
+  - [Contribution Guide](/en/prologue/contribution-guide.md)
+  - [API Documentation](https://documenter.getpostman.com/view/421224/pointred/77cf6Pd)
+  - [Github](https://github.com/point-red/point)
 - Getting Started
   - [Introduction](/en/getting-started/introduction.md)
   - [Installation](/en/getting-started/installation.md)
@@ -5,11 +10,14 @@
   - [Directory Structure](/en/usage/directory-structure.md)
 - Modules
   - [User & Role](/en/modules/user-and-role.md)
-  - [Master](/en/modules/installation.md)
-  - [Inventory](/en/modules/installation.md)
-  - [Asset](/en/modules/installation.md)
-  - [Point of Sale](/en/modules/installation.md)
-  - [Service](/en/modules/installation.md)
-  - [Accounting](/en/modules/installation.md)
+  - Master
+      - [Person](/en/modules/person.md)
+  - [Inventory](/en/modules)
+  - [Asset](/en/modules)
+  - [Point of Sale](/en/modules)
+  - [Service](/en/modules)
+  - [Accounting](/en/modules)
 - Testing
-  - [Available Assertion](/en/testing/available-assertion.md)
+  - [Available Assertion](/en/modules)
+
+

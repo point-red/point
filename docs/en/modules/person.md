@@ -4,6 +4,8 @@ Person is commonly used for manage each vendor, it can be Supplier, Customer, or
 
 ## Database
 
+![](_media/erd/persons.png)
+
 ### Person Type
 
 Table : `person_type`

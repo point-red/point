@@ -84,7 +84,7 @@ class UserTest extends TestCase
     {
         $response = $this->json('DELETE', 'api/v1/user/'.$this->user->id, [], [$this->headers]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(204);
 
         $this->assertDatabaseMissing('users', [
             'name' => $this->user->name,

@@ -16,5 +16,5 @@ Route::middleware('auth:api')->prefix('v1')->group(function () {
 });
 
 Route::prefix('v1')->group(function () {
-    Route::post('register', 'RegisterController@register');
+    Route::post('register', 'RegisterController@store');
 });

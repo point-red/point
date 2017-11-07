@@ -8,7 +8,7 @@ use App\Http\Resources\UserResource as UserResource;
 
 class RegisterController extends Controller
 {
-    public function register(StoreUserRequest $request)
+    public function store(StoreUserRequest $request)
     {
         $user = new User;
         $user->name = $request->name;

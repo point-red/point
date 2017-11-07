@@ -10,6 +10,7 @@ trait ApiExceptionHandler
 {
     public function apiExceptions($request, Exception $exception)
     {
+        /* Resource not found */
         if ($exception instanceof NotFoundHttpException) {
             return response()->json([
                 'error' => [
@@ -28,7 +29,7 @@ trait ApiExceptionHandler
          * @throws \Illuminate\Validation\ValidationException
          */
         if ($exception instanceof ValidationException) {
-            return response([
+            return response()->json([
                 'error' => [
                     'code' => 422,
                     'message' => $exception->getMessage(),
@@ -37,6 +38,17 @@ trait ApiExceptionHandler
             ], 422);
         }
 
+        /* Handle server error or library error */
+        if ($exception->getCode() >= 500 || ! $exception->getCode()) {
+            return response()->json([
+                'error' => [
+                    'code' => 500,
+                    'message' => 'Something wrong with server',
+                ],
+            ], 500);
+        }
+
+        /* Handle other exception */
         return response()->json([
             'error' => [
                 'code' => $exception->getCode(),

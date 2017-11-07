@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class RegisterationTest extends TestCase
+class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -16,7 +16,7 @@ class RegisterationTest extends TestCase
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
             'password' => 'secret-password',
-        ], [$this->header]);
+        ], [$this->headers]);
 
         $response->assertStatus(201);
     }

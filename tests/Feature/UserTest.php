@@ -27,7 +27,7 @@ class UserTest extends TestCase
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
             'password' => 'secret-password',
-        ], [$this->header]);
+        ], [$this->headers]);
 
         $response->assertStatus(201);
     }
@@ -35,7 +35,7 @@ class UserTest extends TestCase
     /** @test */
     public function user_can_read_single_user()
     {
-        $response = $this->json('GET', 'api/v1/user/'.$this->user->id, [], [$this->header]);
+        $response = $this->json('GET', 'api/v1/user/'.$this->user->id, [], [$this->headers]);
 
         $response->assertJson([
             'data' => [
@@ -53,7 +53,7 @@ class UserTest extends TestCase
     {
         $this->users = factory(User::class, 2)->create();
 
-        $response = $this->json('GET', 'api/v1/user', [], [$this->header]);
+        $response = $this->json('GET', 'api/v1/user', [], [$this->headers]);
 
         $response->assertStatus(200);
     }
@@ -64,7 +64,7 @@ class UserTest extends TestCase
         $response = $this->json('PUT', 'api/v1/user/'.$this->user->id, [
             'name' => 'another name',
             'email' => 'another@email.com',
-        ], [$this->header]);
+        ], [$this->headers]);
 
         $response->assertJson([
             'data' => [
@@ -82,7 +82,7 @@ class UserTest extends TestCase
     /** @test */
     public function user_can_delete_user()
     {
-        $response = $this->json('DELETE', 'api/v1/user/'.$this->user->id, [], [$this->header]);
+        $response = $this->json('DELETE', 'api/v1/user/'.$this->user->id, [], [$this->headers]);
 
         $response->assertStatus(204);
 

@@ -10,7 +10,7 @@ trait ApiExceptionHandler
 {
     public function apiExceptions($request, Exception $exception)
     {
-        /** Resource not found */
+        /* Resource not found */
         if ($exception instanceof NotFoundHttpException) {
             return response()->json([
                 'error' => [
@@ -38,7 +38,7 @@ trait ApiExceptionHandler
             ], 422);
         }
 
-        /** Handle server error or library error */
+        /* Handle server error or library error */
         if ($exception->getCode() >= 500 || ! $exception->getCode()) {
             return response()->json([
                 'error' => [
@@ -48,7 +48,7 @@ trait ApiExceptionHandler
             ], 500);
         }
 
-        /** Handle other exception */
+        /* Handle other exception */
         return response()->json([
             'error' => [
                 'code' => $exception->getCode(),

@@ -8,17 +8,17 @@ Person is commonly used for manage each vendor, it can be Supplier, Customer, or
 
 ### Person Type
 
-Table : `person_type`
+Table : `person_categories`
 
 Properties :
 
 | Column | Type | Description | Relationship |
 | --- | --- | --- | --- |
 | id | increment | | |
-| code | string | internal code | |
-| name | string | type of person | |
+| code | string | unique | |
+| name | string | | |
 | created_at | timestamp | | |
-| updated_at | timestamp | | |
+| updated_at | timestamp | | &nbsp; |
 
 Person type is used to categorize each person roles. There is commony used person type in app :
 
@@ -30,12 +30,15 @@ Person type is used to categorize each person roles. There is commony used perso
 
 ### Person Group
 
+Table : `person_groups`
+
 | Column | Type | Description | Relationship |
 | --- | --- | --- | --- |
 | id | increment | | |
-| name | string | category of each person | |
+| code | string | unique | |
+| name | string | | |
 | created_at | timestamp | | |
-| updated_at | timestamp | | |
+| updated_at | timestamp | | &nbsp; |
 
 Every person can have group for ex :
 
@@ -47,23 +50,26 @@ Each customer in group `member` can have cheaper sale price rather than `non-mem
 
 ### Person
 
+Table : `persons`
+
 | Column | Type | Description | Relationship |
 | --- | --- | --- | --- |
 | id | increment | | |
-| name | string | contact person | |
-| email | string | | |
-| phone | string | | |
-| address | string | | |
-| notes | string | | |
+| code | string | unique | |
+| name | string | unique(['name', 'person_categories_id']) | |
+| email | string | nullable | |
+| phone | string | nullable | |
+| address | text | nullable | |
+| notes | text | nullable | |
 | created_at | timestamp | | |
 | updated_at | timestamp | | |
-| person_type_id | integer | | [person_type.id](/modules/person?id=person-type) |
-| person_group_id | integer | | [person_group.id](/modules/person?id=person-group) |
+| person_categories_id | integer | | [person_categories.id](/en/modules/person?id=person-type) |
+| person_groups_id | integer | | [person_groups.id](/en/modules/person?id=person-group) |
 
-### Relationship
+Relationship :
 
-- each person should have 1 person_type, each person_type can have many person
-- each person can have 1 person_group, each person_group can have many person
+- each persons should have 1 person_categories, each person_categories can have many persons
+- each persons can have 1 person_groups, each person_groups can have many persons
 
 
 

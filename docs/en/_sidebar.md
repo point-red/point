@@ -18,5 +18,7 @@
   - [Point of Sale](/en/modules)
   - [Service](/en/modules)
   - [Accounting](/en/modules)
-
+- Testing
+    - [Intro](/en/testing/intro.md)
+    - [Test Master](/en/testing/testing-master.md)
 

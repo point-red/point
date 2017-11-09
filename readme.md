@@ -60,7 +60,7 @@ If you discover a security vulnerability within Point, please send an e-mail to 
 - [ ] Master Service (non stockable)
 - [ ] Master Fixed Assets (can have depreciation)
 - [ ] Master Account (chart of account)
-- [ ] Master Warehouse (multi warehouse per company)
+- [x] ~~Master Warehouse (multi warehouse per company)~~
 - [ ] Master Allocation (allocated payment)
 
 ### Modules :

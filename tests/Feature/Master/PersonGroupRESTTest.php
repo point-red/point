@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Master;
 
-use App\Model\Master\PersonGroup;
 use Tests\TestCase;
+use App\Model\Master\PersonGroup;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PersonGroupRESTTest extends TestCase
@@ -31,7 +31,7 @@ class PersonGroupRESTTest extends TestCase
 
         $this->assertDatabaseHas('person_groups', $data);
     }
-    
+
     /** @test */
     public function an_user_can_read_single_person_group()
     {
@@ -39,13 +39,13 @@ class PersonGroupRESTTest extends TestCase
         $response = $this->json('GET', 'api/v1/master/person-groups/'.$personGroup->id, [], [$this->headers]);
 
         $response->assertJson([
-            "data" => [
+            'data' => [
                 'code' => $personGroup->code,
                 'name' => $personGroup->name,
             ],
         ]);
     }
-    
+
     /** @test */
     public function an_user_can_read_all_person_group()
     {
@@ -62,7 +62,7 @@ class PersonGroupRESTTest extends TestCase
 
         $response->assertStatus(200);
     }
-    
+
     /** @test */
     public function an_user_can_update_person_group()
     {
@@ -82,7 +82,7 @@ class PersonGroupRESTTest extends TestCase
 
         $response->assertStatus(200);
     }
-    
+
     /** @test */
     public function an_user_can_delete_person_group()
     {

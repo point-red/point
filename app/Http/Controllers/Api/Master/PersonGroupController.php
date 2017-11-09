@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use Illuminate\Http\Request;
+use App\Model\Master\PersonGroup;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Resources\Master\PersonGroup\PersonGroupResource;
+use App\Http\Resources\Master\PersonGroup\PersonGroupCollection;
 use App\Http\Requests\Master\PersonGroup\StorePersonGroupRequest;
 use App\Http\Requests\Master\PersonGroup\UpdatePersonGroupRequest;
-use App\Http\Resources\Master\PersonGroup\PersonGroupCollection;
-use App\Http\Resources\Master\PersonGroup\PersonGroupResource;
-use App\Model\Master\PersonGroup;
-use Illuminate\Http\Request;
 
 class PersonGroupController extends ApiController
 {

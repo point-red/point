@@ -4,7 +4,6 @@ namespace Tests\Feature\Master;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Throwable;
 
 class PersonRESTTest extends TestCase
 {
@@ -20,30 +19,25 @@ class PersonRESTTest extends TestCase
     /** @test */
     public function an_user_can_create_person()
     {
-
     }
 
     /** @test */
     public function an_user_can_read_single_person()
     {
-
     }
 
     /** @test */
     public function an_user_can_read_all_person()
     {
-
     }
 
     /** @test */
     public function an_user_can_update_person()
     {
-
     }
 
     /** @test */
     public function an_user_can_delete_person()
     {
-
     }
 }

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\User;
-use App\Http\Requests\Master\User\StoreUserRequest;
 use App\Http\Resources\Master\User\UserResource;
+use App\Http\Requests\Master\User\StoreUserRequest;
 
 class RegisterController extends ApiController
 {

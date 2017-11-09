@@ -8,11 +8,13 @@ class Person extends Model
 {
     protected $table = 'persons';
 
-    public function category() {
+    public function category()
+    {
         return $this->belongsTo('App\Model\Master\PersonCategory');
     }
 
-    public function group() {
+    public function group()
+    {
         return $this->belongsTo('App\Model\Master\PersonGroup');
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Http\Controllers\Api\ApiController;
 use App\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Api\ApiController;
 use App\Http\Resources\Master\User\UserResource;
 use App\Http\Resources\Master\User\UserCollection;
 use App\Http\Requests\Master\User\StoreUserRequest;

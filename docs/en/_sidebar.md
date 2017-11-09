@@ -9,6 +9,7 @@
 - Develop
   - [Directory Structure](/en/develop/directory-structure.md)
   - [Scaffolding](/en/develop/scaffolding.md)
+  - [Dummy Data](/en/develop/dummy-data.md)
   - [Commands](/en/develop/commands.md)
 - Modules
   - [User & Role](/en/modules/user-and-role.md)

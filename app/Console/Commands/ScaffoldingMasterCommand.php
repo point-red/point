@@ -39,62 +39,62 @@ class ScaffoldingMasterCommand extends Command
     public function handle()
     {
         $name = $this->argument('name');
-        
+
         Artisan::call('make:model', [
-            'name' => 'Model\\Master\\' . $name,
+            'name' => 'Model\\Master\\'.$name,
             '-m' => true,
         ]);
 
-        $this->info('created ' . $name . ' model');
+        $this->info('created '.$name.' model');
 
         Artisan::call('make:controller', [
-            'name' => 'Api\\Master\\' . $name . 'Controller',
+            'name' => 'Api\\Master\\'.$name.'Controller',
             '-r' => true,
         ]);
 
-        $this->info('created ' . $name . ' controller');
+        $this->info('created '.$name.' controller');
 
         Artisan::call('make:resource', [
-            'name' => 'Master\\' . $name . '\\' . $name . 'Resource',
+            'name' => 'Master\\'.$name.'\\'.$name.'Resource',
         ]);
 
-        $this->info('created ' . $name . ' resource');
+        $this->info('created '.$name.' resource');
 
         Artisan::call('make:resource', [
-            'name' => 'Master\\' . $name . '\\' . $name . 'Collection',
+            'name' => 'Master\\'.$name.'\\'.$name.'Collection',
             '--collection' => true,
         ]);
 
-        $this->info('created ' . $name . ' collection');
+        $this->info('created '.$name.' collection');
 
         Artisan::call('make:request', [
-            'name' => 'Master\\' . $name . '\\Store' . $name . 'Request'
+            'name' => 'Master\\'.$name.'\\Store'.$name.'Request',
         ]);
 
-        $this->info('created ' . $name . ' store request');
+        $this->info('created '.$name.' store request');
 
         Artisan::call('make:request', [
-            'name' => 'Master\\' . $name . '\\Update' . $name . 'Request'
+            'name' => 'Master\\'.$name.'\\Update'.$name.'Request',
         ]);
 
-        $this->info('created ' . $name . ' update request');
+        $this->info('created '.$name.' update request');
 
         Artisan::call('make:factory', [
-            'name' => $name . 'Factory',
+            'name' => $name.'Factory',
         ]);
 
-        $this->info('created ' . $name . ' factory');
+        $this->info('created '.$name.' factory');
 
         Artisan::call('make:test', [
-            'name' => 'Master\\' . $name . 'RESTTest',
+            'name' => 'Master\\'.$name.'RESTTest',
         ]);
 
-        $this->info('created ' . $name . ' REST test class');
+        $this->info('created '.$name.' REST test class');
 
         Artisan::call('make:test', [
-            'name' => 'Master\\' . $name . 'ValidationTest',
+            'name' => 'Master\\'.$name.'ValidationTest',
         ]);
 
-        $this->info('created ' . $name . ' validation test class');
+        $this->info('created '.$name.' validation test class');
     }
 }

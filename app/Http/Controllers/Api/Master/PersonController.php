@@ -54,7 +54,7 @@ class PersonController extends ApiController
      */
     public function show($id)
     {
-        return new PersonResource(Person::find($id));
+        return new PersonResource(Person::findOrFail($id));
     }
 
     /**
@@ -66,7 +66,7 @@ class PersonController extends ApiController
      */
     public function update(UpdatePersonRequest $request, $id)
     {
-        $person = Person::find($id);
+        $person = Person::findOrFail($id);
         $person->code = $request->input('code');
         $person->name = $request->input('name');
         $person->phone = $request->input('phone');
@@ -87,7 +87,7 @@ class PersonController extends ApiController
      */
     public function destroy($id)
     {
-        Person::find($id)->delete();
+        Person::findOrFail($id)->delete();
 
         return response(null, 204);
     }

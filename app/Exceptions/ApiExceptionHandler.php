@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 trait ApiExceptionHandler
@@ -16,6 +17,16 @@ trait ApiExceptionHandler
                 'error' => [
                     'code' => 404,
                     'message' => 'Http not found',
+                ],
+            ], 404);
+        }
+
+        /* Model not found */
+        if ($exception instanceof ModelNotFoundException) {
+            return response()->json([
+                'error' => [
+                    'code' => 404,
+                    'message' => 'Model not found',
                 ],
             ], 404);
         }

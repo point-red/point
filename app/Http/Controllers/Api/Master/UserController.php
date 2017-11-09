@@ -50,7 +50,7 @@ class UserController extends ApiController
      */
     public function show($id)
     {
-        return new UserResource(User::find($id));
+        return new UserResource(User::findOrFail($id));
     }
 
     /**
@@ -62,7 +62,7 @@ class UserController extends ApiController
      */
     public function update(UpdateUserRequest $request, $id)
     {
-        $user = User::find($id);
+        $user = User::findOrFail($id);
         $user->name = $request->name;
         $user->email = $request->email;
         $user->save();
@@ -78,7 +78,7 @@ class UserController extends ApiController
      */
     public function destroy($id)
     {
-        User::find($id)->delete();
+        User::findOrFail($id)->delete();
 
         return response(null, 204);
     }

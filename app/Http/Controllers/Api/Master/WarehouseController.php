@@ -48,7 +48,7 @@ class WarehouseController extends Controller
      */
     public function show($id)
     {
-        return new WarehouseResource(Warehouse::find($id));
+        return new WarehouseResource(Warehouse::findOrFail($id));
     }
 
     /**
@@ -60,7 +60,7 @@ class WarehouseController extends Controller
      */
     public function update(UpdateWarehouseRequest $request, $id)
     {
-        $warehouse = Warehouse::find($id);
+        $warehouse = Warehouse::findOrFail($id);
         $warehouse->code = $request->input('code');
         $warehouse->name = $request->input('name');
         $warehouse->save();
@@ -76,7 +76,7 @@ class WarehouseController extends Controller
      */
     public function destroy($id)
     {
-        Warehouse::find($id)->delete();
+        Warehouse::findOrFail($id)->delete();
 
         return response(null, 204);
     }

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Master;
 
-use App\Model\Master\PersonGroup;
 use Tests\TestCase;
 use App\Model\Master\Person;
+use App\Model\Master\PersonGroup;
 use App\Model\Master\PersonCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

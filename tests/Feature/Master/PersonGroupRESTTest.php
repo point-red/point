@@ -92,7 +92,7 @@ class PersonGroupRESTTest extends TestCase
 
         $response->assertStatus(204);
 
-        $this->assertDatabaseMissing('users', [
+        $this->assertDatabaseMissing('person_groups', [
             'code' => $personGroup->code,
             'name' => $personGroup->name,
         ]);

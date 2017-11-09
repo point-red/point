@@ -92,7 +92,7 @@ class PersonCategoryRESTTest extends TestCase
 
         $response->assertStatus(204);
 
-        $this->assertDatabaseMissing('users', [
+        $this->assertDatabaseMissing('person_categories', [
             'code' => $personCategory->code,
             'name' => $personCategory->name,
         ]);

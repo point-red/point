@@ -88,7 +88,7 @@ class PersonCategoryRESTTest extends TestCase
     {
         $personCategory = factory(PersonCategory::class)->create();
 
-        $response = $this->json('DELETE', 'api/v1/master/user/'.$personCategory->id, [], [$this->headers]);
+        $response = $this->json('DELETE', 'api/v1/master/person-categories/'.$personCategory->id, [], [$this->headers]);
 
         $response->assertStatus(204);
 

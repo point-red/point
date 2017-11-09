@@ -88,7 +88,7 @@ class PersonGroupRESTTest extends TestCase
     {
         $personGroup = factory(PersonGroup::class)->create();
 
-        $response = $this->json('DELETE', 'api/v1/master/user/'.$personGroup->id, [], [$this->headers]);
+        $response = $this->json('DELETE', 'api/v1/master/person-groups/'.$personGroup->id, [], [$this->headers]);
 
         $response->assertStatus(204);
 

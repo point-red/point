@@ -26,7 +26,7 @@ class PersonRESTTest extends TestCase
         $data = [
             'code' => 'code',
             'name' => 'name',
-            'person_categories_id' => $personCategory->id,
+            'person_category_id' => $personCategory->id,
         ];
 
         $response = $this->json('POST', 'api/v1/master/persons', $data, [$this->headers]);
@@ -47,7 +47,7 @@ class PersonRESTTest extends TestCase
             'data' => [
                 'code' => $person->code,
                 'name' => $person->name,
-                'person_categories_id' => $person->person_categories_id,
+                'person_category_id' => $person->person_category_id,
             ],
         ]);
     }
@@ -78,7 +78,7 @@ class PersonRESTTest extends TestCase
             'id' => $person->id,
             'code' => 'another code',
             'name' => 'another name',
-            'person_categories_id' => $person->person_categories_id,
+            'person_category_id' => $person->person_category_id,
         ];
 
         $response = $this->json('PUT', 'api/v1/master/persons/'.$person->id, $data, [$this->headers]);

@@ -23,17 +23,17 @@ class CreatePersonsTable extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->unsignedInteger('person_categories_id')->index();
-            $table->unsignedInteger('person_groups_id')->nullable()->index();
+            $table->unsignedInteger('person_category_id')->index();
+            $table->unsignedInteger('person_group_id')->nullable()->index();
 
             $table->unique(['name', 'person_categories_id']);
 
-            $table->foreign('person_categories_id')
+            $table->foreign('person_category_id')
                 ->references('id')->on('person_categories')
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
 
-            $table->foreign('person_groups_id')
+            $table->foreign('person_group_id')
                 ->references('id')->on('person_groups')
                 ->onUpdate('cascade')
                 ->onDelete('restrict');

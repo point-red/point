@@ -28,10 +28,10 @@ class UpdatePersonRequest extends FormRequest
             'name' => [
                 'required',
                 'unique:persons,name,'.$this->id.',id'
-                .',person_categories_id,'.$request->get('person_categories_id'),
+                .',person_category_id,'.$request->get('person_category_id'),
             ],
             'code' => 'unique:persons,code,'.$this->id,
-            'person_categories_id' => 'required',
+            'person_category_id' => 'required',
         ];
     }
 }

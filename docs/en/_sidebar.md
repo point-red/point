@@ -8,6 +8,7 @@
   - [Installation](/en/getting-started/installation.md)
 - Usage
   - [Directory Structure](/en/usage/directory-structure.md)
+  - [Scaffolding](/en/usage/scaffolding.md)
 - Modules
   - [User & Role](/en/modules/user-and-role.md)
   - Master
@@ -17,3 +18,5 @@
   - [Point of Sale](/en/modules)
   - [Service](/en/modules)
   - [Accounting](/en/modules)
+
+

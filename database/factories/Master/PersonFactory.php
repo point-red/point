@@ -18,6 +18,6 @@ $factory->define(Person::class, function (Faker $faker) {
         },
         'person_groups_id' => function () {
             return factory(\App\Model\Master\PersonGroup::class)->create()->id;
-        }
+        },
     ];
 });

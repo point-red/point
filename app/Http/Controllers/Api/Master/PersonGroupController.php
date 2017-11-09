@@ -48,7 +48,7 @@ class PersonGroupController extends ApiController
      */
     public function show($id)
     {
-        return new PersonGroupResource(PersonGroup::find($id));
+        return new PersonGroupResource(PersonGroup::findOrFail($id));
     }
 
     /**
@@ -60,7 +60,7 @@ class PersonGroupController extends ApiController
      */
     public function update(UpdatePersonGroupRequest $request, $id)
     {
-        $personGroup = PersonGroup::find($id);
+        $personGroup = PersonGroup::findOrFail($id);
         $personGroup->code = $request->input('code');
         $personGroup->name = $request->input('name');
         $personGroup->save();
@@ -76,7 +76,7 @@ class PersonGroupController extends ApiController
      */
     public function destroy($id)
     {
-        PersonGroup::find($id)->delete();
+        PersonGroup::findOrFail($id)->delete();
 
         return response(null, 204);
     }

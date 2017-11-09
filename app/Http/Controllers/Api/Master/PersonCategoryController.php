@@ -48,7 +48,7 @@ class PersonCategoryController extends ApiController
      */
     public function show($id)
     {
-        return new PersonCategoryResource(PersonCategory::find($id));
+        return new PersonCategoryResource(PersonCategory::findOrFail($id));
     }
 
     /**
@@ -60,7 +60,7 @@ class PersonCategoryController extends ApiController
      */
     public function update(UpdatePersonCategoryRequest $request, $id)
     {
-        $personCategory = PersonCategory::find($id);
+        $personCategory = PersonCategory::findOrFail($id);
         $personCategory->code = $request->input('code');
         $personCategory->name = $request->input('name');
         $personCategory->save();
@@ -76,7 +76,7 @@ class PersonCategoryController extends ApiController
      */
     public function destroy($id)
     {
-        PersonCategory::find($id)->delete();
+        PersonCategory::findOrFail($id)->delete();
 
         return response(null, 204);
     }

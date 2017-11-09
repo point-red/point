@@ -13,10 +13,10 @@ $factory->define(Person::class, function (Faker $faker) {
         'email' => $faker->email,
         'address' => $faker->address,
         'notes' => $faker->text,
-        'person_categories_id' => function () {
+        'person_category_id' => function () {
             return factory(\App\Model\Master\PersonCategory::class)->create()->id;
         },
-        'person_groups_id' => function () {
+        'person_group_id' => function () {
             return factory(\App\Model\Master\PersonGroup::class)->create()->id;
         },
     ];

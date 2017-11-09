@@ -19,17 +19,17 @@ class PersonValidationTest extends TestCase
     }
 
     /** @test */
-    public function a_person_name_with_person_categories_id_should_be_unique()
+    public function a_person_name_with_person_category_id_should_be_unique()
     {
         $personCategory = factory(PersonCategory::class)->create();
         $person = factory(Person::class)->create([
-            'person_categories_id' => $personCategory->id,
+            'person_category_id' => $personCategory->id,
         ]);
 
         $response = $this->json('POST', 'api/v1/master/persons', [
             'code' => 'NEW CODE',
             'name' => $person->name,
-            'person_categories_id' => $personCategory->id,
+            'person_category_id' => $personCategory->id,
         ], [$this->headers]);
 
         $response->assertJsonStructure([
@@ -46,13 +46,13 @@ class PersonValidationTest extends TestCase
     {
         $personCategory = factory(PersonCategory::class)->create();
         $person = factory(Person::class)->create([
-            'person_categories_id' => $personCategory->id,
+            'person_category_id' => $personCategory->id,
         ]);
 
         $response = $this->json('POST', 'api/v1/master/persons', [
             'code' => $person->code,
             'name' => 'NEW NAME',
-            'person_categories_id' => $personCategory->id,
+            'person_category_id' => $personCategory->id,
         ], [$this->headers]);
 
         $response->assertJsonStructure([

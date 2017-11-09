@@ -39,8 +39,8 @@ class PersonController extends ApiController
         $person->phone = $request->input('phone');
         $person->address = $request->input('address');
         $person->notes = $request->input('notes');
-        $person->person_categories_id = $request->input('person_categories_id');
-        $person->person_groups_id = $request->input('person_groups_id');
+        $person->person_category_id = $request->input('person_category_id');
+        $person->person_group_id = $request->input('person_group_id');
         $person->save();
 
         return new PersonResource($person);
@@ -72,8 +72,8 @@ class PersonController extends ApiController
         $person->phone = $request->input('phone');
         $person->address = $request->input('address');
         $person->notes = $request->input('notes');
-        $person->person_categories_id = $request->input('person_categories_id');
-        $person->person_groups_id = $request->input('person_groups_id');
+        $person->person_category_id = $request->input('person_category_id');
+        $person->person_group_id = $request->input('person_group_id');
         $person->save();
 
         return new PersonResource($person);

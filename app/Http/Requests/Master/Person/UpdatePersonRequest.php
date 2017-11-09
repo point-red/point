@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Master\Person;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class UpdatePersonRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class UpdatePersonRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,10 +22,16 @@ class UpdatePersonRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(Request $request)
     {
         return [
-            //
+            'name' => [
+                'required',
+                'unique:persons,name,'.$this->id.',id'
+                .',person_categories_id,'.$request->get('person_categories_id'),
+            ],
+            'code' => 'unique:persons,code,'.$this->id,
+            'person_categories_id' => 'required',
         ];
     }
 }

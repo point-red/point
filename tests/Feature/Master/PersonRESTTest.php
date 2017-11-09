@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Master;
 
+use Tests\TestCase;
 use App\Model\Master\Person;
 use App\Model\Master\PersonCategory;
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PersonRESTTest extends TestCase

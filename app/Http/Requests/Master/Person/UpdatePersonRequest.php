@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Master\Person;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePersonRequest extends FormRequest
 {

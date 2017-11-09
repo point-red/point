@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use App\User;
+use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -23,5 +25,14 @@ abstract class TestCase extends BaseTestCase
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
+    }
+
+    protected function signIn($user = null)
+    {
+        $this->user = $user ?: factory(User::class)->create();
+
+        Passport::actingAs($this->user, ['*']);
+
+        return $this;
     }
 }

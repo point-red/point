@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Master\PersonGroup;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class UserCollection extends ResourceCollection
+class PersonGroupCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.

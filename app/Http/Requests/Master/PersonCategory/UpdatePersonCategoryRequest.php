@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Master\PersonCategory;
 
-use App\Http\Requests\ApiFormRequest;
+use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateUserRequest extends ApiFormRequest
+class UpdatePersonCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,8 @@ class UpdateUserRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255|unique:users,id,'.$this->id,
-            'email' => 'required|email|max:255|unique:users,id,'.$this->id,
+            'code' => 'required|unique:person_categories,code,'.$this->id,
+            'name' => 'required|unique:person_categories,name,'.$this->id,
         ];
     }
 }

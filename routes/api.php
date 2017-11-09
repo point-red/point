@@ -11,10 +11,14 @@
 |
 */
 
-Route::middleware('auth:api')->prefix('v1')->group(function () {
-    Route::apiResource('user', 'UserController');
-});
-
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->namespace('Api')->group(function () {
     Route::post('register', 'RegisterController@store');
+
+    Route::middleware('auth:api')->group(function () {
+        Route::prefix('master')->namespace('Master')->group(function () {
+            Route::apiResource('user', 'UserController');
+
+            require base_path('routes/api/master.php');
+        });
+    });
 });

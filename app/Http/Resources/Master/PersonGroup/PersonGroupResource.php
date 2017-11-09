@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Master\PersonGroup;
 
 use Illuminate\Http\Resources\Json\Resource;
 
-class UserResource extends Resource
+class PersonGroupResource extends Resource
 {
     /**
      * Transform the resource into an array.

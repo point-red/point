@@ -9,8 +9,9 @@
 │   └── Exception
 │   └── HTTP
 │   │   └── Controller                  # Endpoint logic
-│   │   │   └── {Module}
-│   │   │       └── {Sub Module}		# Optional, each module can have submodule
+│   │   |   └── Api                     # All Api controller should be here
+│   │   │       └── {Module}
+│   │   │           └── {SubModule}	# Optional, each module can have submodule
 │   │   └── Middleware
 │   │   └── Requests                    # Validation and authorization check
 │   │   │   └── {Module}
@@ -45,10 +46,10 @@ Instead of defining all of your request handling logic as Closures in route file
 
 **Generate controller scaffolding** 
 
-`php artisan make:controller {Module}\\{SubModule}\\{Feature}Controller --resource`
+`php artisan make:controller Api\\{Module}\\{SubModule}\\{Feature}Controller --resource`
 
 ```
-php artisan make:controller Inventory\\Purchasing\\PurchaseOrderController --resource
+php artisan make:controller Api\\Inventory\\Purchasing\\PurchaseOrderController --resource
 ```
 
 **Result**, you need to delete method `create` and `edit` because we don't need them for creating API
@@ -56,12 +57,12 @@ php artisan make:controller Inventory\\Purchasing\\PurchaseOrderController --res
 ```
 <?php
 
-namespace App\Http\Controllers\Inventory\Purchasing;
+namespace App\Http\Controllers\Api\Inventory\Purchasing;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\ApiController;
 
-class PurchaseOrderController extends Controller
+class PurchaseOrderController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -436,10 +437,11 @@ All done, now we are ready to write our logic to create a feature, and this is o
 │   └── Console
 │   └── Exception
 │   └── HTTP
-│   │   └── Controller                  
-│   │   │   └── Inventory
-│   │   │    	└── Purchasing
-│   │   │        	└── PurchaseOrderController.php
+│   │   └── Controller   
+│   │   |   └── Api                     
+│   │   │       └── Inventory
+│   │   │    	     └── Purchasing
+│   │   │        	      └── PurchaseOrderController.php
 │   │   └── Middleware
 │   │   └── Requests                    
 │   │   |   └── Inventory
@@ -458,7 +460,7 @@ All done, now we are ready to write our logic to create a feature, and this is o
 │   └── migrations
 │    	└── create_inventory_purchasing_purchase_order.php
 │   └── seeds
-│    	└── InventoryPurchasingPurchaseOrder.php
+│    	└── InventoryPurchasingPurchaseOrderSeeder.php
 └── docs
 └── routes
     └── api                             

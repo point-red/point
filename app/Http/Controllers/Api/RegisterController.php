@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\User;
-use App\Http\Requests\User\StoreUserRequest;
-use App\Http\Resources\UserResource as UserResource;
+use App\Http\Resources\Master\User\UserResource;
+use App\Http\Requests\Master\User\StoreUserRequest;
 
-class RegisterController extends Controller
+class RegisterController extends ApiController
 {
     public function store(StoreUserRequest $request)
     {

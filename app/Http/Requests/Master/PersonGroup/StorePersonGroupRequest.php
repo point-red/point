@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Master\PersonGroup;
 
-use App\Http\Requests\ApiFormRequest;
+use Illuminate\Foundation\Http\FormRequest;
 
-class StoreUserRequest extends ApiFormRequest
+class StorePersonGroupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,8 @@ class StoreUserRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255|unique:users',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:8|max:255',
+            'code' => 'required|unique:person_groups,code',
+            'name' => 'required|unique:person_groups,name',
         ];
     }
 }

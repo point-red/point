@@ -23,7 +23,7 @@ class UserRESTTest extends TestCase
         $response = $this->json('POST', 'api/v1/master/user', [
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
-            'password' => 'secret-2016'
+            'password' => 'secret-2016',
         ], [$this->headers]);
 
         $response->assertStatus(201);

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Master;
 
-use App\Model\Master\PersonGroup;
 use Tests\TestCase;
+use App\Model\Master\PersonGroup;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PersonGroupValidationTest extends TestCase
@@ -30,8 +30,8 @@ class PersonGroupValidationTest extends TestCase
 
         $response->assertJsonStructure([
             'error' => [
-                'errors' => ['code', 'name']
-            ]
+                'errors' => ['code', 'name'],
+            ],
         ]);
 
         $response->assertStatus(422);

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Master;
 
+use Tests\TestCase;
 use App\Model\Master\Person;
 use App\Model\Master\PersonCategory;
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PersonValidationTest extends TestCase
@@ -23,7 +23,7 @@ class PersonValidationTest extends TestCase
     {
         $personCategory = factory(PersonCategory::class)->create();
         $person = factory(Person::class)->create([
-            'person_categories_id' => $personCategory->id
+            'person_categories_id' => $personCategory->id,
         ]);
 
         $response = $this->json('POST', 'api/v1/master/persons', [
@@ -34,19 +34,19 @@ class PersonValidationTest extends TestCase
 
         $response->assertJsonStructure([
             'error' => [
-                'errors' => ['name']
-            ]
+                'errors' => ['name'],
+            ],
         ]);
 
         $response->assertStatus(422);
     }
-    
+
     /** @test */
     public function a_person_code_should_be_unique()
     {
         $personCategory = factory(PersonCategory::class)->create();
         $person = factory(Person::class)->create([
-            'person_categories_id' => $personCategory->id
+            'person_categories_id' => $personCategory->id,
         ]);
 
         $response = $this->json('POST', 'api/v1/master/persons', [
@@ -57,8 +57,8 @@ class PersonValidationTest extends TestCase
 
         $response->assertJsonStructure([
             'error' => [
-                'errors' => ['code']
-            ]
+                'errors' => ['code'],
+            ],
         ]);
 
         $response->assertStatus(422);

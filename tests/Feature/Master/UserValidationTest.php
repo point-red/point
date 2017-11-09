@@ -30,8 +30,8 @@ class UserValidationTest extends TestCase
 
         $response->assertJsonStructure([
             'error' => [
-                'errors' => ['name', 'email']
-            ]
+                'errors' => ['name', 'email'],
+            ],
         ]);
 
         $response->assertStatus(422);

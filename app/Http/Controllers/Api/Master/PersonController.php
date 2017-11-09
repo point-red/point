@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Http\Controllers\Api\ApiController;
-use App\Http\Requests\Master\Person\StorePersonRequest;
-use App\Http\Requests\Master\Person\UpdatePersonRequest;
-use App\Http\Resources\Master\Person\PersonResource;
 use App\Model\Master\Person;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Api\ApiController;
+use App\Http\Resources\Master\Person\PersonResource;
+use App\Http\Requests\Master\Person\StorePersonRequest;
+use App\Http\Requests\Master\Person\UpdatePersonRequest;
 
 class PersonController extends ApiController
 {

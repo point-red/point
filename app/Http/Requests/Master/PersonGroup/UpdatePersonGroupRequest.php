@@ -24,8 +24,8 @@ class UpdatePersonGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|unique:person_groups,code,' . $this->id,
-            'name' => 'required|unique:person_groups,name,' . $this->id,
+            'code' => 'required|unique:person_groups,code,'.$this->id,
+            'name' => 'required|unique:person_groups,name,'.$this->id,
         ];
     }
 }

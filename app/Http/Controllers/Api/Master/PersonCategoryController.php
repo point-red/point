@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use Illuminate\Http\Request;
+use App\Model\Master\PersonCategory;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Resources\Master\PersonCategory\PersonCategoryResource;
+use App\Http\Resources\Master\PersonCategory\PersonCategoryCollection;
 use App\Http\Requests\Master\PersonCategory\StorePersonCategoryRequest;
 use App\Http\Requests\Master\PersonCategory\UpdatePersonCategoryRequest;
-use App\Http\Resources\Master\PersonCategory\PersonCategoryCollection;
-use App\Http\Resources\Master\PersonCategory\PersonCategoryResource;
-use App\Model\Master\PersonCategory;
-use Illuminate\Http\Request;
 
 class PersonCategoryController extends ApiController
 {
@@ -80,5 +80,4 @@ class PersonCategoryController extends ApiController
 
         return response(null, 204);
     }
-
 }

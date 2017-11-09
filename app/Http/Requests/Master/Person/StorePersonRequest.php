@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Master\Person;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StorePersonRequest extends FormRequest
 {
@@ -28,10 +28,10 @@ class StorePersonRequest extends FormRequest
             'name' => [
                 'required',
                 'unique:persons,name,NULL,id'
-                    . ',person_categories_id,' . $request->get('person_categories_id')
+                    .',person_categories_id,'.$request->get('person_categories_id'),
             ],
             'code' => 'unique:persons,code',
-            'person_categories_id' => 'required'
+            'person_categories_id' => 'required',
         ];
     }
 }

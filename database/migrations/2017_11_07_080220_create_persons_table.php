@@ -26,7 +26,7 @@ class CreatePersonsTable extends Migration
             $table->unsignedInteger('person_category_id')->index();
             $table->unsignedInteger('person_group_id')->nullable()->index();
 
-            $table->unique(['name', 'person_categories_id']);
+            $table->unique(['name', 'person_category_id']);
 
             $table->foreign('person_category_id')
                 ->references('id')->on('person_categories')

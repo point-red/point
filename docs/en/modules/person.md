@@ -6,7 +6,7 @@ Person is commonly used for manage each vendor, it can be Supplier, Customer, or
 
 ![](_media/erd/persons.png)
 
-### Person Type
+### Person Category
 
 Table : `person_categories`
 
@@ -56,14 +56,14 @@ Table : `persons`
 | --- | --- | --- | --- |
 | id | increment | | |
 | code | string | unique | |
-| name | string | unique(['name', 'person_categories_id']) | |
+| name | string | unique(['name', 'person_category_id']) | |
 | email | string | nullable | |
 | phone | string | nullable | |
 | address | text | nullable | |
 | notes | text | nullable | |
 | created_at | timestamp | | |
 | updated_at | timestamp | | |
-| person_categories_id | integer | | [person_categories.id](/en/modules/person?id=person-type) |
+| person_category_id | integer | | [person_categories.id](/en/modules/person?id=person-category) |
 | person_groups_id | integer | | [person_groups.id](/en/modules/person?id=person-group) |
 
 Relationship :

@@ -6,9 +6,10 @@
 - Getting Started
   - [Introduction](/en/getting-started/introduction.md)
   - [Installation](/en/getting-started/installation.md)
-- Usage
-  - [Directory Structure](/en/usage/directory-structure.md)
-  - [Scaffolding](/en/usage/scaffolding.md)
+- Develop
+  - [Directory Structure](/en/develop/directory-structure.md)
+  - [Scaffolding](/en/develop/scaffolding.md)
+  - [Commands](/en/develop/commands.md)
 - Modules
   - [User & Role](/en/modules/user-and-role.md)
   - Master

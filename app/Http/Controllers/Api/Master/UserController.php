@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Master;
 
+use App\Http\Controllers\Api\ApiController;
 use App\User;
 use Illuminate\Http\Request;
-use App\Http\Resources\UserResource;
-use App\Http\Resources\UserCollection;
-use App\Http\Requests\User\StoreUserRequest;
-use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Resources\Master\User\UserResource;
+use App\Http\Resources\Master\User\UserCollection;
+use App\Http\Requests\Master\User\StoreUserRequest;
+use App\Http\Requests\Master\User\UpdateUserRequest;
 
-class UserController extends Controller
+class UserController extends ApiController
 {
     /**
      * Display a listing of the resource.

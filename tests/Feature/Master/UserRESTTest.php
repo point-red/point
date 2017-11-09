@@ -1,13 +1,12 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Master;
 
 use App\User;
 use Tests\TestCase;
-use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class UserTest extends TestCase
+class UserRESTTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -15,27 +14,30 @@ class UserTest extends TestCase
     {
         parent::setUp();
 
-        $this->user = factory(User::class)->create();
-
-        Passport::actingAs($this->user, ['*']);
+        $this->signIn();
     }
 
     /** @test */
-    public function user_can_create_user()
+    public function an_user_can_create_user()
     {
-        $response = $this->json('POST', 'api/v1/user', [
+        $response = $this->json('POST', 'api/v1/master/user', [
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
-            'password' => 'secret-password',
+            'password' => 'secret-2016'
         ], [$this->headers]);
 
         $response->assertStatus(201);
+
+        $this->assertDatabaseHas('users', [
+            'name' => 'John',
+            'email' => 'john.doe@gmail.com',
+        ]);
     }
 
     /** @test */
-    public function user_can_read_single_user()
+    public function an_user_can_read_single_user()
     {
-        $response = $this->json('GET', 'api/v1/user/'.$this->user->id, [], [$this->headers]);
+        $response = $this->json('GET', 'api/v1/master/user/'.$this->user->id, [], [$this->headers]);
 
         $response->assertJson([
             'data' => [
@@ -49,40 +51,37 @@ class UserTest extends TestCase
     }
 
     /** @test */
-    public function user_can_read_all_user()
+    public function an_user_can_read_all_user()
     {
         $this->users = factory(User::class, 2)->create();
 
-        $response = $this->json('GET', 'api/v1/user', [], [$this->headers]);
+        $response = $this->json('GET', 'api/v1/master/user', [], [$this->headers]);
 
         $response->assertStatus(200);
     }
 
     /** @test */
-    public function user_can_update_user()
+    public function an_user_can_update_user()
     {
-        $response = $this->json('PUT', 'api/v1/user/'.$this->user->id, [
+        $data = [
+            'id' => $this->user->id,
             'name' => 'another name',
             'email' => 'another@email.com',
-        ], [$this->headers]);
+        ];
 
-        $response->assertJson([
-            'data' => [
-                'id' => $this->user->id,
-                'name' => 'another name',
-                'email' => 'another@email.com',
-                'created_at' => $this->user->created_at,
-                'updated_at' => $this->user->updated_at,
-            ],
-        ]);
+        $response = $this->json('PUT', 'api/v1/master/user/'.$this->user->id, $data, [$this->headers]);
+
+        $response->assertJson(['data' => $data]);
+
+        $this->assertDatabaseHas('users', $data);
 
         $response->assertStatus(200);
     }
 
     /** @test */
-    public function user_can_delete_user()
+    public function an_user_can_delete_user()
     {
-        $response = $this->json('DELETE', 'api/v1/user/'.$this->user->id, [], [$this->headers]);
+        $response = $this->json('DELETE', 'api/v1/master/user/'.$this->user->id, [], [$this->headers]);
 
         $response->assertStatus(204);
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Master\User;
 
 use App\Http\Requests\ApiFormRequest;
 

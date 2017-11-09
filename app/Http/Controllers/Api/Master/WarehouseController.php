@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use Illuminate\Http\Request;
+use App\Model\Master\Warehouse;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Master\Warehouse\WarehouseResource;
+use App\Http\Resources\Master\Warehouse\WarehouseCollection;
 use App\Http\Requests\Master\Warehouse\StoreWarehouseRequest;
 use App\Http\Requests\Master\Warehouse\UpdateWarehouseRequest;
-use App\Http\Resources\Master\Warehouse\WarehouseCollection;
-use App\Http\Resources\Master\Warehouse\WarehouseResource;
-use App\Model\Master\Warehouse;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class WarehouseController extends Controller
 {

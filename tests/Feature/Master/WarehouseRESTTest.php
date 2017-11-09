@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Master;
 
-use App\Model\Master\Warehouse;
 use Tests\TestCase;
+use App\Model\Master\Warehouse;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class WarehouseRESTTest extends TestCase

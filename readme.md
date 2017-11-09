@@ -55,7 +55,7 @@ If you discover a security vulnerability within Point, please send an e-mail to 
 - [x] ~~Integrate code style~~
 
 > v0.2.x start to design module and database for minimum viable product
-- [ ] Master Person (can be supplier, customer, employee, manager, supervisor, etc)
+- [x] ~~Master Person (can be supplier, customer, employee, manager, supervisor, etc)~~
 - [ ] Master Item (stockable)
 - [ ] Master Service (non stockable)
 - [ ] Master Fixed Assets (can have depreciation)
@@ -63,7 +63,7 @@ If you discover a security vulnerability within Point, please send an e-mail to 
 - [ ] Master Warehouse (multi warehouse per company)
 - [ ] Master Allocation (allocated payment)
 
-- Module :
+### Modules :
 - [ ] Inventory
     - [ ] Purchasing
     - [ ] Sales

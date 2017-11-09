@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Master;
 
-use App\Model\Master\Person;
 use Tests\TestCase;
+use App\Model\Master\Person;
 use App\Model\Master\PersonCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -37,7 +37,7 @@ class PersonCategoryValidationTest extends TestCase
 
         $response->assertStatus(422);
     }
-    
+
     /** @test */
     public function a_person_category_has_many_person()
     {

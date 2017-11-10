@@ -15,7 +15,8 @@
   - [User & Role](/en/modules/user-and-role.md)
   - Master
       - [Person](/en/modules/person.md)
-  - [Inventory](/en/modules)
+      - [Warehouse](/en/modules/warehouse.md)
+  - [Inventory & Services](/en/modules)
   - [Asset](/en/modules)
   - [Point of Sale](/en/modules)
   - [Service](/en/modules)

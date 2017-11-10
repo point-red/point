@@ -4,7 +4,7 @@ Person is commonly used for manage each vendor, it can be Supplier, Customer, or
 
 ## Database
 
-![](_media/erd/persons.png)
+![](_media/erd/persons.jpg)
 
 ### Person Category
 

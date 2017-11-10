@@ -16,8 +16,6 @@
 | disabled       |  boolean  | Prevent user for login if `true`         |                                          |
 | created_at     | timestamp |                                          |                                          |
 | updated_at     | timestamp |                                          |                                          |
-| created_by     |  integer  | Log user who create this data            | [users.id](/modules/user-and-role?id=users) |
-| updated_by     |  integer  | Log user who update this data            | [users.id](/modules/user-and-role?id=users) |
 
 ### Role
 
@@ -72,3 +70,5 @@ When user forgot their password, they can request to reset their password with f
 | password        | text | Password        | new password         |
 | retype_password | text | Retype Password | confirm new password |
 | email           | text | Email           | confirm your email   |
+
+

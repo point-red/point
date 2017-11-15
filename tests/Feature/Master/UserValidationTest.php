@@ -22,7 +22,7 @@ class UserValidationTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $response = $this->json('POST', 'api/v1/master/user', [
+        $response = $this->json('POST', 'api/v1/master/users', [
             'name' => $user->name,
             'email' => $user->email,
             'password' => $user->password,

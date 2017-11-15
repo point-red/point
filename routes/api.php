@@ -15,9 +15,9 @@ Route::prefix('v1')->namespace('Api')->group(function () {
     Route::post('register', 'RegisterController@store');
 
     Route::middleware('auth:api')->group(function () {
-        Route::prefix('master')->namespace('Master')->group(function () {
-            Route::apiResource('user', 'UserController');
+        Route::post('auth-user', 'AuthUserController@show');
 
+        Route::prefix('master')->namespace('Master')->group(function () {
             require base_path('routes/api/master.php');
         });
     });

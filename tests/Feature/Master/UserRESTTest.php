@@ -20,7 +20,7 @@ class UserRESTTest extends TestCase
     /** @test */
     public function an_user_can_create_user()
     {
-        $response = $this->json('POST', 'api/v1/master/user', [
+        $response = $this->json('POST', 'api/v1/master/users', [
             'name' => 'John',
             'email' => 'john.doe@gmail.com',
             'password' => 'secret-2016',
@@ -37,7 +37,7 @@ class UserRESTTest extends TestCase
     /** @test */
     public function an_user_can_read_single_user()
     {
-        $response = $this->json('GET', 'api/v1/master/user/'.$this->user->id, [], [$this->headers]);
+        $response = $this->json('GET', 'api/v1/master/users/'.$this->user->id, [], [$this->headers]);
 
         $response->assertJson([
             'data' => [
@@ -55,7 +55,7 @@ class UserRESTTest extends TestCase
     {
         $this->users = factory(User::class, 2)->create();
 
-        $response = $this->json('GET', 'api/v1/master/user', [], [$this->headers]);
+        $response = $this->json('GET', 'api/v1/master/users', [], [$this->headers]);
 
         $response->assertStatus(200);
     }
@@ -69,7 +69,7 @@ class UserRESTTest extends TestCase
             'email' => 'another@email.com',
         ];
 
-        $response = $this->json('PUT', 'api/v1/master/user/'.$this->user->id, $data, [$this->headers]);
+        $response = $this->json('PUT', 'api/v1/master/users/'.$this->user->id, $data, [$this->headers]);
 
         $response->assertJson(['data' => $data]);
 
@@ -81,7 +81,7 @@ class UserRESTTest extends TestCase
     /** @test */
     public function an_user_can_delete_user()
     {
-        $response = $this->json('DELETE', 'api/v1/master/user/'.$this->user->id, [], [$this->headers]);
+        $response = $this->json('DELETE', 'api/v1/master/users/'.$this->user->id, [], [$this->headers]);
 
         $response->assertStatus(204);
 

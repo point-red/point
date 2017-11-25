@@ -16,11 +16,13 @@ class AuthUserController extends ApiController
     {
         $user = $request->user();
 
-        $res = [
-            'email' => $user->email,
-            'name' => $user->name,
+        $userData = [
+            'data' => [
+                'email' => $user->email,
+                'name' => $user->name,
+            ]
         ];
 
-        return $res;
+        return $userData;
     }
 }

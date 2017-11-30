@@ -20,7 +20,7 @@ class AuthUserController extends ApiController
             'data' => [
                 'email' => $user->email,
                 'name' => $user->name,
-            ]
+            ],
         ];
 
         return $userData;

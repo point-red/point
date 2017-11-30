@@ -83,11 +83,9 @@
                 </div>
 
                 <div class="links">
-                    <a href="https://laravel.com/docs">Laravel</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
+                    <a href="https://www.point.red">Website</a>
+                    <a href="https://point-red.github.io/point">Developer</a>
+                    <a href="https://documenter.getpostman.com/view/421224/pointred/77cf6Pd">API</a>
                 </div>
             </div>
         </div>

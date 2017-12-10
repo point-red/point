@@ -73,7 +73,7 @@ class WarehouseRESTTest extends TestCase
             'code' => $warehouse->code,
             'name' => $warehouse->name,
             'address' => 'Another Address',
-            'phone' => 'New Phone'
+            'phone' => 'New Phone',
         ];
 
         $response = $this->json('PUT', 'api/v1/master/warehouses/'.$warehouse->id, $data, [$this->headers]);

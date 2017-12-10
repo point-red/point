@@ -35,6 +35,8 @@ class WarehouseController extends Controller
         $warehouse = new Warehouse;
         $warehouse->code = $request->input('code');
         $warehouse->name = $request->input('name');
+        $warehouse->address = $request->input('address');
+        $warehouse->phone = $request->input('phone');
         $warehouse->save();
 
         return new WarehouseResource($warehouse);
@@ -63,6 +65,8 @@ class WarehouseController extends Controller
         $warehouse = Warehouse::findOrFail($id);
         $warehouse->code = $request->input('code');
         $warehouse->name = $request->input('name');
+        $warehouse->address = $request->input('address');
+        $warehouse->phone = $request->input('phone');
         $warehouse->save();
 
         return new WarehouseResource($warehouse);

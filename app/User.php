@@ -28,7 +28,8 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function findForPassport($username) {
+    public function findForPassport($username)
+    {
         $field = filter_var($username, FILTER_VALIDATE_EMAIL)
             ? 'email' : 'name';
 

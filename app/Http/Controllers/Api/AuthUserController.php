@@ -9,8 +9,9 @@ class AuthUserController extends ApiController
     /**
      * Display a listing of the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \App\Http\Resources\UserCollection
+     * @param  \Illuminate\Http\Request $request
+     *
+     * @return array
      */
     public function show(Request $request)
     {

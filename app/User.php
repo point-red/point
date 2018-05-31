@@ -27,4 +27,11 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function findForPassport($username) {
+        $field = filter_var($username, FILTER_VALIDATE_EMAIL)
+            ? 'email' : 'name';
+
+        return $this->where($field, $username)->first();
+    }
 }

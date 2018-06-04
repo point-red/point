@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Person extends Model
 {
+    protected $connection = 'tenant';
+
     protected $table = 'persons';
 
     public function category()

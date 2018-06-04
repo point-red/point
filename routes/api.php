@@ -14,7 +14,7 @@
 Route::prefix('v1')->namespace('Api')->group(function () {
     Route::post('register', 'RegisterController@store');
 
-    Route::middleware('auth:api')->group(function () {
+    Route::domain('{tenant_subdomain}.'.env('API_DOMAIN'))->middleware('auth:api')->group(function () {
         Route::post('auth-user', 'AuthUserController@show');
 
         Route::prefix('master')->namespace('Master')->group(function () {

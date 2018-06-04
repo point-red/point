@@ -29,7 +29,7 @@ class AuthServiceProvider extends ServiceProvider
         Route::domain('{tenant_subdomain}.'.env('API_DOMAIN'))
             ->prefix('api/v1')
             ->group(function () {
-            Passport::routes();
-        });
+                Passport::routes();
+            });
     }
 }

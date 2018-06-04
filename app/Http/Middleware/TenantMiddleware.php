@@ -23,7 +23,7 @@ class TenantMiddleware
         $tenant_subdomain = $tenant_domain[0];
 
         if (count($tenant_domain) > 3) {
-            config()->set('database.connections.tenant.database', 'point_' . $tenant_subdomain);
+            config()->set('database.connections.tenant.database', 'point_'.$tenant_subdomain);
             DB::connection('tenant')->reconnect();
         }
 

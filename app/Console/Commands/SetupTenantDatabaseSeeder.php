@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class SetupTenantDatabaseSeeder extends Command
 {
@@ -41,12 +41,12 @@ class SetupTenantDatabaseSeeder extends Command
     {
         $tenantSubdomain = $this->argument('tenant_subdomain');
 
-        config()->set('database.connections.tenant.database', 'point_' . $tenantSubdomain);
+        config()->set('database.connections.tenant.database', 'point_'.$tenantSubdomain);
         DB::connection('tenant')->reconnect();
 
         Artisan::call('db:seed', [
             '--database' => 'tenant',
-            '--class' => 'TenantDatabaseSeeder'
+            '--class' => 'TenantDatabaseSeeder',
         ]);
     }
 }

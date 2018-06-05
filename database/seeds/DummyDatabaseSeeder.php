@@ -1,8 +1,6 @@
 <?php
 
 use App\User;
-use App\Model\Master\Person;
-use App\Model\Master\Warehouse;
 use Illuminate\Database\Seeder;
 
 class DummyDatabaseSeeder extends Seeder

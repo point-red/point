@@ -117,4 +117,4 @@ jobs:
 
       - run:
           name: Sending code coverage
-          command: php vendor/bin/coveralls
+          command: php vendor/bin/php-coveralls

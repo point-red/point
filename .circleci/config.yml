@@ -86,6 +86,10 @@ jobs:
           command: touch database/database.sqlite
 
       - run:
+          name: Create SQLite Tenant Database
+          command: touch database/databaseTenant.sqlite
+
+      - run:
           name: Migrate Laravel Database
           command: php artisan migrate
 

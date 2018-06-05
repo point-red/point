@@ -86,6 +86,10 @@ jobs:
           command: touch database/database.sqlite
 
       - run:
+          name: Create SQLite Tenant Database
+          command: touch database/databaseTenant.sqlite
+
+      - run:
           name: Migrate Laravel Database
           command: php artisan migrate
 
@@ -113,4 +117,4 @@ jobs:
 
       - run:
           name: Sending code coverage
-          command: php vendor/bin/coveralls
+          command: php vendor/bin/php-coveralls

@@ -8,9 +8,8 @@ before_script:
   - composer self-update
   - composer install --no-interaction
   - mysql -e 'create database testing;'
+  - mysql -e 'create database testing_tenant;'
   - php artisan key:generate
-  - php artisan migrate
-  - php artisan db:seed --class="DatabaseSeeder"
 
 script:
   - vendor/bin/phpunit

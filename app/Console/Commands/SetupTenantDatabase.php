@@ -41,10 +41,9 @@ class SetupTenantDatabase extends Command
     {
         $tenantSubdomain = $this->argument('tenant_subdomain');
 
-        config()->set('database.connections.tenant.database', 'point_'.$tenantSubdomain);
-        DB::connection('tenant')->reconnect();
+        config()->set('database.connections.tenant.database', $tenantSubdomain);
 
-        Artisan::call('migrate', [
+        Artisan::call('migrate:refresh', [
             '--database' => 'tenant',
             '--path' => 'database/migrations/tenant',
         ]);

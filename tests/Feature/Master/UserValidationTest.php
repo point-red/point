@@ -15,6 +15,8 @@ class UserValidationTest extends TestCase
         parent::setUp();
 
         $this->signIn();
+
+        config()->set('database.default', 'mysql');
     }
 
     /** @test */

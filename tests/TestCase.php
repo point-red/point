@@ -3,7 +3,8 @@
 namespace Tests;
 
 use App\User;
-use Laravel\Passport\Passport;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -17,22 +18,27 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        $this->artisan('migrate');
+        Artisan::call('config:clear');
 
-        $this->artisan('passport:install');
+        config()->set('database.connections.tenant.driver', 'sqlite');
+        config()->set('database.connections.tenant.database', 'database/databaseTenant.sqlite');
+
+        $this->getConnection(DB::getDefaultConnection())->disconnect();
+
+        $this->artisan('tenant:setup-database', [
+            'tenant_subdomain' => 'database/databaseTenant.sqlite'
+        ]);
 
         $this->headers = [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
+            'Content-Type' => 'application/json'
         ];
     }
 
-    protected function signIn($user = null)
+    protected function signIn()
     {
-        $this->user = $user ?: factory(User::class)->create();
+        $this->user = factory(User::class)->create();
 
-        Passport::actingAs($this->user, ['*']);
-
-        return $this;
+        $this->actingAs($this->user, 'api');
     }
 }

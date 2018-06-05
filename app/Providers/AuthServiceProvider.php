@@ -26,10 +26,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Route::domain('{tenant_subdomain}.'.env('API_DOMAIN'))
-            ->prefix('api/v1')
-            ->group(function () {
-                Passport::routes();
-            });
+        Route::prefix('api/v1')->group(function () {
+            Passport::routes();
+        });
     }
 }

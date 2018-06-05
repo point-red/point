@@ -16,14 +16,8 @@ class TenantMiddleware
      */
     public function handle($request, Closure $next)
     {
-        // client domain
-        $tenant_domain = explode('.', $request->getHost());
-
-        // client subdomain
-        $tenant_subdomain = $tenant_domain[0];
-
-        if (count($tenant_domain) > 3) {
-            config()->set('database.connections.tenant.database', 'point_'.$tenant_subdomain);
+        if ($request->header('Tenant')) {
+            config()->set('database.connections.tenant.database', 'point_' . $request->header('Tenant'));
             DB::connection('tenant')->reconnect();
         }
 

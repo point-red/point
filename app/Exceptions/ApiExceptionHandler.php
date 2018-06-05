@@ -3,8 +3,11 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use League\OAuth2\Server\Exception\OAuthServerException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 trait ApiExceptionHandler
@@ -47,6 +50,25 @@ trait ApiExceptionHandler
                     'errors' => $exception->errors(),
                 ],
             ], 422);
+        }
+
+        if ($exception instanceof AuthorizationException) {
+            return response()->json([
+                'error' => [
+                    'code' => 403,
+                    'message' => $exception->getMessage(),
+                ],
+            ], 403);
+        }
+
+        // Wrong access token
+        if ($exception instanceof OAuthServerException || $exception instanceof AuthenticationException) {
+            return response()->json([
+                'error' => [
+                    'code' => 401,
+                    'message' => $exception->getMessage(),
+                ],
+            ], 401);
         }
 
         /* Handle server error or library error */

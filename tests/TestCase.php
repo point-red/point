@@ -3,8 +3,8 @@
 namespace Tests;
 
 use App\User;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -26,12 +26,12 @@ abstract class TestCase extends BaseTestCase
         $this->getConnection(DB::getDefaultConnection())->disconnect();
 
         $this->artisan('tenant:setup-database', [
-            'tenant_subdomain' => 'database/databaseTenant.sqlite'
+            'tenant_subdomain' => 'database/databaseTenant.sqlite',
         ]);
 
         $this->headers = [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ];
     }
 

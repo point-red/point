@@ -3,8 +3,6 @@
 namespace Tests\Feature\Master;
 
 use App\User;
-use Illuminate\Database\ConnectionResolver;
-use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -64,7 +62,7 @@ class UserRESTTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    /* @test */
 //    public function an_user_can_update_user()
 //    {
 //        $data = [
@@ -82,7 +80,7 @@ class UserRESTTest extends TestCase
 //        $response->assertStatus(200);
 //    }
 
-    /** @test */
+    /* @test */
 //    public function an_user_can_delete_user()
 //    {
 //        $response = $this->json('DELETE', 'api/v1/master/users/'.$this->user->id, [], [$this->headers]);

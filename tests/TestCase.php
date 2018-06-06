@@ -20,13 +20,13 @@ abstract class TestCase extends BaseTestCase
 
         Artisan::call('config:clear');
 
-        config()->set('database.connections.tenant.driver', 'sqlite');
-        config()->set('database.connections.tenant.database', 'database/databaseTenant.sqlite');
+        config()->set('database.connections.tenant.driver', env('DB_TENANT_DRIVER'));
+        config()->set('database.connections.tenant.database', env('DB_TENANT_DATABASE'));
 
         $this->getConnection(DB::getDefaultConnection())->disconnect();
 
         $this->artisan('tenant:setup-database', [
-            'tenant_subdomain' => 'database/databaseTenant.sqlite',
+            'tenant_subdomain' => env('DB_TENANT_DATABASE'),
         ]);
 
         $this->headers = [

@@ -96,10 +96,10 @@ class GenerateScaffoldingCommand extends Command
         $this->line('created '.$this->name.' factory');
 
         Artisan::call('make:test', [
-            'name' => $this->module.$this->submodule.$this->name.'RESTTest',
+            'name' => $this->module.$this->submodule.$this->name.'Test',
         ]);
 
-        $this->line('created '.$this->name.' REST test class');
+        $this->line('created '.$this->name.' test class');
 
         Artisan::call('make:test', [
             'name' => $this->module.$this->submodule.$this->name.'ValidationTest',

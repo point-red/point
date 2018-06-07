@@ -6,7 +6,7 @@ use Tests\TestCase;
 use App\Model\Master\PersonGroup;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class PersonGroupRESTTest extends TestCase
+class PersonGroupTest extends TestCase
 {
     use RefreshDatabase;
 

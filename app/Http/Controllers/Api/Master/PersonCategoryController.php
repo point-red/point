@@ -15,7 +15,9 @@ class PersonCategoryController extends ApiController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \App\Http\Resources\Master\PersonCategory\PersonCategoryCollection
      */
     public function index(Request $request)
     {
@@ -28,7 +30,8 @@ class PersonCategoryController extends ApiController
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Master\PersonCategory\PersonCategoryResource
      */
     public function store(StorePersonCategoryRequest $request)
     {
@@ -44,7 +47,8 @@ class PersonCategoryController extends ApiController
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Master\PersonCategory\PersonCategoryResource
      */
     public function show($id)
     {
@@ -56,7 +60,8 @@ class PersonCategoryController extends ApiController
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Master\PersonCategory\PersonCategoryResource
      */
     public function update(UpdatePersonCategoryRequest $request, $id)
     {

@@ -15,7 +15,9 @@ class PersonGroupController extends ApiController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \App\Http\Resources\Master\PersonGroup\PersonGroupCollection
      */
     public function index(Request $request)
     {
@@ -28,7 +30,8 @@ class PersonGroupController extends ApiController
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Master\PersonGroup\PersonGroupResource
      */
     public function store(StorePersonGroupRequest $request)
     {
@@ -44,7 +47,8 @@ class PersonGroupController extends ApiController
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Master\PersonGroup\PersonGroupResource
      */
     public function show($id)
     {
@@ -56,7 +60,8 @@ class PersonGroupController extends ApiController
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Master\PersonGroup\PersonGroupResource
      */
     public function update(UpdatePersonGroupRequest $request, $id)
     {

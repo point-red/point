@@ -15,7 +15,9 @@ class WarehouseController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \App\Http\Resources\Master\Warehouse\WarehouseCollection
      */
     public function index(Request $request)
     {
@@ -27,8 +29,9 @@ class WarehouseController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\Master\Warehouse\StoreWarehouseRequest $request
+     *
+     * @return \App\Http\Resources\Master\Warehouse\WarehouseResource
      */
     public function store(StoreWarehouseRequest $request)
     {
@@ -45,8 +48,9 @@ class WarehouseController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  int $id
+     *
+     * @return \App\Http\Resources\Master\Warehouse\WarehouseResource
      */
     public function show($id)
     {
@@ -58,7 +62,8 @@ class WarehouseController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Master\Warehouse\WarehouseResource
      */
     public function update(UpdateWarehouseRequest $request, $id)
     {

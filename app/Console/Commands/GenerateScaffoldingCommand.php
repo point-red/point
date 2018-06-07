@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Symfony\Component\Console\Input\InputOption;
 
 class GenerateScaffoldingCommand extends Command
 {
@@ -45,10 +44,12 @@ class GenerateScaffoldingCommand extends Command
      */
     public function handle()
     {
-        $this->module = $this->argument('module') . DIRECTORY_SEPARATOR;
+        $this->module = $this->argument('module').DIRECTORY_SEPARATOR;
         $this->name = $this->argument('name');
 
-        if ($this->option('submodule')) $this->submodule = $this->option('submodule') . DIRECTORY_SEPARATOR;
+        if ($this->option('submodule')) {
+            $this->submodule = $this->option('submodule').DIRECTORY_SEPARATOR;
+        }
 
         Artisan::call('make:model', [
             'name' => 'Model\\'.$this->module.$this->submodule.$this->name,

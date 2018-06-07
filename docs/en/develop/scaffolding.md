@@ -8,7 +8,7 @@ With master scaffolding you can create a new master in no time.
 Just run this command and you will have all the template for your work.
 
 ```
-php artisan scaffolding:master Warehouse
+php artisan scaffolding:generate Master Warehouse
 ```
 
 Then register your routes in `routes/api/master.php`

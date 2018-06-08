@@ -41,7 +41,7 @@ class SetupTenantDatabaseSeeder extends Command
     {
         $tenantSubdomain = $this->argument('tenant_subdomain');
 
-        config()->set('database.connections.tenant.database', 'point_'.$tenantSubdomain);
+        config()->set('database.connections.tenant.database', $tenantSubdomain);
         DB::connection('tenant')->reconnect();
 
         Artisan::call('db:seed', [

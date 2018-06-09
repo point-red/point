@@ -6,7 +6,7 @@ use Tests\TestCase;
 use App\Model\Master\PersonCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class PersonCategoryRESTTest extends TestCase
+class PersonCategoryTest extends TestCase
 {
     use RefreshDatabase;
 

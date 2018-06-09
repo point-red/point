@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Artisan;
 
 class SetupTenantDatabase extends Command
@@ -39,6 +40,13 @@ class SetupTenantDatabase extends Command
     public function handle()
     {
         $tenantSubdomain = $this->argument('tenant_subdomain');
+
+        $process = new Process('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "drop database if exists '.$tenantSubdomain.'"');
+        $process->run();
+
+        // create new database
+        $process = new Process('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "create database '.$tenantSubdomain.'"');
+        $process->run();
 
         config()->set('database.connections.tenant.database', $tenantSubdomain);
 

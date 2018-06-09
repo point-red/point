@@ -16,7 +16,8 @@ class UserController extends ApiController
      * Display a listing of the resource.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \App\Http\Resources\UserCollection
+     *
+     * @return \App\Http\Resources\Master\User\UserCollection
      */
     public function index(Request $request)
     {
@@ -28,8 +29,9 @@ class UserController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\Master\User\StoreUserRequest $request
+     *
+     * @return \App\Http\Resources\Master\User\UserResource
      */
     public function store(StoreUserRequest $request)
     {
@@ -46,7 +48,8 @@ class UserController extends ApiController
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Master\User\UserResource
      */
     public function show($id)
     {
@@ -58,7 +61,8 @@ class UserController extends ApiController
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Master\User\UserResource
      */
     public function update(UpdateUserRequest $request, $id)
     {

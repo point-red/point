@@ -7,7 +7,7 @@ use App\Model\Master\PersonGroup;
 
 $factory->define(PersonGroup::class, function (Faker $faker) {
     return [
-        'code' => $faker->numberBetween($min = 1000, $max = 9999),
+        'code' => $faker->numberBetween($min = 10, $max = 999999),
         'name' => $faker->name,
     ];
 });

@@ -20,6 +20,8 @@ class StorePersonRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
     public function rules(Request $request)
@@ -27,8 +29,7 @@ class StorePersonRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'unique:persons,name,NULL,id'
-                    .',person_category_id,'.$request->get('person_category_id'),
+                'unique:persons,name,NULL,id,person_category_id,'.$request->get('person_category_id'),
             ],
             'code' => 'unique:persons,code',
             'person_category_id' => 'required',

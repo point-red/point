@@ -24,7 +24,7 @@ class StoreKpiScoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'kpi_template_indicator_id' => 'required'
+            'kpi_template_indicator_id' => 'required',
         ];
     }
 }

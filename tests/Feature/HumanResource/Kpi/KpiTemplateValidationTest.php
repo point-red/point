@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\HumanResource\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiTemplate;
 use Tests\TestCase;
+use App\Model\HumanResource\Kpi\KpiTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiTemplateValidationTest extends TestCase
@@ -23,7 +23,7 @@ class KpiTemplateValidationTest extends TestCase
         $kpiTemplate = factory(KpiTemplate::class)->create();
 
         $data = [
-            'name' => ''
+            'name' => '',
         ];
 
         $response = $this->json('POST', 'api/v1/human-resource/kpi/templates', $data, [$this->headers]);

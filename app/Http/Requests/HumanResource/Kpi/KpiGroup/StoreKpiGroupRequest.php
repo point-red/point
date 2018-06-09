@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\HumanResource\Kpi\KpiGroup;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreKpiGroupRequest extends FormRequest
 {

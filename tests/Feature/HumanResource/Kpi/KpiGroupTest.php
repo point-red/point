@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Master;
 
-use App\Model\HumanResource\Kpi\KpiCategory;
 use Tests\TestCase;
 use App\Model\HumanResource\Kpi\KpiGroup;
+use App\Model\HumanResource\Kpi\KpiCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiGroupTest extends TestCase

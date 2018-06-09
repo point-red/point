@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\HumanResource\Kpi\KpiCategory;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateKpiCategoryRequest extends FormRequest
 {

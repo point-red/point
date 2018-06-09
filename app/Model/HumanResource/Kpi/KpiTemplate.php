@@ -13,11 +13,6 @@ class KpiTemplate extends Model
      */
     public function persons()
     {
-        return $this->hasManyThrough('App\Model\Master\Person'
-            ,'App\Model\HumanResource\Kpi\KpiTemplatePerson'
-            ,'kpi_template_id'
-            ,'id'
-            ,'id'
-            ,'person_id');
+        return $this->hasManyThrough('App\Model\Master\Person', 'App\Model\HumanResource\Kpi\KpiTemplatePerson', 'kpi_template_id', 'id', 'id', 'person_id');
     }
 }

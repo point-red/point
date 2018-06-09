@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\HumanResource\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiResult;
 use Tests\TestCase;
+use App\Model\HumanResource\Kpi\KpiResult;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiResultValidationTest extends TestCase
@@ -32,7 +32,7 @@ class KpiResultValidationTest extends TestCase
 
         $response->assertJsonStructure([
             'error' => [
-                'errors' => ['score_min','score_max','criteria','notes'],
+                'errors' => ['score_min', 'score_max', 'criteria', 'notes'],
             ],
         ]);
 
@@ -50,7 +50,7 @@ class KpiResultValidationTest extends TestCase
 
         $response->assertJsonMissing([
             'error' => [
-                'errors' => ['score_min','score_max','criteria'],
+                'errors' => ['score_min', 'score_max', 'criteria'],
             ],
         ]);
 

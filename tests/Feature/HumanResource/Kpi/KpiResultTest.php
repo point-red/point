@@ -24,7 +24,7 @@ class KpiResultTest extends TestCase
             'score_min' => 85,
             'score_max' => 94,
             'criteria' => 'good',
-            'notes' => 'appreciate with reward'
+            'notes' => 'appreciate with reward',
         ];
 
         $response = $this->json('POST', 'api/v1/human-resource/kpi/results', $data, [$this->headers]);

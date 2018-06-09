@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Artisan;
 
 class SetupTenantDatabase extends Command
 {

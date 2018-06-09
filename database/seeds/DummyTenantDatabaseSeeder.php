@@ -1,15 +1,13 @@
 <?php
 
-use App\Model\HumanResource\Kpi\Kpi;
-use App\Model\HumanResource\Kpi\KpiCategory;
-use App\Model\HumanResource\Kpi\KpiGroup;
-use App\Model\HumanResource\Kpi\KpiResult;
-use App\Model\HumanResource\Kpi\KpiScore;
-use App\Model\HumanResource\Kpi\KpiScoreDetail;
-use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 use App\Model\Master\Person;
 use App\Model\Master\Warehouse;
 use Illuminate\Database\Seeder;
+use App\Model\HumanResource\Kpi\Kpi;
+use App\Model\HumanResource\Kpi\KpiScore;
+use App\Model\HumanResource\Kpi\KpiResult;
+use App\Model\HumanResource\Kpi\KpiScoreDetail;
+use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 
 class DummyTenantDatabaseSeeder extends Seeder
 {

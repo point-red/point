@@ -2,11 +2,11 @@
 
 namespace Tests\Feature\Master;
 
-use App\Model\HumanResource\Kpi\KpiScoreDetail;
-use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 use Tests\TestCase;
 use App\Model\HumanResource\Kpi\KpiScore;
+use App\Model\HumanResource\Kpi\KpiScoreDetail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 
 class KpiScoreTest extends TestCase
 {
@@ -25,7 +25,7 @@ class KpiScoreTest extends TestCase
         $data = [
             'kpi_template_indicator_id' => factory(KpiTemplateIndicator::class)->create()->id,
             'description' => ['description', 'description', 'description', 'description', 'description'],
-            'score' => [1,2,3,4,5],
+            'score' => [1, 2, 3, 4, 5],
         ];
 
         $response = $this->json('POST', 'api/v1/human-resource/kpi/scores', $data, [$this->headers]);
@@ -82,9 +82,9 @@ class KpiScoreTest extends TestCase
         $data = [
             'id' => $kpiScore->id,
             'kpi_template_indicator_id' => factory(KpiTemplateIndicator::class)->create()->id,
-            'kpi_score_detail_id' => [1,2,3,5],
+            'kpi_score_detail_id' => [1, 2, 3, 5],
             'description' => ['description', 'description', 'description', 'description'],
-            'score' => [1,2,3,5],
+            'score' => [1, 2, 3, 5],
         ];
 
         $response = $this->json('PUT', 'api/v1/human-resource/kpi/scores/'.$kpiScore->id, $data, [$this->headers]);

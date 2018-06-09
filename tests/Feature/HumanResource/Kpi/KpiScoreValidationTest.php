@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\HumanResource\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiScore;
 use Tests\TestCase;
+use App\Model\HumanResource\Kpi\KpiScore;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiScoreValidationTest extends TestCase

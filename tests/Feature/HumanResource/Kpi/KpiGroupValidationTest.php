@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\HumanResource\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiGroup;
 use Tests\TestCase;
+use App\Model\HumanResource\Kpi\KpiGroup;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiGroupValidationTest extends TestCase

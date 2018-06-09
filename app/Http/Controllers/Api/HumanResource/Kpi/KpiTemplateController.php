@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Model\HumanResource\Kpi\KpiTemplate;
+use App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateResource;
+use App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateCollection;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplate\StoreKpiTemplateRequest;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplate\UpdateKpiTemplateRequest;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateCollection;
-use App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateResource;
-use App\Model\HumanResource\Kpi\KpiTemplate;
-use Illuminate\Http\Request;
 
 class KpiTemplateController extends Controller
 {

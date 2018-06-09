@@ -1,7 +1,7 @@
 <?php
 
-Route::prefix('human-resource')->namespace('HumanResource')->group(function() {
-    Route::prefix('kpi')->namespace('Kpi')->group(function() {
+Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
+    Route::prefix('kpi')->namespace('Kpi')->group(function () {
         Route::apiResource('templates', 'KpiTemplateController');
         Route::apiResource('template-groups', 'KpiTemplateGroupController');
         Route::apiResource('template-indicators', 'KpiTemplateIndicatorController');
@@ -13,4 +13,3 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function() {
         Route::apiResource('kpis', 'KpiController');
     });
 });
-

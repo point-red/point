@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\HumanResource\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiCategory;
 use Tests\TestCase;
+use App\Model\HumanResource\Kpi\KpiCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiCategoryValidationTest extends TestCase

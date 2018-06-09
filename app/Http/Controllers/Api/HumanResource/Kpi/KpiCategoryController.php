@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Model\HumanResource\Kpi\KpiCategory;
+use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCategoryResource;
+use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCategoryCollection;
 use App\Http\Requests\HumanResource\Kpi\KpiCategory\StoreKpiCategoryRequest;
 use App\Http\Requests\HumanResource\Kpi\KpiCategory\UpdateKpiCategoryRequest;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCategoryCollection;
-use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCategoryResource;
-use App\Model\HumanResource\Kpi\KpiCategory;
-use Illuminate\Http\Request;
 
 class KpiCategoryController extends Controller
 {

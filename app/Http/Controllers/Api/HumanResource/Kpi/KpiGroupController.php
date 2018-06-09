@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Model\HumanResource\Kpi\KpiGroup;
+use App\Http\Resources\HumanResource\Kpi\KpiGroup\KpiGroupResource;
+use App\Http\Resources\HumanResource\Kpi\KpiGroup\KpiGroupCollection;
 use App\Http\Requests\HumanResource\Kpi\KpiGroup\StoreKpiGroupRequest;
 use App\Http\Requests\HumanResource\Kpi\KpiGroup\UpdateKpiGroupRequest;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\HumanResource\Kpi\KpiGroup\KpiGroupCollection;
-use App\Http\Resources\HumanResource\Kpi\KpiGroup\KpiGroupResource;
-use App\Model\HumanResource\Kpi\KpiGroup;
-use Illuminate\Http\Request;
 
 class KpiGroupController extends Controller
 {

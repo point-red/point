@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
-use App\Http\Requests\HumanResource\Kpi\KpiScore\StoreKpiScoreRequest;
-use App\Http\Requests\HumanResource\Kpi\KpiScore\UpdateKpiScoreRequest;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\HumanResource\Kpi\KpiScore\KpiScoreCollection;
-use App\Http\Resources\HumanResource\Kpi\KpiScore\KpiScoreResource;
-use App\Model\HumanResource\Kpi\KpiScore;
-use App\Model\HumanResource\Kpi\KpiScoreDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Model\HumanResource\Kpi\KpiScore;
+use App\Model\HumanResource\Kpi\KpiScoreDetail;
+use App\Http\Resources\HumanResource\Kpi\KpiScore\KpiScoreResource;
+use App\Http\Resources\HumanResource\Kpi\KpiScore\KpiScoreCollection;
+use App\Http\Requests\HumanResource\Kpi\KpiScore\StoreKpiScoreRequest;
+use App\Http\Requests\HumanResource\Kpi\KpiScore\UpdateKpiScoreRequest;
 
 class KpiScoreController extends Controller
 {
@@ -35,12 +35,12 @@ class KpiScoreController extends Controller
      */
     public function store(StoreKpiScoreRequest $request)
     {
-        $kpiScore = DB::transaction(function() use ($request) {
+        $kpiScore = DB::transaction(function () use ($request) {
             $kpiScore = new KpiScore();
             $kpiScore->kpi_template_indicator_id = $request->input('kpi_template_indicator_id');
             $kpiScore->save();
 
-            for ($i=0;$i<count($request->get('description'));$i++) {
+            for ($i = 0; $i < count($request->get('description')); $i++) {
                 $kpiScoreDetail = new KpiScoreDetail();
                 $kpiScoreDetail->kpi_score_id = $kpiScore->id;
                 $kpiScoreDetail->description = $request->get('description')[$i];
@@ -76,13 +76,13 @@ class KpiScoreController extends Controller
      */
     public function update(UpdateKpiScoreRequest $request, $id)
     {
-        $kpiScore = DB::transaction(function() use ($request, $id) {
+        $kpiScore = DB::transaction(function () use ($request, $id) {
             $kpiScore = KpiScore::findOrFail($id);
             $kpiScore->kpi_template_indicator_id = $request->input('kpi_template_indicator_id');
             $kpiScore->save();
 
             // update kpi score detail
-            for ($i=0;$i<count($request->get('description'));$i++) {
+            for ($i = 0; $i < count($request->get('description')); $i++) {
                 $kpiScoreDetail = KpiScoreDetail::findOrFail($request->get('kpi_score_detail_id')[$i]);
                 $kpiScoreDetail->kpi_score_id = $kpiScore->id;
                 $kpiScoreDetail->description = $request->get('description')[$i];

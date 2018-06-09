@@ -25,7 +25,7 @@ class UpdateKpiTemplateGroupRequest extends FormRequest
     {
         return [
             'kpi_template_id' => 'required',
-            'name' => 'required'
+            'name' => 'required',
         ];
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Master;
 
-use App\Model\Master\Person;
 use Tests\TestCase;
+use App\Model\Master\Person;
 use App\Model\HumanResource\Kpi\KpiCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

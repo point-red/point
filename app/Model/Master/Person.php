@@ -2,10 +2,9 @@
 
 namespace App\Model\Master;
 
-use App\Model\HumanResource\Kpi\KpiPersonTemplate;
+use Illuminate\Database\Eloquent\Model;
 use App\Model\HumanResource\Kpi\KpiTemplate;
 use App\Model\HumanResource\Kpi\KpiTemplatePerson;
-use Illuminate\Database\Eloquent\Model;
 
 class Person extends Model
 {
@@ -26,6 +25,7 @@ class Person extends Model
     public function kpiTemplate()
     {
         $kpiTemplatePerson = optional(KpiTemplatePerson::where('person_id', $this->id))->first();
+
         return KpiTemplate::find(optional($kpiTemplatePerson)->kpi_template_id);
     }
 }

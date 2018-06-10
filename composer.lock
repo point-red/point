@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b6b8a81cd401aeb04a9fc59c3e7d99fd",
+    "content-hash": "6fcfaa78a3ce19269b14fbacdae2467a",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.61.0",
+            "version": "3.61.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "5dabf378a52afd357fedd290f6b1837aec15eab8"
+                "reference": "82e0865e4d54333a10121ee68f4f496b48f6b51d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5dabf378a52afd357fedd290f6b1837aec15eab8",
-                "reference": "5dabf378a52afd357fedd290f6b1837aec15eab8",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/82e0865e4d54333a10121ee68f4f496b48f6b51d",
+                "reference": "82e0865e4d54333a10121ee68f4f496b48f6b51d",
                 "shasum": ""
             },
             "require": {
@@ -84,20 +84,20 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2018-06-04T21:48:21+00:00"
+            "time": "2018-06-08T16:08:43+00:00"
         },
         {
             "name": "bugsnag/bugsnag",
-            "version": "v3.12.1",
+            "version": "v3.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bugsnag/bugsnag-php.git",
-                "reference": "b1cd36a49a5a780824d9b3f369ad89275013b19f"
+                "reference": "f07dfa792db5d28bf38fb9321aebe75d6b352fc5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bugsnag/bugsnag-php/zipball/b1cd36a49a5a780824d9b3f369ad89275013b19f",
-                "reference": "b1cd36a49a5a780824d9b3f369ad89275013b19f",
+                "url": "https://api.github.com/repos/bugsnag/bugsnag-php/zipball/f07dfa792db5d28bf38fb9321aebe75d6b352fc5",
+                "reference": "f07dfa792db5d28bf38fb9321aebe75d6b352fc5",
                 "shasum": ""
             },
             "require": {
@@ -143,7 +143,7 @@
                 "logging",
                 "tracking"
             ],
-            "time": "2018-02-28T12:14:17+00:00"
+            "time": "2018-06-06T16:58:57+00:00"
         },
         {
             "name": "bugsnag/bugsnag-laravel",
@@ -952,16 +952,16 @@
         },
         {
             "name": "dragonmantank/cron-expression",
-            "version": "v2.1.0",
+            "version": "v2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dragonmantank/cron-expression.git",
-                "reference": "3f00985deec8df53d4cc1e5c33619bda1ee309a5"
+                "reference": "92a2c3768d50e21a1f26a53cb795ce72806266c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/3f00985deec8df53d4cc1e5c33619bda1ee309a5",
-                "reference": "3f00985deec8df53d4cc1e5c33619bda1ee309a5",
+                "url": "https://api.github.com/repos/dragonmantank/cron-expression/zipball/92a2c3768d50e21a1f26a53cb795ce72806266c5",
+                "reference": "92a2c3768d50e21a1f26a53cb795ce72806266c5",
                 "shasum": ""
             },
             "require": {
@@ -997,7 +997,7 @@
                 "cron",
                 "schedule"
             ],
-            "time": "2018-04-06T15:51:55+00:00"
+            "time": "2018-06-06T03:12:17+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -2355,16 +2355,16 @@
         },
         {
             "name": "paragonie/random_compat",
-            "version": "v2.0.12",
+            "version": "v2.0.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/random_compat.git",
-                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb"
+                "reference": "10bcb46e8f3d365170f6de9d05245aa066b81f09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
-                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/10bcb46e8f3d365170f6de9d05245aa066b81f09",
+                "reference": "10bcb46e8f3d365170f6de9d05245aa066b81f09",
                 "shasum": ""
             },
             "require": {
@@ -2396,10 +2396,11 @@
             "description": "PHP 5.x polyfill for random_bytes() and random_int() from PHP 7",
             "keywords": [
                 "csprng",
+                "polyfill",
                 "pseudorandom",
                 "random"
             ],
-            "time": "2018-04-04T21:24:14+00:00"
+            "time": "2018-06-08T15:26:40+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -2492,6 +2493,46 @@
                 "x509"
             ],
             "time": "2018-04-15T16:55:05+00:00"
+        },
+        {
+            "name": "point-red/laravel-database-management",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/point-red/laravel-database-management.git",
+                "reference": "1e6a22c14e9b4780062272045b79d9dcb5be75d8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/point-red/laravel-database-management/zipball/1e6a22c14e9b4780062272045b79d9dcb5be75d8",
+                "reference": "1e6a22c14e9b4780062272045b79d9dcb5be75d8",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "PointRed\\LaravelDatabaseManagement\\DatabaseManagementServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PointRed\\LaravelDatabaseManagement\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martien Dermawan Tanama",
+                    "email": "martiendt@gmail.com"
+                }
+            ],
+            "description": "Get info about your database",
+            "time": "2018-06-10T09:16:07+00:00"
         },
         {
             "name": "predis/predis",
@@ -5258,16 +5299,16 @@
         },
         {
             "name": "sebastian/diff",
-            "version": "3.0.0",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/diff.git",
-                "reference": "e09160918c66281713f1c324c1f4c4c3037ba1e8"
+                "reference": "366541b989927187c4ca70490a35615d3fef2dce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/e09160918c66281713f1c324c1f4c4c3037ba1e8",
-                "reference": "e09160918c66281713f1c324c1f4c4c3037ba1e8",
+                "url": "https://api.github.com/repos/sebastianbergmann/diff/zipball/366541b989927187c4ca70490a35615d3fef2dce",
+                "reference": "366541b989927187c4ca70490a35615d3fef2dce",
                 "shasum": ""
             },
             "require": {
@@ -5310,7 +5351,7 @@
                 "unidiff",
                 "unified diff"
             ],
-            "time": "2018-02-01T13:45:15+00:00"
+            "time": "2018-06-10T07:54:39+00:00"
         },
         {
             "name": "sebastian/environment",

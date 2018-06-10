@@ -12,7 +12,8 @@
         "laravel/horizon": "^1.2",
         "laravel/passport": "^5.0",
         "laravel/tinker": "~1.0",
-        "league/flysystem-aws-s3-v3": "~1.0"
+        "league/flysystem-aws-s3-v3": "~1.0",
+        "point-red/laravel-database-management": "^1.0"
     },
     "require-dev": {
         "filp/whoops": "~2.0",

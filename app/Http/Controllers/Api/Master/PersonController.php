@@ -23,7 +23,17 @@ class PersonController extends ApiController
     {
         $limit = $request->input('limit') ?? 0;
 
-        return new PersonCollection(Person::paginate($limit));
+        $persons = Person::join('person_categories', 'person_categories.id', '=', 'persons.person_category_id')
+            ->join('person_groups', 'person_groups.id', '=', 'persons.person_group_id')
+            ->select('persons.*', 'person_categories.name as category_name', 'person_groups.name as group_name');
+
+        if ($request->input('category')) {
+            $persons = $persons->where('person_categories.name', $request->input('category'));
+        }
+
+        $persons = $persons->paginate($limit);
+
+        return new PersonCollection($persons);
     }
 
     /**
@@ -58,7 +68,13 @@ class PersonController extends ApiController
      */
     public function show($id)
     {
-        return new PersonResource(Person::findOrFail($id));
+        $person = Person::join('person_categories', 'person_categories.id', '=', 'persons.person_category_id')
+            ->join('person_groups', 'person_groups.id', '=', 'persons.person_group_id')
+            ->where('persons.id', $id)
+            ->select('persons.*', 'person_categories.name as category_name', 'person_groups.name as group_name')
+            ->first();
+
+        return new PersonResource($person);
     }
 
     /**

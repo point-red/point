@@ -16,9 +16,11 @@ class TenantMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if ($request->header('Tenant')) {
-            config()->set('database.connections.tenant.database', 'point_'.$request->header('Tenant'));
-            DB::connection('tenant')->reconnect();
+        if (env('APP_ENV') === 'production') {
+            if ($request->header('Tenant')) {
+                config()->set('database.connections.tenant.database', 'point_'.$request->header('Tenant'));
+                DB::connection('tenant')->reconnect();
+            }
         }
 
         return $next($request);

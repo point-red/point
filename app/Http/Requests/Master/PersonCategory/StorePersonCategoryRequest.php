@@ -24,8 +24,8 @@ class StorePersonCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|unique:person_categories,code',
-            'name' => 'required|unique:person_categories,name',
+            'code' => 'required|unique:tenant.person_categories,code',
+            'name' => 'required|unique:tenant.person_categories,name',
         ];
     }
 }

@@ -26,7 +26,7 @@ class StoreKpiCategoryRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'unique:kpi_categories,name,NULL,id',
+                'unique:tenant.kpi_categories,name,NULL,id',
             ],
         ];
     }

@@ -26,15 +26,15 @@ class StoreKpiResultRequest extends FormRequest
         return [
             'score_min' => [
                 'required',
-                'unique:kpi_results,score_min',
+                'unique:tenant.kpi_results,score_min',
             ],
             'score_max' => [
                 'required',
-                'unique:kpi_results,score_max',
+                'unique:tenant.kpi_results,score_max',
             ],
             'criteria' => [
                 'required',
-                'unique:kpi_results,criteria',
+                'unique:tenant.kpi_results,criteria',
             ],
             'notes' => ['required'],
         ];

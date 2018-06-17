@@ -29,9 +29,9 @@ class UpdatePersonRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'unique:persons,name,'.$this->id.',id,person_category_id,'.$request->get('person_category_id'),
+                'unique:tenant.persons,name,'.$this->id.',id,person_category_id,'.$request->get('person_category_id'),
             ],
-            'code' => 'unique:persons,code,'.$this->id,
+            'code' => 'tenant.unique:persons,code,'.$this->id,
             'person_category_id' => 'required',
         ];
     }

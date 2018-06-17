@@ -24,8 +24,8 @@ class UpdatePersonCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|unique:person_categories,code,'.$this->id,
-            'name' => 'required|unique:person_categories,name,'.$this->id,
+            'code' => 'required|unique:tenant.person_categories,code,'.$this->id,
+            'name' => 'required|unique:tenant.person_categories,name,'.$this->id,
         ];
     }
 }

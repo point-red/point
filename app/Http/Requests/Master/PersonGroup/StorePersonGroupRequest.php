@@ -24,8 +24,8 @@ class StorePersonGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|unique:person_groups,code',
-            'name' => 'required|unique:person_groups,name',
+            'code' => 'required|unique:tenant.person_groups,code',
+            'name' => 'required|unique:tenant.person_groups,name',
         ];
     }
 }

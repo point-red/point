@@ -27,7 +27,7 @@ class UpdateKpiGroupRequest extends FormRequest
     public function rules(Request $request)
     {
         return [
-            'unique:kpi_groups,name,'.$this->id.',id,kpi_category_id,'.$request->get('kpi_category_id'),
+            'unique:tenant.kpi_groups,name,'.$this->id.',id,kpi_category_id,'.$request->get('kpi_category_id'),
         ];
     }
 }

@@ -76,7 +76,7 @@ trait ApiExceptionHandler
             return response()->json([
                 'error' => [
                     'code' => 500,
-                    'message' => 'Something wrong with server',
+                    'message' => 'Request Error',
                 ],
             ], 500);
         }

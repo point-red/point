@@ -13,7 +13,8 @@
         "laravel/passport": "^5.0",
         "laravel/tinker": "~1.0",
         "league/flysystem-aws-s3-v3": "~1.0",
-        "point-red/laravel-database-management": "^1.0"
+        "point-red/laravel-database-management": "^1.0",
+        "spatie/laravel-permission": "^2.12"
     },
     "require-dev": {
         "filp/whoops": "~2.0",

@@ -62,13 +62,23 @@ trait ApiExceptionHandler
         }
 
         // Wrong access token
-        if ($exception instanceof OAuthServerException || $exception instanceof AuthenticationException) {
+        if ($exception instanceof AuthenticationException) {
             return response()->json([
                 'error' => [
                     'code' => 401,
                     'message' => $exception->getMessage(),
                 ],
             ], 401);
+        }
+
+        // oauth server exception
+        if ($exception instanceof OAuthServerException) {
+            return response()->json([
+                'error' => [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
+                ],
+            ], $exception->getCode());
         }
 
         /* Handle server error or library error */

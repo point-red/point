@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
-use App\Http\Resources\HumanResource\Kpi\KpiScoreDetail\KpiScoreDetailCollection;
-use App\Http\Resources\HumanResource\Kpi\KpiScoreDetail\KpiScoreDetailResource;
-use App\Model\HumanResource\Kpi\KpiScoreDetail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Model\HumanResource\Kpi\KpiScoreDetail;
+use App\Http\Resources\HumanResource\Kpi\KpiScoreDetail\KpiScoreDetailResource;
+use App\Http\Resources\HumanResource\Kpi\KpiScoreDetail\KpiScoreDetailCollection;
 
 class KpiScoreDetailController extends Controller
 {
@@ -85,6 +85,7 @@ class KpiScoreDetailController extends Controller
 
         $kpiScoreDetail->delete();
         info($kpiScoreDetail);
+
         return new KpiScoreDetailResource($kpiScoreDetail);
     }
 }

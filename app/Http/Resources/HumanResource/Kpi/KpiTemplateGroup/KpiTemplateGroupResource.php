@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\HumanResource\Kpi\KpiTemplateGroup;
 
-use App\Http\Resources\HumanResource\Kpi\KpiTemplateIndicator\KpiTemplateIndicatorResource;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\HumanResource\Kpi\KpiTemplateIndicator\KpiTemplateIndicatorResource;
 
 class KpiTemplateGroupResource extends JsonResource
 {
@@ -19,7 +19,7 @@ class KpiTemplateGroupResource extends JsonResource
             'name' => $this->name,
             'weight' => collect($this->indicators)->sum('weight'),
             'target' => collect($this->indicators)->sum('target'),
-            'indicators' => KpiTemplateIndicatorResource::collection($this->indicators)
+            'indicators' => KpiTemplateIndicatorResource::collection($this->indicators),
         ];
     }
 }

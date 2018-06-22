@@ -15,4 +15,9 @@ class KpiTemplateIndicator extends Model
     {
         return $this->belongsTo(get_class(new KpiTemplateGroup()));
     }
+
+    public function score()
+    {
+        return $this->hasOne(get_class(new KpiScore()));
+    }
 }

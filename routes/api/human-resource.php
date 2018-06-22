@@ -6,7 +6,7 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::apiResource('template-groups', 'KpiTemplateGroupController');
         Route::apiResource('template-indicators', 'KpiTemplateIndicatorController');
         Route::apiResource('scores', 'KpiScoreController');
-        Route::apiResource('score-details', 'KpiController');
+        Route::apiResource('score-details', 'KpiScoreDetailController');
         Route::apiResource('results', 'KpiResultController');
         Route::apiResource('categories', 'KpiCategoryController');
         Route::apiResource('groups', 'KpiGroupController');

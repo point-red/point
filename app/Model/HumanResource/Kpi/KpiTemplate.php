@@ -15,4 +15,14 @@ class KpiTemplate extends Model
     {
         return $this->hasManyThrough('App\Model\Master\Person', 'App\Model\HumanResource\Kpi\KpiTemplatePerson', 'kpi_template_id', 'id', 'id', 'person_id');
     }
+
+    public function groups()
+    {
+        return $this->hasMany('App\Model\HumanResource\Kpi\KpiTemplateGroup');
+    }
+
+    public function score()
+    {
+        return $this->hasOne('App\Model\HumanResource\Kpi\KpiScore');
+    }
 }

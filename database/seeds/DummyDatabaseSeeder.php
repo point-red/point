@@ -1,6 +1,5 @@
 <?php
 
-use App\User;
 use Illuminate\Database\Seeder;
 
 class DummyDatabaseSeeder extends Seeder
@@ -14,6 +13,7 @@ class DummyDatabaseSeeder extends Seeder
     {
         $this->call(DefaultSeeder::class);
 
-        factory(User::class, 10)->create();
+        factory(\App\User::class, 10)->create();
+        factory(\App\Model\Project\Project::class, 3)->create();
     }
 }

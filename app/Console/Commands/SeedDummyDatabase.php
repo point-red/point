@@ -51,7 +51,7 @@ class SeedDummyDatabase extends Command
 
         Artisan::call('db:seed', [
             '--database' => 'tenant',
-            '--class' => 'DummyTenantDatabaseSeeder',
+            '--class' => 'DummyDatabaseSeeder',
         ]);
     }
 }

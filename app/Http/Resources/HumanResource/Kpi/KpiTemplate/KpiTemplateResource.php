@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\HumanResource\Kpi\KpiTemplate;
 
+use App\Http\Resources\HumanResource\Kpi\KpiTemplateGroup\KpiTemplateGroupResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class KpiTemplateResource extends JsonResource
@@ -14,6 +15,9 @@ class KpiTemplateResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'name' => $this->name,
+            'groups' => KpiTemplateGroupResource::collection($this->groups)
+        ];
     }
 }

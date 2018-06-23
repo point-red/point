@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
+use App\Model\HumanResource\Kpi\KpiScore;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
@@ -9,6 +10,7 @@ use App\Http\Resources\HumanResource\Kpi\KpiTemplateIndicator\KpiTemplateIndicat
 use App\Http\Resources\HumanResource\Kpi\KpiTemplateIndicator\KpiTemplateIndicatorCollection;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplateIndicator\StoreKpiTemplateIndicatorRequest;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplateIndicator\UpdateKpiTemplateIndicatorRequest;
+use Illuminate\Support\Facades\DB;
 
 class KpiTemplateIndicatorController extends Controller
 {
@@ -23,7 +25,7 @@ class KpiTemplateIndicatorController extends Controller
     {
         $limit = $request->input('limit') ?? 0;
 
-        return new KpiTemplateIndicatorCollection(KpiTemplateIndicator::paginate($limit));
+        return new KpiTemplateIndicatorCollection(KpiTemplateIndicator::where('kpi_template_group_id', $request->input('kpi_template_group_id'))->paginate($limit));
     }
 
     /**
@@ -35,12 +37,20 @@ class KpiTemplateIndicatorController extends Controller
      */
     public function store(StoreKpiTemplateIndicatorRequest $request)
     {
+        DB::beginTransaction();
+
         $kpiTemplateIndicator = new KpiTemplateIndicator();
         $kpiTemplateIndicator->kpi_template_group_id = $request->input('kpi_template_group_id');
         $kpiTemplateIndicator->name = $request->input('name');
         $kpiTemplateIndicator->weight = $request->input('weight');
         $kpiTemplateIndicator->target = $request->input('target');
         $kpiTemplateIndicator->save();
+
+        $kpiScore = new KpiScore();
+        $kpiScore->kpi_template_indicator_id = $kpiTemplateIndicator->id;
+        $kpiScore->save();
+
+        DB::commit();
 
         return new KpiTemplateIndicatorResource($kpiTemplateIndicator);
     }
@@ -81,12 +91,15 @@ class KpiTemplateIndicatorController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiTemplateIndicator\KpiTemplateIndicatorResource
      */
     public function destroy($id)
     {
-        KpiTemplateIndicator::findOrFail($id)->delete();
+        $kpiTemplateIndicator = KpiTemplateIndicator::findOrFail($id);
 
-        return response(null, 204);
+        $kpiTemplateIndicator->delete();
+
+        return new KpiTemplateIndicatorResource($kpiTemplateIndicator);
     }
 }

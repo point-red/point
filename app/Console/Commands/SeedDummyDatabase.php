@@ -39,19 +39,27 @@ class SeedDummyDatabase extends Command
      */
     public function handle()
     {
+        $this->line('Artisan call seed dummy database seeder');
+
         Artisan::call('db:seed', [
             '--database' => 'mysql',
             '--class' => 'DummyDatabaseSeeder',
         ]);
+
+        $this->line(Artisan::output());
 
         $tenantSubdomain = $this->argument('tenant_subdomain');
 
         config()->set('database.connections.tenant.database', $tenantSubdomain);
         DB::connection('tenant')->reconnect();
 
+        $this->line('Artisan call seed tenant dummy database seeder');
+
         Artisan::call('db:seed', [
             '--database' => 'tenant',
-            '--class' => 'DummyDatabaseSeeder',
+            '--class' => 'DummyTenantDatabaseSeeder',
         ]);
+
+        $this->line(Artisan::output());
     }
 }

@@ -39,17 +39,21 @@ class SetupTenantDatabase extends Command
      */
     public function handle()
     {
+        // tenant subdomain equal to tenant database name
         $tenantSubdomain = $this->argument('tenant_subdomain');
 
+        // drop tenant database if exists
         $process = new Process('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "drop database if exists '.$tenantSubdomain.'"');
         $process->run();
 
-        // create new database
+        // create new tenant database
         $process = new Process('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "create database '.$tenantSubdomain.'"');
         $process->run();
 
+        // update tenant database name in configuration
         config()->set('database.connections.tenant.database', $tenantSubdomain);
 
+        // migrate database
         Artisan::call('migrate:refresh', [
             '--database' => 'tenant',
             '--path' => 'database/migrations/tenant',

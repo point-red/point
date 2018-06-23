@@ -15,15 +15,11 @@ class KpiResultController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
-     *
      * @return \App\Http\Resources\HumanResource\Kpi\KpiResult\KpiResultCollection
      */
-    public function index(Request $request)
+    public function index()
     {
-        $limit = $request->input('limit') ?? 0;
-
-        return new KpiResultCollection(KpiResult::paginate($limit));
+        return new KpiResultCollection(KpiResult::all());
     }
 
     /**
@@ -81,12 +77,15 @@ class KpiResultController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiResult\KpiResultResource
      */
     public function destroy($id)
     {
-        KpiResult::findOrFail($id)->delete();
+        $kpiResult = KpiResult::findOrFail($id);
 
-        return response(null, 204);
+        $kpiResult->delete();
+
+        return new KpiResultResource($kpiResult);
     }
 }

@@ -23,7 +23,7 @@ class KpiTemplateGroupController extends Controller
     {
         $limit = $request->input('limit') ?? 0;
 
-        return new KpiTemplateGroupCollection(KpiTemplateGroup::paginate($limit));
+        return new KpiTemplateGroupCollection(KpiTemplateGroup::where('kpi_template_id', $request->get('kpi_template_id'))->paginate($limit));
     }
 
     /**
@@ -77,12 +77,15 @@ class KpiTemplateGroupController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiTemplateGroup\KpiTemplateGroupResource
      */
     public function destroy($id)
     {
-        KpiTemplateGroup::findOrFail($id)->delete();
+        $kpiTemplateGroup = KpiTemplateGroup::findOrFail($id);
 
-        return response(null, 204);
+        $kpiTemplateGroup->delete();
+
+        return new KpiTemplateGroupResource($kpiTemplateGroup);
     }
 }

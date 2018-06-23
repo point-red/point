@@ -16,7 +16,10 @@ class KpiTemplateResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'name' => $this->name,
+            'weight' => collect($this->indicators)->sum('weight'),
+            'target' => collect($this->indicators)->sum('target'),
             'groups' => KpiTemplateGroupResource::collection($this->groups),
         ];
     }

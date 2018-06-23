@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests\HumanResource\Kpi\KpiResult;
 
+use App\Model\HumanResource\Kpi\KpiResult;
+use App\Rules\NumberNotInRange;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -27,15 +30,21 @@ class UpdateKpiResultRequest extends FormRequest
         return [
             'score_min' => [
                 'required',
-                Rule::unique('kpi_results')->ignore($this->id),
+                'numeric',
+                'max:'.$this->score_max,
+                Rule::unique('tenant.kpi_results')->ignore($this->id),
+                new NumberNotInRange(KpiResult::class, 'score_min', 'score_max', $this->id)
             ],
             'score_max' => [
                 'required',
-                Rule::unique('kpi_results')->ignore($this->id),
+                'numeric',
+                'min:'.$this->score_min,
+                Rule::unique('tenant.kpi_results')->ignore($this->id),
+                new NumberNotInRange(KpiResult::class, 'score_min', 'score_max', $this->id)
             ],
             'criteria' => [
                 'required',
-                Rule::unique('kpi_results')->ignore($this->id),
+                Rule::unique('tenant.kpi_results')->ignore($this->id),
             ],
             'notes' => ['required'],
         ];

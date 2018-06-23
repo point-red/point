@@ -75,12 +75,15 @@ class KpiTemplateController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateResource
      */
     public function destroy($id)
     {
-        KpiTemplate::findOrFail($id)->delete();
+        $kpiTemplate = KpiTemplate::findOrFail($id);
 
-        return response(null, 204);
+        $kpiTemplate->delete();
+
+        return new KpiTemplateResource($kpiTemplate);
     }
 }

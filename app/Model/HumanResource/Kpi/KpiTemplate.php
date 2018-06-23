@@ -21,6 +21,11 @@ class KpiTemplate extends Model
         return $this->hasMany('App\Model\HumanResource\Kpi\KpiTemplateGroup');
     }
 
+    public function indicators()
+    {
+        return $this->hasManyThrough('App\Model\HumanResource\Kpi\KpiTemplateIndicator', 'App\Model\HumanResource\Kpi\KpiTemplateGroup');
+    }
+
     public function score()
     {
         return $this->hasOne('App\Model\HumanResource\Kpi\KpiScore');

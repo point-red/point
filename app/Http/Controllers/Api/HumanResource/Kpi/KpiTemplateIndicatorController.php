@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiScore;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Model\HumanResource\Kpi\KpiScore;
 use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 use App\Http\Resources\HumanResource\Kpi\KpiTemplateIndicator\KpiTemplateIndicatorResource;
 use App\Http\Resources\HumanResource\Kpi\KpiTemplateIndicator\KpiTemplateIndicatorCollection;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplateIndicator\StoreKpiTemplateIndicatorRequest;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplateIndicator\UpdateKpiTemplateIndicatorRequest;
-use Illuminate\Support\Facades\DB;
 
 class KpiTemplateIndicatorController extends Controller
 {

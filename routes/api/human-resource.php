@@ -12,4 +12,9 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::apiResource('groups', 'KpiGroupController');
         Route::apiResource('kpis', 'KpiController');
     });
+
+    Route::prefix('employee')->namespace('Employee')->group(function () {
+        Route::apiResource('groups', 'EmployeeGroupController');
+        Route::apiResource('employees', 'EmployeeController');
+    });
 });

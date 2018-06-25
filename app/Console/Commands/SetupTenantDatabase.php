@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Artisan;
 
@@ -57,6 +58,17 @@ class SetupTenantDatabase extends Command
         Artisan::call('migrate:refresh', [
             '--database' => 'tenant',
             '--path' => 'database/migrations/tenant',
+        ]);
+
+        $tenantSubdomain = $this->argument('tenant_subdomain');
+
+        config()->set('database.connections.tenant.database', $tenantSubdomain);
+        DB::connection('tenant')->reconnect();
+
+        // seeding default database for tenant
+        Artisan::call('db:seed', [
+            '--database' => 'tenant',
+            '--class' => 'TenantDatabaseSeeder',
         ]);
     }
 }

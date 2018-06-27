@@ -9,11 +9,11 @@ class KpiTemplate extends Model
     protected $connection = 'tenant';
 
     /**
-     * Get the person for the kpi template.
+     * Get the employees for the kpi template.
      */
-    public function persons()
+    public function employees()
     {
-        return $this->hasManyThrough('App\Model\Master\Person', 'App\Model\HumanResource\Kpi\KpiTemplatePerson', 'kpi_template_id', 'id', 'id', 'person_id');
+        return $this->hasMany('App\Model\HumanResource\Employee\Employee');
     }
 
     public function groups()

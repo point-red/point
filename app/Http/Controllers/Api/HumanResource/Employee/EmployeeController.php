@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use App\Http\Resources\HumanResource\Employee\Employee\EmployeeCollection;
 use App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource;
-use App\HumanResource\Employee\EmployeeEmail;
-use App\HumanResource\Employee\EmployeeSocialMedia;
+use App\Model\HumanResource\Employee\EmployeeEmail;
+use App\Model\HumanResource\Employee\EmployeeSocialMedia;
 use App\Model\HumanResource\Employee\Employee;
+use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 use App\Model\Master\Person;
 use App\Model\Master\PersonAddress;
@@ -69,14 +70,14 @@ class EmployeeController extends Controller
         $employee = new Employee;
         $employee->person_id = $person->id;
         $employee->last_education = $request->get('last_education');
-        $employee->birth_date = $request->get('birth_date');
+        $employee->birth_date = date('Y-m-d', strtotime($request->get('birth_date')));
         $employee->birth_place = $request->get('birth_place');
         $employee->gender = $request->get('gender');
         $employee->marital_status = $request->get('marital_status');
         $employee->married_with = $request->get('married_with');
         $employee->religion = $request->get('religion');
         $employee->employee_group_id = $request->get('employee_group_id');
-        info($employee->employee_group_id);
+        $employee->join_date = date('Y-m-d', strtotime($request->get('join_date')));
         $employee->job_title = $request->get('job_title');
         $employee->save();
 
@@ -103,6 +104,16 @@ class EmployeeController extends Controller
             $employeeSocialMedia->save();
         }
 
+        for($i=0; $i < count($request->get('contracts')); $i++) {
+            $employeeContract = new EmployeeContract;
+            $employeeContract->employee_id = $employee->id;
+            $employeeContract->contract_begin = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_date']));
+            $employeeContract->contract_end = date('Y-m-d', strtotime($request->get('contracts')[$i]['expired_date']));
+            $employeeContract->link = '';
+            $employeeContract->notes = $request->get('contracts')[$i]['notes'];
+            $employeeContract->save();
+        }
+
         DB::connection('tenant')->commit();
 
         return new EmployeeResource($employee);
@@ -112,11 +123,12 @@ class EmployeeController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource
      */
     public function show($id)
     {
-        //
+        return new EmployeeResource(Employee::findOrFail($id));
     }
 
     /**

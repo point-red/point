@@ -16,8 +16,11 @@ class KpiTemplateIndicator extends Model
         return $this->belongsTo(get_class(new KpiTemplateGroup()));
     }
 
-    public function score()
+    /**
+     * Get the scores template for the indicator.
+     */
+    public function scores()
     {
-        return $this->hasOne(get_class(new KpiScore()));
+        return $this->hasMany(get_class(new KpiTemplateScore()));
     }
 }

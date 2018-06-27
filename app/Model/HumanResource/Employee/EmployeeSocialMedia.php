@@ -4,7 +4,7 @@ namespace App\Model\HumanResource\Employee;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EmployeeSalaryHistory extends Model
+class EmployeeSocialMedia extends Model
 {
     protected $connection = 'tenant';
 

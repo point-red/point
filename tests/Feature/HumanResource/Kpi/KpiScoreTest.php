@@ -4,7 +4,7 @@ namespace Tests\Feature\Master;
 
 use Tests\TestCase;
 use App\Model\HumanResource\Kpi\KpiScore;
-use App\Model\HumanResource\Kpi\KpiScoreDetail;
+use App\Model\HumanResource\Kpi\KpiTemplateScore;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 
@@ -73,11 +73,11 @@ class KpiScoreTest extends TestCase
     {
         $kpiScore = factory(KpiScore::class)->create();
 
-        $kpiScore->details()->save(factory(KpiScoreDetail::class)->create(['kpi_score_id' => $kpiScore->id]));
-        $kpiScore->details()->save(factory(KpiScoreDetail::class)->create(['kpi_score_id' => $kpiScore->id]));
-        $kpiScore->details()->save(factory(KpiScoreDetail::class)->create(['kpi_score_id' => $kpiScore->id]));
-        $kpiScore->details()->save(factory(KpiScoreDetail::class)->create(['kpi_score_id' => $kpiScore->id]));
-        $kpiScore->details()->save(factory(KpiScoreDetail::class)->create(['kpi_score_id' => $kpiScore->id]));
+        $kpiScore->details()->save(factory(KpiTemplateScore::class)->create(['kpi_score_id' => $kpiScore->id]));
+        $kpiScore->details()->save(factory(KpiTemplateScore::class)->create(['kpi_score_id' => $kpiScore->id]));
+        $kpiScore->details()->save(factory(KpiTemplateScore::class)->create(['kpi_score_id' => $kpiScore->id]));
+        $kpiScore->details()->save(factory(KpiTemplateScore::class)->create(['kpi_score_id' => $kpiScore->id]));
+        $kpiScore->details()->save(factory(KpiTemplateScore::class)->create(['kpi_score_id' => $kpiScore->id]));
 
         $data = [
             'id' => $kpiScore->id,

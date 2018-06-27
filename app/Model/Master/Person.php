@@ -3,8 +3,6 @@
 namespace App\Model\Master;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Model\HumanResource\Kpi\KpiTemplate;
-use App\Model\HumanResource\Kpi\KpiTemplatePerson;
 
 class Person extends Model
 {
@@ -22,10 +20,18 @@ class Person extends Model
         return $this->belongsTo('App\Model\Master\PersonGroup', 'person_group_id');
     }
 
-    public function kpiTemplate()
+    public function phones()
     {
-        $kpiTemplatePerson = optional(KpiTemplatePerson::where('person_id', $this->id))->first();
+        return $this->hasMany(get_class(new PersonPhone()));
+    }
 
-        return KpiTemplate::find(optional($kpiTemplatePerson)->kpi_template_id);
+    public function addresses()
+    {
+        return $this->hasMany(get_class(new PersonAddress()));
+    }
+
+    public function emails()
+    {
+        return $this->hasMany(get_class(new PersonEmail()));
     }
 }

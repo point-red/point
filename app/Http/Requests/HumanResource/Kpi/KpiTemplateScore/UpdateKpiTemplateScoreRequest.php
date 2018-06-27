@@ -4,7 +4,7 @@ namespace App\Http\Requests\HumanResource\Kpi\KpiScore;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreKpiScoreRequest extends FormRequest
+class UpdateKpiTemplateScoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

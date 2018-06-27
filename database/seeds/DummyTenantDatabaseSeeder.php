@@ -1,13 +1,6 @@
 <?php
 
-use App\Model\Master\Person;
-use App\Model\Master\Warehouse;
 use Illuminate\Database\Seeder;
-use App\Model\HumanResource\Kpi\Kpi;
-use App\Model\HumanResource\Kpi\KpiScore;
-use App\Model\HumanResource\Kpi\KpiResult;
-use App\Model\HumanResource\Kpi\KpiScoreDetail;
-use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 
 class DummyTenantDatabaseSeeder extends Seeder
 {
@@ -18,21 +11,8 @@ class DummyTenantDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // Master
-        factory(Warehouse::class, 2)->create();
-        factory(Person::class, 2)->create();
-
         // Kpi
-        factory(KpiTemplateIndicator::class, 2)->create();
-        factory(KpiResult::class, 1)->create();
-        factory(Kpi::class, 2)->create();
-        factory(KpiScore::class, 2)->create()
-            ->each(function ($kpiScore) {
-                $kpiScore->details()->save(factory(KpiScoreDetail::class)->create(['kpi_score_id' => $kpiScore->id]));
-                $kpiScore->details()->save(factory(KpiScoreDetail::class)->create(['kpi_score_id' => $kpiScore->id]));
-                $kpiScore->details()->save(factory(KpiScoreDetail::class)->create(['kpi_score_id' => $kpiScore->id]));
-                $kpiScore->details()->save(factory(KpiScoreDetail::class)->create(['kpi_score_id' => $kpiScore->id]));
-                $kpiScore->details()->save(factory(KpiScoreDetail::class)->create(['kpi_score_id' => $kpiScore->id]));
-            });
+        $this->call(DummyKpiTemplateSeeder::class);
+        $this->call(DummyEmployeeSeeder::class);
     }
 }

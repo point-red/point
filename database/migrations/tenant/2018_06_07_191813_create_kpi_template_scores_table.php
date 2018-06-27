@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateKpiScoresTable extends Migration
+class CreateKpiTemplateScoresTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class CreateKpiScoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('kpi_scores', function (Blueprint $table) {
+        Schema::create('kpi_template_scores', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('kpi_template_indicator_id')->index();
+            $table->string('description');
+            $table->unsignedInteger('score');
             $table->timestamps();
 
             $table->foreign('kpi_template_indicator_id')
@@ -32,6 +34,6 @@ class CreateKpiScoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kpi_scores');
+        Schema::dropIfExists('kpi_template_scores');
     }
 }

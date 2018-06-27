@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources\HumanResource\Kpi\KpiScoreDetail;
+namespace App\Http\Resources\HumanResource\Kpi\KpiTemplateScore;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class KpiScoreDetailResource extends JsonResource
+class KpiTemplateScoreResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

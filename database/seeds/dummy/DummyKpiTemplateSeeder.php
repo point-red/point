@@ -1,12 +1,11 @@
 <?php
 
-use App\Model\HumanResource\Kpi\KpiScore;
-use App\Model\HumanResource\Kpi\KpiTemplate;
-use App\Model\HumanResource\Kpi\KpiTemplateGroup;
-use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
-use App\Model\HumanResource\Kpi\KpiTemplateScore;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Model\HumanResource\Kpi\KpiTemplate;
+use App\Model\HumanResource\Kpi\KpiTemplateGroup;
+use App\Model\HumanResource\Kpi\KpiTemplateScore;
+use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 
 class DummyKpiTemplateSeeder extends Seeder
 {
@@ -35,7 +34,7 @@ class DummyKpiTemplateSeeder extends Seeder
                 'Terlaksananya proses produksi sesuai standar operasi yang ditentukan perusahaan',
                 'Terlaksananya briefing rutin kepada bawahan',
                 'Terlaksananya laporan kerja secara priodik',
-                'Terlaksananya analisa permasalahan serta solusinya'
+                'Terlaksananya analisa permasalahan serta solusinya',
             ];
 
             for ($indicatorIndex = 0; $indicatorIndex < count($indicatorName); $indicatorIndex++) {
@@ -51,7 +50,7 @@ class DummyKpiTemplateSeeder extends Seeder
                     ['score' => 4, 'description' => 'sering mencapai target produksi'],
                     ['score' => 3, 'description' => 'terkadang mencapai target produksi'],
                     ['score' => 2, 'description' => 'sering tidak mencapai target produksi'],
-                    ['score' => 1, 'description' => 'selalu tidak mencapai target produksi']
+                    ['score' => 1, 'description' => 'selalu tidak mencapai target produksi'],
                 ];
 
                 for ($scoreIndex = 0; $scoreIndex < count($scores); $scoreIndex++) {

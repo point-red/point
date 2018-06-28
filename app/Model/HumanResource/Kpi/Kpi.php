@@ -2,8 +2,8 @@
 
 namespace App\Model\HumanResource\Kpi;
 
-use App\Model\HumanResource\Employee\Employee;
 use Illuminate\Database\Eloquent\Model;
+use App\Model\HumanResource\Employee\Employee;
 
 class Kpi extends Model
 {

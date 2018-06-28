@@ -36,7 +36,7 @@ class EmployeeResource extends JsonResource
             'company_emails' => $this->companyEmails,
             'contracts' => $this->contracts,
             'salary_histories' => $this->salaryHistories,
-            'kpi_template_id' => $this->kpi_template_id
+            'kpi_template_id' => $this->kpi_template_id,
         ];
     }
 }

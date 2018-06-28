@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\HumanResource\Kpi\KpiResult;
 
-use App\Model\HumanResource\Kpi\KpiResult;
 use App\Rules\NumberNotInRange;
+use App\Model\HumanResource\Kpi\KpiResult;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreKpiResultRequest extends FormRequest

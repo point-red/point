@@ -35,7 +35,7 @@ class NumberNotInRange implements Rule
     }
 
     /**
-     * Number should not in group range
+     * Number should not in group range.
      *
      * @param  string  $attribute
      * @param  mixed  $value

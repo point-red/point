@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
-use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
-use App\Model\HumanResource\Kpi\KpiIndicator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
+use App\Model\HumanResource\Kpi\KpiIndicator;
+use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
+use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
 
 class EmployeeAssessmentController extends Controller
 {
@@ -53,7 +53,7 @@ class EmployeeAssessmentController extends Controller
             for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
                 $kpi = new KpiIndicator;
                 $kpi->kpi_group_id = $kpiGroup->id;
-                $kpi->indicator =  $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
+                $kpi->indicator = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
                 $kpi->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
                 $kpi->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
                 $kpi->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Master;
 
+use App\Model\HumanResource\Employee\Employee;
 use Tests\TestCase;
 use App\Model\HumanResource\Kpi\Kpi;
-use App\Model\HumanResource\Kpi\KpiGroup;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiTest extends TestCase
@@ -19,47 +19,44 @@ class KpiTest extends TestCase
     }
 
     /** @test */
-    public function an_user_can_create_kpi()
+    public function an_user_can_create_kpi_category()
     {
         $data = [
-            'kpi_group_id' => factory(KpiGroup::class)->create()->id,
-            'indicator' => 'indicator',
-            'weight' => 20,
-            'target' => 5,
-            'score' => 5,
-            'score_percentage' => 5,
+            'name' => 'name',
+            'date' => date('Y-m-d'),
+            'employee_id' => factory(Employee::class)->create()->id,
         ];
 
         $response = $this->json('POST', 'api/v1/human-resource/kpi/kpis', $data, [$this->headers]);
 
         $response->assertStatus(201);
 
-        $this->assertDatabaseHas('kpis', $data);
+        $this->assertDatabaseHas('kpi', $data);
     }
 
     /** @test */
-    public function an_user_can_read_single_kpi()
+    public function an_user_can_read_single_kpi_category()
     {
         $kpi = factory(Kpi::class)->create();
         $response = $this->json('GET', 'api/v1/human-resource/kpi/kpis/'.$kpi->id, [], [$this->headers]);
 
         $response->assertJson([
             'data' => [
-                'indicator' => $kpi->indicator,
+                'name' => $kpi->name,
             ],
         ]);
     }
 
     /** @test */
-    public function an_user_can_read_all_kpi()
+    public function an_user_can_read_all_kpi_category()
     {
-        $kpis = factory(Kpi::class, 2)->create();
+        $kpiCategories = factory(Kpi::class, 2)->create();
 
         $response = $this->json('GET', 'api/v1/human-resource/kpi/kpis', [], [$this->headers]);
 
-        foreach ($kpis as $kpi) {
-            $this->assertDatabaseHas('kpis', [
-                'indicator' => $kpi->indicator,
+        foreach ($kpiCategories as $kpi) {
+            $this->assertDatabaseHas('kpi', [
+                'name' => $kpi->name,
             ]);
         }
 
@@ -67,31 +64,28 @@ class KpiTest extends TestCase
     }
 
     /** @test */
-    public function an_user_can_update_kpi()
+    public function an_user_can_update_kpi_category()
     {
         $kpi = factory(Kpi::class)->create();
 
         $data = [
             'id' => $kpi->id,
-            'kpi_group_id' => $kpi->kpi_group_id,
-            'indicator' => 'another name',
-            'weight' => 20,
-            'target' => 5,
-            'score' => 5,
-            'score_percentage' => 5,
+            'person_id' => $kpi->person_id,
+            'date' => $kpi->date,
+            'name' => 'another name',
         ];
 
         $response = $this->json('PUT', 'api/v1/human-resource/kpi/kpis/'.$kpi->id, $data, [$this->headers]);
 
         $response->assertJson(['data' => $data]);
 
-        $this->assertDatabaseHas('kpis', $data);
+        $this->assertDatabaseHas('kpi', $data);
 
         $response->assertStatus(200);
     }
 
     /** @test */
-    public function an_user_can_delete_kpi()
+    public function an_user_can_delete_kpi_category()
     {
         $kpi = factory(Kpi::class)->create();
 
@@ -99,7 +93,7 @@ class KpiTest extends TestCase
 
         $response->assertStatus(204);
 
-        $this->assertDatabaseMissing('kpis', [
+        $this->assertDatabaseMissing('kpi', [
             'id' => $kpi->id,
         ]);
     }

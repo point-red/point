@@ -11,16 +11,16 @@ class KpiGroup extends Model
     /**
      * Get the kpis for the group.
      */
-    public function kpis()
+    public function indicators()
     {
-        return $this->hasMany(get_class(new Kpi()));
+        return $this->hasMany(get_class(new KpiIndicator()));
     }
 
     /**
      * Get the kpi category that owns kpi group.
      */
-    public function category()
+    public function kpi()
     {
-        return $this->belongsTo(get_class(new KpiCategory()));
+        return $this->belongsTo(get_class(new Kpi()));
     }
 }

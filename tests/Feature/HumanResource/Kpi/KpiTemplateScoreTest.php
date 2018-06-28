@@ -3,12 +3,11 @@
 namespace Tests\Feature\Master;
 
 use Tests\TestCase;
-use App\Model\HumanResource\Kpi\KpiScore;
 use App\Model\HumanResource\Kpi\KpiTemplateScore;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 
-class KpiScoreTest extends TestCase
+class KpiTemplateScoreTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -28,7 +27,7 @@ class KpiScoreTest extends TestCase
             'score' => [1, 2, 3, 4, 5],
         ];
 
-        $response = $this->json('POST', 'api/v1/human-resource/kpi/scores', $data, [$this->headers]);
+        $response = $this->json('POST', 'api/v1/human-resource/kpi/template-scores', $data, [$this->headers]);
 
         $response->assertStatus(201);
 
@@ -38,8 +37,8 @@ class KpiScoreTest extends TestCase
     /** @test */
     public function an_user_can_read_single_kpi_score()
     {
-        $kpiScore = factory(KpiScore::class)->create();
-        $response = $this->json('GET', 'api/v1/human-resource/kpi/scores/'.$kpiScore->id, [], [$this->headers]);
+        $kpiScore = factory(KpiTemplateScore::class)->create();
+        $response = $this->json('GET', 'api/v1/human-resource/kpi/template-scores/'.$kpiScore->id, [], [$this->headers]);
 
         $response->assertJson([
             'data' => [
@@ -51,9 +50,9 @@ class KpiScoreTest extends TestCase
     /** @test */
     public function an_user_can_read_all_kpi_score()
     {
-        $kpiScores = factory(KpiScore::class, 2)->create();
+        $kpiScores = factory(KpiTemplateScore::class, 2)->create();
 
-        $response = $this->json('GET', 'api/v1/human-resource/kpi/scores', [], [$this->headers]);
+        $response = $this->json('GET', 'api/v1/human-resource/kpi/template-scores', [], [$this->headers]);
 
         foreach ($kpiScores as $kpiScore) {
             $this->assertDatabaseHas('kpi_scores', [
@@ -71,7 +70,7 @@ class KpiScoreTest extends TestCase
     /** @test */
     public function an_user_can_update_kpi_score()
     {
-        $kpiScore = factory(KpiScore::class)->create();
+        $kpiScore = factory(KpiTemplateScore::class)->create();
 
         $kpiScore->details()->save(factory(KpiTemplateScore::class)->create(['kpi_score_id' => $kpiScore->id]));
         $kpiScore->details()->save(factory(KpiTemplateScore::class)->create(['kpi_score_id' => $kpiScore->id]));
@@ -87,7 +86,7 @@ class KpiScoreTest extends TestCase
             'score' => [1, 2, 3, 5],
         ];
 
-        $response = $this->json('PUT', 'api/v1/human-resource/kpi/scores/'.$kpiScore->id, $data, [$this->headers]);
+        $response = $this->json('PUT', 'api/v1/human-resource/kpi/template-scores/'.$kpiScore->id, $data, [$this->headers]);
 
         $response->assertJson(['data' => ['kpi_template_indicator_id' => $data['kpi_template_indicator_id']]]);
 
@@ -99,9 +98,9 @@ class KpiScoreTest extends TestCase
     /** @test */
     public function an_user_can_delete_kpi_score()
     {
-        $kpiScore = factory(KpiScore::class)->create();
+        $kpiScore = factory(KpiTemplateScore::class)->create();
 
-        $response = $this->json('DELETE', 'api/v1/human-resource/kpi/scores/'.$kpiScore->id, [], [$this->headers]);
+        $response = $this->json('DELETE', 'api/v1/human-resource/kpi/template-scores/'.$kpiScore->id, [], [$this->headers]);
 
         $response->assertStatus(204);
 

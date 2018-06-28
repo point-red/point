@@ -29,7 +29,7 @@ class StoreKpiGroupRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'unique:tenant.kpi_groups,name,NULL,id,kpi_category_id,'.$request->get('kpi_category_id'),
+                'unique:tenant.kpi_groups,name,NULL,id,kpi_id,'.$request->get('kpi_id'),
             ],
         ];
     }

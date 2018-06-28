@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\HumanResource\Kpi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Model\HumanResource\Kpi\KpiScore;
 use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 use App\Http\Resources\HumanResource\Kpi\KpiTemplateIndicator\KpiTemplateIndicatorResource;
 use App\Http\Resources\HumanResource\Kpi\KpiTemplateIndicator\KpiTemplateIndicatorCollection;
@@ -39,16 +38,12 @@ class KpiTemplateIndicatorController extends Controller
     {
         DB::beginTransaction();
 
-        $kpiTemplateIndicator = new KpiTemplateIndicator();
+        $kpiTemplateIndicator = new KpiTemplateIndicator;
         $kpiTemplateIndicator->kpi_template_group_id = $request->input('kpi_template_group_id');
         $kpiTemplateIndicator->name = $request->input('name');
         $kpiTemplateIndicator->weight = $request->input('weight');
         $kpiTemplateIndicator->target = $request->input('target');
         $kpiTemplateIndicator->save();
-
-        $kpiScore = new KpiScore();
-        $kpiScore->kpi_template_indicator_id = $kpiTemplateIndicator->id;
-        $kpiScore->save();
 
         DB::commit();
 

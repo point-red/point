@@ -3,10 +3,10 @@
 namespace Tests\Feature\HumanResource\Kpi;
 
 use Tests\TestCase;
-use App\Model\HumanResource\Kpi\KpiScore;
+use App\Model\HumanResource\Kpi\KpiTemplateScore;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class KpiScoreValidationTest extends TestCase
+class KpiTemplateScoreValidationTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -20,11 +20,11 @@ class KpiScoreValidationTest extends TestCase
     /** @test */
     public function a_kpi_score_name_should_be_unique()
     {
-        $kpiScore = factory(KpiScore::class)->create();
+        $kpiTemplateScore = factory(KpiTemplateScore::class)->create();
 
         $data = [];
 
-        $response = $this->json('POST', 'api/v1/human-resource/kpi/scores', $data, [$this->headers]);
+        $response = $this->json('POST', 'api/v1/human-resource/kpi/template-scores', $data, [$this->headers]);
 
         $response->assertJsonStructure([
             'error' => [
@@ -35,11 +35,11 @@ class KpiScoreValidationTest extends TestCase
         $response->assertStatus(422);
 
         $data = [
-            'id' => $kpiScore->id,
+            'id' => $kpiTemplateScore->id,
             'kpi_template_indicator_id' => '',
         ];
 
-        $response = $this->json('PUT', 'api/v1/human-resource/kpi/scores/'.$kpiScore->id, $data, [$this->headers]);
+        $response = $this->json('PUT', 'api/v1/human-resource/kpi/template-scores/'.$kpiTemplateScore->id, $data, [$this->headers]);
 
         $response->assertJsonMissing([
             'error' => [

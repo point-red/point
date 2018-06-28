@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\HumanResource\Kpi\KpiCategory;
+namespace App\Http\Requests\HumanResource\Kpi\Kpi;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreKpiCategoryRequest extends FormRequest
+class StoreKpiIndicatorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,13 @@ class StoreKpiCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => [
-                'required',
-                'unique:tenant.kpi_categories,name,NULL,id',
-            ],
+            'kpi_group_id' => 'required',
+            'name' => 'required',
+            'weight' => 'required',
+            'target' => 'required',
+            'score' => 'required',
+            'score_percentage' => 'required',
+            'score_description' => 'required',
         ];
     }
 }

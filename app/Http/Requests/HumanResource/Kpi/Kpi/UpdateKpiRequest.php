@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Requests\HumanResource\Kpi\Kpi;
+namespace App\Http\Requests\HumanResource\Kpi\KpiCategory;
 
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateKpiRequest extends FormRequest
@@ -24,12 +26,10 @@ class UpdateKpiRequest extends FormRequest
     public function rules()
     {
         return [
-            'kpi_group_id' => 'required',
-            'indicator' => 'required',
-            'weight' => 'required',
-            'target' => 'required',
-            'score' => 'required',
-            'score_percentage' => 'required',
+            'name' => [
+                'required',
+                Rule::unique('kpis')->ignore($this->id),
+            ],
         ];
     }
 }

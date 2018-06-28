@@ -4,7 +4,7 @@ namespace Tests\Feature\Master;
 
 use Tests\TestCase;
 use App\Model\HumanResource\Kpi\KpiGroup;
-use App\Model\HumanResource\Kpi\KpiCategory;
+use App\Model\HumanResource\Kpi\Kpi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiGroupTest extends TestCase
@@ -23,7 +23,7 @@ class KpiGroupTest extends TestCase
     {
         $data = [
             'name' => 'name',
-            'kpi_category_id' => factory(KpiCategory::class)->create()->id,
+            'kpi_id' => factory(Kpi::class)->create()->id,
         ];
 
         $response = $this->json('POST', 'api/v1/human-resource/kpi/groups', $data, [$this->headers]);
@@ -69,7 +69,7 @@ class KpiGroupTest extends TestCase
 
         $data = [
             'id' => $kpiGroup->id,
-            'kpi_category_id' => $kpiGroup->kpi_category_id,
+            'kpi_id' => $kpiGroup->kpi_id,
             'name' => 'another name',
         ];
 

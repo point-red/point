@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCategoryCollection;
-use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCategoryResource;
+use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
+use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
+use App\Model\HumanResource\Kpi\KpiIndicator;
 use App\Model\HumanResource\Kpi\Kpi;
-use App\Model\HumanResource\Kpi\KpiCategory;
 use App\Model\HumanResource\Kpi\KpiGroup;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -18,11 +18,11 @@ class EmployeeAssessmentController extends Controller
      *
      * @param $employeeId
      *
-     * @return \App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCategoryCollection
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection
      */
     public function index($employeeId)
     {
-        return new KpiCategoryCollection(KpiCategory::where('employee_id', $employeeId)->get());
+        return new KpiCollection(Kpi::where('employee_id', $employeeId)->get());
     }
 
     /**
@@ -39,7 +39,7 @@ class EmployeeAssessmentController extends Controller
 
         DB::connection('tenant')->beginTransaction();
 
-        $kpiCategory = new KpiCategory;
+        $kpiCategory = new Kpi;
         $kpiCategory->name = $template['name'];
         $kpiCategory->employee_id = $employeeId;
         $kpiCategory->save();
@@ -51,7 +51,7 @@ class EmployeeAssessmentController extends Controller
             $kpiGroup->save();
 
             for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
-                $kpi = new Kpi;
+                $kpi = new KpiIndicator;
                 $kpi->kpi_group_id = $kpiGroup->id;
                 $kpi->indicator =  $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
                 $kpi->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
@@ -72,11 +72,11 @@ class EmployeeAssessmentController extends Controller
      * @param  int $employee_id
      * @param  int $id
      *
-     * @return \App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCategoryResource
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource
      */
     public function show($employee_id, $id)
     {
-        return new KpiCategoryResource(KpiCategory::where('employee_id', $employee_id)->where('id', $id)->first());
+        return new KpiResource(Kpi::where('employee_id', $employee_id)->where('id', $id)->first());
     }
 
     /**

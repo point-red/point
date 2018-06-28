@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Resources\HumanResource\Kpi\KpiCategory;
+namespace App\Http\Resources\HumanResource\Kpi\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiCategory;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class KpiCategoryCollection extends ResourceCollection
+class KpiIndicatorCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -15,10 +14,6 @@ class KpiCategoryCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        $this->collection->transform(function (KpiCategory $kpiCategory) {
-            return (new KpiCategoryResource($kpiCategory));
-        });
-
         return parent::toArray($request);
     }
 }

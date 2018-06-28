@@ -15,13 +15,13 @@ class CreateKpiGroupsTable extends Migration
     {
         Schema::create('kpi_groups', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('kpi_category_id')->index();
+            $table->unsignedInteger('kpi_id')->index();
             $table->string('name');
             $table->timestamps();
 
-            $table->foreign('kpi_category_id')
+            $table->foreign('kpi_id')
                 ->references('id')
-                ->on('kpi_categories')
+                ->on('kpis')
                 ->onDelete('cascade');
         });
     }

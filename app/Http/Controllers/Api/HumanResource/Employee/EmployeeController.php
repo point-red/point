@@ -46,21 +46,21 @@ class EmployeeController extends Controller
         $person->personal_identity = $request->get('personal_identity');
         $person->save();
 
-        for($i=0; $i < count($request->get('addresses')); $i++) {
+        for ($i=0; $i < count($request->get('addresses')); $i++) {
             $personAddress = new PersonAddress;
             $personAddress->person_id = $person->id;
             $personAddress->address = $request->get('addresses')[$i]['address'];
             $personAddress->save();
         }
 
-        for($i=0; $i < count($request->get('phones')); $i++) {
+        for ($i=0; $i < count($request->get('phones')); $i++) {
             $personPhone = new PersonPhone;
             $personPhone->person_id = $person->id;
             $personPhone->phone = $request->get('phones')[$i]['phone'];
             $personPhone->save();
         }
 
-        for($i=0; $i < count($request->get('emails')); $i++) {
+        for ($i=0; $i < count($request->get('emails')); $i++) {
             $personEmail = new PersonEmail;
             $personEmail->person_id = $person->id;
             $personEmail->email = $request->get('emails')[$i]['email'];
@@ -81,14 +81,14 @@ class EmployeeController extends Controller
         $employee->job_title = $request->get('job_title');
         $employee->save();
 
-        for($i=0; $i < count($request->get('email_companies')); $i++) {
+        for ($i=0; $i < count($request->get('email_companies')); $i++) {
             $employeeEmails = new EmployeeEmail;
             $employeeEmails->employee_id = $employee->id;
             $employeeEmails->email = $request->get('email_companies')[$i]['email'];
             $employeeEmails->save();
         }
 
-        for($i=0; $i < count($request->get('salary_histories')); $i++) {
+        for ($i=0; $i < count($request->get('salary_histories')); $i++) {
             $employeeSalaryHistory = new EmployeeSalaryHistory;
             $employeeSalaryHistory->employee_id = $employee->id;
             $employeeSalaryHistory->date = date('Y-m-d', strtotime($request->get('salary_histories')[$i]['date']));
@@ -96,7 +96,7 @@ class EmployeeController extends Controller
             $employeeSalaryHistory->save();
         }
 
-        for($i=0; $i < count($request->get('social_media')); $i++) {
+        for ($i=0; $i < count($request->get('social_media')); $i++) {
             $employeeSocialMedia = new EmployeeSocialMedia;
             $employeeSocialMedia->employee_id = $employee->id;
             $employeeSocialMedia->type = $request->get('social_media')[$i]['type'];
@@ -104,7 +104,7 @@ class EmployeeController extends Controller
             $employeeSocialMedia->save();
         }
 
-        for($i=0; $i < count($request->get('contracts')); $i++) {
+        for ($i=0; $i < count($request->get('contracts')); $i++) {
             $employeeContract = new EmployeeContract;
             $employeeContract->employee_id = $employee->id;
             $employeeContract->contract_begin = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_date']));

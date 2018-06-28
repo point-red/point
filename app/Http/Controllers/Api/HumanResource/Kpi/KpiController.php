@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Api\HumanResource\Kpi;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Kpi\Kpi;
-use App\Http\Resources\HumanResource\Kpi\Kpi\KpiResource;
-use App\Http\Resources\HumanResource\Kpi\Kpi\KpiCollection;
-use App\Http\Requests\HumanResource\Kpi\Kpi\StoreKpiRequest;
-use App\Http\Requests\HumanResource\Kpi\Kpi\UpdateKpiRequest;
+use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
+use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
+use App\Http\Requests\HumanResource\Kpi\KpiCategory\StoreKpiRequest;
+use App\Http\Requests\HumanResource\Kpi\KpiCategory\UpdateKpiRequest;
 
 class KpiController extends Controller
 {
@@ -17,7 +17,7 @@ class KpiController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return \App\Http\Resources\HumanResource\Kpi\Kpi\KpiCollection
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection
      */
     public function index(Request $request)
     {
@@ -29,19 +29,16 @@ class KpiController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\HumanResource\Kpi\Kpi\StoreKpiRequest $request
+     * @param \App\Http\Requests\HumanResource\Kpi\KpiCategory\StoreKpiRequest $request
      *
-     * @return \App\Http\Resources\HumanResource\Kpi\Kpi\KpiResource
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource
      */
     public function store(StoreKpiRequest $request)
     {
         $kpi = new Kpi();
-        $kpi->kpi_group_id = $request->input('kpi_group_id');
-        $kpi->indicator = $request->input('indicator');
-        $kpi->weight = $request->input('weight');
-        $kpi->target = $request->input('target');
-        $kpi->score = $request->input('score');
-        $kpi->score_percentage = $request->input('score_percentage');
+        $kpi->name = $request->input('name');
+        $kpi->date = $request->input('date');
+        $kpi->person_id = $request->input('person_id');
         $kpi->save();
 
         return new KpiResource($kpi);
@@ -52,7 +49,7 @@ class KpiController extends Controller
      *
      * @param  int  $id
      *
-     * @return \App\Http\Resources\HumanResource\Kpi\Kpi\KpiResource
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource
      */
     public function show($id)
     {
@@ -62,20 +59,17 @@ class KpiController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\HumanResource\Kpi\Kpi\UpdateKpiRequest $request
-     * @param  int                                                      $id
+     * @param \App\Http\Requests\HumanResource\Kpi\KpiCategory\UpdateKpiRequest $request
+     * @param  int                                                              $id
      *
-     * @return \App\Http\Resources\HumanResource\Kpi\Kpi\KpiResource
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource
      */
     public function update(UpdateKpiRequest $request, $id)
     {
         $kpi = Kpi::findOrFail($id);
-        $kpi->kpi_group_id = $request->input('kpi_group_id');
-        $kpi->indicator = $request->input('indicator');
-        $kpi->weight = $request->input('weight');
-        $kpi->target = $request->input('target');
-        $kpi->score = $request->input('score');
-        $kpi->score_percentage = $request->input('score_percentage');
+        $kpi->name = $request->input('name');
+        $kpi->date = $request->input('date');
+        $kpi->person_id = $request->input('person_id');
         $kpi->save();
 
         return new KpiResource($kpi);
@@ -85,12 +79,15 @@ class KpiController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource
      */
     public function destroy($id)
     {
-        Kpi::findOrFail($id)->delete();
+        $kpi = Kpi::findOrFail($id);
 
-        return response(null, 204);
+        $kpi->delete();
+
+        return new KpiResource($kpi);
     }
 }

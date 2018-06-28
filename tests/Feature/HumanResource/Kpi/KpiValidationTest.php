@@ -18,32 +18,39 @@ class KpiValidationTest extends TestCase
     }
 
     /** @test */
-    public function a_kpi_name_should_be_unique()
+    public function a_kpi_category_name_should_be_unique()
     {
         $kpi = factory(Kpi::class)->create();
 
-        $data = [];
+        $data = [
+            'name' => $kpi->name,
+        ];
 
         $response = $this->json('POST', 'api/v1/human-resource/kpi/kpis', $data, [$this->headers]);
 
         $response->assertJsonStructure([
             'error' => [
-                'errors' => ['kpi_group_id', 'indicator', 'weight', 'target', 'score', 'score_percentage'],
+                'errors' => ['name'],
             ],
         ]);
 
         $response->assertStatus(422);
 
-        $data = [];
+        $data = [
+            'id' => $kpi->id,
+            'name' => $kpi->name,
+            'date' => $kpi->date,
+            'employee_id' => $kpi->employee_id,
+        ];
 
         $response = $this->json('PUT', 'api/v1/human-resource/kpi/kpis/'.$kpi->id, $data, [$this->headers]);
 
         $response->assertJsonMissing([
             'error' => [
-                'errors' => ['kpi_group_id', 'indicator', 'weight', 'target', 'score', 'score_percentage'],
+                'errors' => ['name'],
             ],
         ]);
 
-        $response->assertStatus(422);
+        $response->assertStatus(200);
     }
 }

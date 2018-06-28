@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateKpisTable extends Migration
+class CreateKpiIndicatorsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,15 @@ class CreateKpisTable extends Migration
      */
     public function up()
     {
-        Schema::create('kpis', function (Blueprint $table) {
+        Schema::create('kpi_indicators', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('kpi_group_id')->index();
-            $table->string('indicator');
+            $table->string('name');
             $table->unsignedInteger('weight');
             $table->unsignedInteger('target');
             $table->unsignedInteger('score');
             $table->float('score_percentage');
+            $table->text('score_description');
             $table->timestamps();
 
             $table->foreign('kpi_group_id')
@@ -37,6 +38,6 @@ class CreateKpisTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kpis');
+        Schema::dropIfExists('kpi_indicators');
     }
 }

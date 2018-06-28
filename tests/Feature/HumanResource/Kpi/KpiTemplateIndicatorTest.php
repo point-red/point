@@ -3,7 +3,7 @@
 namespace Tests\Feature\Master;
 
 use Tests\TestCase;
-use App\Model\HumanResource\Kpi\KpiCategory;
+use App\Model\HumanResource\Kpi\Kpi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 
@@ -23,7 +23,7 @@ class KpiTemplateIndicatorTest extends TestCase
     {
         $data = [
             'name' => 'name',
-            'kpi_template_group_id' => factory(KpiCategory::class)->create()->id,
+            'kpi_template_group_id' => factory(Kpi::class)->create()->id,
             'weight' => 20,
             'target' => 5,
         ];

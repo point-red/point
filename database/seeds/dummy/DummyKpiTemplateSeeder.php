@@ -54,8 +54,6 @@ class DummyKpiTemplateSeeder extends Seeder
                     ['score' => 1, 'description' => 'selalu tidak mencapai target produksi']
                 ];
 
-                info($scores);
-
                 for ($scoreIndex = 0; $scoreIndex < count($scores); $scoreIndex++) {
                     $kpiTemplateScore = new KpiTemplateScore;
                     $kpiTemplateScore->kpi_template_indicator_id = $kpiTemplateIndicator->id;

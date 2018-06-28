@@ -15,5 +15,6 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
     Route::prefix('employee')->namespace('Employee')->group(function () {
         Route::apiResource('groups', 'EmployeeGroupController');
         Route::apiResource('employees', 'EmployeeController');
+        Route::apiResource('employees/{employee_id}/assessment', 'EmployeeAssessmentController');
     });
 });

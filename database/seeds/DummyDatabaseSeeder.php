@@ -12,8 +12,5 @@ class DummyDatabaseSeeder extends Seeder
     public function run()
     {
         $this->call(DefaultSeeder::class);
-
-        factory(\App\User::class, 10)->create();
-        factory(\App\Model\Project\Project::class, 3)->create();
     }
 }

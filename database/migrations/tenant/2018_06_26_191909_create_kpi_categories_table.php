@@ -15,14 +15,14 @@ class CreateKpiCategoriesTable extends Migration
     {
         Schema::create('kpi_categories', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('person_id')->index();
+            $table->unsignedInteger('employee_id')->index();
             $table->string('name');
             $table->timestamp('date');
             $table->timestamps();
 
-            $table->foreign('person_id')
+            $table->foreign('employee_id')
                 ->references('id')
-                ->on('persons')
+                ->on('employees')
                 ->onDelete('cascade');
         });
     }

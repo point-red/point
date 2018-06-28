@@ -2,7 +2,7 @@
 
 namespace App\Model\HumanResource\Kpi;
 
-use App\Model\Master\Person;
+use App\Model\HumanResource\Employee\Employee;
 use Illuminate\Database\Eloquent\Model;
 
 class KpiCategory extends Model
@@ -17,11 +17,13 @@ class KpiCategory extends Model
         return $this->hasMany(get_class(new KpiGroup()));
     }
 
-    /**
-     * Get persons for the kpi category.
-     */
-    public function persons()
+    public function kpis()
     {
-        return $this->hasMany(get_class(new Person()));
+        return $this->hasManyThrough('App\Model\HumanResource\Kpi\Kpi', 'App\Model\HumanResource\Kpi\KpiGroup');
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(get_class(new Employee()));
     }
 }

@@ -1,17 +1,17 @@
 <?php
 
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\HumanResource\Employee\EmployeeContract;
-use App\Model\HumanResource\Employee\EmployeeEmail;
-use App\Model\HumanResource\Employee\EmployeeGroup;
-use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
-use App\Model\HumanResource\Employee\EmployeeSocialMedia;
 use App\Model\Master\Person;
-use App\Model\Master\PersonAddress;
+use Illuminate\Database\Seeder;
 use App\Model\Master\PersonEmail;
 use App\Model\Master\PersonPhone;
-use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Model\Master\PersonAddress;
+use App\Model\HumanResource\Employee\Employee;
+use App\Model\HumanResource\Employee\EmployeeEmail;
+use App\Model\HumanResource\Employee\EmployeeGroup;
+use App\Model\HumanResource\Employee\EmployeeContract;
+use App\Model\HumanResource\Employee\EmployeeSocialMedia;
+use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 
 class DummyEmployeeSeeder extends Seeder
 {

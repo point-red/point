@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
-use App\Http\Resources\HumanResource\Kpi\KpiTemplateScore\KpiTemplateScoreCollection;
-use App\Http\Resources\HumanResource\Kpi\KpiTemplateScore\KpiTemplateScoreResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Kpi\KpiTemplateScore;
+use App\Http\Resources\HumanResource\Kpi\KpiTemplateScore\KpiTemplateScoreResource;
+use App\Http\Resources\HumanResource\Kpi\KpiTemplateScore\KpiTemplateScoreCollection;
 
 class KpiTemplateScoreController extends Controller
 {

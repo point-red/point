@@ -3,8 +3,6 @@
 namespace Tests\Feature\HumanResource\Employee;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class EmployeeTrainingHistoryTest extends TestCase
 {

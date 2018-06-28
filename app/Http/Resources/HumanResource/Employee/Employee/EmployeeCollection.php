@@ -16,7 +16,7 @@ class EmployeeCollection extends ResourceCollection
     public function toArray($request)
     {
         $this->collection->transform(function (Employee $employee) {
-            return (new EmployeeResource($employee));
+            return new EmployeeResource($employee);
         });
 
         return parent::toArray($request);

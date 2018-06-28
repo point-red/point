@@ -2,10 +2,9 @@
 
 namespace App\Model\HumanResource\Employee;
 
-use App\Model\HumanResource\Kpi\KpiTemplate;
-use App\Model\HumanResource\Kpi\KpiTemplateEmployee;
 use App\Model\Master\Person;
 use Illuminate\Database\Eloquent\Model;
+use App\Model\HumanResource\Kpi\KpiTemplate;
 
 class Employee extends Model
 {

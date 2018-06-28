@@ -16,7 +16,7 @@ class KpiTemplateCollection extends ResourceCollection
     public function toArray($request)
     {
         $this->collection->transform(function (KpiTemplate $kpiTemplate) {
-            return (new KpiTemplateResource($kpiTemplate));
+            return new KpiTemplateResource($kpiTemplate);
         });
 
         return parent::toArray($request);

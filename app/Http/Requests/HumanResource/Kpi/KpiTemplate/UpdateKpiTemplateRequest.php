@@ -24,7 +24,7 @@ class UpdateKpiTemplateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
+            'name' => 'required|unique:tenant.kpi_templates,name,'.$this->id,
         ];
     }
 }

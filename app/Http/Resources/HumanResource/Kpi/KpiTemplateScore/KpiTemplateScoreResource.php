@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\HumanResource\Kpi\KpiTemplateScore;
 
+use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class KpiTemplateScoreResource extends JsonResource
@@ -14,6 +15,15 @@ class KpiTemplateScoreResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $indicator = KpiTemplateIndicator::findOrFail($this->kpi_template_indicator_id);
+
+        return [
+            'id' => $this->id,
+            'kpi_template_indicator_id' => $indicator->id,
+            'kpi_template_group_id' => $indicator->kpi_template_group_id,
+            'kpi_template_id' => $indicator->group->kpi_template_id,
+            'description' => $this->description,
+            'score' => $this->score,
+        ];
     }
 }

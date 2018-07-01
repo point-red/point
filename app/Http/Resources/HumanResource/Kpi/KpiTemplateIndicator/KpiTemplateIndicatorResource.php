@@ -22,8 +22,8 @@ class KpiTemplateIndicatorResource extends JsonResource
             'name' => $this->name,
             'weight' => $this->weight,
             'target' => $this->target,
-            'scores' => new KpiTemplateScoreResource($this->scores),
-            'group' => KpiTemplateGroup::find($this->kpi_template_group_id)->toArray()
+            'scores' => KpiTemplateScoreResource::collection($this->scores),
+            'group' => KpiTemplateGroup::findOrFail($this->kpi_template_group_id)->toArray()
         ];
     }
 }

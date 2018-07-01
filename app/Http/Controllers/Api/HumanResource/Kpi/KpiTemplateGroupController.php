@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api\HumanResource\Kpi;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Kpi\KpiTemplateGroup;
-use App\Http\Resources\HumanResource\Kpi\KpiTemplateGroup\KpiTemplateGroupResource;
 use App\Http\Resources\HumanResource\Kpi\KpiTemplateGroup\KpiTemplateGroupCollection;
+use App\Http\Resources\HumanResource\Kpi\KpiTemplateGroup\KpiTemplateGroupResource;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplateGroup\StoreKpiTemplateGroupRequest;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplateGroup\UpdateKpiTemplateGroupRequest;
 

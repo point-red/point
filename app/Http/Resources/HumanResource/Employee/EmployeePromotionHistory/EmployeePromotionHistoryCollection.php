@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\HumanResource\Employee\EmployeePromotionHistory;
 
+use App\Model\HumanResource\Employee\EmployeePromotionHistory;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class EmployeePromotionHistoryCollection extends ResourceCollection
@@ -14,6 +15,10 @@ class EmployeePromotionHistoryCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+        $this->collection->transform(function (EmployeePromotionHistory $employeePromotionHistory) {
+            return new EmployeePromotionHistoryResource($employeePromotionHistory);
+        });
+
         return parent::toArray($request);
     }
 }

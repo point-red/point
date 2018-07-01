@@ -24,7 +24,7 @@ class KpiResource extends JsonResource
             'weight' => collect($this->indicators)->sum('weight'),
             'target' => collect($this->indicators)->sum('target'),
             'score' => collect($this->indicators)->sum('score'),
-            'score_percentage' => collect($this->kpis)->sum('score_percentage'),
+            'score_percentage' => collect($this->indicators)->sum('score_percentage'),
             'groups' => KpiGroupResource::collection($this->groups),
         ];
     }

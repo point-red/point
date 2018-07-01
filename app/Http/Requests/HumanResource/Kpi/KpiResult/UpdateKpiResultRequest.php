@@ -33,14 +33,14 @@ class UpdateKpiResultRequest extends FormRequest
                 'numeric',
                 'max:'.$this->score_max,
                 Rule::unique('tenant.kpi_results')->ignore($this->id),
-                new NumberNotInRange(KpiResult::class, 'score_min', 'score_max', $this->id),
+                new NumberNotInRange(KpiResult::class, 'score_min', 'score_max', $this->score_min, $this->score_max, $this->id),
             ],
             'score_max' => [
                 'required',
                 'numeric',
                 'min:'.$this->score_min,
                 Rule::unique('tenant.kpi_results')->ignore($this->id),
-                new NumberNotInRange(KpiResult::class, 'score_min', 'score_max', $this->id),
+                new NumberNotInRange(KpiResult::class, 'score_min', 'score_max', $this->score_min, $this->score_max, $this->id),
             ],
             'criteria' => [
                 'required',

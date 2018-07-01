@@ -36,8 +36,8 @@ class KpiCollection extends ResourceCollection
         $scores = [];
 
         foreach ($kpis as $key => $kpi) {
-            array_push( $dates, $kpi->date);
-            array_push( $scores, $kpi->indicators->sum('score_percentage'));
+            array_push( $dates, date('d F y', strtotime($kpi->date)));
+            array_push( $scores, number_format($kpi->indicators->sum('score_percentage'), 2));
         }
 
         return [

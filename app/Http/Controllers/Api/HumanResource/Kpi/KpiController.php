@@ -23,7 +23,23 @@ class KpiController extends Controller
     {
         $limit = $request->input('limit') ?? 0;
 
-        return new KpiCollection(Kpi::paginate($limit));
+        $kpis = Kpi::where('employee_id', $request->get('employee_id'))->paginate($limit);
+
+        $dates = [];
+        $scores = [];
+
+        foreach ($kpis as $key => $kpi) {
+            array_push( $dates, date('dMY', strtotime($kpi->date)));
+            array_push( $scores, number_format($kpi->indicators->sum('score_percentage'), 2));
+        }
+
+        return (new KpiCollection($kpis))
+            ->additional([
+                'data_set' => [
+                    'dates' => $dates,
+                    'scores' => $scores
+                ],
+            ]);
     }
 
     /**

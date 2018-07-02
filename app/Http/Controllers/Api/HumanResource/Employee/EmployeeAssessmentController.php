@@ -22,7 +22,23 @@ class EmployeeAssessmentController extends Controller
      */
     public function index($employeeId)
     {
-        return new KpiCollection(Kpi::where('employee_id', $employeeId)->get());
+        $kpis = Kpi::where('employee_id', $employeeId)->get();
+
+        $dates = [];
+        $scores = [];
+
+        foreach ($kpis as $key => $kpi) {
+            array_push( $dates, date('dMY', strtotime($kpi->date)));
+            array_push( $scores, number_format($kpi->indicators->sum('score_percentage'), 2));
+        }
+
+        return (new KpiCollection($kpis))
+            ->additional([
+                'data_set' => [
+                    'dates' => $dates,
+                    'scores' => $scores
+                ],
+            ]);
     }
 
     /**

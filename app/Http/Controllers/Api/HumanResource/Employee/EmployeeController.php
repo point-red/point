@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
+use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Model\Master\Person;
 use Illuminate\Http\Request;
 use App\Model\Master\PersonEmail;
@@ -36,7 +37,7 @@ class EmployeeController extends Controller
      *
      * @return \App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource
      */
-    public function store(Request $request)
+    public function store(StoreEmployeeRequest $request)
     {
         DB::connection('tenant')->beginTransaction();
 
@@ -70,14 +71,14 @@ class EmployeeController extends Controller
         $employee = new Employee;
         $employee->person_id = $person->id;
         $employee->last_education = $request->get('last_education');
-        $employee->birth_date = date('Y-m-d', strtotime($request->get('birth_date')));
+        $employee->birth_date = $request->get('birth_date') ? date('Y-m-d', strtotime($request->get('birth_date'))) : null;
         $employee->birth_place = $request->get('birth_place');
         $employee->gender = $request->get('gender');
         $employee->marital_status = $request->get('marital_status');
         $employee->married_with = $request->get('married_with');
         $employee->religion = $request->get('religion');
         $employee->employee_group_id = $request->get('employee_group_id');
-        $employee->join_date = date('Y-m-d', strtotime($request->get('join_date')));
+        $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
         $employee->job_title = $request->get('job_title');
         $employee->save();
 

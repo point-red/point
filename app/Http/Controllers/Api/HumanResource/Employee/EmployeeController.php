@@ -82,10 +82,10 @@ class EmployeeController extends Controller
         $employee->job_title = $request->get('job_title');
         $employee->save();
 
-        for ($i = 0; $i < count($request->get('email_companies')); $i++) {
+        for ($i = 0; $i < count($request->get('company_emails')); $i++) {
             $employeeEmails = new EmployeeEmail;
             $employeeEmails->employee_id = $employee->id;
-            $employeeEmails->email = $request->get('email_companies')[$i]['email'];
+            $employeeEmails->email = $request->get('company_emails')[$i]['email'];
             $employeeEmails->save();
         }
 
@@ -108,8 +108,8 @@ class EmployeeController extends Controller
         for ($i = 0; $i < count($request->get('contracts')); $i++) {
             $employeeContract = new EmployeeContract;
             $employeeContract->employee_id = $employee->id;
-            $employeeContract->contract_begin = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_date']));
-            $employeeContract->contract_end = date('Y-m-d', strtotime($request->get('contracts')[$i]['expired_date']));
+            $employeeContract->contract_begin = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_begin']));
+            $employeeContract->contract_end = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_end']));
             $employeeContract->link = '';
             $employeeContract->notes = $request->get('contracts')[$i]['notes'];
             $employeeContract->save();
@@ -137,21 +137,175 @@ class EmployeeController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource
      */
     public function update(Request $request, $id)
     {
-        //
+        log_object($request->get('birth_date'));
+        DB::connection('tenant')->beginTransaction();
+
+        $employee = Employee::findOrFail($id);
+        $employee->last_education = $request->get('last_education');
+        $employee->birth_date = $request->get('birth_date') ? date('Y-m-d', strtotime($request->get('birth_date'))) : null;
+        $employee->birth_place = $request->get('birth_place');
+        $employee->gender = $request->get('gender');
+        $employee->marital_status = $request->get('marital_status');
+        $employee->married_with = $request->get('married_with');
+        $employee->religion = $request->get('religion');
+        $employee->employee_group_id = $request->get('employee_group_id');
+        $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
+        $employee->job_title = $request->get('job_title');
+        $employee->save();
+
+        $person = Person::findOrFail($employee->person_id);
+        $person->code = $request->get('code');
+        $person->name = $request->get('name');
+        $person->personal_identity = $request->get('personal_identity');
+        $person->save();
+
+        for ($i = 0; $i < count($request->get('addresses')); $i++) {
+            $deleted = array_column($request->get('addresses'), 'id');
+
+            if ($deleted) {
+                PersonAddress::where('person_id', $person->id)->whereNotIn('id', $deleted)->delete();
+            }
+
+            if (isset($request->get('addresses')[$i]['id'])) {
+                $personAddress = PersonAddress::findOrFail($request->get('addresses')[$i]['id']);
+            } else {
+                $personAddress = new PersonAddress;
+            }
+            $personAddress->person_id = $person->id;
+            $personAddress->address = $request->get('addresses')[$i]['address'];
+            $personAddress->save();
+        }
+
+        for ($i = 0; $i < count($request->get('phones')); $i++) {
+            $deleted = array_column($request->get('phones'), 'id');
+
+            if ($deleted) {
+                PersonPhone::where('person_id', $person->id)->whereNotIn('id', $deleted)->delete();
+            }
+
+            if (isset($request->get('phones')[$i]['id'])) {
+                $personPhone = PersonPhone::findOrFail($request->get('phones')[$i]['id']);
+            } else {
+                $personPhone = new PersonPhone;
+            }
+            $personPhone->person_id = $person->id;
+            $personPhone->phone = $request->get('phones')[$i]['phone'];
+            $personPhone->save();
+        }
+
+        for ($i = 0; $i < count($request->get('emails')); $i++) {
+            $deleted = array_column($request->get('emails'), 'id');
+
+            if ($deleted) {
+                PersonEmail::where('person_id', $person->id)->whereNotIn('id', $deleted)->delete();
+            }
+
+            if (isset($request->get('emails')[$i]['id'])) {
+                $personEmail = PersonEmail::findOrFail($request->get('emails')[$i]['id']);
+            } else {
+                $personEmail = new PersonEmail;
+            }
+            $personEmail->person_id = $person->id;
+            $personEmail->email = $request->get('emails')[$i]['email'];
+            $personEmail->save();
+        }
+
+        for ($i = 0; $i < count($request->get('company_emails')); $i++) {
+            $deleted = array_column($request->get('company_emails'), 'id');
+
+            if ($deleted) {
+                EmployeeEmail::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
+            }
+
+            if (isset($request->get('company_emails')[$i]['id'])) {
+                $employeeEmails = EmployeeEmail::findOrFail($request->get('company_emails')[$i]['id']);
+            } else {
+                $employeeEmails = new EmployeeEmail;
+            }
+            $employeeEmails->employee_id = $employee->id;
+            $employeeEmails->email = $request->get('company_emails')[$i]['email'];
+            $employeeEmails->save();
+        }
+
+        for ($i = 0; $i < count($request->get('salary_histories')); $i++) {
+            $deleted = array_column($request->get('salary_histories'), 'id');
+
+            if ($deleted) {
+                EmployeeSalaryHistory::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
+            }
+
+            if (isset($request->get('salary_histories')[$i]['id'])) {
+                $employeeSalaryHistory = EmployeeSalaryHistory::findOrFail($request->get('salary_histories')[$i]['id']);
+            } else {
+                $employeeSalaryHistory = new EmployeeSalaryHistory;
+            }
+            $employeeSalaryHistory->employee_id = $employee->id;
+            $employeeSalaryHistory->date = date('Y-m-d', strtotime($request->get('salary_histories')[$i]['date']));
+            $employeeSalaryHistory->salary = $request->get('salary_histories')[$i]['salary'];
+            $employeeSalaryHistory->save();
+        }
+
+        for ($i = 0; $i < count($request->get('social_media')); $i++) {
+            $deleted = array_column($request->get('social_media'), 'id');
+
+            if ($deleted) {
+                EmployeeSocialMedia::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
+            }
+
+            if (isset($request->get('social_media')[$i]['id'])) {
+                $employeeSocialMedia = EmployeeSocialMedia::findOrFail($request->get('social_media')[$i]['id']);
+            } else {
+                $employeeSocialMedia = new EmployeeSocialMedia;
+            }
+            $employeeSocialMedia->employee_id = $employee->id;
+            $employeeSocialMedia->type = $request->get('social_media')[$i]['type'];
+            $employeeSocialMedia->account = $request->get('social_media')[$i]['account'];
+            $employeeSocialMedia->save();
+        }
+
+        for ($i = 0; $i < count($request->get('contracts')); $i++) {
+            $deleted = array_column($request->get('contracts'), 'id');
+
+            if ($deleted) {
+                EmployeeContract::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
+            }
+
+            if (isset($request->get('contracts')[$i]['id'])) {
+                $employeeContract = EmployeeContract::findOrFail($request->get('contracts')[$i]['id']);
+            } else {
+                $employeeContract = new EmployeeContract;
+            }
+            $employeeContract->employee_id = $employee->id;
+            $employeeContract->contract_begin = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_begin']));
+            $employeeContract->contract_end = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_end']));
+            $employeeContract->link = '';
+            $employeeContract->notes = $request->get('contracts')[$i]['notes'];
+            $employeeContract->save();
+        }
+
+        DB::connection('tenant')->commit();
+
+        return new EmployeeResource($employee);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource
      */
     public function destroy($id)
     {
-        //
+        $employee = Employee::findOrFail($id);
+
+        $employee->delete();
+
+        return new EmployeeResource($employee);
     }
 }

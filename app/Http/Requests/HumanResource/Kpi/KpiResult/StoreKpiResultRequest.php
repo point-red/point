@@ -31,14 +31,14 @@ class StoreKpiResultRequest extends FormRequest
                 'numeric',
                 'max:'.$this->score_max,
                 'unique:tenant.kpi_results,score_min',
-                new NumberNotInRange(KpiResult::class, 'score_min', 'score_max'),
+                new NumberNotInRange(KpiResult::class, 'score_min', 'score_max', $this->score_min, $this->score_max),
             ],
             'score_max' => [
                 'required',
                 'numeric',
                 'min:'.$this->score_min,
                 'unique:tenant.kpi_results,score_max',
-                new NumberNotInRange(KpiResult::class, 'score_min', 'score_max'),
+                new NumberNotInRange(KpiResult::class, 'score_min', 'score_max', $this->score_min, $this->score_max),
             ],
             'criteria' => [
                 'required',

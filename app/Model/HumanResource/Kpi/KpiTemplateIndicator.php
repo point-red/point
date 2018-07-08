@@ -13,7 +13,7 @@ class KpiTemplateIndicator extends Model
      */
     public function group()
     {
-        return $this->belongsTo(get_class(new KpiTemplateGroup()));
+        return $this->belongsTo(get_class(new KpiTemplateGroup()), 'kpi_template_group_id');
     }
 
     /**

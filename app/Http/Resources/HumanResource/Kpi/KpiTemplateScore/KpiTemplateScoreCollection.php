@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\HumanResource\Kpi\KpiTemplateScore;
 
+use App\Model\HumanResource\Kpi\KpiTemplateScore;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class KpiTemplateScoreCollection extends ResourceCollection
@@ -14,6 +15,10 @@ class KpiTemplateScoreCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+        $this->collection->transform(function (KpiTemplateScore $kpiTemplateScore) {
+            return new KpiTemplateScoreResource($kpiTemplateScore);
+        });
+
         return parent::toArray($request);
     }
 }

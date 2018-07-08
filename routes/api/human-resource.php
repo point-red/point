@@ -6,6 +6,7 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::apiResource('template-groups', 'KpiTemplateGroupController');
         Route::apiResource('template-indicators', 'KpiTemplateIndicatorController');
         Route::apiResource('template-scores', 'KpiTemplateScoreController');
+        Route::get('results/showBy', 'KpiResultController@showBy');
         Route::apiResource('results', 'KpiResultController');
         Route::apiResource('kpis', 'KpiController');
         Route::apiResource('groups', 'KpiGroupController');
@@ -15,6 +16,7 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
     Route::prefix('employee')->namespace('Employee')->group(function () {
         Route::apiResource('groups', 'EmployeeGroupController');
         Route::apiResource('employees', 'EmployeeController');
+        Route::post('employees/{employee_id}/assign-assessment', 'AssignAssessmentController@store');
         Route::apiResource('employees/{employee_id}/assessment', 'EmployeeAssessmentController');
     });
 });

@@ -17,7 +17,7 @@ class CreatePersonsTable extends Migration
             $table->increments('id');
             $table->string('code')->nullable()->unique();
             $table->string('name');
-            $table->string('personal_identity');
+            $table->string('personal_identity')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
 

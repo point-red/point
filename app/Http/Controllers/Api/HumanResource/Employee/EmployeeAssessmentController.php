@@ -22,7 +22,23 @@ class EmployeeAssessmentController extends Controller
      */
     public function index($employeeId)
     {
-        return new KpiCollection(Kpi::where('employee_id', $employeeId)->get());
+        $kpis = Kpi::where('employee_id', $employeeId)->get();
+
+        $dates = [];
+        $scores = [];
+
+        foreach ($kpis as $key => $kpi) {
+            array_push($dates, date('dMY', strtotime($kpi->date)));
+            array_push($scores, number_format($kpi->indicators->sum('score_percentage'), 2));
+        }
+
+        return (new KpiCollection($kpis))
+            ->additional([
+                'data_set' => [
+                    'dates' => $dates,
+                    'scores' => $scores,
+                ],
+            ]);
     }
 
     /**
@@ -39,27 +55,27 @@ class EmployeeAssessmentController extends Controller
 
         DB::connection('tenant')->beginTransaction();
 
-        $kpiCategory = new Kpi;
-        $kpiCategory->name = $template['name'];
-        $kpiCategory->employee_id = $employeeId;
-        $kpiCategory->save();
+        $kpi = new Kpi;
+        $kpi->name = $template['name'];
+        $kpi->employee_id = $employeeId;
+        $kpi->save();
 
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
             $kpiGroup = new KpiGroup;
-            $kpiGroup->kpi_category_id = $kpiCategory->id;
+            $kpiGroup->kpi_id = $kpi->id;
             $kpiGroup->name = $template['groups'][$groupIndex]['name'];
             $kpiGroup->save();
 
             for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
-                $kpi = new KpiIndicator;
-                $kpi->kpi_group_id = $kpiGroup->id;
-                $kpi->indicator = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
-                $kpi->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
-                $kpi->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
-                $kpi->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
-                $kpi->score_percentage = $kpi->weight * $kpi->score / $kpi->target;
-                $kpi->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
-                $kpi->save();
+                $kpiIndicator = new KpiIndicator;
+                $kpiIndicator->kpi_group_id = $kpiGroup->id;
+                $kpiIndicator->name = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
+                $kpiIndicator->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
+                $kpiIndicator->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
+                $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
+                $kpiIndicator->score_percentage = $kpiIndicator->weight * $kpiIndicator->score / $kpiIndicator->target;
+                $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+                $kpiIndicator->save();
             }
         }
 
@@ -74,9 +90,9 @@ class EmployeeAssessmentController extends Controller
      *
      * @return \App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource
      */
-    public function show($employee_id, $id)
+    public function show($employeeId, $id)
     {
-        return new KpiResource(Kpi::where('employee_id', $employee_id)->where('id', $id)->first());
+        return new KpiResource(Kpi::where('employee_id', $employeeId)->where('id', $id)->first());
     }
 
     /**
@@ -95,10 +111,13 @@ class EmployeeAssessmentController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource
      */
-    public function destroy($id)
+    public function destroy($employeeId, $id)
     {
-        //
+        $kpi = Kpi::findOrFail($id);
+        $kpi->delete();
+        return new KpiResource($kpi);
     }
 }

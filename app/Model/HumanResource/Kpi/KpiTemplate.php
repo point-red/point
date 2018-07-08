@@ -16,18 +16,19 @@ class KpiTemplate extends Model
         return $this->hasMany('App\Model\HumanResource\Employee\Employee');
     }
 
+    /**
+     * Get the template groups for the kpi template.
+     */
     public function groups()
     {
         return $this->hasMany('App\Model\HumanResource\Kpi\KpiTemplateGroup');
     }
 
+    /**
+     * Get the template indicators for the kpi template.
+     */
     public function indicators()
     {
         return $this->hasManyThrough('App\Model\HumanResource\Kpi\KpiTemplateIndicator', 'App\Model\HumanResource\Kpi\KpiTemplateGroup');
-    }
-
-    public function score()
-    {
-        return $this->hasOne('App\Model\HumanResource\Kpi\KpiScore');
     }
 }

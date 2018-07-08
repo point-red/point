@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Kpi\KpiResult;
 use App\Http\Resources\HumanResource\Kpi\KpiResult\KpiResultResource;
@@ -50,6 +51,37 @@ class KpiResultController extends Controller
     public function show($id)
     {
         return new KpiResultResource(KpiResult::findOrFail($id));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \App\Http\Resources\HumanResource\Kpi\KpiResult\KpiResultResource
+     */
+    public function showBy(Request $request)
+    {
+        if ($request->get('score_percentage')) {
+            $scorePercentage = $request->get('score_percentage');
+
+            $kpiResult = KpiResult::where('score_min', '<', $scorePercentage)
+                ->where('score_max', '>', $scorePercentage)->first();
+
+            if (! $kpiResult) {
+                return response()->json([
+                    'code' => 422,
+                    'message' => 'Kpi result not found',
+                ], 422);
+            }
+
+            return new KpiResultResource($kpiResult);
+        }
+
+        return response()->json([
+            'code' => 422,
+            'message' => 'Kpi result not found',
+        ], 422);
     }
 
     /**

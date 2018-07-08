@@ -16,6 +16,8 @@ class EmployeeResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'employee_group_id' => $this->employee_group_id,
+            'group' => $this->group,
             'code' => $this->person->code,
             'name' => $this->person->name,
             'addresses' => $this->person->addresses,
@@ -30,7 +32,6 @@ class EmployeeResource extends JsonResource
             'marital_status' => $this->marital_status,
             'married_with' => $this->married_with,
             'religion' => $this->religion,
-            'employee_group' => $this->group,
             'join_date' => $this->join_date,
             'job_title' => $this->job_title,
             'company_emails' => $this->companyEmails,

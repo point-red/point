@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\HumanResource\Kpi\Kpi;
 
+use App\Model\HumanResource\Kpi\KpiIndicator;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class KpiIndicatorCollection extends ResourceCollection
@@ -14,6 +15,10 @@ class KpiIndicatorCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+        $this->collection->transform(function (KpiIndicator $kpiIndicator) {
+            return new KpiIndicatorResource($kpiIndicator);
+        });
+
         return parent::toArray($request);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
+use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
 use App\Model\Master\Person;
 use Illuminate\Http\Request;
 use App\Model\Master\PersonEmail;
@@ -140,9 +141,8 @@ class EmployeeController extends Controller
      *
      * @return \App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource
      */
-    public function update(Request $request, $id)
+    public function update(UpdateEmployeeRequest $request, $id)
     {
-        log_object($request->get('birth_date'));
         DB::connection('tenant')->beginTransaction();
 
         $employee = Employee::findOrFail($id);
@@ -164,30 +164,22 @@ class EmployeeController extends Controller
         $person->personal_identity = $request->get('personal_identity');
         $person->save();
 
+        $deleteAddresses = array_column($request->get('addresses'), 'id');
+        PersonAddress::where('person_id', $person->id)->whereNotIn('id', $deleteAddresses)->delete();
         for ($i = 0; $i < count($request->get('addresses')); $i++) {
-            $deleted = array_column($request->get('addresses'), 'id');
-
-            if ($deleted) {
-                PersonAddress::where('person_id', $person->id)->whereNotIn('id', $deleted)->delete();
-            }
-
             if (isset($request->get('addresses')[$i]['id'])) {
                 $personAddress = PersonAddress::findOrFail($request->get('addresses')[$i]['id']);
             } else {
                 $personAddress = new PersonAddress;
+                $personAddress->person_id = $person->id;
             }
-            $personAddress->person_id = $person->id;
             $personAddress->address = $request->get('addresses')[$i]['address'];
             $personAddress->save();
         }
 
+        $deletePhones = array_column($request->get('phones'), 'id');
+        PersonPhone::where('person_id', $person->id)->whereNotIn('id', $deletePhones)->delete();
         for ($i = 0; $i < count($request->get('phones')); $i++) {
-            $deleted = array_column($request->get('phones'), 'id');
-
-            if ($deleted) {
-                PersonPhone::where('person_id', $person->id)->whereNotIn('id', $deleted)->delete();
-            }
-
             if (isset($request->get('phones')[$i]['id'])) {
                 $personPhone = PersonPhone::findOrFail($request->get('phones')[$i]['id']);
             } else {
@@ -198,13 +190,9 @@ class EmployeeController extends Controller
             $personPhone->save();
         }
 
+        $deleted = array_column($request->get('emails'), 'id');
+        PersonEmail::where('person_id', $person->id)->whereNotIn('id', $deleted)->delete();
         for ($i = 0; $i < count($request->get('emails')); $i++) {
-            $deleted = array_column($request->get('emails'), 'id');
-
-            if ($deleted) {
-                PersonEmail::where('person_id', $person->id)->whereNotIn('id', $deleted)->delete();
-            }
-
             if (isset($request->get('emails')[$i]['id'])) {
                 $personEmail = PersonEmail::findOrFail($request->get('emails')[$i]['id']);
             } else {
@@ -215,13 +203,9 @@ class EmployeeController extends Controller
             $personEmail->save();
         }
 
+        $deleted = array_column($request->get('company_emails'), 'id');
+        EmployeeEmail::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
         for ($i = 0; $i < count($request->get('company_emails')); $i++) {
-            $deleted = array_column($request->get('company_emails'), 'id');
-
-            if ($deleted) {
-                EmployeeEmail::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
-            }
-
             if (isset($request->get('company_emails')[$i]['id'])) {
                 $employeeEmails = EmployeeEmail::findOrFail($request->get('company_emails')[$i]['id']);
             } else {
@@ -232,13 +216,9 @@ class EmployeeController extends Controller
             $employeeEmails->save();
         }
 
+        $deleted = array_column($request->get('salary_histories'), 'id');
+        EmployeeSalaryHistory::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
         for ($i = 0; $i < count($request->get('salary_histories')); $i++) {
-            $deleted = array_column($request->get('salary_histories'), 'id');
-
-            if ($deleted) {
-                EmployeeSalaryHistory::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
-            }
-
             if (isset($request->get('salary_histories')[$i]['id'])) {
                 $employeeSalaryHistory = EmployeeSalaryHistory::findOrFail($request->get('salary_histories')[$i]['id']);
             } else {
@@ -250,13 +230,9 @@ class EmployeeController extends Controller
             $employeeSalaryHistory->save();
         }
 
+        $deleted = array_column($request->get('social_media'), 'id');
+        EmployeeSocialMedia::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
         for ($i = 0; $i < count($request->get('social_media')); $i++) {
-            $deleted = array_column($request->get('social_media'), 'id');
-
-            if ($deleted) {
-                EmployeeSocialMedia::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
-            }
-
             if (isset($request->get('social_media')[$i]['id'])) {
                 $employeeSocialMedia = EmployeeSocialMedia::findOrFail($request->get('social_media')[$i]['id']);
             } else {
@@ -268,13 +244,9 @@ class EmployeeController extends Controller
             $employeeSocialMedia->save();
         }
 
+        $deleted = array_column($request->get('contracts'), 'id');
+        EmployeeContract::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
         for ($i = 0; $i < count($request->get('contracts')); $i++) {
-            $deleted = array_column($request->get('contracts'), 'id');
-
-            if ($deleted) {
-                EmployeeContract::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
-            }
-
             if (isset($request->get('contracts')[$i]['id'])) {
                 $employeeContract = EmployeeContract::findOrFail($request->get('contracts')[$i]['id']);
             } else {

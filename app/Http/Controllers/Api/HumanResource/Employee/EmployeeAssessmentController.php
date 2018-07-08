@@ -28,15 +28,15 @@ class EmployeeAssessmentController extends Controller
         $scores = [];
 
         foreach ($kpis as $key => $kpi) {
-            array_push( $dates, date('dMY', strtotime($kpi->date)));
-            array_push( $scores, number_format($kpi->indicators->sum('score_percentage'), 2));
+            array_push($dates, date('dMY', strtotime($kpi->date)));
+            array_push($scores, number_format($kpi->indicators->sum('score_percentage'), 2));
         }
 
         return (new KpiCollection($kpis))
             ->additional([
                 'data_set' => [
                     'dates' => $dates,
-                    'scores' => $scores
+                    'scores' => $scores,
                 ],
             ]);
     }

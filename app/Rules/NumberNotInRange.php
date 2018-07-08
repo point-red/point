@@ -53,18 +53,18 @@ class NumberNotInRange implements Rule
     public function passes($attribute, $value)
     {
         $exists = $this->source::where(function ($q) use ($value) {
-                $q->where(function ($q) use ($value) {
-                    // Find number between range
-                    // For example database has number in range 1 - 20
-                    // Then any number between that number is not allowed
-                    $q->where($this->minColumn, '<=', $value)->where($this->maxColumn, '>=', $value);
-                })->orWhere(function ($q) {
-                    // Find number between range when min value outside range
-                    // For example database has number in range 1 - 20
-                    // Then any number like 0 - 21 is not allowed
-                    $q->where($this->minColumn, '>=', $this->minValue)->where($this->maxColumn, '<=', $this->maxValue);
-                });
+            $q->where(function ($q) use ($value) {
+                // Find number between range
+                // For example database has number in range 1 - 20
+                // Then any number between that number is not allowed
+                $q->where($this->minColumn, '<=', $value)->where($this->maxColumn, '>=', $value);
+            })->orWhere(function ($q) {
+                // Find number between range when min value outside range
+                // For example database has number in range 1 - 20
+                // Then any number like 0 - 21 is not allowed
+                $q->where($this->minColumn, '>=', $this->minValue)->where($this->maxColumn, '<=', $this->maxValue);
             });
+        });
 
         // Check if has ignore id
         // Usually used for update form

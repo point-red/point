@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Kpi\KpiResult;
 use App\Http\Resources\HumanResource\Kpi\KpiResult\KpiResultResource;
 use App\Http\Resources\HumanResource\Kpi\KpiResult\KpiResultCollection;
 use App\Http\Requests\HumanResource\Kpi\KpiResult\StoreKpiResultRequest;
 use App\Http\Requests\HumanResource\Kpi\KpiResult\UpdateKpiResultRequest;
-use Illuminate\Http\Request;
 
 class KpiResultController extends Controller
 {
@@ -71,7 +71,7 @@ class KpiResultController extends Controller
             if (! $kpiResult) {
                 return response()->json([
                     'code' => 422,
-                    'message' => 'Kpi result not found'
+                    'message' => 'Kpi result not found',
                 ], 422);
             }
 
@@ -80,7 +80,7 @@ class KpiResultController extends Controller
 
         return response()->json([
             'code' => 422,
-            'message' => 'Kpi result not found'
+            'message' => 'Kpi result not found',
         ], 422);
     }
 

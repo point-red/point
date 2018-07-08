@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
-use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
 use App\Model\Master\Person;
-use Illuminate\Http\Request;
 use App\Model\Master\PersonEmail;
 use App\Model\Master\PersonPhone;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +15,8 @@ use App\Model\HumanResource\Employee\EmployeeSocialMedia;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 use App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource;
 use App\Http\Resources\HumanResource\Employee\Employee\EmployeeCollection;
+use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
+use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
 
 class EmployeeController extends Controller
 {

@@ -2,7 +2,7 @@
 
 if (! function_exists('log_array')) {
     /**
-     * Get database size
+     * Get database size.
      *
      * @param        $databaseName
      * @param string $connection

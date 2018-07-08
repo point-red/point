@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\HumanResource\Employee\EmployeeTrainingHistory;
 
-use App\Model\HumanResource\Employee\EmployeeTrainingHistory;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use App\Model\HumanResource\Employee\EmployeeTrainingHistory;
 
 class EmployeeTrainingHistoryCollection extends ResourceCollection
 {

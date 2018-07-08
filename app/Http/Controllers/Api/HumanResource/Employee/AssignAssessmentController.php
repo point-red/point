@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource;
-use App\Model\HumanResource\Employee\Employee;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Model\HumanResource\Employee\Employee;
+use App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource;
 
 class AssignAssessmentController extends Controller
 {

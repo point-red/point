@@ -11,6 +11,6 @@ class TenantDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        //
+        $this->call(PermissionSeeder::class);
     }
 }

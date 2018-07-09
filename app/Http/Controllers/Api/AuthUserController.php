@@ -32,6 +32,7 @@ class AuthUserController extends ApiController
                 $userData['data'] = array_merge($userData['data'], [
                     'tenant_code' => $project->code,
                     'tenant_name' => $project->name,
+                    'permissions' => tenant($user->id)->getPermissions(),
                 ]);
             }
         }

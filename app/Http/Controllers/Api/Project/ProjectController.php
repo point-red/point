@@ -20,7 +20,7 @@ class ProjectController extends Controller
     {
         $limit = $request->input('limit') ?? 0;
 
-        return new ProjectCollection(Project::paginate($limit));
+        return new ProjectCollection(Project::where('owner_id', auth()->user()->id)->paginate($limit));
     }
 
     /**

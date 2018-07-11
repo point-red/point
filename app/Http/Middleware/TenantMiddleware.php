@@ -18,8 +18,10 @@ class TenantMiddleware
     {
         if (env('APP_ENV') === 'production') {
             if ($request->header('Tenant')) {
-                config()->set('database.connections.tenant.database', 'point_'.$request->header('Tenant'));
-                DB::connection('tenant')->reconnect();
+                if ($request->header('Tenant') !== 'cloud') {
+                    config()->set('database.connections.tenant.database', 'point_'.$request->header('Tenant'));
+                    DB::connection('tenant')->reconnect();
+                }
             }
         }
 

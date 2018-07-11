@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Master\Person;
 
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePersonRequest extends FormRequest
@@ -24,15 +23,10 @@ class StorePersonRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(Request $request)
+    public function rules()
     {
         return [
-            'name' => [
-                'required',
-                'unique:tenant.persons,name,NULL,id,person_category_id,'.$request->get('person_category_id'),
-            ],
-            'code' => 'unique:tenant.persons,code',
-            'person_category_id' => 'required',
+            //
         ];
     }
 }

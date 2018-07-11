@@ -53,17 +53,13 @@ class SetupTenantDatabase extends Command
 
         // update tenant database name in configuration
         config()->set('database.connections.tenant.database', $tenantSubdomain);
+        DB::connection('tenant')->reconnect();
 
         // migrate database
-        Artisan::call('migrate:refresh', [
+        Artisan::call('migrate', [
             '--database' => 'tenant',
             '--path' => 'database/migrations/tenant',
         ]);
-
-        $tenantSubdomain = $this->argument('tenant_subdomain');
-
-        config()->set('database.connections.tenant.database', $tenantSubdomain);
-        DB::connection('tenant')->reconnect();
 
         // seeding default database for tenant
         Artisan::call('db:seed', [

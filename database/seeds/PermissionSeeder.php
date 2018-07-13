@@ -2,6 +2,7 @@
 
 use App\Model\Auth\Permission;
 use App\Model\Auth\Role;
+use App\Model\Master\User;
 use Illuminate\Database\Seeder;
 
 class PermissionSeeder extends Seeder

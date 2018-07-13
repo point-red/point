@@ -39,10 +39,15 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
-        Artisan::call('tenant:setup-database', [
-            'tenant_subdomain' => 'point_' . strtolower($request->get('code'))
+        // Create new database for tenant project
+        $dbName = 'point_' . strtolower($request->get('code'));
+        Artisan::call('tenant:create-database', [
+            'db_name' => $dbName
         ]);
 
+        // Update tenant database name in configuration
+        config()->set('database.connections.tenant.database', $dbName);
+        DB::connection('tenant')->reconnect();
         DB::connection('tenant')->beginTransaction();
 
         $project = new Project;
@@ -53,6 +58,13 @@ class ProjectController extends Controller
         $project->phone = $request->get('phone');
         $project->save();
 
+        // Migrate database
+        Artisan::call('migrate', [
+            '--database' => 'tenant',
+            '--path' => 'database/migrations/tenant',
+        ]);
+
+        // Clone user point into their database
         $user = new User;
         $user->id = auth()->user()->id;
         $user->name = auth()->user()->name;
@@ -60,9 +72,7 @@ class ProjectController extends Controller
         $user->password = auth()->user()->password;
         $user->save();
 
-        $role = Role::findByName('super admin', 'api');
-
-        $user->assignRole($role);
+        Artisan::call('tenant:setup-database');
 
         DB::connection('tenant')->commit();
 

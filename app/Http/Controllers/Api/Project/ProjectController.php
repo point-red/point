@@ -100,15 +100,12 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, $id)
     {
-        DB::connection('tenant')->beginTransaction();
-
+        // Update tenant database name in configuration
         $project = Project::findOrFail($id);
         $project->name = $request->get('name');
         $project->address = $request->get('address');
         $project->phone = $request->get('phone');
         $project->save();
-
-        DB::connection('tenant')->commit();
 
         return new ProjectResource($project);
     }

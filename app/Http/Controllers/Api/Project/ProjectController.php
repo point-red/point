@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Project;
 use App\Http\Requests\Project\Project\StoreProjectRequest;
 use App\Http\Requests\Project\Project\UpdateProjectRequest;
 use App\Http\Resources\Project\Project\ProjectResource;
-use App\Model\Auth\Role;
 use App\Model\Master\User;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
@@ -126,6 +125,11 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
 
         $project->delete();
+
+        // Delete database tenant
+        Artisan::call('tenant:delete-database', [
+            'db_name' => 'point_' . strtolower($project->code)
+        ]);
 
         return new ProjectResource($project);
     }

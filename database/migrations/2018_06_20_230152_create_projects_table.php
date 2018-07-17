@@ -19,6 +19,7 @@ class CreateProjectsTable extends Migration
             $table->string('name');
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
+            $table->string('vat_id_number')->nullable();
             $table->unsignedInteger('owner_id')->index();
             $table->timestamps();
 

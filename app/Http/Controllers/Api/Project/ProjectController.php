@@ -64,6 +64,7 @@ class ProjectController extends Controller
         $project->name = $request->get('name');
         $project->address = $request->get('address');
         $project->phone = $request->get('phone');
+        $project->vat_id_number = $request->get('vat_id_number');
         $project->save();
 
         // Migrate database
@@ -78,6 +79,10 @@ class ProjectController extends Controller
         $user->name = auth()->user()->name;
         $user->email = auth()->user()->email;
         $user->password = auth()->user()->password;
+        $user->phone_confirmation_code = auth()->user()->phone_confirmation_code;
+        $user->phone_confirmed = auth()->user()->phone_confirmed;
+        $user->email_confirmation_code = auth()->user()->email_confirmation_code;
+        $user->email_confirmed = auth()->user()->email_confirmed;
         $user->save();
 
         Artisan::call('tenant:setup-database');
@@ -114,6 +119,7 @@ class ProjectController extends Controller
         $project->name = $request->get('name');
         $project->address = $request->get('address');
         $project->phone = $request->get('phone');
+        $project->vat_id_number = $request->get('vat_id_number');
         $project->save();
 
         return new ProjectResource($project);

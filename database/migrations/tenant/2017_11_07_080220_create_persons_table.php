@@ -20,13 +20,6 @@ class CreatePersonsTable extends Migration
             $table->string('personal_identity')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
-
-            $table->unsignedInteger('person_group_id')->nullable()->index();
-
-            $table->foreign('person_group_id')
-                ->references('id')->on('person_groups')
-                ->onUpdate('cascade')
-                ->onDelete('restrict');
         });
     }
 

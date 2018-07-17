@@ -44,6 +44,7 @@ class SetupTenantDatabase extends Command
         Artisan::call('db:seed', [
             '--database' => 'tenant',
             '--class' => 'TenantDatabaseSeeder',
+            '--force' => true
         ]);
 
         log_object(Artisan::output());

@@ -50,7 +50,8 @@ class ProjectController extends Controller
         // Create new database for tenant project
         $dbName = 'point_' . strtolower($request->get('code'));
         Artisan::call('tenant:create-database', [
-            'db_name' => $dbName
+            'db_name' => $dbName,
+            '--force' => true
         ]);
 
         // Update tenant database name in configuration
@@ -71,6 +72,7 @@ class ProjectController extends Controller
         Artisan::call('migrate', [
             '--database' => 'tenant',
             '--path' => 'database/migrations/tenant',
+            '--force' => true
         ]);
 
         // Clone user point into their database

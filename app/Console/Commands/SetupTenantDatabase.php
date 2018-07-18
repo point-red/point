@@ -47,8 +47,6 @@ class SetupTenantDatabase extends Command
             '--force' => true
         ]);
 
-        log_object(Artisan::output());
-
         // Default role
         $role = Role::findByName('super admin', 'api');
 

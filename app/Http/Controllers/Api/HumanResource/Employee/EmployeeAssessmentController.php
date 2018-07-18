@@ -57,6 +57,7 @@ class EmployeeAssessmentController extends Controller
 
         $kpi = new Kpi;
         $kpi->name = $template['name'];
+        $kpi->date = $request->get('date');
         $kpi->employee_id = $employeeId;
         $kpi->save();
 

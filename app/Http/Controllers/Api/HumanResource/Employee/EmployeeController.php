@@ -73,10 +73,10 @@ class EmployeeController extends Controller
         $employee->last_education = $request->get('last_education');
         $employee->birth_date = $request->get('birth_date') ? date('Y-m-d', strtotime($request->get('birth_date'))) : null;
         $employee->birth_place = $request->get('birth_place');
-        $employee->gender = $request->get('gender');
-        $employee->marital_status = $request->get('marital_status');
+        $employee->employee_gender_id = $request->get('employee_gender_id');
+        $employee->employee_marital_status_id = $request->get('employee_marital_status_id');
         $employee->married_with = $request->get('married_with');
-        $employee->religion = $request->get('religion');
+        $employee->employee_religion_id = $request->get('employee_religion_id');
         $employee->employee_group_id = $request->get('employee_group_id');
         $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
         $employee->job_title = $request->get('job_title');
@@ -148,10 +148,10 @@ class EmployeeController extends Controller
         $employee->last_education = $request->get('last_education');
         $employee->birth_date = $request->get('birth_date') ? date('Y-m-d', strtotime($request->get('birth_date'))) : null;
         $employee->birth_place = $request->get('birth_place');
-        $employee->gender = $request->get('gender');
-        $employee->marital_status = $request->get('marital_status');
+        $employee->employee_gender_id = $request->get('employee_gender_id');
+        $employee->employee_marital_status_id = $request->get('employee_marital_status_id');
         $employee->married_with = $request->get('married_with');
-        $employee->religion = $request->get('religion');
+        $employee->employee_religion_id = $request->get('employee_religion_id');
         $employee->employee_group_id = $request->get('employee_group_id');
         $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
         $employee->job_title = $request->get('job_title');

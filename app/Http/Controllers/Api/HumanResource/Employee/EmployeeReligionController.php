@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Http\Resources\HumanResource\Employee\EmployeeGroup\EmployeeGroupCollection;
+use App\Http\Resources\HumanResource\Employee\EmployeeReligion\EmployeeReligionCollection;
+use App\Model\HumanResource\Employee\EmployeeReligion;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\HumanResource\Employee\EmployeeGroup;
 
-class EmployeeGroupController extends Controller
+class EmployeeReligionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return new EmployeeGroupCollection(EmployeeGroup::all());
+        return new EmployeeReligionCollection(EmployeeReligion::all());
     }
 
     /**

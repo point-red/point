@@ -12,6 +12,9 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
 
     Route::prefix('employee')->namespace('Employee')->group(function () {
         Route::apiResource('groups', 'EmployeeGroupController');
+        Route::apiResource('religions', 'EmployeeReligionController');
+        Route::apiResource('marital-statuses', 'EmployeeMaritalStatusController');
+        Route::apiResource('genders', 'EmployeeGenderController');
         Route::apiResource('employees', 'EmployeeController');
         Route::post('employees/{employee_id}/assign-assessment', 'AssignAssessmentController@store');
         Route::apiResource('employees/{employee_id}/assessment', 'EmployeeAssessmentController');

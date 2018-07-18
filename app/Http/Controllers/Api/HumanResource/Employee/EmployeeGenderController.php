@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Http\Resources\HumanResource\Employee\EmployeeGroup\EmployeeGroupCollection;
+use App\Http\Resources\HumanResource\Employee\EmployeeGender\EmployeeGenderCollection;
+use App\Model\HumanResource\Employee\EmployeeGender;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\HumanResource\Employee\EmployeeGroup;
 
-class EmployeeGroupController extends Controller
+class EmployeeGenderController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return new EmployeeGroupCollection(EmployeeGroup::all());
+        return new EmployeeGenderCollection(EmployeeGender::all());
     }
 
     /**

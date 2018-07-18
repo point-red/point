@@ -27,6 +27,30 @@ class Employee extends Model
     }
 
     /**
+     * Get the gender that owns the employee.
+     */
+    public function gender()
+    {
+        return $this->belongsTo(get_class(new EmployeeGender()), 'employee_gender_id');
+    }
+
+    /**
+     * Get the religion that owns the employee.
+     */
+    public function religion()
+    {
+        return $this->belongsTo(get_class(new EmployeeReligion()), 'employee_religion_id');
+    }
+
+    /**
+     * Get the gender that owns the employee.
+     */
+    public function maritalStatus()
+    {
+        return $this->belongsTo(get_class(new EmployeeMaritalStatus()), 'employee_marital_status_id');
+    }
+
+    /**
      * Get the emails for the employee.
      */
     public function companyEmails()

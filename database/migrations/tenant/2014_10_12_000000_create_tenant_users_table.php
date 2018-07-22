@@ -19,11 +19,6 @@ class CreateTenantUsersTable extends Migration
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->unique();
-            $table->string('phone_confirmation_code')->nullable();
-            $table->boolean('phone_confirmed')->default(false);
-            $table->string('email_confirmation_code');
-            $table->boolean('email_confirmed')->default(false);
-            $table->rememberToken();
             $table->timestamps();
         });
     }

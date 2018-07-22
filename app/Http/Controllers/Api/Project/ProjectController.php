@@ -79,10 +79,6 @@ class ProjectController extends Controller
         $user->id = auth()->user()->id;
         $user->name = auth()->user()->name;
         $user->email = auth()->user()->email;
-        $user->phone_confirmation_code = auth()->user()->phone_confirmation_code;
-        $user->phone_confirmed = auth()->user()->phone_confirmed;
-        $user->email_confirmation_code = auth()->user()->email_confirmation_code;
-        $user->email_confirmed = auth()->user()->email_confirmed;
         $user->save();
 
         Artisan::call('tenant:setup-database');

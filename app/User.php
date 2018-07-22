@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Model\Project\Project;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -12,6 +13,14 @@ class User extends Authenticatable
     protected $connection = 'mysql';
 
     use Notifiable, HasApiTokens, HasRoles;
+
+    /**
+     * The users that belong to the project.
+     */
+    public function projects()
+    {
+        return $this->belongsToMany(new Project());
+    }
 
     /**
      * The attributes that are mass assignable.

@@ -16,4 +16,12 @@ class Project extends Model
     {
         return $this->belongsTo(get_class(new User()), 'owner_id');
     }
+
+    /**
+     * The users that belong to the project.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(new User());
+    }
 }

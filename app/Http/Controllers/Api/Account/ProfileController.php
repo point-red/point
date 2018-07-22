@@ -53,7 +53,6 @@ class ProfileController extends Controller
     public function update(UpdateProfileRequest $request, $id)
     {
         DB::beginTransaction();
-        DB::connection('tenant')->beginTransaction();
 
         $user = User::findOrFail($id);
         $user->name = $request->get('name');
@@ -65,6 +64,7 @@ class ProfileController extends Controller
         foreach ($user->projects as $project) {
             config()->set('database.connections.tenant.database', 'point_'.$project->code);
             DB::connection('tenant')->reconnect();
+            DB::connection('tenant')->beginTransaction();
 
             $tenantUser = \App\Model\Master\User::where('id', $user->id)->first();
             if ($tenantUser) {
@@ -76,10 +76,10 @@ class ProfileController extends Controller
                 $tenantUser->phone = $user->phone;
                 $tenantUser->save();
             }
+            DB::connection('tenant')->commit();
         }
 
         DB::commit();
-        DB::connection('tenant')->commit();
     }
 
     /**

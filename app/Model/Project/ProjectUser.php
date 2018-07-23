@@ -9,6 +9,8 @@ class ProjectUser extends Model
 {
     protected $connection = 'mysql';
 
+    protected $table = 'project_user';
+
     /**
      * Get the user that invited to the project.
      */

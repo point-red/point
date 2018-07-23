@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\User;
+use App\Model\Master\User as TenantUser;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Resources\Master\User\UserResource;
@@ -23,7 +23,7 @@ class UserController extends ApiController
     {
         $limit = $request->input('limit') ?? 0;
 
-        return new UserCollection(User::paginate($limit));
+        return new UserCollection(TenantUser::paginate($limit));
     }
 
     /**
@@ -35,13 +35,13 @@ class UserController extends ApiController
      */
     public function store(StoreUserRequest $request)
     {
-        $user = new User;
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = bcrypt($request->password);
-        $user->save();
+        $tenantUser = new TenantUser;
+        $tenantUser->name = $request->name;
+        $tenantUser->email = $request->email;
+        $tenantUser->password = bcrypt($request->password);
+        $tenantUser->save();
 
-        return new UserResource($user);
+        return new UserResource($tenantUser);
     }
 
     /**
@@ -53,7 +53,7 @@ class UserController extends ApiController
      */
     public function show($id)
     {
-        return new UserResource(User::findOrFail($id));
+        return new UserResource(TenantUser::findOrFail($id));
     }
 
     /**
@@ -66,12 +66,12 @@ class UserController extends ApiController
      */
     public function update(UpdateUserRequest $request, $id)
     {
-        $user = User::findOrFail($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->save();
+        $tenantUser = TenantUser::findOrFail($id);
+        $tenantUser->name = $request->name;
+        $tenantUser->email = $request->email;
+        $tenantUser->save();
 
-        return new UserResource($user);
+        return new UserResource($tenantUser);
     }
 
     /**
@@ -82,7 +82,7 @@ class UserController extends ApiController
      */
     public function destroy($id)
     {
-        User::findOrFail($id)->delete();
+        TenantUser::findOrFail($id)->delete();
 
         return response(null, 204);
     }

@@ -17,7 +17,8 @@ class CreateProjectUserTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('project_id')->index();
             $table->unsignedInteger('user_id')->nullable()->index();
-            $table->string('user_email')->nullable();
+            $table->string('user_name');
+            $table->string('user_email');
             // After user invite other user inside a project, invited user need to confirm to join this project
             // false : user invited into this project
             // true : user confirm to join this project

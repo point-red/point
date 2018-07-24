@@ -6,6 +6,7 @@ use App\Http\Requests\Project\Project\StoreProjectRequest;
 use App\Http\Requests\Project\Project\UpdateProjectRequest;
 use App\Http\Resources\Project\Project\ProjectResource;
 use App\Model\Master\User;
+use App\Model\Project\ProjectUser;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
@@ -66,6 +67,14 @@ class ProjectController extends Controller
         $project->phone = $request->get('phone');
         $project->vat_id_number = $request->get('vat_id_number');
         $project->save();
+
+        $projectUser = new ProjectUser;
+        $projectUser->project_id = $project->id;
+        $projectUser->user_id = $project->owner_id;
+        $projectUser->user_name = $project->owner->name;
+        $projectUser->user_email = $project->owner->email;
+        $projectUser->joined = true;
+        $projectUser->save();
 
         // Migrate database
         Artisan::call('migrate', [

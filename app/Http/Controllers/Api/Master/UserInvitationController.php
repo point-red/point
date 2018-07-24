@@ -39,15 +39,15 @@ class UserInvitationController extends Controller
     public function store(StoreUserInvitationRequest $request)
     {
         // Check if invited user already registered
-        $user = User::where('email', $request->get('email'))->first();
+        $user = User::where('email', $request->get('user_email'))->first();
         $project = Project::where('code', $request->header('Tenant'))->first();
         if ($user) {
             // If user registered
             $projectUser = new ProjectUser;
             $projectUser->project_id = $project->id;
             $projectUser->user_id = $user->id;
-            $projectUser->user_name = $request->get('name');
-            $projectUser->user_email = $request->get('email');
+            $projectUser->user_name = $request->get('user_name');
+            $projectUser->user_email = $request->get('user_email');
             $projectUser->joined = false;
             $projectUser->save();
         } else {
@@ -55,8 +55,8 @@ class UserInvitationController extends Controller
             $projectUser = new ProjectUser;
             $projectUser->project_id = $project->id;
             $projectUser->user_id = null;
-            $projectUser->user_name = $request->get('name');
-            $projectUser->user_email = $request->get('email');
+            $projectUser->user_name = $request->get('user_name');
+            $projectUser->user_email = $request->get('user_email');
             $projectUser->joined = false;
             $projectUser->save();
         }
@@ -80,11 +80,16 @@ class UserInvitationController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Master\UserInvitation\UserInvitationResource
      */
     public function update(Request $request, $id)
     {
-        //
+        $projectUser = ProjectUser::findOrFail($id);
+        $projectUser->joined = true;
+        $projectUser->save();
+
+        return new UserInvitationResource($projectUser);
     }
 
     /**

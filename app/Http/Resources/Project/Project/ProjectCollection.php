@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Project\Project;
 
+use App\Model\Project\Project;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class ProjectCollection extends ResourceCollection
@@ -14,6 +15,10 @@ class ProjectCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+        $this->collection->transform(function (Project $project) {
+            return new ProjectResource($project);
+        });
+
         return parent::toArray($request);
     }
 }

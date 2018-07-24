@@ -25,7 +25,7 @@ class StoreUserInvitationRequest extends FormRequest
     {
         return [
             'user_name' => 'required',
-            'user_email' => 'required|email|max:255|unique:project_user',
+            'user_email' => 'required|email|max:255',
         ];
     }
 }

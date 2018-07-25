@@ -14,6 +14,12 @@ class ChartOfAccountResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'type' => new ChartOfAccountTypeResource($this->type),
+            'group' => new ChartOfAccountGroupResource($this->group),
+            'number' => $this->number,
+            'name' => $this->name,
+            'alias' => $this->alias,
+        ];
     }
 }

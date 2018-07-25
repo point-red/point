@@ -2,41 +2,32 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountCollection;
-use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource;
-use App\Model\Accounting\ChartOfAccount;
+use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountTypeCollection;
+use App\Model\Accounting\ChartOfAccountType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class ChartOfAccountController extends Controller
+class ChartOfAccountTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountCollection
+     * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountTypeCollection
      */
     public function index()
     {
-        return new ChartOfAccountCollection(ChartOfAccount::orderBy('type_id')->orderBy('alias')->get());
+        return new ChartOfAccountTypeCollection(ChartOfAccountType::all());
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     *
-     * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $chartOfAccount = new ChartOfAccount;
-        $chartOfAccount->type_id = $request->get('type_id');
-        $chartOfAccount->number = $request->get('number') ?? null;
-        $chartOfAccount->name = $request->get('name');
-        $chartOfAccount->alias = $request->get('name');
-        $chartOfAccount->save();
-
-        return new ChartOfAccountResource($chartOfAccount);
+        //
     }
 
     /**

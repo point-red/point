@@ -20,6 +20,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         require base_path('routes/api/account.php');
         require base_path('routes/api/project.php');
         require base_path('routes/api/master.php');
+        require base_path('routes/api/accounting.php');
         require base_path('routes/api/human-resource.php');
     });
 });

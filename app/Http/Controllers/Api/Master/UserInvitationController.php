@@ -24,7 +24,7 @@ class UserInvitationController extends Controller
     {
         $project = Project::where('code', $request->header('Tenant'))->first();
 
-        $projectUsers = ProjectUser::where('project_id', $project->id)->get();
+        $projectUsers = ProjectUser::where('project_id', $project->id)->where('joined', false)->get();
 
         return new UserInvitationCollection($projectUsers);
     }
@@ -88,6 +88,16 @@ class UserInvitationController extends Controller
         $projectUser = ProjectUser::findOrFail($id);
         $projectUser->joined = true;
         $projectUser->save();
+
+        $user = User::findOrFail($request->get('user_id'));
+
+        $tenantUser = new \App\Model\Master\User;
+        $tenantUser->id = $user->id;
+        $tenantUser->name = $user->name;
+        $tenantUser->email = $user->email;
+        $tenantUser->address = $user->address;
+        $tenantUser->phone = $user->phone;
+        $tenantUser->save();
 
         return new UserInvitationResource($projectUser);
     }

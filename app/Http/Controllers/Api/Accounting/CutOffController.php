@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
+use App\Http\Resources\Accounting\CutOff\CutOffCollection;
 use App\Http\Resources\Accounting\CutOff\CutOffResource;
 use App\Model\Accounting\CutOff;
 use App\Model\Accounting\CutOffDetail;
@@ -15,11 +16,11 @@ class CutOffController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\Accounting\CutOff\CutOffCollection
      */
     public function index()
     {
-        //
+        return new CutOffCollection(CutOff::all());
     }
 
     /**
@@ -47,8 +48,8 @@ class CutOffController extends Controller
             $cutOffDetail = new CutOffDetail;
             $cutOffDetail->cut_off_id = $cutOff->id;
             $cutOffDetail->chart_of_account_id = $request->get('details')[$i]['id'];
-            $cutOffDetail->debit = $request->get('details')[$i]['debit'];
-            $cutOffDetail->credit = $request->get('details')[$i]['credit'];
+            $cutOffDetail->debit = $request->get('details')[$i]['debit'] ?? 0;
+            $cutOffDetail->credit = $request->get('details')[$i]['credit'] ?? 0;
             $cutOffDetail->save();
 
             $journal = new Journal;

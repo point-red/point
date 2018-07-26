@@ -18,8 +18,8 @@ class CreateChartOfAccountsTable extends Migration
             $table->unsignedInteger('type_id')->index();
             $table->unsignedInteger('group_id')->nullable()->index();
             $table->string('number', 20)->nullable()->unique();
-            $table->string('name')->unique();
-            $table->string('alias')->unique();
+            $table->string('name');
+            $table->string('alias');
             $table->timestamps();
 
             $table->foreign('type_id')

@@ -17,7 +17,7 @@ class ChartOfAccountController extends Controller
      */
     public function index()
     {
-        return new ChartOfAccountCollection(ChartOfAccount::orderBy('type_id')->orderBy('alias')->get());
+        return new ChartOfAccountCollection(ChartOfAccount::orderBy('type_id')->orderBy('number')->orderBy('alias')->get());
     }
 
     /**
@@ -55,21 +55,34 @@ class ChartOfAccountController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource
      */
     public function update(Request $request, $id)
     {
-        //
+        $chartOfAccount = ChartOfAccount::findOrFail($id);
+        $chartOfAccount->type_id = $request->get('type_id');
+        $chartOfAccount->number = $request->get('number') ?? null;
+        $chartOfAccount->name = $request->get('name');
+        $chartOfAccount->alias = $request->get('name');
+        $chartOfAccount->save();
+
+        return new ChartOfAccountResource($chartOfAccount);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource
      */
     public function destroy($id)
     {
-        //
+        $chartOfAccount = ChartOfAccount::findOrFail($id);
+
+        $chartOfAccount->delete();
+
+        return new ChartOfAccountResource($chartOfAccount);
     }
 }

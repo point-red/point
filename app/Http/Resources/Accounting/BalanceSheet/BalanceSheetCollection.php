@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Accounting\BalanceSheet;
 
+use App\Model\Accounting\ChartOfAccount;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class BalanceSheetCollection extends ResourceCollection
@@ -14,6 +15,10 @@ class BalanceSheetCollection extends ResourceCollection
      */
     public function toArray($request)
     {
+        $this->collection->transform(function (ChartOfAccount $chartOfAccount) {
+            return new BalanceSheetResource($chartOfAccount);
+        });
+
         return parent::toArray($request);
     }
 }

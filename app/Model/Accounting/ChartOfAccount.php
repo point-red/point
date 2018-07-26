@@ -25,4 +25,28 @@ class ChartOfAccount extends Model
     {
         return $this->belongsTo(get_class(new ChartOfAccountGroup()), 'group_id');
     }
+
+    public function journals()
+    {
+        return $this->hasMany(get_class(new Journal()), 'chart_of_account_id');
+    }
+
+    public function totalDebit()
+    {
+        return $this->journals()->sum('debit');
+    }
+
+    public function totalCredit()
+    {
+        return $this->journals()->sum('credit');
+    }
+
+    public function total()
+    {
+        if ($this->type->is_debit) {
+            return $this->totalDebit() - $this->totalCredit();
+        }
+
+        return $this->totalCredit() - $this->totalDebit();
+    }
 }

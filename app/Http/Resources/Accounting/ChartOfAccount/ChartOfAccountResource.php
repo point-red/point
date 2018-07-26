@@ -15,11 +15,14 @@ class ChartOfAccountResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id' => $this->id,
             'type' => new ChartOfAccountTypeResource($this->type),
             'group' => new ChartOfAccountGroupResource($this->group),
             'number' => $this->number,
             'name' => $this->name,
             'alias' => $this->alias,
+            'debit' => 0,
+            'credit' => 0,
         ];
     }
 }

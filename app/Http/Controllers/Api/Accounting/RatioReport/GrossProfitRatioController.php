@@ -6,7 +6,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class CashRatioController extends Controller
+class GrossProfitRatioController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,11 +17,8 @@ class CashRatioController extends Controller
      */
     public function index(Request $request)
     {
-        $currentAssets = ['cash', 'bank', 'cheque', 'inventory', 'account receivable', 'other account receivable'];
-        $otherAssets = ['fixed asset', 'other asset'];
-        $cashEquivalent = ['cash', 'bank', 'cheque'];
-        $accountReceivable = ['account receivable', 'other account receivable'];
-        $currentLiability = ['current liability', 'other current liability'];
+        $currentAssets = ['sales income'];
+        $currentLiability = ['cost of sales'];
 
         $dateFrom = date('Y-m-d 00:00:00', strtotime($request->get('date_from')));
         $dateTo = date('Y-m-d 00:00:00', strtotime($request->get('date_to')));
@@ -33,10 +30,13 @@ class CashRatioController extends Controller
         $values = [];
         $labels = [];
         for ($i = 0; $i < $months; $i++) {
+            log_object('a'.$date);
+
+            log_object('b'.$date);
             array_push($labels, date('M Y', strtotime($date)));
 
             $chartOfAccountIds = \App\Model\Accounting\ChartOfAccount::join('chart_of_account_types', 'chart_of_accounts.type_id', '=', 'chart_of_account_types.id')
-                ->whereIn('chart_of_account_types.name', $cashEquivalent)
+                ->whereIn('chart_of_account_types.name', $currentAssets)
                 ->select('chart_of_accounts.*')
                 ->pluck('id');
             $totalCurrentAsset = \App\Model\Accounting\Journal::whereIn('chart_of_account_id', $chartOfAccountIds)
@@ -65,8 +65,8 @@ class CashRatioController extends Controller
 
         return response()->json([
             'data' => [
-                'description' => 'berapa kekuatan perusahaan untuk membayar hutang jangka pendek menggunakan saldo kas/setara kas yang dimiliki?',
-                'result' => 'rasio untuk mengukur kemampuan perusahaan dalam membayar kewajiban finansial jangka pendek dengan mengunakan kas dan setara kas yang tersedia, nilai ideal adalah 150%',
+                'description' => 'rasio untuk mengukur kemampuan perusahaan dalam mendapatkan laba kotor dari penjualan. (semakin tinggi semakin baik)',
+                'result' => '',
                 'labels' => $labels,
                 'values' => $values
             ]

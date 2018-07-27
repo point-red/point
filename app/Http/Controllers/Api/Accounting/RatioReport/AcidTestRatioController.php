@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Accounting\RatioReport;
 
+use DateTime;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -10,9 +11,11 @@ class AcidTestRatioController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $currentAssets = ['cash', 'bank', 'cheque', 'inventory', 'account receivable', 'other account receivable'];
         $otherAssets = ['fixed asset', 'other asset'];
@@ -63,7 +66,7 @@ class AcidTestRatioController extends Controller
         return response()->json([
             'data' => [
                 'description' => 'berapa kekuatan perusahaan untuk membayar hutang jangka pendek menggunakan aset yang siap diuangkan?',
-                'result' => 'rasio untuk mengukur kemampuan perusahaan dalam membayar kewajiban finansial jangka pendek dengan mengunakan asset lancar yang lebih likuid (Liquid Assets), nilai ideal adalah 150%		',
+                'result' => 'rasio untuk mengukur kemampuan perusahaan dalam membayar kewajiban finansial jangka pendek dengan mengunakan asset lancar yang lebih likuid (Liquid Assets), nilai ideal adalah 150%',
                 'labels' => $labels,
                 'values' => $values
             ]

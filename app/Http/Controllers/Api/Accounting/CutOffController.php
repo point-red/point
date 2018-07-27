@@ -71,11 +71,12 @@ class CutOffController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Accounting\CutOff\CutOffResource
      */
     public function show($id)
     {
-        //
+        return new CutOffResource(CutOff::findOrFail($id));
     }
 
     /**

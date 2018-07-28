@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Accounting\RatioReport;
 
-use App\Helpers\Ratio\InventoryTurnOver;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Helpers\Ratio\InventoryTurnOver;
 
 class InventoryTurnOverController extends Controller
 {
@@ -18,6 +18,7 @@ class InventoryTurnOverController extends Controller
     public function index(Request $request)
     {
         $ratio = new InventoryTurnOver();
+
         return $ratio->get($request->get('date_from'), $request->get('date_to'));
     }
 }

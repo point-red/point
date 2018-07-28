@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use App\Http\Resources\Accounting\CutOff\CutOffCollection;
-use App\Http\Resources\Accounting\CutOff\CutOffResource;
-use App\Model\Accounting\CutOff;
-use App\Model\Accounting\CutOffDetail;
-use App\Model\Accounting\Journal;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Model\Accounting\CutOff;
+use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Model\Accounting\CutOffDetail;
+use App\Http\Resources\Accounting\CutOff\CutOffResource;
+use App\Http\Resources\Accounting\CutOff\CutOffCollection;
 
 class CutOffController extends Controller
 {
@@ -40,11 +40,11 @@ class CutOffController extends Controller
 
         $cutOff = new CutOff;
         $cutOff->date = $request->get('date');
-        $cutOff->code = 'CUTOFF/' . date('ym', strtotime($request->get('date'))) . '/' . sprintf("%04d", ++$increment);
+        $cutOff->code = 'CUTOFF/'.date('ym', strtotime($request->get('date'))).'/'.sprintf('%04d', ++$increment);
         $cutOff->save();
 
         $details = $request->get('details');
-        for($i = 0; $i < count($details); $i++) {
+        for ($i = 0; $i < count($details); $i++) {
             $cutOffDetail = new CutOffDetail;
             $cutOffDetail->cut_off_id = $cutOff->id;
             $cutOffDetail->chart_of_account_id = $request->get('details')[$i]['id'];

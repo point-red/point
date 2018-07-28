@@ -2,9 +2,9 @@
 
 namespace App\Helpers;
 
-use App\Model\Accounting\ChartOfAccount;
-use App\Model\Accounting\Journal;
 use DateTime;
+use App\Model\Accounting\Journal;
+use App\Model\Accounting\ChartOfAccount;
 
 class RatioHelper
 {
@@ -35,17 +35,19 @@ class RatioHelper
 
     /**
      * Current Asset
-     * CURRENT ASSET / CURRENT LIABILITY
+     * CURRENT ASSET / CURRENT LIABILITY.
      *
      * @param $date
      *
      * @return float|int
      */
-    public function getCurrentAsset($date) {
+    public function getCurrentAsset($date)
+    {
         return $this->calculate($this->getTotal($this->currentAssets, $date), $this->getTotal($this->currentLiability, $date));
     }
 
-    private function getRatio($dateFrom, $dateTo) {
+    private function getRatio($dateFrom, $dateTo)
+    {
         $date = date('Y-m-d 23:59:59', strtotime($dateFrom));
         $dateTimeFrom = new Datetime($dateFrom);
         $dateTimeTo = new DateTime($dateTo);
@@ -57,7 +59,7 @@ class RatioHelper
             array_push($labels, date('M Y', strtotime($date)));
             array_push($values, $this->calculate(1, 1));
 
-            $date = date('Y-m-d', strtotime($date . ' +1 Months'));
+            $date = date('Y-m-d', strtotime($date.' +1 Months'));
         }
 
         return response()->json([
@@ -65,12 +67,13 @@ class RatioHelper
                 'description' => '',
                 'result' => '',
                 'labels' => $labels,
-                'values' => $values
-            ]
+                'values' => $values,
+            ],
         ]);
     }
 
-    private function calculate($a, $b) {
+    private function calculate($a, $b)
+    {
         if ($a == 0 || $b == 0) {
             return 0;
         }
@@ -78,7 +81,8 @@ class RatioHelper
         return $a / $b;
     }
 
-    private function getTotal($accountType, $date) {
+    private function getTotal($accountType, $date)
+    {
         $ids = ChartOfAccount::join('chart_of_account_types', 'chart_of_accounts.type_id', '=', 'chart_of_account_types.id')
             ->whereIn('chart_of_account_types.name', $accountType)
             ->select('chart_of_accounts.*')

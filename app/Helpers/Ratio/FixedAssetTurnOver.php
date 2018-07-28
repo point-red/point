@@ -6,7 +6,8 @@ class FixedAssetTurnOver extends Ratio implements RatioContract
 {
     private $description = 'rasio ini berguna untuk mengevaluasi seberapa besar tingkat kemampuan perusahaan dalam memanfaatkan aktivatetap yang dimiliki secara efisien dalam rangka meningkatkan pendapatan';
 
-    public function get($dateFrom, $dateTo) {
+    public function get($dateFrom, $dateTo)
+    {
         $date = $dateFrom;
 
         $months = $this->getTotalMonth($dateFrom, $dateTo);
@@ -27,8 +28,8 @@ class FixedAssetTurnOver extends Ratio implements RatioContract
                 'description' => $this->description,
                 'result' => '',
                 'labels' => $labels,
-                'values' => $values
-            ]
+                'values' => $values,
+            ],
         ]);
     }
 }

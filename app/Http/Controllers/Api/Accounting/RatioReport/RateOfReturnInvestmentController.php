@@ -17,6 +17,7 @@ class RateOfReturnInvestmentController extends Controller
     public function index(Request $request)
     {
         $ratio = new \App\Helpers\Ratio\RateOfReturnInvestment();
+
         return $ratio->get($request->get('date_from'), $request->get('date_to'));
     }
 }

@@ -19,7 +19,7 @@ class UserInvitationResource extends JsonResource
             'user_id' => $this->user_id,
             'user_email' => $this->user_email,
             'user_name' => $this->user_name,
-            'joined' => $this->joined
+            'joined' => $this->joined,
         ];
     }
 }

@@ -24,9 +24,10 @@ class UpdateProjectRequest extends FormRequest
     public function rules()
     {
         info($this->id);
+
         return [
             'code' => 'required|unique:projects,code,'.$this->id,
-            'name' => 'required|unique:projects,name,'.$this->id
+            'name' => 'required|unique:projects,name,'.$this->id,
         ];
     }
 }

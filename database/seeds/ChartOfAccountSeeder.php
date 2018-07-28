@@ -1,8 +1,8 @@
 <?php
 
+use Illuminate\Database\Seeder;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
-use Illuminate\Database\Seeder;
 
 class ChartOfAccountSeeder extends Seeder
 {
@@ -27,7 +27,7 @@ class ChartOfAccountSeeder extends Seeder
             'account receivable',
             'other account receivable',
             'fixed asset',
-            'other asset'
+            'other asset',
         ];
 
         $assetsAlias = [
@@ -38,7 +38,7 @@ class ChartOfAccountSeeder extends Seeder
             'piutang usaha',
             'piutang lain lain',
             'aset tetap',
-            'aset lain lain'
+            'aset lain lain',
         ];
 
         $liabilities = [
@@ -141,7 +141,7 @@ class ChartOfAccountSeeder extends Seeder
         $cheque = ['wesel tagih'];
         $chequeNumber = ['10301'];
 
-        $inventory = [ 'sediaan bahan baku', 'sediaan bahan pembantu', 'sediaan barang dalam proses', 'sediaan barang jadi (manufaktur)', 'sediaan dalam perjalanan', 'sediaan lain-lain'];
+        $inventory = ['sediaan bahan baku', 'sediaan bahan pembantu', 'sediaan barang dalam proses', 'sediaan barang jadi (manufaktur)', 'sediaan dalam perjalanan', 'sediaan lain-lain'];
         $inventoryNumber = ['10601', '10602', '10603', '10604', '10605', '10699'];
 
         $accountReceivable = ['piutang usaha'];

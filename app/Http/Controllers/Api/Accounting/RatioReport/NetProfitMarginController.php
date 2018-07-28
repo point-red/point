@@ -30,9 +30,9 @@ class NetProfitMarginController extends Controller
         $values = [];
         $labels = [];
         for ($i = 0; $i < $months; $i++) {
-            log_object('a' . $date);
+            log_object('a'.$date);
 
-            log_object('b' . $date);
+            log_object('b'.$date);
             array_push($labels, date('M Y', strtotime($date)));
 
             $chartOfAccountIds = \App\Model\Accounting\ChartOfAccount::join('chart_of_account_types',
@@ -62,7 +62,7 @@ class NetProfitMarginController extends Controller
                 array_push($values, $value);
             }
 
-            $date = date('Y-m-d 23:59:59', strtotime($date . ' +1 Months'));
+            $date = date('Y-m-d 23:59:59', strtotime($date.' +1 Months'));
         }
 
         return response()->json([
@@ -70,8 +70,8 @@ class NetProfitMarginController extends Controller
                 'description' => 'rasio untuk mengukur kemampuan perusahaan dalam mendapatkan laba bersih dari penjualan (semakin tinggi semakin baik)',
                 'result' => '',
                 'labels' => $labels,
-                'values' => $values
-            ]
+                'values' => $values,
+            ],
         ]);
     }
 }

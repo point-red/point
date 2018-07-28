@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use App\Http\Requests\Project\Project\StoreProjectRequest;
-use App\Http\Requests\Project\Project\UpdateProjectRequest;
-use App\Http\Resources\Project\Project\ProjectResource;
 use App\Model\Master\User;
-use App\Model\Project\ProjectUser;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Project\Project\ProjectCollection;
-use Illuminate\Support\Facades\Artisan;
+use App\Model\Project\ProjectUser;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Artisan;
+use App\Http\Resources\Project\Project\ProjectResource;
+use App\Http\Resources\Project\Project\ProjectCollection;
+use App\Http\Requests\Project\Project\StoreProjectRequest;
+use App\Http\Requests\Project\Project\UpdateProjectRequest;
 
 class ProjectController extends Controller
 {
@@ -49,14 +49,14 @@ class ProjectController extends Controller
         if ($numberOfProject > 1) {
             return response()->json([
                 'code' => 422,
-                'message' => 'Beta user only allowed to create 1 project'
+                'message' => 'Beta user only allowed to create 1 project',
             ], 422);
         }
 
         // Create new database for tenant project
-        $dbName = 'point_' . strtolower($request->get('code'));
+        $dbName = 'point_'.strtolower($request->get('code'));
         Artisan::call('tenant:create-database', [
-            'db_name' => $dbName
+            'db_name' => $dbName,
         ]);
 
         // Update tenant database name in configuration
@@ -85,7 +85,7 @@ class ProjectController extends Controller
         Artisan::call('migrate', [
             '--database' => 'tenant',
             '--path' => 'database/migrations/tenant',
-            '--force' => true
+            '--force' => true,
         ]);
 
         // Clone user point into their database
@@ -150,7 +150,7 @@ class ProjectController extends Controller
 
         // Delete database tenant
         Artisan::call('tenant:delete-database', [
-            'db_name' => 'point_' . strtolower($project->code)
+            'db_name' => 'point_'.strtolower($project->code),
         ]);
 
         return new ProjectResource($project);

@@ -1,9 +1,9 @@
 <?php
 
-use App\Model\HumanResource\Employee\EmployeeGender;
-use App\Model\HumanResource\Employee\EmployeeMaritalStatus;
-use App\Model\HumanResource\Employee\EmployeeReligion;
 use Illuminate\Database\Seeder;
+use App\Model\HumanResource\Employee\EmployeeGender;
+use App\Model\HumanResource\Employee\EmployeeReligion;
+use App\Model\HumanResource\Employee\EmployeeMaritalStatus;
 
 class EmployeeSeeder extends Seeder
 {

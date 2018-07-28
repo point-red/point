@@ -2,7 +2,7 @@
 
 namespace App\Helpers\Ratio;
 
-class AverageCollectionPeriodTurnOver extends Ratio implements RatioContract
+class AverageCollectionPeriodRatio extends Ratio implements RatioContract
 {
     private $description = 'rasio untuk mengukur  berapa lama waktu yang dibutuhkan oleh perusahaan dalam menerima pelunasan dari konsumen.';
 

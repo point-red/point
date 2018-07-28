@@ -17,7 +17,7 @@ class CashRatioController extends Controller
      */
     public function index(Request $request)
     {
-        $cashRatio = new CashRatio();
-        return $cashRatio->get($request->get('date_from'), $request->get('date_to'));
+        $ratio = new CashRatio();
+        return $ratio->get($request->get('date_from'), $request->get('date_to'));
     }
 }

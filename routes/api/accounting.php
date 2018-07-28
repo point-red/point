@@ -14,9 +14,9 @@ Route::prefix('accounting')->namespace('Accounting')->group(function () {
         // Profitability Ratio
         Route::get('gross-profit-ratios', 'GrossProfitRatioController@index');
         Route::get('net-profit-margins', 'NetProfitMarginController@index');
-        Route::get('net-earning-power-ratios', 'NetEarningPowerRatioController@index');
+        Route::get('rate-of-return-investment', 'RateOfReturnInvestmentController@index');
         Route::get('return-on-equities', 'ReturnOnEquityController@index');
-        Route::get('rate-of-return-on-net-worths', 'RateOfReturnOnNetWorthController@index');
+        Route::get('rate-of-return-on-net-worth', 'RateOfReturnOnNetWorthController@index');
         // Leverage Ratio
         Route::get('total-debt-to-asset-ratios', 'TotalDebtToAssetRatioController@index');
         Route::get('total-debt-to-equity-ratios', 'TotalDebtToEquityRatioController@index');

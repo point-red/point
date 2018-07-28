@@ -17,7 +17,7 @@ class AcidTestRatioController extends Controller
      */
     public function index(Request $request)
     {
-        $acidTestRatio = new AcidTestRatio();
-        return $acidTestRatio->get($request->get('date_from'), $request->get('date_to'));
+        $ratio = new AcidTestRatio();
+        return $ratio->get($request->get('date_from'), $request->get('date_to'));
     }
 }

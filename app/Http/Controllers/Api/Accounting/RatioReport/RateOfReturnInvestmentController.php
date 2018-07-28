@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api\Accounting\RatioReport;
 
-use App\Helpers\Ratio\TotalDebtToEquityRatio;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class TotalDebtToEquityRatioController extends Controller
+class RateOfReturnInvestmentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +16,7 @@ class TotalDebtToEquityRatioController extends Controller
      */
     public function index(Request $request)
     {
-        $ratio = new TotalDebtToEquityRatio();
+        $ratio = new \App\Helpers\Ratio\RateOfReturnInvestment();
         return $ratio->get($request->get('date_from'), $request->get('date_to'));
     }
 }

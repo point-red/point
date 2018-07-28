@@ -17,7 +17,7 @@ class CurrentRatioController extends Controller
      */
     public function index(Request $request)
     {
-        $currentRatio = new CurrentRatio();
-        return $currentRatio->get($request->get('date_from'), $request->get('date_to'));
+        $ratio = new CurrentRatio();
+        return $ratio->get($request->get('date_from'), $request->get('date_to'));
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Accounting\RatioReport;
 
-use App\Helpers\Ratio\ReturnOfEquity;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Helpers\Ratio\ReturnOfEquity;
 
 class ReturnOnEquityController extends Controller
 {
@@ -18,6 +18,7 @@ class ReturnOnEquityController extends Controller
     public function index(Request $request)
     {
         $ratio = new ReturnOfEquity();
+
         return $ratio->get($request->get('date_from'), $request->get('date_to'));
     }
 }

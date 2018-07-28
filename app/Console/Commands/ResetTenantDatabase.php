@@ -5,8 +5,8 @@ namespace App\Console\Commands;
 use App\Model\Master\User;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class ResetTenantDatabase extends Command
 {
@@ -44,10 +44,10 @@ class ResetTenantDatabase extends Command
         $project = Project::where('code', $this->argument('project'))->first();
 
         // Recreate new database for tenant project
-        $databaseName = 'point_' . $project->code;
+        $databaseName = 'point_'.$project->code;
 
         Artisan::call('tenant:create-database', [
-            'db_name' => $databaseName
+            'db_name' => $databaseName,
         ]);
 
         // Update tenant database name in configuration
@@ -58,7 +58,7 @@ class ResetTenantDatabase extends Command
         Artisan::call('migrate', [
             '--database' => 'tenant',
             '--path' => 'database/migrations/tenant',
-            '--force' => true
+            '--force' => true,
         ]);
 
         info('database migrated');

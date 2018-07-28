@@ -17,7 +17,7 @@ class CutOffResource extends JsonResource
         $resource = array_merge(parent::toArray($request), [
             'details' => new CutOffDetailCollection($this->details),
             'totalDebit' => $this->details->sum('debit'),
-            'totalCredit' => $this->details->sum('credit')
+            'totalCredit' => $this->details->sum('credit'),
         ]);
 
         return $resource;

@@ -2,9 +2,9 @@
 
 namespace App\Helpers\Ratio;
 
-use App\Model\Accounting\ChartOfAccount;
-use App\Model\Accounting\Journal;
 use DateTime;
+use App\Model\Accounting\Journal;
+use App\Model\Accounting\ChartOfAccount;
 
 class Ratio
 {
@@ -22,23 +22,28 @@ class Ratio
     public $otherIncome = ['other income'];
     public $otherExpense = ['other expense'];
 
-    public function getTotalSalesProfit($date) {
+    public function getTotalSalesProfit($date)
+    {
         return $this->getTotal($this->salesIncome, $date) - $this->getTotal($this->costOfSales, $date);
     }
 
-    public function getTotalGrossProfit($date) {
+    public function getTotalGrossProfit($date)
+    {
         return $this->getTotalSalesProfit($date) - $this->getTotal($this->directExpense, $date);
     }
 
-    public function getTotalNetProfit($date) {
+    public function getTotalNetProfit($date)
+    {
         return $this->getTotalGrossProfit($date) + $this->getTotal($this->otherIncome, $date) - $this->getTotal($this->otherExpense, $date);
     }
 
-    public function getTotalNetWorkingCapital($date) {
-        return $this->getTotal($this->currentAssets, $date) - $this->getTotal($this->currentLiability, $date)  - $this->getTotal(['note payable'], $date);
+    public function getTotalNetWorkingCapital($date)
+    {
+        return $this->getTotal($this->currentAssets, $date) - $this->getTotal($this->currentLiability, $date) - $this->getTotal(['note payable'], $date);
     }
 
-    public function getRatio($a, $b) {
+    public function getRatio($a, $b)
+    {
         if ($a == 0 || $b == 0) {
             return 0;
         }
@@ -46,21 +51,26 @@ class Ratio
         return $a / $b;
     }
 
-    public function getLabel($date) {
+    public function getLabel($date)
+    {
         return date('M Y', strtotime($date));
     }
 
-    public function addOneMonth($date) {
-        return date('Y-m-d', strtotime($date . ' +1 Months'));
+    public function addOneMonth($date)
+    {
+        return date('Y-m-d', strtotime($date.' +1 Months'));
     }
 
-    public function getTotalMonth($dateFrom, $dateTo) {
+    public function getTotalMonth($dateFrom, $dateTo)
+    {
         $dateTimeFrom = new Datetime($dateFrom);
         $dateTimeTo = new DateTime($dateTo);
+
         return $dateTimeFrom->diff($dateTimeTo)->m + 1;
     }
 
-    public function getTotal($accountType, $date) {
+    public function getTotal($accountType, $date)
+    {
         $date = date('Y-m-d 23:59:59', strtotime($date));
 
         $chartOfAccount = ChartOfAccount::join('chart_of_account_types', 'chart_of_accounts.type_id', '=', 'chart_of_account_types.id')

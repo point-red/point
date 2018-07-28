@@ -6,7 +6,8 @@ class CurrentRatio extends Ratio implements RatioContract
 {
     private $description = 'rasio untuk mengukur kemampuan perusahaan dalam membayar kewajiban finansial jangka pendek dengan mengunakan asset lancar, nilai ideal adalah 150%';
 
-    public function get($dateFrom, $dateTo) {
+    public function get($dateFrom, $dateTo)
+    {
         $date = $dateFrom;
 
         $months = $this->getTotalMonth($dateFrom, $dateTo);
@@ -27,8 +28,8 @@ class CurrentRatio extends Ratio implements RatioContract
                 'description' => $this->description,
                 'result' => '',
                 'labels' => $labels,
-                'values' => $values
-            ]
+                'values' => $values,
+            ],
         ]);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Accounting\RatioReport;
 
-use App\Helpers\Ratio\TotalDebtToEquityRatio;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Helpers\Ratio\TotalDebtToEquityRatio;
 
 class TotalDebtToEquityRatioController extends Controller
 {
@@ -18,6 +18,7 @@ class TotalDebtToEquityRatioController extends Controller
     public function index(Request $request)
     {
         $ratio = new TotalDebtToEquityRatio();
+
         return $ratio->get($request->get('date_from'), $request->get('date_to'));
     }
 }

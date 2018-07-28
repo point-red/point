@@ -2,9 +2,9 @@
 
 namespace App\Helpers\Ratio;
 
-class RateOfReturnOnNetWorth extends Ratio implements RatioContract
+class WorkingCapitalTurnOver extends Ratio implements RatioContract
 {
-    private $description = 'rasio untuk mengukur kemampuan modal sendiri (tanpa laba ditahan) dalam menghasilkan pendapatan (semakin tinggi semakin baik)';
+    private $description = 'rasio untuk mengukur tingkat perputaran modal kerja bersih (Aktiva Lancar-Hutang Lancar) terhadap penjualan';
 
     public function get($dateFrom, $dateTo) {
         $date = $dateFrom;
@@ -16,7 +16,7 @@ class RateOfReturnOnNetWorth extends Ratio implements RatioContract
         for ($i = 0; $i < $months; $i++) {
             array_push($labels, $this->getLabel($date));
 
-            $value = $this->getRatio($this->getTotalNetProfit($date), $this->getTotal(['owner equity'], $date));
+            $value = $this->getRatio($this->getTotal($this->salesIncome, $date), $this->getTotalNetWorkingCapital($date));
             array_push($values, $value);
 
             $date = $this->addOneMonth($date);

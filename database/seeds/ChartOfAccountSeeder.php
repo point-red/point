@@ -22,7 +22,7 @@ class ChartOfAccountSeeder extends Seeder
         $assets = [
             'cash',
             'bank',
-            'cheque',
+            'note receivable',
             'inventory',
             'account receivable',
             'other account receivable',
@@ -33,7 +33,7 @@ class ChartOfAccountSeeder extends Seeder
         $assetsAlias = [
             'kas',
             'bank',
-            'wesel',
+            'wesel tagih',
             'sediaan',
             'piutang usaha',
             'piutang lain lain',
@@ -43,27 +43,28 @@ class ChartOfAccountSeeder extends Seeder
 
         $liabilities = [
             'current liability',
+            'note payable',
             'other current liability',
             'long term liability',
         ];
 
+        $liabilitiesAlias = [
+            'utang dagang',
+            'wesel bayar',
+            'utang lain lain',
+            'utang jangka panjang',
+        ];
+
         $equities = [
-            'equity',
+            'owner equity',
             'shareholder distribution',
             'retained earning',
         ];
 
         $equitiesAlias = [
-            'modal',
+            'modal pemilik',
             'dividen',
             'laba ditahan',
-        ];
-
-        $liabilitiesAlias = [
-            'utang dagang',
-            'utang lain lain',
-            'utang jangka panjang',
-            'modal',
         ];
 
         $incomes = [
@@ -164,9 +165,14 @@ class ChartOfAccountSeeder extends Seeder
         $longTermLiability = ['gaji ymh dibayar', 'sewa ymh dibayar', 'listrik, air & telpon ymh dibayar', 'asuransi ymh dibayar', 'lain-lain ymh dibayar', 'utang bank jangka panjang'];
         $longTermLiabilityNumber = ['20501', '20502', '20503', '20504', '20505', '21001'];
 
-        $equity = ['modal disetor', 'prive / deviden', 'laba rugi', 'laba rugi s/d tahun lalu', 'laba rugi s/d bulan lalu', 'laba rugi bulan berjalan'];
-        $equityNumber = ['30101', '30102', '30103', '30104', '30105', '30106'];
+        $ownerEquity = ['modal disetor'];
+        $ownerEquityNumber = ['30101'];
 
+        $shareholderDistribution = ['dividen'];
+        $shareholderDistributionNumber = ['30102'];
+
+        $retainedEarning = ['laba rugi', 'laba rugi s/d tahun lalu', 'laba rugi s/d bulan lalu', 'laba rugi bulan berjalan'];
+        $retainedEarningNumber = ['30103', '30104', '30105', '30106'];
 
         $salesIncome = ['penjualan', 'pendapatan lain', 'retur penjualan', 'potongan penjualan', 'pendapatan (beban) selisih kas'];
         $salesIncomeNumber = ['40101', '40102', '40103', '40104', '40105'];
@@ -207,15 +213,6 @@ class ChartOfAccountSeeder extends Seeder
             $chartOfAccount->number = $chequeNumber[$i];
             $chartOfAccount->name = $cheque[$i];
             $chartOfAccount->alias = $cheque[$i];
-            $chartOfAccount->save();
-        }
-
-        for ($i = 0; $i < count($creditCard); $i++) {
-            $chartOfAccount = new ChartOfAccount;
-            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'credit card')->first()->id;
-            $chartOfAccount->number = $creditCardNumber[$i];
-            $chartOfAccount->name = $creditCard[$i];
-            $chartOfAccount->alias = $creditCard[$i];
             $chartOfAccount->save();
         }
 
@@ -291,12 +288,30 @@ class ChartOfAccountSeeder extends Seeder
             $chartOfAccount->save();
         }
 
-        for ($i = 0; $i < count($equity); $i++) {
+        for ($i = 0; $i < count($ownerEquity); $i++) {
             $chartOfAccount = new ChartOfAccount;
-            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'equity')->first()->id;
-            $chartOfAccount->number = $equityNumber[$i];
-            $chartOfAccount->name = $equity[$i];
-            $chartOfAccount->alias = $equity[$i];
+            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'owner equity')->first()->id;
+            $chartOfAccount->number = $ownerEquityNumber[$i];
+            $chartOfAccount->name = $ownerEquity[$i];
+            $chartOfAccount->alias = $ownerEquity[$i];
+            $chartOfAccount->save();
+        }
+
+        for ($i = 0; $i < count($shareholderDistribution); $i++) {
+            $chartOfAccount = new ChartOfAccount;
+            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'shareholder distribution')->first()->id;
+            $chartOfAccount->number = $shareholderDistributionNumber[$i];
+            $chartOfAccount->name = $shareholderDistribution[$i];
+            $chartOfAccount->alias = $shareholderDistribution[$i];
+            $chartOfAccount->save();
+        }
+
+        for ($i = 0; $i < count($retainedEarning); $i++) {
+            $chartOfAccount = new ChartOfAccount;
+            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'retained earning')->first()->id;
+            $chartOfAccount->number = $retainedEarningNumber[$i];
+            $chartOfAccount->name = $retainedEarning[$i];
+            $chartOfAccount->alias = $retainedEarning[$i];
             $chartOfAccount->save();
         }
 

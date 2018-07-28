@@ -10,24 +10,17 @@ class Ratio
 {
     public $currentAssets = ['cash', 'bank', 'cheque', 'inventory', 'account receivable', 'other account receivable'];
     public $otherAssets = ['fixed asset', 'other asset'];
+    public $assets = ['cash', 'bank', 'cheque', 'inventory', 'account receivable', 'other account receivable', 'fixed asset', 'other asset'];
     public $cashEquivalent = ['cash', 'bank', 'cheque'];
     public $accountReceivable = ['account receivable', 'other account receivable'];
+    public $liability = ['current liability', 'other current liability', 'long term liability'];
     public $currentLiability = ['current liability', 'other current liability'];
-    public $equity = ['equity'];
+    public $equity = ['owner equity', 'shareholder distribution', 'retained earning'];
     public $salesIncome = ['sales income'];
     public $costOfSales = ['cost of sales'];
     public $directExpense = ['direct expense'];
     public $otherIncome = ['other income'];
     public $otherExpense = ['other expense'];
-
-    private $rateOfReturnNetWorthDescription = 'rasio untuk mengukur kemampuan modal sendiri (tanpa laba ditahan) dalam menghasilkan pendapatan (semakin tinggi semakin baik)';
-    private $totalDebtToAssetDescription = 'rasio untuk mengukur kemampuan perusahaan dalam membayar hutang-hutangnya dengan asset yang dimilikinya';
-    private $totalDebtToEquityDescription = 'rasio untuk mengukur seberapa besar hutang perusahaan dibandingkan dengan modal';
-    private $totalAssetTurnOverDescription = 'rasio untuk mengukur tingkat perputaran total aktiva terhadap penjualan';
-    private $workingCapitalDescription = 'rasio untuk mengukur tingkat perputaran modal kerja bersih (Aktiva Lancar-Hutang Lancar) terhadap penjualan';
-    private $fixedAssetTurnOverDescription = 'rasio ini berguna untuk mengevaluasi seberapa besar tingkat kemampuan perusahaan dalam memanfaatkan aktivatetap yang dimiliki secara efisien dalam rangka meningkatkan pendapatan';
-    private $inventoryTurnOverDescription = 'rasio untuk mengukur tingkat efisiensi pengelolaan perputaran persediaan yang dimiliki terhadap penjualan. Semakin tinggi rasio ini akan semakin baik dan menunjukkan pengelolaan persediaan yang efisien.';
-    private $averageCollectionPeriodRatioDescription = 'rasio untuk mengukur  berapa lama waktu yang dibutuhkan oleh perusahaan dalam menerima pelunasan dari konsumen.';
 
     public function getTotalSalesProfit($date) {
         return $this->getTotal($this->salesIncome, $date) - $this->getTotal($this->costOfSales, $date);
@@ -39,6 +32,10 @@ class Ratio
 
     public function getTotalNetProfit($date) {
         return $this->getTotalGrossProfit($date) + $this->getTotal($this->otherIncome, $date) - $this->getTotal($this->otherExpense, $date);
+    }
+
+    public function getTotalNetWorkingCapital($date) {
+        return $this->getTotal($this->currentAssets, $date) - $this->getTotal($this->currentLiability, $date)  - $this->getTotal(['note payable'], $date);
     }
 
     public function getRatio($a, $b) {

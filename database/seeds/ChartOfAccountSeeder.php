@@ -45,7 +45,18 @@ class ChartOfAccountSeeder extends Seeder
             'current liability',
             'other current liability',
             'long term liability',
+        ];
+
+        $equities = [
             'equity',
+            'shareholder distribution',
+            'retained earning',
+        ];
+
+        $equitiesAlias = [
+            'modal',
+            'dividen',
+            'laba ditahan',
         ];
 
         $liabilitiesAlias = [
@@ -89,6 +100,14 @@ class ChartOfAccountSeeder extends Seeder
             $chartOfAccountType = new ChartOfAccountType;
             $chartOfAccountType->name = $liabilities[$i];
             $chartOfAccountType->alias = $liabilitiesAlias[$i];
+            $chartOfAccountType->is_debit = false;
+            $chartOfAccountType->save();
+        }
+
+        for ($i = 0; $i < count($equities); $i++) {
+            $chartOfAccountType = new ChartOfAccountType;
+            $chartOfAccountType->name = $equities[$i];
+            $chartOfAccountType->alias = $equitiesAlias[$i];
             $chartOfAccountType->is_debit = false;
             $chartOfAccountType->save();
         }

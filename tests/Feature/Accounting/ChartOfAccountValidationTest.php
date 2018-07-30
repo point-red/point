@@ -3,8 +3,6 @@
 namespace Tests\Feature\Accounting;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ChartOfAccountValidationTest extends TestCase
 {

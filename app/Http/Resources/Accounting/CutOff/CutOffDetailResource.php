@@ -15,7 +15,7 @@ class CutOffDetailResource extends JsonResource
     public function toArray($request)
     {
         $resource = array_merge(parent::toArray($request), [
-            'chartOfAccount' => $this->chartOfAccount
+            'chartOfAccount' => $this->chartOfAccount,
         ]);
 
         return $resource;

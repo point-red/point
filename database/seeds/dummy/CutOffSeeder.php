@@ -1,10 +1,10 @@
 <?php
 
-use App\Model\Accounting\CutOff;
-use App\Model\Accounting\CutOffDetail;
-use App\Model\Accounting\Journal;
 use Illuminate\Database\Seeder;
+use App\Model\Accounting\CutOff;
+use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
+use App\Model\Accounting\CutOffDetail;
 
 class CutOffSeeder extends Seeder
 {
@@ -23,7 +23,7 @@ class CutOffSeeder extends Seeder
 
         $cutOff = new CutOff;
         $cutOff->date = '2018-04-30 23:59:59';
-        $cutOff->number = 'CUTOFF/' . date('ym', strtotime($cutOff->date)) . '/' . sprintf("%04d", ++$increment);
+        $cutOff->number = 'CUTOFF/'.date('ym', strtotime($cutOff->date)).'/'.sprintf('%04d', ++$increment);
         $cutOff->save();
 
         $total = 100000000;

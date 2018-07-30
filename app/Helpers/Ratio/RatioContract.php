@@ -2,6 +2,7 @@
 
 namespace App\Helpers\Ratio;
 
-interface RatioContract {
+interface RatioContract
+{
     public function get($dateFrom, $dateTo);
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Accounting\RatioReport;
 
-use App\Helpers\Ratio\GrossProfitRatio;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Helpers\Ratio\GrossProfitRatio;
 
 class GrossProfitRatioController extends Controller
 {
@@ -18,6 +18,7 @@ class GrossProfitRatioController extends Controller
     public function index(Request $request)
     {
         $grossProfitRatio = new GrossProfitRatio();
+
         return $grossProfitRatio->get($request->get('date_from'), $request->get('date_to'));
     }
 }

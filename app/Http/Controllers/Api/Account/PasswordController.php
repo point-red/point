@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\Account;
 
-use App\Http\Requests\Account\Password\UpdatePasswordRequest;
-use App\Http\Resources\Account\UserResource;
 use App\User;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Account\UserResource;
+use App\Http\Requests\Account\Password\UpdatePasswordRequest;
 
 class PasswordController extends Controller
 {

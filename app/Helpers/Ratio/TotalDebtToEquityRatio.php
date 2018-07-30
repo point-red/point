@@ -6,7 +6,8 @@ class TotalDebtToEquityRatio extends Ratio implements RatioContract
 {
     private $description = 'rasio untuk mengukur seberapa besar hutang perusahaan dibandingkan dengan modal';
 
-    public function get($dateFrom, $dateTo) {
+    public function get($dateFrom, $dateTo)
+    {
         $date = $dateFrom;
 
         $months = $this->getTotalMonth($dateFrom, $dateTo);
@@ -27,8 +28,8 @@ class TotalDebtToEquityRatio extends Ratio implements RatioContract
                 'description' => $this->description,
                 'result' => '',
                 'labels' => $labels,
-                'values' => $values
-            ]
+                'values' => $values,
+            ],
         ]);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Accounting\RatioReport;
 
+use Illuminate\Http\Request;
 use App\Helpers\Ratio\CurrentRatio;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class CurrentRatioController extends Controller
 {
@@ -18,6 +18,7 @@ class CurrentRatioController extends Controller
     public function index(Request $request)
     {
         $ratio = new CurrentRatio();
+
         return $ratio->get($request->get('date_from'), $request->get('date_to'));
     }
 }

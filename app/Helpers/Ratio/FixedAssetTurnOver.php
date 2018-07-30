@@ -16,7 +16,7 @@ class FixedAssetTurnOver extends Ratio implements RatioContract
         for ($i = 0; $i < $months; $i++) {
             array_push($labels, $this->getLabel($date));
 
-            $value = $this->getRatio($this->getTotal($this->salesIncome, $date), $this->getTotal($this->assets, $date));
+            $value = $this->getRatio($this->getTotal($this->salesIncome, $date), $this->getTotal($this->otherAssets, $date));
             array_push($values, $value);
 
             $date = $this->addOneMonth($date);

@@ -16,7 +16,7 @@ class CreateCutOffsTable extends Migration
         Schema::create('cut_offs', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamp('date');
-            $table->string('code');
+            $table->string('number');
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Accounting\RatioReport;
 
+use App\Helpers\Ratio\RateOfReturnInvestment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -16,7 +17,7 @@ class RateOfReturnInvestmentController extends Controller
      */
     public function index(Request $request)
     {
-        $ratio = new \App\Helpers\Ratio\RateOfReturnInvestment();
+        $ratio = new RateOfReturnInvestment();
         return $ratio->get($request->get('date_from'), $request->get('date_to'));
     }
 }

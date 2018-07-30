@@ -160,8 +160,8 @@ class ChartOfAccountSeeder extends Seeder
         $fixedAssetDepreciation = ['akumulasi penyusutan bangunan pabrik', 'akumulasi penyusutan bangunan kantor', 'akumulasi penyusutan mesin', 'akumulasi penyusutan peralatan', 'akumulasi penyusutan instalasi listrik', 'akumulasi penyusutan inventaris pabrik', 'akumulasi penyusutan inventaris kantor', 'akumulasi penyusutan kendaraan pabrik', 'akumulasi penyusutan kendaraan kantor', 'akumulasi penyusutan kendaraan penjualan'];
         $fixedAssetDepreciationNumber = ['11601', '11602', '11603', '11604', '11605', '11606', '11607', '11608', '11609', '11610'];
 
-        $otherAsset = ['aktiva dalam proses', 'aktiva tak berwujud', 'akumulasi amortisasi aktiva tak berwujud'];
-        $otherAssetNumber = ['12101', '12102', '12103'];
+        $otherAsset = ['aktiva dalam proses', 'aktiva tak berwujud'];
+        $otherAssetNumber = ['12101', '12102'];
 
         $otherAssetDepreciation = ['akumulasi amortisasi aktiva tak berwujud'];
         $otherAssetDepreciationNumber = ['12103'];

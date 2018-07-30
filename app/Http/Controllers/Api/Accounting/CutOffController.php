@@ -36,11 +36,12 @@ class CutOffController extends Controller
 
         $fromDate = date('Y-m-01 00:00:00', strtotime($request->get('date')));
         $untilDate = date('Y-m-t 23:59:59', strtotime($request->get('date')));
+        $date = date('Y-m-d 23:59:59', strtotime($request->get('date')));
         $increment = CutOff::where('date', '>=', $fromDate)->where('date', '<=', $untilDate)->count();
 
         $cutOff = new CutOff;
-        $cutOff->date = $request->get('date');
-        $cutOff->code = 'CUTOFF/' . date('ym', strtotime($request->get('date'))) . '/' . sprintf("%04d", ++$increment);
+        $cutOff->date = $date;
+        $cutOff->number = 'CUTOFF/' . date('ym', strtotime($request->get('date'))) . '/' . sprintf("%04d", ++$increment);
         $cutOff->save();
 
         $details = $request->get('details');
@@ -95,10 +96,21 @@ class CutOffController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     *
+     * @return \App\Http\Resources\Accounting\CutOff\CutOffResource
      */
     public function destroy($id)
     {
-        //
+        DB::connection('tenant')->beginTransaction();
+
+        $cutOff = CutOff::findOrFail($id);
+
+        $cutOff->delete();
+
+        Journal::where('journalable_type', get_class($cutOff))->where('journalable_id', $id)->delete();
+
+        DB::connection('tenant')->commit();
+
+        return new CutOffResource($cutOff);
     }
 }

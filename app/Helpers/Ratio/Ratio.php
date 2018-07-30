@@ -9,7 +9,7 @@ use DateTime;
 class Ratio
 {
     public $currentAssets = ['cash', 'bank', 'cheque', 'inventory', 'account receivable', 'other account receivable'];
-    public $otherAssets = ['fixed asset', 'other asset'];
+    public $otherAssets = ['fixed asset', 'other asset', 'fixed asset depreciation', 'other asset amortization'];
     public $assets = ['cash', 'bank', 'cheque', 'inventory', 'account receivable', 'other account receivable', 'fixed asset', 'other asset'];
     public $cashEquivalent = ['cash', 'bank', 'cheque'];
     public $accountReceivable = ['account receivable', 'other account receivable'];
@@ -70,6 +70,10 @@ class Ratio
             ->whereIn('chart_of_account_types.name', $accountType)
             ->select('chart_of_accounts.*')
             ->pluck('id');
+
+        if (!$chartOfAccount) {
+            return 0;
+        }
 
         if ($chartOfAccount->is_debit) {
             $total = Journal::whereIn('chart_of_account_id', $ids)

@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Master\UserInvitation\UserInvitationResource;
 use App\Http\Resources\Master\UserInvitation\UserInvitationCollection;
 use App\Http\Requests\Master\UserInvitation\StoreUserInvitationRequest;
+use Illuminate\Support\Facades\DB;
 
 class UserInvitationController extends Controller
 {
@@ -90,6 +91,10 @@ class UserInvitationController extends Controller
         $projectUser->save();
 
         $user = User::findOrFail($request->get('user_id'));
+
+        $dbName = 'point_'.strtolower($projectUser->project->code);
+        config()->set('database.connections.tenant.database', $dbName);
+        DB::connection('tenant')->reconnect();
 
         $tenantUser = new \App\Model\Master\User;
         $tenantUser->id = $user->id;

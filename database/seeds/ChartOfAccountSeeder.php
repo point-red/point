@@ -27,7 +27,9 @@ class ChartOfAccountSeeder extends Seeder
             'account receivable',
             'other account receivable',
             'fixed asset',
-            'other asset'
+            'fixed asset depreciation',
+            'other asset',
+            'other asset depreciation'
         ];
 
         $assetsAlias = [
@@ -38,7 +40,9 @@ class ChartOfAccountSeeder extends Seeder
             'piutang usaha',
             'piutang lain lain',
             'aset tetap',
-            'aset lain lain'
+            'penyusutan aset tetap',
+            'aset lain lain',
+            'penyusutan aset lain'
         ];
 
         $liabilities = [
@@ -138,8 +142,8 @@ class ChartOfAccountSeeder extends Seeder
         $bank = ['bank bca', 'bank mandiri'];
         $bankNumber = ['10201', '10202'];
 
-        $cheque = ['wesel tagih'];
-        $chequeNumber = ['10301'];
+        $noteReceivable = ['wesel tagih'];
+        $noteReceivableNumber = ['10301'];
 
         $inventory = [ 'sediaan bahan baku', 'sediaan bahan pembantu', 'sediaan barang dalam proses', 'sediaan barang jadi (manufaktur)', 'sediaan dalam perjalanan', 'sediaan lain-lain'];
         $inventoryNumber = ['10601', '10602', '10603', '10604', '10605', '10699'];
@@ -150,11 +154,17 @@ class ChartOfAccountSeeder extends Seeder
         $otherAccountReceivable = ['piutang direksi', 'piutang karyawan'];
         $otherAccountReceivableNumber = ['10501', '10502'];
 
-        $fixedAsset = ['tanah lokasi kota surabaya', 'bangunan pabrik', 'bangunan kantor', 'mesin', 'peralatan', 'instalasi listrik', 'inventaris pabrik', 'inventaris kantor', 'kendaraan pabrik', 'kendaraan kantor', 'kendaraan penjualan', 'akumulasi penyusutan bangunan pabrik', 'akumulasi penyusutan bangunan kantor', 'akumulasi penyusutan mesin', 'akumulasi penyusutan peralatan', 'akumulasi penyusutan instalasi listrik', 'akumulasi penyusutan inventaris pabrik', 'akumulasi penyusutan inventaris kantor', 'akumulasi penyusutan kendaraan pabrik', 'akumulasi penyusutan kendaraan kantor', 'akumulasi penyusutan kendaraan penjualan'];
-        $fixedAssetNumber = ['11101', '11102', '11201', '11202', '11301', '11302', '11303', '11401', '11402', '11501', '11502', '11503', '11601', '11602', '11603', '11604', '11605', '11606', '11607', '11608', '11609', '11610'];
+        $fixedAsset = ['tanah lokasi kota surabaya', 'bangunan pabrik', 'bangunan kantor', 'mesin', 'peralatan', 'instalasi listrik', 'inventaris pabrik', 'inventaris kantor', 'kendaraan pabrik', 'kendaraan kantor', 'kendaraan penjualan'];
+        $fixedAssetNumber = ['11101', '11102', '11201', '11202', '11301', '11302', '11303', '11401', '11402', '11501', '11502', '11503'];
+
+        $fixedAssetDepreciation = ['akumulasi penyusutan bangunan pabrik', 'akumulasi penyusutan bangunan kantor', 'akumulasi penyusutan mesin', 'akumulasi penyusutan peralatan', 'akumulasi penyusutan instalasi listrik', 'akumulasi penyusutan inventaris pabrik', 'akumulasi penyusutan inventaris kantor', 'akumulasi penyusutan kendaraan pabrik', 'akumulasi penyusutan kendaraan kantor', 'akumulasi penyusutan kendaraan penjualan'];
+        $fixedAssetDepreciationNumber = ['11601', '11602', '11603', '11604', '11605', '11606', '11607', '11608', '11609', '11610'];
 
         $otherAsset = ['aktiva dalam proses', 'aktiva tak berwujud', 'akumulasi amortisasi aktiva tak berwujud'];
         $otherAssetNumber = ['12101', '12102', '12103'];
+
+        $otherAssetDepreciation = ['akumulasi amortisasi aktiva tak berwujud'];
+        $otherAssetDepreciationNumber = ['12103'];
 
         $currentLiability = ['wesel bayar ', 'utang usaha', 'utang bank bca', 'utang bank mandiri'];
         $currentLiabilityNumber = ['20101', '20201', '20301', '20302', '20401', '20402', '20403', '20499'];
@@ -207,12 +217,12 @@ class ChartOfAccountSeeder extends Seeder
             $chartOfAccount->save();
         }
 
-        for ($i = 0; $i < count($cheque); $i++) {
+        for ($i = 0; $i < count($noteReceivable); $i++) {
             $chartOfAccount = new ChartOfAccount;
-            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'cheque')->first()->id;
-            $chartOfAccount->number = $chequeNumber[$i];
-            $chartOfAccount->name = $cheque[$i];
-            $chartOfAccount->alias = $cheque[$i];
+            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'note receivable')->first()->id;
+            $chartOfAccount->number = $noteReceivableNumber[$i];
+            $chartOfAccount->name = $noteReceivable[$i];
+            $chartOfAccount->alias = $noteReceivable[$i];
             $chartOfAccount->save();
         }
 
@@ -252,12 +262,30 @@ class ChartOfAccountSeeder extends Seeder
             $chartOfAccount->save();
         }
 
+        for ($i = 0; $i < count($fixedAssetDepreciation); $i++) {
+            $chartOfAccount = new ChartOfAccount;
+            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'fixed asset depreciation')->first()->id;
+            $chartOfAccount->number = $fixedAssetDepreciationNumber[$i];
+            $chartOfAccount->name = $fixedAssetDepreciation[$i];
+            $chartOfAccount->alias = $fixedAssetDepreciation[$i];
+            $chartOfAccount->save();
+        }
+
         for ($i = 0; $i < count($otherAsset); $i++) {
             $chartOfAccount = new ChartOfAccount;
             $chartOfAccount->type_id = ChartOfAccountType::where('name', 'other asset')->first()->id;
             $chartOfAccount->number = $otherAssetNumber[$i];
             $chartOfAccount->name = $otherAsset[$i];
             $chartOfAccount->alias = $otherAsset[$i];
+            $chartOfAccount->save();
+        }
+
+        for ($i = 0; $i < count($otherAssetDepreciation); $i++) {
+            $chartOfAccount = new ChartOfAccount;
+            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'other asset depreciation')->first()->id;
+            $chartOfAccount->number = $otherAssetDepreciationNumber[$i];
+            $chartOfAccount->name = $otherAssetDepreciation[$i];
+            $chartOfAccount->alias = $otherAssetDepreciation[$i];
             $chartOfAccount->save();
         }
 

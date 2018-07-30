@@ -24,6 +24,6 @@ class ProjectUser extends Model
      */
     public function project()
     {
-        return $this->belongsTo(get_class(new Project()), 'user_id');
+        return $this->belongsTo(get_class(new Project()), 'project_id');
     }
 }

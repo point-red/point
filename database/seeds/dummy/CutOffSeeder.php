@@ -31,6 +31,7 @@ class CutOffSeeder extends Seeder
         $chartOfAccounts = \App\Model\Accounting\ChartOfAccount::join('chart_of_account_types', 'chart_of_account_types.id', '=', 'chart_of_accounts.type_id')
             ->where('chart_of_account_types.is_debit', true)
             ->where('chart_of_account_types.name', '!=', 'fixed asset depreciation')
+            ->where('chart_of_account_types.name', '!=', 'other asset amortization')
             ->select('chart_of_accounts.*')
             ->get();
         $i = 0;

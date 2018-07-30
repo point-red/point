@@ -29,7 +29,7 @@ class ChartOfAccountSeeder extends Seeder
             'fixed asset',
             'fixed asset depreciation',
             'other asset',
-            'other asset depreciation'
+            'other asset amortization'
         ];
 
         $assetsAlias = [
@@ -42,7 +42,7 @@ class ChartOfAccountSeeder extends Seeder
             'aset tetap',
             'penyusutan aset tetap',
             'aset lain lain',
-            'penyusutan aset lain'
+            'amortisasi aset lain'
         ];
 
         $liabilities = [
@@ -282,7 +282,7 @@ class ChartOfAccountSeeder extends Seeder
 
         for ($i = 0; $i < count($otherAssetDepreciation); $i++) {
             $chartOfAccount = new ChartOfAccount;
-            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'other asset depreciation')->first()->id;
+            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'other asset amortization')->first()->id;
             $chartOfAccount->number = $otherAssetDepreciationNumber[$i];
             $chartOfAccount->name = $otherAssetDepreciation[$i];
             $chartOfAccount->alias = $otherAssetDepreciation[$i];

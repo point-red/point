@@ -2,8 +2,8 @@
 
 namespace App\Model\Master;
 
-use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {

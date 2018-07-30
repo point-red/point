@@ -17,7 +17,7 @@ class CreateKpiTemplateIndicatorsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('kpi_template_group_id')->index();
             $table->string('name');
-            $table->unsignedInteger('weight');
+            $table->unsignedDecimal('weight', 5, 2);
             $table->unsignedInteger('target');
             $table->timestamps();
 

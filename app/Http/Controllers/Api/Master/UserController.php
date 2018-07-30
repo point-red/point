@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Model\Master\User as TenantUser;
 use Illuminate\Http\Request;
+use App\Model\Master\User as TenantUser;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Resources\Master\User\UserResource;
 use App\Http\Resources\Master\User\UserCollection;

@@ -2,7 +2,7 @@
 
 if (! function_exists('log_array')) {
     /**
-     * Log an object / array
+     * Log an object / array.
      *
      * @param $object
      */
@@ -14,7 +14,7 @@ if (! function_exists('log_array')) {
 
 if (! function_exists('tenant')) {
     /**
-     * Get Tenant User
+     * Get Tenant User.
      *
      * @param $userId
      *

@@ -119,6 +119,7 @@ class EmployeeAssessmentController extends Controller
     {
         $kpi = Kpi::findOrFail($id);
         $kpi->delete();
+
         return new KpiResource($kpi);
     }
 }

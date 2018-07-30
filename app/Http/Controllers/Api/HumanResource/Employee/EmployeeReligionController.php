@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Http\Resources\HumanResource\Employee\EmployeeReligion\EmployeeReligionCollection;
-use App\Model\HumanResource\Employee\EmployeeReligion;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Model\HumanResource\Employee\EmployeeReligion;
+use App\Http\Resources\HumanResource\Employee\EmployeeReligion\EmployeeReligionCollection;
 
 class EmployeeReligionController extends Controller
 {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Model\Auth\Role;
 use App\User;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
@@ -103,6 +104,11 @@ class UserInvitationController extends Controller
         $tenantUser->address = $user->address;
         $tenantUser->phone = $user->phone;
         $tenantUser->save();
+
+        // Add role to new user
+        // TODO: make this role dynamic
+        $role = Role::findByName('super admin', 'api');
+        $tenantUser->assignRole($role);
 
         return new UserInvitationResource($projectUser);
     }

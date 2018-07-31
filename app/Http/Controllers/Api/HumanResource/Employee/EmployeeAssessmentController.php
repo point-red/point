@@ -22,7 +22,7 @@ class EmployeeAssessmentController extends Controller
      */
     public function index($employeeId)
     {
-        $kpis = Kpi::where('employee_id', $employeeId)->get();
+        $kpis = Kpi::where('employee_id', $employeeId)->orderBy('date', 'asc')->get();
 
         $dates = [];
         $scores = [];

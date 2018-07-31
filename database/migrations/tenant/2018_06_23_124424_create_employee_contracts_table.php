@@ -16,8 +16,8 @@ class CreateEmployeeContractsTable extends Migration
         Schema::create('employee_contracts', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('employee_id')->index();
-            $table->timestamp('contract_begin')->nullable();
-            $table->timestamp('contract_end')->nullable();
+            $table->date('contract_begin')->nullable();
+            $table->date('contract_end')->nullable();
             $table->string('link');
             $table->text('notes')->nullable();
             $table->timestamps();

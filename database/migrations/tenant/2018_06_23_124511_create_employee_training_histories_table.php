@@ -16,7 +16,7 @@ class CreateEmployeeTrainingHistoriesTable extends Migration
         Schema::create('employee_training_histories', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('employee_id')->index();
-            $table->timestamp('date');
+            $table->date('date');
             $table->string('description');
             $table->timestamps();
             // Relationship

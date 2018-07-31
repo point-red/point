@@ -17,7 +17,7 @@ class CreateKpisTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('employee_id')->index();
             $table->string('name');
-            $table->timestamp('date');
+            $table->date('date');
             $table->timestamps();
 
             $table->foreign('employee_id')

@@ -16,7 +16,7 @@ class CreateEmployeeSalaryHistoriesTable extends Migration
         Schema::create('employee_salary_histories', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('employee_id')->index();
-            $table->timestamp('date');
+            $table->date('date');
             $table->double('salary');
             $table->timestamps();
             // Relationship

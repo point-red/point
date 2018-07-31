@@ -18,7 +18,7 @@ class CreateEmployeesTable extends Migration
             // Data related to personal info
             $table->unsignedInteger('person_id')->index();
             $table->string('last_education')->nullable();
-            $table->timestamp('birth_date')->nullable();
+            $table->date('birth_date')->nullable();
             $table->string('birth_place')->nullable();
             $table->unsignedInteger('employee_gender_id')->nullable()->index();
             $table->unsignedInteger('employee_marital_status_id')->nullable()->index();
@@ -26,7 +26,7 @@ class CreateEmployeesTable extends Migration
             $table->unsignedInteger('employee_religion_id')->nullable();
             // Data related to job
             $table->unsignedInteger('employee_group_id')->nullable()->index();
-            $table->timestamp('join_date')->nullable();
+            $table->date('join_date')->nullable();
             $table->string('job_title')->nullable();
             $table->unsignedInteger('kpi_template_id')->nullable()->index();
             $table->timestamps();

@@ -23,7 +23,7 @@ class KpiTemplateController extends Controller
     {
         $limit = $request->input('limit') ?? 0;
 
-        return new KpiTemplateCollection(KpiTemplate::paginate($limit));
+        return new KpiTemplateCollection(KpiTemplate::get());
     }
 
     /**

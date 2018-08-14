@@ -14,6 +14,11 @@
 Route::prefix('v1')->namespace('Api')->group(function () {
     Route::post('register', 'RegisterController@store');
 
+    Route::prefix('auth')->namespace('Auth')->group(function () {
+        Route::get('reset-password-request', 'ResetPasswordController@index');
+        Route::get('reset-password', 'ResetPasswordController@store');
+    });
+
     Route::middleware('auth:api')->group(function () {
         Route::post('auth-user', 'AuthUserController@show');
 

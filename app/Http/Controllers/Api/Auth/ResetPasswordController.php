@@ -22,7 +22,7 @@ class ResetPasswordController extends Controller
 
         $url = 'https://' . env('TENANT_DOMAIN') . '/auth/reset-password?token=' . $passwordReset->token;
 
-        Mail::to([$request->get('email')])->send(new ResetPasswordRequestMail($url));
+        Mail::to([$request->get('email')])->queue(new ResetPasswordRequestMail($url));
     }
 
     public function store(UpdatePasswordRequest $request)

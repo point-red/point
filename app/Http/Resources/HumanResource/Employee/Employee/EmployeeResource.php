@@ -36,7 +36,7 @@ class EmployeeResource extends JsonResource
             'employee_religion_id' => $this->employee_religion_id,
             'religion' => $this->religion, // relationship with EmployeeReligion
             'join_date' => $this->join_date,
-            'job_title' => $this->job_title,
+            'job_title' => $this->job_title ?? '',
             'company_emails' => $this->companyEmails,
             'contracts' => $this->contracts,
             'salary_histories' => $this->salaryHistories,

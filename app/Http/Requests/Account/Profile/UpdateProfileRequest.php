@@ -13,6 +13,10 @@ class UpdateProfileRequest extends FormRequest
      */
     public function authorize()
     {
+        if (auth()->user()->id !== $this->id) {
+            return false;
+        }
+
         return true;
     }
 

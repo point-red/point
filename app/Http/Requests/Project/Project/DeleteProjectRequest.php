@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Project\Project;
 
+use App\Model\Project\Project;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProjectRequest extends FormRequest
+class DeleteProjectRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,6 +14,16 @@ class UpdateProjectRequest extends FormRequest
      */
     public function authorize()
     {
+        $project = Project::find($this->route('project'));
+        // if project not exists
+        if (!$project) {
+            return false;
+        }
+        // if user is not owner of the project
+        if ($project->owner->id !== auth()->user()->id) {
+            return false;
+        }
+
         return true;
     }
 
@@ -24,8 +35,7 @@ class UpdateProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|unique:projects,code,'.$this->id,
-            'name' => 'required|unique:projects,name,'.$this->id,
+            //
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Project;
 
+use App\Http\Requests\Project\Project\DeleteProjectRequest;
 use App\Model\Master\User;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
@@ -138,11 +139,12 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param \App\Http\Requests\Project\Project\DeleteProjectRequest $request
+     * @param  int                                                    $id
      *
      * @return \App\Http\Resources\Project\Project\ProjectResource
      */
-    public function destroy($id)
+    public function destroy(DeleteProjectRequest $request, $id)
     {
         $project = Project::findOrFail($id);
 

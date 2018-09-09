@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Model\Project\Project;
 use Closure;
 use Illuminate\Support\Facades\DB;
 
@@ -16,13 +17,20 @@ class TenantMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (env('APP_ENV') === 'production') {
-            if ($request->header('Tenant')) {
-                if ($request->header('Tenant') !== 'cloud') {
-                    config()->set('database.connections.tenant.database', 'point_'.$request->header('Tenant'));
-                    DB::connection('tenant')->reconnect();
-                }
+        if ($request->header('Tenant') && auth()->user()) {
+            // Ignore this, because this subdomain is not allowed
+            if ($request->header('Tenant') === 'cloud') {
+                return $next($request);
             }
+
+            // Permission denied, the project is not owned by that user
+            $project = Project::where('code', $request->header('Tenant'))->where('owner_id', auth()->user()->id)->first();
+            if (!$project) {
+                return $next($request);
+            }
+
+            config()->set('database.connections.tenant.database', 'point_'.$request->header('Tenant'));
+            DB::connection('tenant')->reconnect();
         }
 
         return $next($request);

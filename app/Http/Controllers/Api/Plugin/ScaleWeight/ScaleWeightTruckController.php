@@ -43,6 +43,7 @@ class ScaleWeightTruckController extends Controller
         $scaleWeightTruck->gross_weight = $request->get('gross_weight');
         $scaleWeightTruck->tare_weight = $request->get('tare_weight');
         $scaleWeightTruck->net_weight = $request->get('net_weight');
+        $scaleWeightTruck->is_delivery = $request->get('is_delivery');
         $scaleWeightTruck->save();
 
         return new ScaleWeightTruckResource($scaleWeightTruck);

@@ -27,6 +27,7 @@ class CreateScaleWeightTrucksTable extends Migration
             $table->datetime('time_in');
             $table->datetime('time_out');
             $table->string('user');
+            $table->boolean('is_delivery');
             $table->timestamps();
         });
     }

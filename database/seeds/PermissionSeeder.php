@@ -18,6 +18,7 @@ class PermissionSeeder extends Seeder
 
         $this->setMasterPermission();
         $this->setHumanResourcePermission();
+        $this->setPluginPermission();
 
         $permissions = Permission::all();
         $role->syncPermissions($permissions);
@@ -53,5 +54,28 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
         }
+    }
+
+    private function setScaleWeightPermission()
+    {
+        Permission::createIfNotExists('menu scale weight');
+
+        $allPermission = [
+            'scale weight truck', 'scale weight item',
+        ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
+    private function setPluginPermission()
+    {
+        Permission::createIfNotExists('menu plugin');
+
+        $this->setScaleWeightPermission();
     }
 }

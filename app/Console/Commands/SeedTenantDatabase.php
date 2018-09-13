@@ -54,6 +54,7 @@ class SeedTenantDatabase extends Command
             Artisan::call('db:seed', [
                 '--database' => 'tenant',
                 '--class' => $this->argument('class'),
+                '--force' => true
             ]);
         }
     }

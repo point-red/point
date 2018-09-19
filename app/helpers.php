@@ -25,3 +25,22 @@ if (! function_exists('tenant')) {
         return \App\Model\Master\User::findOrFail($userId ?? auth()->user()->id);
     }
 }
+
+if (! function_exists('get_invitation_code')) {
+    /**
+     * Get Invitation Code.
+     */
+    function get_invitation_code()
+    {
+        $activationCode = null;
+
+        do {
+            $random = strtoupper(str_random(12));
+            if (! \App\Model\Project\Project::where('invitation_code', $random)->first()) {
+                $activationCode = $random;
+            }
+        } while ($activationCode == null);
+
+        return $activationCode;
+    }
+}

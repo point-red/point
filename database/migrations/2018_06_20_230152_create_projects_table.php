@@ -21,6 +21,8 @@ class CreateProjectsTable extends Migration
             $table->string('phone')->nullable();
             $table->string('vat_id_number')->nullable();
             $table->unsignedInteger('owner_id')->index();
+            $table->string('invitation_code', 20)->nullable()->unique();
+            $table->boolean('invitation_code_enabled')->default(false);
             $table->timestamps();
 
             $table->foreign('owner_id')

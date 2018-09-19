@@ -23,6 +23,10 @@ class CreateProjectUserTable extends Migration
             // false : user invited into this project
             // true : user confirm to join this project
             $table->boolean('joined')->default(false);
+            // This column is used when user request join to the company using invitation code
+            // otherwise it value will be null
+            // so we can know where user that need approval to join to the company
+            $table->timestamp('request_join_at')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')

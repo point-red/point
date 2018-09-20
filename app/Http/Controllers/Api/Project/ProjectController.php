@@ -30,7 +30,7 @@ class ProjectController extends Controller
 
         $projects = Project::join('project_user', 'projects.id', '=', 'project_user.project_id')
             ->where('project_user.user_id', auth()->user()->id)
-            ->select('projects.*', 'user_id', 'user_name', 'user_email', 'joined', 'project_user.id as user_invitation_id')
+            ->select('projects.*', 'user_id', 'user_name', 'user_email', 'joined', 'request_join_at', 'project_user.id as user_invitation_id')
             ->paginate($limit);
 
         return new ProjectCollection($projects);

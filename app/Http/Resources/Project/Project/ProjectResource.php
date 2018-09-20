@@ -21,8 +21,10 @@ class ProjectResource extends JsonResource
           'address' => $this->address,
           'vat_id_number' => $this->vat_id_number,
           'owner_id' => $this->owner_id,
+          'joined' => $this->joined,
+          'request_join_at' => $this->request_join_at,
           'invitation_code' => $this->invitation_code,
-          'invitation_code_enabled' => $this->invitation_code_enabled ? true : false, // convert mysql tinyint into boolean
+          'invitation_code_enabled' => $this->invitation_code_enabled,
           'created_at' => $this->created_at,
           'updated_at' => $this->updated_at
         ];

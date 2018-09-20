@@ -19,7 +19,7 @@ class EmployeeResource extends JsonResource
             'employee_group_id' => $this->employee_group_id,
             'group' => $this->group, // relationship with EmployeeGroup
             'code' => $this->person->code,
-            'name' => $this->person->name,
+            'name' => $this->name,
             'addresses' => $this->person->addresses,
             'emails' => $this->person->emails,
             'phones' => $this->person->phones,

@@ -132,6 +132,8 @@ class ProjectController extends Controller
         $project->address = $request->get('address');
         $project->phone = $request->get('phone');
         $project->vat_id_number = $request->get('vat_id_number');
+        $project->invitation_code = $request->get('invitation_code');
+        $project->invitation_code_enabled = $request->get('invitation_code_enabled');
         $project->save();
 
         return new ProjectResource($project);

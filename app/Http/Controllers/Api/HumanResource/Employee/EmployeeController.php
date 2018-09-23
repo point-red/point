@@ -27,7 +27,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        return new EmployeeCollection(Employee::all());
+        return new EmployeeCollection(Employee::join('persons', 'persons.id', '=', 'employees.person_id')->select('employees.*', 'persons.name as name')->get());
     }
 
     /**

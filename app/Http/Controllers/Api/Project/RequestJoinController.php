@@ -2,25 +2,33 @@
 
 namespace App\Http\Controllers\Api\Project;
 
+use App\Http\Resources\Master\UserInvitation\UserInvitationCollection;
 use App\Http\Resources\Master\UserInvitation\UserInvitationResource;
+use App\Model\Auth\Role;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
 
 class RequestJoinController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \App\Http\Resources\Master\UserInvitation\UserInvitationCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $projectUsers = ProjectUser::whereNotNull('request_join_at')
+            ->where('joined', false)
+            ->where('project_id', $request->get('project_id'))
+            ->get();
+
+        return new UserInvitationCollection($projectUsers);
     }
 
     /**
@@ -83,11 +91,12 @@ class RequestJoinController extends Controller
      */
     public function update(Request $request, $id)
     {
+        DB::beginTransaction();
         $projectUser = ProjectUser::findOrFail($id);
         $projectUser->joined = true;
         $projectUser->save();
 
-        $user = User::findOrFail($request->get('user_id'));
+        $user = User::findOrFail($projectUser->user_id);
 
         $dbName = 'point_'.strtolower($projectUser->project->code);
         config()->set('database.connections.tenant.database', $dbName);
@@ -106,6 +115,8 @@ class RequestJoinController extends Controller
         $role = Role::findByName('super admin', 'api');
         $tenantUser->assignRole($role);
 
+        DB::commit();
+
         return new UserInvitationResource($projectUser);
     }
 
@@ -117,6 +128,13 @@ class RequestJoinController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $projectUser = ProjectUser::findOrFail($id);
+
+        $projectUser->delete();
+
+        return response()->json([
+            'code' => '200',
+            'message' => 'delete success'
+        ]);
     }
 }

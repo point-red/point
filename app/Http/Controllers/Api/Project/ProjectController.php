@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Project;
 
 use App\Http\Requests\Project\Project\DeleteProjectRequest;
+use App\Http\Resources\GeneralCollection;
+use App\Http\Resources\JsonCollection;
 use App\Model\Master\User;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
@@ -22,7 +24,7 @@ class ProjectController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return \App\Http\Resources\Project\Project\ProjectCollection
+     * @return \App\Http\Resources\JsonCollection
      */
     public function index(Request $request)
     {
@@ -30,10 +32,10 @@ class ProjectController extends Controller
 
         $projects = Project::join('project_user', 'projects.id', '=', 'project_user.project_id')
             ->where('project_user.user_id', auth()->user()->id)
-            ->select('projects.*', 'user_id', 'user_name', 'user_email', 'joined', 'request_join_at', 'project_user.id as user_invitation_id')
+            ->select('projects.*', 'user_id', 'user_name', 'user_email', 'joined', 'request_join_at')
             ->paginate($limit);
 
-        return new ProjectCollection($projects);
+        return new JsonCollection($projects);
     }
 
     /**

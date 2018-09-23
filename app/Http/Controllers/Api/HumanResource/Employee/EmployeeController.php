@@ -129,7 +129,7 @@ class EmployeeController extends Controller
      */
     public function show($id)
     {
-        return new EmployeeResource(Employee::findOrFail($id));
+        return new EmployeeResource(Employee::join('persons', 'persons.id', '=', 'employees.person_id')->select('employees.*', 'persons.name as name')->where('employees.id', $id)->first());
     }
 
     /**

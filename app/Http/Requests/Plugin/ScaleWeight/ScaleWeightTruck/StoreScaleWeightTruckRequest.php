@@ -13,7 +13,7 @@ class StoreScaleWeightTruckRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,19 @@ class StoreScaleWeightTruckRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'machine_code' => 'required',
+            'form_number' => 'required',
+            'vendor' => 'required',
+            'driver' => 'required',
+            'license_number' => 'required',
+            'item' => 'required',
+            'gross_weight' => 'required|numeric|min:1',
+            'tare_weight' => 'required|numeric|min:0',
+            'net_weight' => 'required|numeric|min:1',
+            'time_in' => 'required',
+            'time_out' => 'required',
+            'is_delivery' => 'required',
+            'user' => 'required',
         ];
     }
 }

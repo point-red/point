@@ -13,7 +13,7 @@ class StoreScaleWeightItemRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,15 @@ class StoreScaleWeightItemRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'machine_code' => 'required',
+            'form_number' => 'required',
+            'vendor' => 'required',
+            'item' => 'required',
+            'gross_weight' => 'required|numeric|min:1',
+            'tare_weight' => 'required|numeric|min:0',
+            'net_weight' => 'required|numeric|min:1',
+            'time' => 'required',
+            'user' => 'required',
         ];
     }
 }

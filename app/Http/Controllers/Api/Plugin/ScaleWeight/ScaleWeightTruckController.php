@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
+use App\Http\Requests\Plugin\ScaleWeight\ScaleWeightTruck\StoreScaleWeightTruckRequest;
 use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckCollection;
 use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckResource;
 use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;
@@ -24,11 +25,11 @@ class ScaleWeightTruckController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \App\Http\Requests\Plugin\ScaleWeight\ScaleWeightTruck\StoreScaleWeightTruckRequest $request
      *
      * @return \App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckResource
      */
-    public function store(Request $request)
+    public function store(StoreScaleWeightTruckRequest $request)
     {
         $scaleWeightTruck = new ScaleWeightTruck;
         $scaleWeightTruck->form_number = $request->get('form_number');

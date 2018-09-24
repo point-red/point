@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
+use App\Http\Requests\Plugin\ScaleWeight\ScaleWeightItem\StoreScaleWeightItemRequest;
 use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemCollection;
 use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemResource;
 use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
@@ -24,11 +25,11 @@ class ScaleWeightItemController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \App\Http\Requests\Plugin\ScaleWeight\ScaleWeightItem\StoreScaleWeightItemRequest $request
      *
      * @return \App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemResource
      */
-    public function store(Request $request)
+    public function store(StoreScaleWeightItemRequest $request)
     {
         $scaleWeightItem = new ScaleWeightItem;
         $scaleWeightItem->form_number = $request->get('form_number');

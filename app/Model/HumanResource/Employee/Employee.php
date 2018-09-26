@@ -89,4 +89,12 @@ class Employee extends Model
     {
         return $this->belongsTo(get_class(new KpiTemplate()));
     }
+
+    /**
+     * The users that belong to the employee.
+     */
+    public function users()
+    {
+        return $this->belongsToMany('App\Model\Master\User', 'employee_scorer', 'employee_id', 'user_id');
+    }
 }

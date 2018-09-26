@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
+use App\Model\HumanResource\Employee\EmployeeScorer;
 use App\Model\Master\Person;
 use App\Model\Master\PersonEmail;
 use App\Model\Master\PersonPhone;
@@ -175,7 +176,6 @@ class EmployeeController extends Controller
             $personAddress->address = $request->get('addresses')[$i]['address'];
             $personAddress->save();
         }
-
         $deletePhones = array_column($request->get('phones'), 'id');
         PersonPhone::where('person_id', $person->id)->whereNotIn('id', $deletePhones)->delete();
         for ($i = 0; $i < count($request->get('phones')); $i++) {
@@ -188,7 +188,6 @@ class EmployeeController extends Controller
             $personPhone->phone = $request->get('phones')[$i]['phone'];
             $personPhone->save();
         }
-
         $deleted = array_column($request->get('emails'), 'id');
         PersonEmail::where('person_id', $person->id)->whereNotIn('id', $deleted)->delete();
         for ($i = 0; $i < count($request->get('emails')); $i++) {
@@ -201,7 +200,6 @@ class EmployeeController extends Controller
             $personEmail->email = $request->get('emails')[$i]['email'];
             $personEmail->save();
         }
-
         $deleted = array_column($request->get('company_emails'), 'id');
         EmployeeEmail::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
         for ($i = 0; $i < count($request->get('company_emails')); $i++) {
@@ -214,7 +212,6 @@ class EmployeeController extends Controller
             $employeeEmails->email = $request->get('company_emails')[$i]['email'];
             $employeeEmails->save();
         }
-
         $deleted = array_column($request->get('salary_histories'), 'id');
         EmployeeSalaryHistory::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
         for ($i = 0; $i < count($request->get('salary_histories')); $i++) {
@@ -228,7 +225,6 @@ class EmployeeController extends Controller
             $employeeSalaryHistory->salary = $request->get('salary_histories')[$i]['salary'];
             $employeeSalaryHistory->save();
         }
-
         $deleted = array_column($request->get('social_media'), 'id');
         EmployeeSocialMedia::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
         for ($i = 0; $i < count($request->get('social_media')); $i++) {
@@ -242,7 +238,6 @@ class EmployeeController extends Controller
             $employeeSocialMedia->account = $request->get('social_media')[$i]['account'];
             $employeeSocialMedia->save();
         }
-
         $deleted = array_column($request->get('contracts'), 'id');
         EmployeeContract::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
         for ($i = 0; $i < count($request->get('contracts')); $i++) {
@@ -259,6 +254,14 @@ class EmployeeController extends Controller
             $employeeContract->save();
         }
 
+        $scorers = $request->get('scorers');
+        $deleted = array_column($request->get('scorers'), 'id');
+        EmployeeScorer::where('employee_id', $employee->id)->whereNotIn('user_id', $deleted)->delete();
+        foreach ($scorers as $scorer) {
+            if (! $employee->users->contains($scorer['id'])) {
+                $employee->users()->attach($scorer['id']);
+            }
+        }
         DB::connection('tenant')->commit();
 
         return new EmployeeResource($employee);

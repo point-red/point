@@ -20,4 +20,12 @@ class User extends Model
 
         return $names;
     }
+
+    /**
+     * The employees that belong to the user.
+     */
+    public function employees()
+    {
+        return $this->belongsToMany('App\Model\HumanResource\Employee\Employee', 'employee_scorer');
+    }
 }

@@ -47,7 +47,7 @@ class MigrateTenantDatabase extends Command
             $databaseName = 'point_'.$project->code;
 
             // Update tenant database name in configuration
-            config()->set('database.connections.tenant.database', $databaseName);
+            config()->set('database.connections.tenant.database', strtolower($databaseName));
             DB::connection('tenant')->reconnect();
             DB::connection('tenant')->beginTransaction();
 

@@ -7,6 +7,7 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::patch('roles/{roles_id}/permissions/bulk-update', 'RolePermissionController@bulkUpdate');
     Route::apiResource('roles', 'RoleController');
     Route::apiResource('user-invitations', 'UserInvitationController');
+    Route::apiResource('user-roles', 'UserRoleController');
 
     Route::apiResource('warehouses', 'WarehouseController');
 });

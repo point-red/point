@@ -23,7 +23,7 @@ class UserController extends ApiController
     {
         $limit = $request->input('limit') ?? 0;
 
-        return new UserCollection(TenantUser::paginate($limit));
+        return new UserCollection(TenantUser::with('roles')->paginate($limit));
     }
 
     /**
@@ -53,7 +53,7 @@ class UserController extends ApiController
      */
     public function show($id)
     {
-        return new UserResource(TenantUser::findOrFail($id));
+        return new UserResource(TenantUser::with('roles')->findOrFail($id));
     }
 
     /**

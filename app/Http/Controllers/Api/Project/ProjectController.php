@@ -48,13 +48,13 @@ class ProjectController extends Controller
     public function store(StoreProjectRequest $request)
     {
         // User only allowed to create max 1 project
-        $numberOfProject = Project::where('owner_id', auth()->user()->id)->count();
-        if ($numberOfProject >= 1) {
-            return response()->json([
-                'code' => 422,
-                'message' => 'Beta user only allowed to create 1 project',
-            ], 422);
-        }
+//        $numberOfProject = Project::where('owner_id', auth()->user()->id)->count();
+//        if ($numberOfProject >= 1) {
+//            return response()->json([
+//                'code' => 422,
+//                'message' => 'Beta user only allowed to create 1 project',
+//            ], 422);
+//        }
 
         // Create new database for tenant project
         $dbName = 'point_'.strtolower($request->get('code'));

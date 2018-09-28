@@ -96,6 +96,8 @@ class ProjectController extends Controller
         $user = new User;
         $user->id = auth()->user()->id;
         $user->name = auth()->user()->name;
+        $user->first_name = auth()->user()->first_name;
+        $user->last_name = auth()->user()->last_name;
         $user->email = auth()->user()->email;
         $user->save();
 

@@ -100,6 +100,8 @@ class UserInvitationController extends Controller
         $tenantUser = new \App\Model\Master\User;
         $tenantUser->id = $user->id;
         $tenantUser->name = $user->name;
+        $tenantUser->first_name = $user->first_name;
+        $tenantUser->last_name = $user->last_name;
         $tenantUser->email = $user->email;
         $tenantUser->address = $user->address;
         $tenantUser->phone = $user->phone;

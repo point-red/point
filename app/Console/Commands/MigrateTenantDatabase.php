@@ -44,7 +44,7 @@ class MigrateTenantDatabase extends Command
 
         foreach ($projects as $project) {
             // Recreate new database for tenant project
-            $databaseName = 'point_'.$project->code;
+            $databaseName = 'point_'. strtolower($project->code);
 
             // Update tenant database name in configuration
             config()->set('database.connections.tenant.database', strtolower($databaseName));

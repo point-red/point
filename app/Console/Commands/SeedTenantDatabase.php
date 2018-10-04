@@ -48,7 +48,7 @@ class SeedTenantDatabase extends Command
 
         foreach ($projects as $project) {
             $this->line(++$increment . '. Seed : ' . $project->code);
-            config()->set('database.connections.tenant.database', 'point_' . $project->code);
+            config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
             Artisan::call('db:seed', [

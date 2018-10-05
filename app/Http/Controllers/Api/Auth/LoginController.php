@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Controllers\Controller;
 
 class LoginController extends Controller
@@ -10,9 +10,11 @@ class LoginController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \App\Http\Requests\Auth\LoginRequest $request
+     *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(LoginRequest $request)
     {
         // check username for login is name or email
         $usernameLabel = str_contains($request->username, '@') ? 'name' : 'email';

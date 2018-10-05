@@ -17,7 +17,7 @@ class LoginController extends Controller
     public function index(LoginRequest $request)
     {
         // check username for login is name or email
-        $usernameLabel = str_contains($request->username, '@') ? 'name' : 'email';
+        $usernameLabel = str_contains($request->username, '@') ? 'email' : 'name';
 
         $attempt = auth()->guard('web')->attempt([
             $usernameLabel => $request->username,

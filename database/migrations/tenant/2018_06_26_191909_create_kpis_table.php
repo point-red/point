@@ -16,6 +16,7 @@ class CreateKpisTable extends Migration
         Schema::create('kpis', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('employee_id')->index();
+            $table->unsignedInteger('scorer_id')->index();
             $table->string('name');
             $table->date('date');
             $table->timestamps();
@@ -23,6 +24,11 @@ class CreateKpisTable extends Migration
             $table->foreign('employee_id')
                 ->references('id')
                 ->on('employees')
+                ->onDelete('cascade');
+
+            $table->foreign('scorer_id')
+                ->references('id')
+                ->on('users')
                 ->onDelete('cascade');
         });
     }

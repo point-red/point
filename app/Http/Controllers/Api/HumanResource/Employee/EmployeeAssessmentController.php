@@ -59,6 +59,7 @@ class EmployeeAssessmentController extends Controller
         $kpi->name = $template['name'];
         $kpi->date = date('Y-m-d', strtotime($request->get('date')));
         $kpi->employee_id = $employeeId;
+        $kpi->scorer_id = auth()->user()->id;
         $kpi->save();
 
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
 use App\Model\HumanResource\Employee\EmployeeScorer;
 use App\Model\Master\Person;
 use App\Model\Master\PersonEmail;
 use App\Model\Master\PersonPhone;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Model\Master\PersonAddress;
 use App\Http\Controllers\Controller;
@@ -15,7 +18,6 @@ use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeSocialMedia;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 use App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource;
-use App\Http\Resources\HumanResource\Employee\Employee\EmployeeCollection;
 use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
 
@@ -24,11 +26,25 @@ class EmployeeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \App\Http\Resources\HumanResource\Employee\Employee\EmployeeCollection
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \App\Http\Resources\ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new EmployeeCollection(Employee::join('persons', 'persons.id', '=', 'employees.person_id')->select('employees.*', 'persons.name as name')->get());
+        $employees = Employee::leftJoin('persons', 'persons.id', '=', 'employees.person_id')
+            ->leftJoin('employee_genders', 'employee_genders.id', '=', 'employees.employee_gender_id')
+            ->leftJoin('employee_groups', 'employee_groups.id', '=', 'employees.employee_group_id')
+            ->leftJoin('employee_marital_statuses', 'employee_marital_statuses.id', '=', 'employees.employee_marital_status_id')
+            ->leftJoin('employee_religions', 'employee_religions.id', '=', 'employees.employee_religion_id')
+            ->select('persons.name as name', 'persons.personal_identity as personal_identity')
+            ->filters($request->get('filters'))
+            ->fields($request->get('fields'))
+            ->sortBy($request->get('sort_by'))
+            ->includes($request->get('includes'))
+            ->paginate($request->get('paginate') ?? 100);
+
+        return new ApiCollection($employees);
     }
 
     /**
@@ -124,13 +140,27 @@ class EmployeeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param  int                     $id
      *
-     * @return \App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource
+     * @return \App\Http\Resources\ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return new EmployeeResource(Employee::join('persons', 'persons.id', '=', 'employees.person_id')->select('employees.*', 'persons.name as name')->where('employees.id', $id)->first());
+        $employee = Employee::leftJoin('persons', 'persons.id', '=', 'employees.person_id')
+            ->leftJoin('employee_genders', 'employee_genders.id', '=', 'employees.employee_gender_id')
+            ->leftJoin('employee_groups', 'employee_groups.id', '=', 'employees.employee_group_id')
+            ->leftJoin('employee_marital_statuses', 'employee_marital_statuses.id', '=', 'employees.employee_marital_status_id')
+            ->leftJoin('employee_religions', 'employee_religions.id', '=', 'employees.employee_religion_id')
+            ->where('employees.id', $id)
+            ->select('employees.*', 'persons.name as name', 'persons.personal_identity as personal_identity')
+            ->filters($request->get('filters'))
+            ->sortBy($request->get('sort_by'))
+            ->fields($request->get('fields'))
+            ->includes($request->get('includes'))
+            ->first();
+
+        return new ApiResource($employee);
     }
 
     /**
@@ -258,8 +288,8 @@ class EmployeeController extends Controller
         $deleted = array_column($request->get('scorers'), 'id');
         EmployeeScorer::where('employee_id', $employee->id)->whereNotIn('user_id', $deleted)->delete();
         foreach ($scorers as $scorer) {
-            if (! $employee->users->contains($scorer['id'])) {
-                $employee->users()->attach($scorer['id']);
+            if (! $employee->scorers->contains($scorer['id'])) {
+                $employee->scorers()->attach($scorer['id']);
             }
         }
         DB::connection('tenant')->commit();

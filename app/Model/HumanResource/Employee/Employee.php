@@ -3,12 +3,15 @@
 namespace App\Model\HumanResource\Employee;
 
 use App\Model\Master\Person;
+use App\Traits\EloquentFilters;
 use Illuminate\Database\Eloquent\Model;
 use App\Model\HumanResource\Kpi\KpiTemplate;
 
 class Employee extends Model
 {
     protected $connection = 'tenant';
+
+    use EloquentFilters;
 
     /**
      * Get the person that owns the employee.
@@ -91,9 +94,9 @@ class Employee extends Model
     }
 
     /**
-     * The users that belong to the employee.
+     * The scorers that belong to the employee.
      */
-    public function users()
+    public function scorers()
     {
         return $this->belongsToMany('App\Model\Master\User', 'employee_scorer', 'employee_id', 'user_id');
     }

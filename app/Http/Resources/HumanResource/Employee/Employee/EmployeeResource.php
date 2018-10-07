@@ -40,7 +40,7 @@ class EmployeeResource extends JsonResource
             'company_emails' => $this->companyEmails,
             'contracts' => $this->contracts,
             'salary_histories' => $this->salaryHistories,
-            'scorers' => $this->users,
+            'scorers' => $this->scorers,
             'kpi_template_id' => $this->kpi_template_id,
         ];
     }

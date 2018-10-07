@@ -14,7 +14,7 @@ class RolePermissionController extends Controller
      *
      * @param $roleId
      *
-     * @return \App\Http\Resources\JsonCollection
+     * @return array
      */
     public function index($roleId)
     {

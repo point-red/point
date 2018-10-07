@@ -16,6 +16,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
 
     Route::prefix('auth')->namespace('Auth')->group(function () {
         Route::post('login', 'LoginController@index');
+        Route::post('fetch', 'FetchController@index');
         Route::get('reset-password-request', 'ResetPasswordController@index');
         Route::get('reset-password', 'ResetPasswordController@store');
     });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Controllers\Controller;
+use App\Model\Project\Project;
 
 class LoginController extends Controller
 {
@@ -33,12 +34,26 @@ class LoginController extends Controller
 
         $user = auth()->guard('web')->user();
 
-        $token = $user->createToken('Token Name')->accessToken;
-
-        $user->access_token = $token;
+        $tokenResult = $user->createToken($user->name);
 
         $response = $user;
+        $response->access_token = $tokenResult->accessToken;
+        $response->token_type = 'Bearer';
+        $response->token_id = $tokenResult->token->id;
+        $response->token_expires_at = $tokenResult->token->expires_at;
 
-        return response()->json($response);
+        if ($request->header('Tenant')) {
+            $project = Project::where('code', $request->header('Tenant'))->first();
+
+            if ($project) {
+                $response->tenant_code = $project->code;
+                $response->tenant_name = $project->name;
+                $response->permissions = tenant($user->id)->getPermissions();
+            }
+        }
+
+        return response()->json([
+            'data' => $response
+        ]);
     }
 }

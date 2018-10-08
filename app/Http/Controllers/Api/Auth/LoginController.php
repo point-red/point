@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Controllers\Controller;
 use App\Model\Project\Project;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 
 class LoginController extends Controller
 {
@@ -22,13 +22,13 @@ class LoginController extends Controller
 
         $attempt = auth()->guard('web')->attempt([
             $usernameLabel => $request->username,
-            'password' => $request->password
+            'password' => $request->password,
         ]);
 
-        if (!$attempt) {
+        if (! $attempt) {
             return response()->json([
                 'code' => 401,
-                'message' => 'Unauthenticated'
+                'message' => 'Unauthenticated',
             ], 401);
         }
 
@@ -53,7 +53,7 @@ class LoginController extends Controller
         }
 
         return response()->json([
-            'data' => $response
+            'data' => $response,
         ]);
     }
 }

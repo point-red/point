@@ -26,7 +26,7 @@ class ProjectResource extends JsonResource
           'invitation_code' => $this->invitation_code,
           'invitation_code_enabled' => $this->invitation_code_enabled,
           'created_at' => $this->created_at,
-          'updated_at' => $this->updated_at
+          'updated_at' => $this->updated_at,
         ];
     }
 }

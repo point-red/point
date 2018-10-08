@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\User;
+use App\Model\Auth\PasswordReset;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ResetPasswordRequestMail;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\UpdatePasswordRequest;
-use App\Mail\ResetPasswordRequestMail;
-use App\Http\Controllers\Controller;
-use App\Model\Auth\PasswordReset;
-use App\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 class ResetPasswordController extends Controller
 {
@@ -17,10 +17,10 @@ class ResetPasswordController extends Controller
     {
         $passwordReset = new PasswordReset;
         $passwordReset->email = $request->get('email');
-        $passwordReset->token = md5($request->get('email') . '' . now());
+        $passwordReset->token = md5($request->get('email').''.now());
         $passwordReset->save();
 
-        $url = 'https://' . env('TENANT_DOMAIN') . '/auth/reset-password?token=' . $passwordReset->token;
+        $url = 'https://'.env('TENANT_DOMAIN').'/auth/reset-password?token='.$passwordReset->token;
 
         Mail::to([$request->get('email')])->queue(new ResetPasswordRequestMail($url));
     }
@@ -33,7 +33,7 @@ class ResetPasswordController extends Controller
             return response()->json([
                 'code' => 422,
                 'message' => 'Update password failed',
-                'errors' => []
+                'errors' => [],
             ], 422);
         }
 
@@ -48,7 +48,7 @@ class ResetPasswordController extends Controller
         DB::connection('mysql')->commit();
 
         return response()->json([
-           'message' => 'Update password success'
+           'message' => 'Update password success',
         ]);
     }
 }

@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class MigrateTenantDatabase extends Command
 {
@@ -44,7 +44,7 @@ class MigrateTenantDatabase extends Command
 
         foreach ($projects as $project) {
             // Recreate new database for tenant project
-            $databaseName = 'point_'. strtolower($project->code);
+            $databaseName = 'point_'.strtolower($project->code);
 
             // Update tenant database name in configuration
             config()->set('database.connections.tenant.database', strtolower($databaseName));
@@ -57,7 +57,7 @@ class MigrateTenantDatabase extends Command
                 '--force' => true,
             ]);
 
-            info($project->code . ' migrated');
+            info($project->code.' migrated');
         }
     }
 }

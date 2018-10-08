@@ -44,7 +44,7 @@ class ResetTenantDatabase extends Command
         $project = Project::where('code', $this->argument('project'))->first();
 
         // Recreate new database for tenant project
-        $databaseName = 'point_'. strtolower($project->code);
+        $databaseName = 'point_'.strtolower($project->code);
 
         Artisan::call('tenant:create-database', [
             'db_name' => $databaseName,

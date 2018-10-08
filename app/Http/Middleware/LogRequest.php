@@ -24,6 +24,6 @@ class LogRequest
         $end = microtime(true);
         $diff = $end - $start;
 
-        log_object('[' . $request->method() . '] ' . $request->url() . ' ' . $diff);
+        log_object('['.$request->method().'] '.$request->url().' '.$diff);
     }
 }

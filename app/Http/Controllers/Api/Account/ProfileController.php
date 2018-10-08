@@ -62,7 +62,7 @@ class ProfileController extends Controller
         $user->save();
 
         foreach ($user->projects as $project) {
-            config()->set('database.connections.tenant.database', 'point_'. strtolower($project->code));
+            config()->set('database.connections.tenant.database', 'point_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
             DB::connection('tenant')->beginTransaction();
 

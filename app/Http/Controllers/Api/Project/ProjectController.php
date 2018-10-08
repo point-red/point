@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use App\Http\Requests\Project\Project\DeleteProjectRequest;
-use App\Http\Resources\ApiCollection;
 use App\Model\Master\User;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Resources\Project\Project\ProjectResource;
-use App\Http\Resources\Project\Project\ProjectCollection;
 use App\Http\Requests\Project\Project\StoreProjectRequest;
+use App\Http\Requests\Project\Project\DeleteProjectRequest;
 use App\Http\Requests\Project\Project\UpdateProjectRequest;
 
 class ProjectController extends Controller

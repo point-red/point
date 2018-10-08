@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Model\Auth\Role;
 use App\User;
+use App\Model\Auth\Role;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Master\UserInvitation\UserInvitationResource;
 use App\Http\Resources\Master\UserInvitation\UserInvitationCollection;
 use App\Http\Requests\Master\UserInvitation\StoreUserInvitationRequest;
-use Illuminate\Support\Facades\DB;
 
 class UserInvitationController extends Controller
 {

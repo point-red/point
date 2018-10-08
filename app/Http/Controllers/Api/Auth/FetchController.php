@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Model\Project\Project;
 use Illuminate\Http\Request;
+use App\Model\Project\Project;
+use App\Http\Controllers\Controller;
 
 class FetchController extends Controller
 {
@@ -20,7 +20,7 @@ class FetchController extends Controller
         if (! $request->user()) {
             return response()->json([
                 'code' => 401,
-                'message' => 'Unauthenticated'
+                'message' => 'Unauthenticated',
             ], 401);
         }
 
@@ -36,7 +36,7 @@ class FetchController extends Controller
         }
 
         return response()->json([
-            'data' => $response
+            'data' => $response,
         ]);
     }
 }

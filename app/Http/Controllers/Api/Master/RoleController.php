@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Http\Resources\Master\Role\RoleResource;
 use App\Model\Auth\Role;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Master\Role\RoleResource;
 use App\Http\Resources\Master\Role\RoleCollection;
 
 class RoleController extends Controller

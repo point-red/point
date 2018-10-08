@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
-use App\Http\Requests\Plugin\ScaleWeight\ScaleWeightItem\StoreScaleWeightItemRequest;
-use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemCollection;
-use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemResource;
-use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
+use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemResource;
+use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemCollection;
+use App\Http\Requests\Plugin\ScaleWeight\ScaleWeightItem\StoreScaleWeightItemRequest;
 
 class ScaleWeightItemController extends Controller
 {
@@ -19,6 +19,7 @@ class ScaleWeightItemController extends Controller
     public function index()
     {
         $scaleWeightItem = ScaleWeightItem::all();
+
         return new ScaleWeightItemCollection($scaleWeightItem);
     }
 

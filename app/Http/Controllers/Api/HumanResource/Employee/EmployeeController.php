@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\HumanResource\Employee\EmployeeScorer;
 use App\Model\Master\Person;
+use Illuminate\Http\Request;
 use App\Model\Master\PersonEmail;
 use App\Model\Master\PersonPhone;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Model\Master\PersonAddress;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\HumanResource\Employee\EmployeeEmail;
+use App\Model\HumanResource\Employee\EmployeeScorer;
 use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeSocialMedia;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;

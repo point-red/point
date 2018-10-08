@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
-use Closure;
 use Illuminate\Support\Facades\DB;
 
 class TenantMiddleware
@@ -27,12 +27,12 @@ class TenantMiddleware
             // Permission denied, the project is not owned by that user
             if (auth()->user()) {
                 $project = Project::where('code', $request->header('Tenant'))->first();
-                if (!$project) {
+                if (! $project) {
                     return $next($request);
                 }
 
                 $projectUser = ProjectUser::where('project_id', $project->id)->where('user_id', auth()->user()->id);
-                if (!$projectUser) {
+                if (! $projectUser) {
                     return $next($request);
                 }
             }

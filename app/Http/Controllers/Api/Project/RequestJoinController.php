@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use App\Http\Resources\Master\UserInvitation\UserInvitationCollection;
-use App\Http\Resources\Master\UserInvitation\UserInvitationResource;
+use App\User;
 use App\Model\Auth\Role;
+use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
-use App\User;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Master\UserInvitation\UserInvitationResource;
+use App\Http\Resources\Master\UserInvitation\UserInvitationCollection;
 
 class RequestJoinController extends Controller
 {
@@ -43,7 +43,7 @@ class RequestJoinController extends Controller
         // There is no project with this invitation code
         $invitationCode = strtoupper($request->get('invitation_code'));
         $project = Project::where('invitation_code', $invitationCode)->first();
-        if (!$project) {
+        if (! $project) {
             return response()->json(['message' => 'Invitation code invalid'], 422);
         }
 
@@ -136,7 +136,7 @@ class RequestJoinController extends Controller
 
         return response()->json([
             'code' => '200',
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 }

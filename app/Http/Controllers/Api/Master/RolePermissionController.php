@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Model\Auth\Permission;
 use App\Model\Auth\Role;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Model\Auth\Permission;
+use App\Http\Controllers\Controller;
 
 class RolePermissionController extends Controller
 {
@@ -20,6 +20,7 @@ class RolePermissionController extends Controller
     {
         $role = Role::findOrFail($roleId);
         $names = array_pluck($role->permissions, 'name');
+
         return $names;
     }
 
@@ -39,7 +40,7 @@ class RolePermissionController extends Controller
             $permission = Permission::findByName($permissionNames[$i]);
             if ($request->get('action') == 'give') {
                 $role->givePermissionTo($permission);
-            } else if ($request->get('action') == 'revoke') {
+            } elseif ($request->get('action') == 'revoke') {
                 $role->revokePermissionTo($permission);
             }
         }
@@ -65,7 +66,7 @@ class RolePermissionController extends Controller
 
         return response()->json([
             'code' => '200',
-            'message' => 'update success'
+            'message' => 'update success',
         ]);
     }
 }

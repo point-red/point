@@ -16,7 +16,7 @@ class DeleteProjectRequest extends FormRequest
     {
         $project = Project::find($this->route('project'));
         // if project not exists
-        if (!$project) {
+        if (! $project) {
             return false;
         }
         // if user is not owner of the project

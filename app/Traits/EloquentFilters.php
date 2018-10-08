@@ -2,9 +2,10 @@
 
 namespace App\Traits;
 
-trait EloquentFilters {
-
-    public function scopeSortBy($query, $values) {
+trait EloquentFilters
+{
+    public function scopeSortBy($query, $values)
+    {
         if ($values) {
             $fields = explode(',', $values);
             foreach ($fields as $value) {
@@ -15,7 +16,8 @@ trait EloquentFilters {
         }
     }
 
-    public function scopeFields($query, $values) {
+    public function scopeFields($query, $values)
+    {
         if ($values) {
             foreach (explode(',', $values) as $value) {
                 $query->addSelect($value);
@@ -23,23 +25,25 @@ trait EloquentFilters {
         }
     }
 
-    public function scopeFilters($query, $values) {
+    public function scopeFilters($query, $values)
+    {
         if ($values) {
             // If values is javascript object then convert it to array
-            if (!is_array($values)) {
+            if (! is_array($values)) {
                 $values = json_decode($values, true);
             }
 
             foreach ($values as $key => $value) {
                 // search each word that separate by space
                 foreach (explode(' ', $value) as $word) {
-                    $query->where($key, 'like', '%' . $word . '%');
+                    $query->where($key, 'like', '%'.$word.'%');
                 }
             }
         }
     }
 
-    public function scopeIncludes($query, $values) {
+    public function scopeIncludes($query, $values)
+    {
         if ($values) {
             foreach (explode(',', $values) as $value) {
                 if ($this->hasRelation($value)) {

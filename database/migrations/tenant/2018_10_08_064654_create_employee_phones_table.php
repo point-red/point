@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePersonPhonesTable extends Migration
+class CreateEmployeePhonesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,18 @@ class CreatePersonPhonesTable extends Migration
      */
     public function up()
     {
-        Schema::create('person_phones', function (Blueprint $table) {
+        Schema::create('employee_phones', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('person_id')->index();
+            $table->unsignedInteger('employee_id')->index();
+            $table->string('country_code')->nullable();
             $table->string('phone');
             $table->boolean('is_main')->default(false);
-            $table->timestamps();
             // Relationship
-            $table->foreign('person_id')
+            $table->foreign('employee_id')
                 ->references('id')
-                ->on('persons')
+                ->on('employees')
                 ->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -34,6 +35,6 @@ class CreatePersonPhonesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('person_phones');
+        Schema::dropIfExists('employee_phones');
     }
 }

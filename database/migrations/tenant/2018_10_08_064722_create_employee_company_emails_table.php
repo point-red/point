@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePersonAddressesTable extends Migration
+class CreateEmployeeCompanyEmailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,17 @@ class CreatePersonAddressesTable extends Migration
      */
     public function up()
     {
-        Schema::create('person_addresses', function (Blueprint $table) {
+        Schema::create('employee_company_emails', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('person_id')->index();
-            $table->string('address');
+            $table->unsignedInteger('employee_id')->index();
+            $table->string('email');
             $table->boolean('is_main')->default(false);
-            $table->timestamps();
             // Relationship
-            $table->foreign('person_id')
+            $table->foreign('employee_id')
                 ->references('id')
-                ->on('persons')
+                ->on('employees')
                 ->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -34,6 +34,6 @@ class CreatePersonAddressesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('person_addresses');
+        Schema::dropIfExists('employee_company_emails');
     }
 }

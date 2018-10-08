@@ -15,8 +15,10 @@ class CreateEmployeesTable extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('code')->nullable()->unique();
+            $table->string('name');
+            $table->string('personal_identity')->nullable();
             // Data related to personal info
-            $table->unsignedInteger('person_id')->index();
             $table->string('last_education')->nullable();
             $table->date('birth_date')->nullable();
             $table->string('birth_place')->nullable();
@@ -29,13 +31,9 @@ class CreateEmployeesTable extends Migration
             $table->date('join_date')->nullable();
             $table->string('job_title')->nullable();
             $table->unsignedInteger('kpi_template_id')->nullable()->index();
+            $table->text('notes')->nullable();
             $table->timestamps();
             // Relationship
-            $table->foreign('person_id')
-                ->references('id')
-                ->on('persons')
-                ->onDelete('cascade');
-
             $table->foreign('employee_group_id')
                 ->references('id')
                 ->on('employee_groups')

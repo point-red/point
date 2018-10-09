@@ -14,6 +14,10 @@ class RegisterController extends ApiController
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->address = $request->address;
+        $user->phone = $request->phone;
         $user->save();
 
         return new UserResource($user);

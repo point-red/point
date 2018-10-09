@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
+use App\Http\Resources\ApiResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Employee\Employee;
-use App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource;
 
 class AssignAssessmentController extends Controller
 {
@@ -15,7 +15,7 @@ class AssignAssessmentController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @param                           $employeeId
      *
-     * @return \App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource
+     * @return \App\Http\Resources\ApiResource
      */
     public function store(Request $request, $employeeId)
     {
@@ -23,7 +23,7 @@ class AssignAssessmentController extends Controller
         $employee->kpi_template_id = $request->get('kpi_template_id');
         $employee->save();
 
-        return new EmployeeResource($employee);
+        return new ApiResource($employee);
     }
 
     /**
@@ -32,12 +32,14 @@ class AssignAssessmentController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @param                           $employeeId
      *
-     * @return void
+     * @return \App\Http\Resources\ApiResource
      */
     public function update(Request $request, $employeeId)
     {
         $employee = Employee::findOrFail($employeeId);
         $employee->kpi_template_id = $request->get('kpi_template_id');
         $employee->save();
+
+        return new ApiResource($employee);
     }
 }

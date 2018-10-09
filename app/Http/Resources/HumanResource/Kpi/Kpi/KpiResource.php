@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources\HumanResource\Kpi\KpiCategory;
 
+use App\Http\Resources\ApiResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\HumanResource\Kpi\KpiGroup\KpiGroupResource;
-use App\Http\Resources\HumanResource\Employee\Employee\EmployeeResource;
 
 class KpiResource extends JsonResource
 {
@@ -20,7 +20,7 @@ class KpiResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'date' => $this->date,
-            'employee' => new EmployeeResource($this->employee),
+            'employee' => new ApiResource($this->employee),
             'weight' => collect($this->indicators)->sum('weight'),
             'target' => collect($this->indicators)->sum('target'),
             'score' => collect($this->indicators)->sum('score'),

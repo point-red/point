@@ -2,10 +2,13 @@
 
 namespace App\Model\HumanResource\Employee;
 
+use App\Model\HumanResource\Employee\Employee\EmployeeAddress;
+use App\Model\HumanResource\Employee\Employee\EmployeeCompanyEmail;
+use App\Model\HumanResource\Employee\Employee\EmployeePhone;
+use App\Model\HumanResource\Kpi\KpiTemplate;
 use App\Model\Master\Person;
 use App\Traits\EloquentFilters;
 use Illuminate\Database\Eloquent\Model;
-use App\Model\HumanResource\Kpi\KpiTemplate;
 
 class Employee extends Model
 {
@@ -54,11 +57,35 @@ class Employee extends Model
     }
 
     /**
+     * Get the phones for the employee.
+     */
+    public function phones()
+    {
+        return $this->hasMany(get_class(new EmployeePhone()));
+    }
+
+    /**
+     * Get the addresses for the employee.
+     */
+    public function addresses()
+    {
+        return $this->hasMany(get_class(new EmployeeAddress()));
+    }
+
+    /**
+     * Get the emails for the employee.
+     */
+    public function emails()
+    {
+        return $this->hasMany(get_class(new EmployeeEmail()));
+    }
+
+    /**
      * Get the emails for the employee.
      */
     public function companyEmails()
     {
-        return $this->hasMany(get_class(new EmployeeEmail()));
+        return $this->hasMany(get_class(new EmployeeCompanyEmail()));
     }
 
     /**

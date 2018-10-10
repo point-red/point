@@ -46,7 +46,7 @@ class EmployeeController extends Controller
             ->fields($request->get('fields'))
             ->sortBy($request->get('sort_by'))
             ->includes($request->get('includes'))
-            ->paginate($request->get('paginate') ?? 100);
+            ->paginate($request->get('paginate') ?? 20);
 
         $additional = [];
         foreach (explode(',', $request->get('additional')) as $addition) {

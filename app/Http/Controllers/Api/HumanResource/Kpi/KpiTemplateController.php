@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Kpi\KpiTemplate;
@@ -9,6 +11,7 @@ use App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateResource;
 use App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateCollection;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplate\StoreKpiTemplateRequest;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplate\UpdateKpiTemplateRequest;
+use Illuminate\Support\Facades\DB;
 
 class KpiTemplateController extends Controller
 {
@@ -17,13 +20,21 @@ class KpiTemplateController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      *
-     * @return \App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateCollection
+     * @return \App\Http\Resources\ApiCollection
      */
     public function index(Request $request)
     {
-        $limit = $request->input('limit') ?? 0;
+        $templates = KpiTemplate::with('groups.indicators.scores')
+            ->select('kpi_templates.*')
+            ->withCount(['indicators as target' => function($query) {
+                $query->select(DB::raw('sum(target)'));
+            }])
+            ->withCount(['indicators as weight' => function($query) {
+                $query->select(DB::raw('sum(weight)'));
+            }])
+            ->paginate($request->input('limit') ?? 20);
 
-        return new KpiTemplateCollection(KpiTemplate::get());
+        return new ApiCollection($templates);
     }
 
     /**
@@ -47,11 +58,22 @@ class KpiTemplateController extends Controller
      *
      * @param  int  $id
      *
-     * @return \App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateResource
+     * @return \App\Http\Resources\ApiResource
      */
     public function show($id)
     {
-        return new KpiTemplateResource(KpiTemplate::findOrFail($id));
+        $templates = KpiTemplate::with('groups.indicators.scores')
+            ->select('kpi_templates.*')
+            ->where('kpi_templates.id', $id)
+            ->withCount(['indicators as target' => function($query) {
+                $query->select(DB::raw('sum(target)'));
+            }])
+            ->withCount(['indicators as weight' => function($query) {
+                $query->select(DB::raw('sum(weight)'));
+            }])
+            ->first();
+
+        return new ApiResource($templates);
     }
 
     /**

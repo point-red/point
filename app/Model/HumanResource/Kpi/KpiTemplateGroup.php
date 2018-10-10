@@ -8,6 +8,18 @@ class KpiTemplateGroup extends Model
 {
     protected $connection = 'tenant';
 
+    protected $appends = ['target', 'weight'];
+
+    public function getTargetAttribute()
+    {
+        return $this->indicators->sum('target');
+    }
+
+    public function getWeightAttribute()
+    {
+        return $this->indicators->sum('weight');
+    }
+
     /**
      * Get the kpi template that owns the group.
      */

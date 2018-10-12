@@ -2,6 +2,7 @@
 
 namespace App\Model\HumanResource\Kpi;
 
+use App\Model\Master\User;
 use Illuminate\Database\Eloquent\Model;
 use App\Model\HumanResource\Employee\Employee;
 
@@ -31,5 +32,13 @@ class Kpi extends Model
     public function employee()
     {
         return $this->belongsTo(get_class(new Employee()));
+    }
+
+    /**
+     * Get the scorer that owns the kpi.
+     */
+    public function scorer()
+    {
+        return $this->belongsTo(get_class(new User()));
     }
 }

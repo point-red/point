@@ -21,10 +21,11 @@ class KpiResource extends JsonResource
             'name' => $this->name,
             'date' => $this->date,
             'employee' => new ApiResource($this->employee),
-            'weight' => collect($this->indicators)->sum('weight'),
-            'target' => collect($this->indicators)->sum('target'),
-            'score' => collect($this->indicators)->sum('score'),
-            'score_percentage' => collect($this->indicators)->sum('score_percentage'),
+            'weight' => $this->weight,
+            'target' => $this->target,
+            'score' => $this->score,
+            'score_percentage' => $this->score_percentage,
+            'scorer' => new ApiResource($this->scorer),
             'groups' => KpiGroupResource::collection($this->groups),
         ];
     }

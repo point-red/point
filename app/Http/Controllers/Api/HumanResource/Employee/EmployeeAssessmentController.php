@@ -22,7 +22,24 @@ class EmployeeAssessmentController extends Controller
      */
     public function index($employeeId)
     {
-        $kpis = Kpi::where('employee_id', $employeeId)->orderBy('date', 'asc')->get();
+        $type = request()->get('type');
+
+        $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
+            ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
+            ->select('kpis.*')
+            ->addSelect(DB::raw('sum(kpi_indicators.weight) / count(DISTINCT kpis.id) as weight'))
+            ->addSelect(DB::raw('sum(kpi_indicators.target) / count(DISTINCT kpis.id) as target'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score) / count(DISTINCT kpis.id) as score'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
+            ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'));
+
+        if ($type === 'single') $kpis = $kpis->groupBy('kpis.id');
+        if ($type === 'daily') $kpis = $kpis->groupBy('kpis.date');
+        if ($type === 'weekly') $kpis = $kpis->groupBy(DB::raw('yearweek(kpis.date)'));
+        if ($type === 'monthly') $kpis = $kpis->groupBy(DB::raw('year(kpis.date)'), DB::raw('month(kpis.date)'));
+        if ($type === 'yearly') $kpis = $kpis->groupBy(DB::raw('year(kpis.date)'));
+
+        $kpis = $kpis->where('employee_id', $employeeId)->paginate(20);
 
         $dates = [];
         $scores = [];
@@ -94,7 +111,19 @@ class EmployeeAssessmentController extends Controller
      */
     public function show($employeeId, $id)
     {
-        return new KpiResource(Kpi::where('employee_id', $employeeId)->where('id', $id)->first());
+        $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
+            ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
+            ->select('kpis.*')
+            ->addSelect(DB::raw('sum(kpi_indicators.weight) / count(DISTINCT kpis.id) as weight'))
+            ->addSelect(DB::raw('sum(kpi_indicators.target) / count(DISTINCT kpis.id) as target'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score) / count(DISTINCT kpis.id) as score'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
+            ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'));
+
+
+        $kpis = $kpis->where('employee_id', $employeeId)->where('id', $id)->first();
+
+        return new KpiResource($kpis);
     }
 
     /**

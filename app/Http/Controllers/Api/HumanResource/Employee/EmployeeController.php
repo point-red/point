@@ -214,8 +214,8 @@ class EmployeeController extends Controller
                 $employeeAddress = Employee\EmployeeAddress::findOrFail($request->get('addresses')[$i]['id']);
             } else {
                 $employeeAddress = new Employee\EmployeeAddress;
+                $employeeAddress->employee_id = $employee->id;
             }
-            $employeeAddress->employee_id = $employee->id;
             $employeeAddress->address = $request->get('addresses')[$i]['address'];
             $employeeAddress->save();
         }
@@ -226,8 +226,8 @@ class EmployeeController extends Controller
                 $employeePhone = Employee\EmployeePhone::findOrFail($request->get('phones')[$i]['id']);
             } else {
                 $employeePhone = new Employee\EmployeePhone;
+                $employeePhone->employee_id = $employee->id;
             }
-            $employeePhone->employee_id = $employee->id;
             $employeePhone->phone = $request->get('phones')[$i]['phone'];
             $employeePhone->save();
         }
@@ -238,8 +238,8 @@ class EmployeeController extends Controller
                 $employeeCompanyEmail = Employee\EmployeeCompanyEmail::findOrFail($request->get('company_emails')[$i]['id']);
             } else {
                 $employeeCompanyEmail = new Employee\EmployeeCompanyEmail;
+                $employeeCompanyEmail->employee_id = $employee->id;
             }
-            $employeeCompanyEmail->employee_id = $employee->id;
             $employeeCompanyEmail->email = $request->get('company_emails')[$i]['email'];
             $employeeCompanyEmail->save();
         }
@@ -250,8 +250,8 @@ class EmployeeController extends Controller
                 $employeeEmails = EmployeeEmail::findOrFail($request->get('emails')[$i]['id']);
             } else {
                 $employeeEmails = new EmployeeEmail;
+                $employeeEmails->employee_id = $employee->id;
             }
-            $employeeEmails->employee_id = $employee->id;
             $employeeEmails->email = $request->get('emails')[$i]['email'];
             $employeeEmails->save();
         }
@@ -262,8 +262,8 @@ class EmployeeController extends Controller
                 $employeeSalaryHistory = EmployeeSalaryHistory::findOrFail($request->get('salary_histories')[$i]['id']);
             } else {
                 $employeeSalaryHistory = new EmployeeSalaryHistory;
+                $employeeSalaryHistory->employee_id = $employee->id;
             }
-            $employeeSalaryHistory->employee_id = $employee->id;
             $employeeSalaryHistory->date = date('Y-m-d', strtotime($request->get('salary_histories')[$i]['date']));
             $employeeSalaryHistory->salary = $request->get('salary_histories')[$i]['salary'];
             $employeeSalaryHistory->save();
@@ -275,8 +275,8 @@ class EmployeeController extends Controller
                 $employeeSocialMedia = EmployeeSocialMedia::findOrFail($request->get('social_media')[$i]['id']);
             } else {
                 $employeeSocialMedia = new EmployeeSocialMedia;
+                $employeeSocialMedia->employee_id = $employee->id;
             }
-            $employeeSocialMedia->employee_id = $employee->id;
             $employeeSocialMedia->type = $request->get('social_media')[$i]['type'];
             $employeeSocialMedia->account = $request->get('social_media')[$i]['account'];
             $employeeSocialMedia->save();
@@ -288,8 +288,8 @@ class EmployeeController extends Controller
                 $employeeContract = EmployeeContract::findOrFail($request->get('contracts')[$i]['id']);
             } else {
                 $employeeContract = new EmployeeContract;
+                $employeeContract->employee_id = $employee->id;
             }
-            $employeeContract->employee_id = $employee->id;
             $employeeContract->contract_begin = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_begin']));
             $employeeContract->contract_end = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_end']));
             $employeeContract->link = '';

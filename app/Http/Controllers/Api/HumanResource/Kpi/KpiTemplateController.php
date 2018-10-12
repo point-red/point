@@ -32,7 +32,7 @@ class KpiTemplateController extends Controller
             ->withCount(['indicators as weight' => function($query) {
                 $query->select(DB::raw('sum(weight)'));
             }])
-            ->paginate($request->input('limit') ?? 20);
+            ->paginate($request->input('limit') ?? 50);
 
         return new ApiCollection($templates);
     }

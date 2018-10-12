@@ -21,9 +21,7 @@ class UserController extends ApiController
      */
     public function index(Request $request)
     {
-        $limit = $request->input('limit') ?? 0;
-
-        return new UserCollection(TenantUser::with('roles')->paginate($limit));
+        return new UserCollection(TenantUser::with('roles')->paginate($limit ?? 100));
     }
 
     /**

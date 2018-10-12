@@ -118,10 +118,10 @@ class EmployeeAssessmentController extends Controller
             ->addSelect(DB::raw('sum(kpi_indicators.target) / count(DISTINCT kpis.id) as target'))
             ->addSelect(DB::raw('sum(kpi_indicators.score) / count(DISTINCT kpis.id) as score'))
             ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
-            ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'));
-
-
-        $kpis = $kpis->where('employee_id', $employeeId)->where('id', $id)->first();
+            ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'))
+            ->where('employee_id', $employeeId)
+            ->where('kpis.id', $id)
+            ->first();
 
         return new KpiResource($kpis);
     }

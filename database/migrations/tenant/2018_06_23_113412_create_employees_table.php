@@ -37,27 +37,27 @@ class CreateEmployeesTable extends Migration
             $table->foreign('employee_group_id')
                 ->references('id')
                 ->on('employee_groups')
-                ->onDelete('cascade');
+                ->onDelete('set null');
 
             $table->foreign('employee_gender_id')
                 ->references('id')
                 ->on('employee_genders')
-                ->onDelete('cascade');
+                ->onDelete('set null');
 
             $table->foreign('employee_marital_status_id')
                 ->references('id')
                 ->on('employee_marital_statuses')
-                ->onDelete('cascade');
+                ->onDelete('set null');
 
             $table->foreign('employee_religion_id')
                 ->references('id')
                 ->on('employee_religions')
-                ->onDelete('cascade');
+                ->onDelete('set null');
 
             $table->foreign('kpi_template_id')
                 ->references('id')
                 ->on('kpi_templates')
-                ->onDelete('cascade');
+                ->onDelete('set null');
         });
     }
 

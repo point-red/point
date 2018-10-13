@@ -10,4 +10,7 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::apiResource('user-roles', 'UserRoleController');
 
     Route::apiResource('warehouses', 'WarehouseController');
+
+    Route::apiResource('customer-groups', 'CustomerGroupController');
+    Route::apiResource('customers', 'CustomerController');
 });

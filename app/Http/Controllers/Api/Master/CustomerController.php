@@ -18,13 +18,15 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        return new ApiCollection(Customer::all());
+        $customers = Customer::with('group')->paginate(request()->get('paginate') ?? 20);
+
+        return new ApiCollection($customers);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \App\Http\Requests\Master\Customer\StoreCustomerRequest $request
      *
      * @return \App\Http\Resources\ApiResource
      */
@@ -52,10 +54,10 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param  int                     $id
+     * @param \App\Http\Requests\Master\Customer\UpdateCustomerRequest $request
+     * @param $id
      *
-     * @return string
+     * @return \App\Http\Resources\ApiResource
      */
     public function update(UpdateCustomerRequest $request, $id)
     {
@@ -76,5 +78,7 @@ class CustomerController extends Controller
     {
         $customer = Customer::findOrFail($id);
         $customer->delete();
+
+        return response()->json([], 204);
     }
 }

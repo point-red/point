@@ -39,7 +39,7 @@ class EmployeeAssessmentController extends Controller
         if ($type === 'monthly') $kpis = $kpis->groupBy(DB::raw('year(kpis.date)'), DB::raw('month(kpis.date)'));
         if ($type === 'yearly') $kpis = $kpis->groupBy(DB::raw('year(kpis.date)'));
 
-        $kpis = $kpis->where('employee_id', $employeeId)->paginate(20);
+        $kpis = $kpis->where('employee_id', $employeeId)->orderBy('kpis.date', 'asc')->paginate(20);
 
         $dates = [];
         $scores = [];

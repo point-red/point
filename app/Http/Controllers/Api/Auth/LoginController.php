@@ -40,7 +40,7 @@ class LoginController extends Controller
         $response->access_token = $tokenResult->accessToken;
         $response->token_type = 'Bearer';
         $response->token_id = $tokenResult->token->id;
-        $response->token_expires_at = $tokenResult->token->expires_at;
+        $response->token_expires_in = $tokenResult->token->expires_at->timestamp;
 
         if ($request->header('Tenant')) {
             $project = Project::where('code', $request->header('Tenant'))->first();

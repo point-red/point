@@ -148,6 +148,11 @@ class EmployeeAssessmentController extends Controller
     public function destroy($employeeId, $id)
     {
         $kpi = Kpi::findOrFail($id);
+
+        if ($kpi->scorer_id != auth()->user()->id) {
+            return response()->json(['message' => 'Unauthorized access'], 401);
+        }
+
         $kpi->delete();
 
         return new KpiResource($kpi);

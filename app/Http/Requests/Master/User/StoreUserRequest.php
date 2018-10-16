@@ -24,9 +24,9 @@ class StoreUserRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255|unique:tenant.users',
-            'email' => 'required|email|max:255|unique:tenant.users',
+            'username' => 'required|max:255|unique:mysql.users,name',
             'password' => 'required|min:8|max:255',
+            'email' => 'required|email|max:255|unique:mysql.users,email',
         ];
     }
 }

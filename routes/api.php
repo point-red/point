@@ -21,6 +21,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         Route::get('reset-password', 'ResetPasswordController@store');
     });
 
+    // This routes below require authentication
     Route::middleware('auth:api')->group(function () {
         Route::post('auth-user', 'AuthUserController@show');
         require base_path('routes/api/account.php');

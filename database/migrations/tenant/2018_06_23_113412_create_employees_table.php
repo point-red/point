@@ -19,6 +19,8 @@ class CreateEmployeesTable extends Migration
             $table->string('name');
             $table->string('personal_identity')->nullable();
             // Data related to personal info
+            $table->string('given_name')->nullable();
+            $table->string('family_name')->nullable();
             $table->string('last_education')->nullable();
             $table->date('birth_date')->nullable();
             $table->string('birth_place')->nullable();

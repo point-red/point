@@ -19,6 +19,8 @@ class CreateContactPeopleTable extends Migration
             $table->string('department')->nullable();
             $table->string('title')->nullable();
             $table->string('name');
+            $table->string('given_name')->nullable();
+            $table->string('family_name')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->timestamps();

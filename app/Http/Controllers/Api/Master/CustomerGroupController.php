@@ -33,6 +33,7 @@ class CustomerGroupController extends Controller
     {
         $customerGroup = new CustomerGroup;
         $customerGroup->fill($request->all());
+        $customerGroup->created_by = auth()->user()->id;
         $customerGroup->save();
 
         return new ApiResource($customerGroup);

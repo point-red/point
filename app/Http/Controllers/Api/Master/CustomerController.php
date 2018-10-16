@@ -34,6 +34,7 @@ class CustomerController extends Controller
     {
         $customer = new Customer;
         $customer->fill($request->all());
+        $customer->created_by = auth()->user()->id;
         $customer->save();
 
         return new ApiResource($customer);

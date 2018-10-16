@@ -70,11 +70,9 @@ class ResetTenantDatabase extends Command
         $user->id = $owner->id;
         $user->name = $owner->name;
         $user->email = $owner->email;
-        $user->password = $owner->password;
-        $user->phone_confirmation_code = $owner->phone_confirmation_code;
-        $user->phone_confirmed = $owner->phone_confirmed;
-        $user->email_confirmation_code = $owner->email_confirmation_code;
-        $user->email_confirmed = $owner->email_confirmed;
+        $user->first_name = $owner->first_name;
+        $user->last_name = $owner->last_name;
+        $user->address = $owner->address;
         $user->save();
 
         Artisan::call('tenant:setup-database');

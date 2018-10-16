@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class CreateTenantDatabase extends Command
@@ -45,8 +46,20 @@ class CreateTenantDatabase extends Command
         $process = new Process('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "drop database if exists '.$dbName.'"');
         $process->run();
 
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            $this->line($process->getOutput());
+            throw new ProcessFailedException($process);
+        }
+
         // create new tenant database
         $process = new Process('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "create database '.$dbName.'"');
         $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            $this->line($process->getOutput());
+            throw new ProcessFailedException($process);
+        }
     }
 }

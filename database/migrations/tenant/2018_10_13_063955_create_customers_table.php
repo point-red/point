@@ -26,12 +26,12 @@ class CreateCustomersTable extends Migration
             $table->unsignedInteger('group_id')->nullable()->index();
             $table->unsignedInteger('pricing_group_id')->nullable()->index();
             $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedInteger('updated_by');
 
-            $table->foreign('created_by')->references('id')->on('users');
-            $table->foreign('updated_by')->references('id')->on('users');
-            $table->foreign('group_id')->references('id')->on('customer_groups');
-            $table->foreign('pricing_group_id')->references('id')->on('pricing_groups');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('group_id')->references('id')->on('customer_groups')->onDelete('restrict');
+            $table->foreign('pricing_group_id')->references('id')->on('pricing_groups')->onDelete('restrict');
         });
     }
 

@@ -35,6 +35,7 @@ class CustomerController extends Controller
         $customer = new Customer;
         $customer->fill($request->all());
         $customer->created_by = auth()->user()->id;
+        $customer->updated_by = auth()->user()->id;
         $customer->save();
 
         return new ApiResource($customer);
@@ -64,6 +65,8 @@ class CustomerController extends Controller
     {
         $customer = Customer::findOrFail($id);
         $customer->fill($request->all());
+        $customer->created_by = auth()->user()->id;
+        $customer->updated_by = auth()->user()->id;
         $customer->save();
 
         return new ApiResource($customer);

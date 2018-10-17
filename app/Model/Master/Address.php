@@ -2,9 +2,9 @@
 
 namespace App\Model\Master;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class Address extends Model
+class Address extends MasterModel
 {
     protected $connection = 'tenant';
 

@@ -17,11 +17,16 @@ class CreateMasterHistoriesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('historyable_id');
             $table->string('historyable_type');
-            $table->unsignedInteger('updated_by');
             $table->string('column_name');
             $table->text('old');
             $table->text('new');
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
+            $table->unsignedInteger('updated_by');
+
+            $table->foreign('updated_by')
+                ->references('id')
+                ->on('users')
+                ->onDelete('restrict');
         });
     }
 

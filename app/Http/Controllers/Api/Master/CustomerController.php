@@ -6,8 +6,10 @@ use App\Http\Requests\Master\Customer\StoreCustomerRequest;
 use App\Http\Requests\Master\Customer\UpdateCustomerRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\Master\Address;
 use App\Model\Master\Customer;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -32,11 +34,23 @@ class CustomerController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $customer = new Customer;
         $customer->fill($request->all());
-        $customer->created_by = auth()->user()->id;
-        $customer->updated_by = auth()->user()->id;
         $customer->save();
+
+        if ($request->has('addresses')) {
+            for ($i = 0; $i < count($request->get('addresses')); $i++) {
+                $address = new Address;
+                $address->address = $request->get('addresses')[$i]['address'];
+                $address->addressable_type = get_class($customer);
+                $address->addressable_id = $customer->id;
+                $address->save();
+            }
+        }
+
+        DB::connection('tenant')->commit();
 
         return new ApiResource($customer);
     }
@@ -65,9 +79,15 @@ class CustomerController extends Controller
     {
         $customer = Customer::findOrFail($id);
         $customer->fill($request->all());
-        $customer->created_by = auth()->user()->id;
-        $customer->updated_by = auth()->user()->id;
         $customer->save();
+
+        if ($request->has('addresses')) {
+            for ($i = 0; $i < count($request->get('addresses')); $i++) {
+                $address = Address::findOrFail($request->get('addresses')[$i]['id']);
+                $address->address = $request->get('addresses')[$i]['address'];
+                $address->save();
+            }
+        }
 
         return new ApiResource($customer);
     }

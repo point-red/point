@@ -17,4 +17,21 @@ class MasterHistory extends Model
     {
         return $this->morphTo();
     }
+
+    public function scopeWhereHistoryable($query, $class, $values)
+    {
+        if (!$class) {
+            // TODO: throw exception
+            return;
+        }
+
+        if (!$values) {
+            // TODO: throw exception
+            return;
+        }
+
+        $query->orWhere(function ($q) use ($class, $values) {
+            $q->where('historyable_type', $class)->whereIn('historyable_id', $values);
+        });
+    }
 }

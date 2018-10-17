@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Model;
+namespace App\Model\Master;
 
-use App\Model\Master\Customer;
-use App\Model\Master\Item;
 use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
+    protected $connection = 'tenant';
+
     /**
      * Get all of the customers that are assigned this group.
      */

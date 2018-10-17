@@ -43,4 +43,18 @@ if (! function_exists('get_invitation_code')) {
 
         return $activationCode;
     }
+
+    if (! function_exists('capitalize')) {
+        /**
+         * Capitalize string.
+         *
+         * @param $string
+         * @return string
+         */
+        function capitalize($string)
+        {
+            return ucfirst(strtolower($string));
+        }
+    }
+
 }

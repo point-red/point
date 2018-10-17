@@ -2,7 +2,7 @@
 
 namespace App\Model\Master;
 
-use App\Model\Group;
+use App\Model\Master\Group;
 use App\Model\MasterModel;
 
 class Customer extends MasterModel

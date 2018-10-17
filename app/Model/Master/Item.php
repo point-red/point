@@ -2,10 +2,9 @@
 
 namespace App\Model\Master;
 
-use App\Model\Master\Group;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class Item extends Model
+class Item extends MasterModel
 {
     protected $connection = 'tenant';
 

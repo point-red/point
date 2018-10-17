@@ -10,14 +10,16 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::apiResource('user-invitations', 'UserInvitationController');
     Route::apiResource('user-roles', 'UserRoleController');
 
-    // Warehouse
-    Route::apiResource('warehouses', 'WarehouseController');
-
-    // Group
+    // Master
     Route::apiResource('groups', 'GroupController');
-
-    // Vendor
+    Route::apiResource('warehouses', 'WarehouseController');
+    // Route::apiResource('items', 'ItemController');
+    // Route::apiResource('services', 'ServiceController');
     Route::apiResource('customers', 'CustomerController');
-    // Route::apiResource('supplier', 'SupplierController');
-    // Route::apiResource('expedition', 'ExpeditionController');
+    // Route::apiResource('suppliers', 'SupplierController');
+    // Route::apiResource('employees', 'EmployeeController');
+    // Route::apiResource('kpi/templates', 'KpiTemplateController');
+    // Route::apiResource('expeditions', 'ExpeditionController');
+    // Route::apiResource('allocations', 'AllocationController');
+    // Route::apiResource('allocations', 'AllocationController');
 });

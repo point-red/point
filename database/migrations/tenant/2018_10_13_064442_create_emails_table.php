@@ -18,6 +18,11 @@ class CreateEmailsTable extends Migration
             $table->string('label')->nullable();
             $table->string('email');
             $table->boolean('is_main')->default(false);
+
+            // Polymorphic Relations
+            $table->unsignedInteger('emailable_id');
+            $table->string('emailable_type');
+
             $table->timestamps();
         });
     }

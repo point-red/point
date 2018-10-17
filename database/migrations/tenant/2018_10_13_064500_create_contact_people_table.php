@@ -21,6 +21,11 @@ class CreateContactPeopleTable extends Migration
             $table->string('name');
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
+
+            // Polymorphic Relations
+            $table->unsignedInteger('contactable_id');
+            $table->string('contactable_type');
+
             $table->timestamps();
         });
     }

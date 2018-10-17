@@ -19,6 +19,11 @@ class CreatePhonesTable extends Migration
             $table->string('country_code')->nullable();
             $table->string('number');
             $table->boolean('is_main')->default(false);
+
+            // Polymorphic Relations
+            $table->unsignedInteger('phoneable_id');
+            $table->string('phoneable_type');
+
             $table->timestamps();
         });
     }

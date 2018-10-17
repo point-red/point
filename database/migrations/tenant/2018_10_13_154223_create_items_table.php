@@ -23,6 +23,7 @@ class CreateItemsTable extends Migration
             $table->string('color')->nullable();
             $table->string('weight')->nullable();
             $table->boolean('disabled')->default(false);
+            $table->unsignedInteger('stock_reminder')->default(0);
             $table->timestamps();
             $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
         });

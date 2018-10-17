@@ -2,6 +2,7 @@
 
 namespace App\Model\Master;
 
+use App\Model\Group;
 use App\Model\MasterModel;
 
 class Customer extends MasterModel
@@ -11,7 +12,6 @@ class Customer extends MasterModel
     protected $fillable = [
         'name',
         'tax_identification_number',
-        'group_id',
         'pricing_group_id',
         'code',
         'tax_identification_number',
@@ -20,11 +20,11 @@ class Customer extends MasterModel
     ];
 
     /**
-     * Get the group that owns the customer.
+     * Get all of the groups for the customer.
      */
-    public function group()
+    public function groups()
     {
-        return $this->belongsTo(get_class(new CustomerGroup()), 'customer_group_id');
+        return $this->morphToMany(get_class(new Group()), 'groupable');
     }
 
     /**

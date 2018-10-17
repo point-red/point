@@ -33,6 +33,8 @@ class CustomerGroupController extends Controller
     {
         $customerGroup = new CustomerGroup;
         $customerGroup->fill($request->all());
+        $customerGroup->created_by = auth()->user()->id;
+        $customerGroup->updated_by = auth()->user()->id;
         $customerGroup->save();
 
         return new ApiResource($customerGroup);
@@ -62,6 +64,8 @@ class CustomerGroupController extends Controller
     {
         $customerGroup = CustomerGroup::findOrFail($id);
         $customerGroup->fill($request->all());
+        $customerGroup->created_by = auth()->user()->id;
+        $customerGroup->updated_by = auth()->user()->id;
         $customerGroup->save();
 
         return new ApiResource($customerGroup);

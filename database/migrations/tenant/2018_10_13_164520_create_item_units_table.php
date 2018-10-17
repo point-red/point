@@ -17,9 +17,11 @@ class CreateItemUnitsTable extends Migration
             $table->increments('id');
             $table->string('label');
             $table->string('name');
-            $table->string('converter')->default(1);
+            $table->decimal('converter', 65, 30)->default(1);
             $table->boolean('disabled')->default(false);
             $table->timestamps();
+            $table->unsignedInteger('item_id');
+            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
         });
     }
 

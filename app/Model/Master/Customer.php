@@ -8,7 +8,16 @@ class Customer extends Model
 {
     protected $connection = 'tenant';
 
-    protected $fillable = ['name', 'tax_identification_number'];
+    protected $fillable = [
+        'name',
+        'tax_identification_number',
+        'group_id',
+        'pricing_group_id',
+        'code',
+        'tax_identification_number',
+        'notes',
+        'credit_ceiling'
+    ];
 
     /**
      * Get the group that owns the customer.

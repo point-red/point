@@ -16,6 +16,8 @@ class CreateGroupItemGroupsTable extends Migration
         Schema::create('group_item_groups', function (Blueprint $table) {
             $table->unsignedInteger('item_id');
             $table->unsignedInteger('item_group_id');
+            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
+            $table->foreign('item_group_id')->references('id')->on('item_groups')->onDelete('cascade');
         });
     }
 

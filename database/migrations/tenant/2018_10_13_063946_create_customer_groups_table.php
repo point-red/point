@@ -22,6 +22,8 @@ class CreateCustomerGroupsTable extends Migration
 
             $table->unsignedInteger('created_by');
             $table->unsignedInteger('updated_by');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
         });
     }
 

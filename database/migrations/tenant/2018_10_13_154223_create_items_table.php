@@ -24,6 +24,7 @@ class CreateItemsTable extends Migration
             $table->string('weight')->nullable();
             $table->boolean('disabled')->default(false);
             $table->timestamps();
+            $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
         });
     }
 

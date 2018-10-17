@@ -30,8 +30,8 @@ class CreateCustomersTable extends Migration
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
-            $table->foreign('group_id')->references('id')->on('customer_groups')->onDelete('restrict');
-            $table->foreign('pricing_group_id')->references('id')->on('pricing_groups')->onDelete('restrict');
+            $table->foreign('group_id')->references('id')->on('customer_groups')->onDelete('set null');
+            $table->foreign('pricing_group_id')->references('id')->on('pricing_groups')->onDelete('set null');
         });
     }
 

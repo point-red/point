@@ -20,6 +20,11 @@ class CreateBanksTable extends Migration
             $table->string('account_number');
             $table->string('account_name');
             $table->text('notes')->nullable();
+
+            // Polymorphic Relations
+            $table->unsignedInteger('bankable_id');
+            $table->string('bankable_type');
+
             $table->timestamps();
         });
     }

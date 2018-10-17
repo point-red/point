@@ -24,6 +24,11 @@ class CreateAddressesTable extends Migration
             $table->double('latitude')->nullable();
             $table->double('longitude')->nullable();
             $table->boolean('is_main')->default(false);
+
+            // Polymorphic Relations
+            $table->unsignedInteger('addressable_id');
+            $table->string('addressable_type');
+
             $table->timestamps();
         });
     }

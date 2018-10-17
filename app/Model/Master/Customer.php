@@ -17,4 +17,44 @@ class Customer extends Model
     {
         return $this->belongsTo(get_class(new CustomerGroup()), 'customer_group_id');
     }
+
+    /**
+     * Get all of the customer's contact persons.
+     */
+    public function contactPersons()
+    {
+        return $this->morphMany(get_class(new ContactPerson()), 'contactable');
+    }
+
+    /**
+     * Get all of the customer's address.
+     */
+    public function addresses()
+    {
+        return $this->morphMany(get_class(new Address()), 'addressable');
+    }
+
+    /**
+     * Get all of the customer's phones.
+     */
+    public function phones()
+    {
+        return $this->morphMany(get_class(new Phone()), 'phoneable');
+    }
+
+    /**
+     * Get all of the customer's emails.
+     */
+    public function emails()
+    {
+        return $this->morphMany(get_class(new Email()), 'emailable');
+    }
+
+    /**
+     * Get all of the customer's banks.
+     */
+    public function banks()
+    {
+        return $this->morphMany(get_class(new Bank()), 'bankable');
+    }
 }

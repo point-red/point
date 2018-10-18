@@ -20,7 +20,7 @@ class TenantMiddleware
     {
         if ($request->header('Tenant')) {
             // Ignore this, because this subdomain is not allowed
-            if ($request->header('Tenant') === 'cloud') {
+            if ($request->header('Tenant') === 'cloud' || $request->header('Tenant') === 'localhost:8080') {
                 return $next($request);
             }
 

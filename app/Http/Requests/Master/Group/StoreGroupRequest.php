@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Master\Group;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreGroupRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class StoreGroupRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +25,7 @@ class StoreGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required',
         ];
     }
 }

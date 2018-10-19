@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Http\Requests\HumanResource\Employee\EmployeeGroup\StoreEmployeeGroupRequest;
+use App\Http\Requests\Master\Group\StoreGroupRequest;
+use App\Http\Requests\Master\Group\UpdateGroupRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Master\Group;
@@ -55,7 +58,7 @@ class GroupController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return ApiResource
      */
-    public function store(Request $request)
+    public function store(StoreGroupRequest $request)
     {
         $groupType = $request->get('group_type');
 
@@ -94,11 +97,11 @@ class GroupController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param UpdateGroupRequest $request
+     * @param  int $id
      * @return ApiResource
      */
-    public function update(Request $request, $id)
+    public function update(UpdateGroupRequest $request, $id)
     {
         $groupType = $request->get('group_type');
 

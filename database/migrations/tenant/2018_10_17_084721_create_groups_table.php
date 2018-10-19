@@ -21,6 +21,8 @@ class CreateGroupsTable extends Migration
             $table->unsignedInteger('updated_by');
             $table->timestamps();
 
+            $table->unique(['type', 'name']);
+
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
         });

@@ -14,14 +14,18 @@ class GroupController extends Controller
 
     private $masterNamespace = 'App\Model\Master\\';
 
-    private function validateGroupType($groupType)
+    private $groupTypeIsNotAvailableResponse = [
+        'code' => 400,
+        'message' => 'Group type is not available'
+    ];
+
+    private function isGroupTypeAvailable($groupType)
     {
         if (!in_array($groupType, $this->availableGroupTypes)) {
-            return response()->json([
-                'code' => 400,
-                'message' => 'Group type is not available'
-            ]);
+            return false;
         }
+
+        return true;
     }
 
     /**
@@ -34,7 +38,9 @@ class GroupController extends Controller
     {
         $groupType = $request->get('group_type');
 
-        $this->validateGroupType($groupType);
+        if (!$this->isGroupTypeAvailable($groupType)) {
+            return response()->json($this->groupTypeIsNotAvailableResponse);
+        }
 
         $groups = Group::where('type', $this->masterNamespace . capitalize($groupType))->get();
 
@@ -51,7 +57,9 @@ class GroupController extends Controller
     {
         $groupType = $request->get('group_type');
 
-        $this->validateGroupType($groupType);
+        if (!$this->isGroupTypeAvailable($groupType)) {
+            return response()->json($this->groupTypeIsNotAvailableResponse);
+        }
 
         $group = new Group;
         $group->name = $request->get('name');
@@ -72,7 +80,9 @@ class GroupController extends Controller
     {
         $groupType = $request->get('group_type');
 
-        $this->validateGroupType($groupType);
+        if (!$this->isGroupTypeAvailable($groupType)) {
+            return response()->json($this->groupTypeIsNotAvailableResponse);
+        }
 
         $group = Group::findOrFail($id);
 
@@ -90,7 +100,9 @@ class GroupController extends Controller
     {
         $groupType = $request->get('group_type');
 
-        $this->validateGroupType($groupType);
+        if (!$this->isGroupTypeAvailable($groupType)) {
+            return response()->json($this->groupTypeIsNotAvailableResponse);
+        }
 
         $group = Group::findOrFail($id);
         $group->name = $request->get('name');
@@ -111,7 +123,9 @@ class GroupController extends Controller
     {
         $groupType = $request->get('group_type');
 
-        $this->validateGroupType($groupType);
+        if (!$this->isGroupTypeAvailable($groupType)) {
+            return response()->json($this->groupTypeIsNotAvailableResponse);
+        }
 
         $group = Group::findOrFail($id);
 

@@ -19,10 +19,12 @@ class Address extends MasterModel
     public static function saveFromRelation($obj, $addresses)
     {
         // Delete address
-        $ids = array_column($addresses, 'id');
-        Address::where('addressable_id', $obj->id)
-            ->where('addressable_type', get_class($obj))
-            ->whereNotIn('id', $ids)->delete();
+        if ($addresses) {
+            $ids = array_column($addresses, 'id');
+            Address::where('addressable_id', $obj->id)
+                ->where('addressable_type', get_class($obj))
+                ->whereNotIn('id', $ids)->delete();
+        }
 
         for ($i = 0; $i < count($addresses); $i++) {
             // If address has id then update existing address

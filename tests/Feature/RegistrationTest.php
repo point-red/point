@@ -20,9 +20,11 @@ class RegistrationTest extends TestCase
     public function user_can_register()
     {
         $response = $this->json('POST', 'api/v1/register', [
-            'name' => 'John Reg',
+            'username' => 'John Reg',
             'email' => 'john.reg@gmail.com',
             'password' => 'secret-password',
+            'first_name' => 'secret-password',
+            'last_name' => 'secret-password',
         ], [$this->headers]);
 
         $response->assertStatus(201);

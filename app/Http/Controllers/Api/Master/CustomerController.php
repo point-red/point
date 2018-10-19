@@ -27,6 +27,10 @@ class CustomerController extends Controller
     {
         $customers = Customer::with('groups')
             ->with('addresses')
+            ->with('emails')
+            ->with('banks')
+            ->with('phones')
+            // ->with('contact_people')
             ->paginate(request()->get('paginate') ?? 20);
 
         return new ApiCollection($customers);

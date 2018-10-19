@@ -3,22 +3,28 @@
 namespace App\Helpers\Journal;
 
 use App\Model\Accounting\Journal;
+use Illuminate\Support\Facades\DB;
 
 class BalanceHelper
 {
+    public static function openingBalance($date, $options = [])
+    {
+        //
+    }
+
     public static function endingBalance($date, $options = [])
     {
-        $journals = Journal::select('journals.*')->whereIn('date', function ($q) use ($date) {
-            $q->selectRaw('max(date)')
-                ->where('date', '<=', date('Y-m-d 23:59:59', strtotime($date)))
-                ->from('journals')
-                ->groupBy('chart_of_account_id');
-        });
+        $journals = Journal::select('chart_of_account_id')
+            ->addSelect(DB::raw('max(date) as date'))
+            ->addSelect(DB::raw('sum(debit) as debit'))
+            ->addSelect(DB::raw('sum(credit) as credit'))
+            ->with('chartOfAccount')
+            ->where('date', '<=', date('Y-m-d 23:59:59', strtotime($date)))
+            ->groupBy('chart_of_account_id');
 
+        // Exclude account that doesn't have any value
         if (in_array('without_zero', $options)) {
-            $journals = $journals->where(function ($q) {
-                $q->where('debit', '!=', 0)->orWhere('credit', '!=', 0);
-            });
+            $journals = $journals->hasValue();
         }
 
         return $journals->get();

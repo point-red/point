@@ -14,4 +14,11 @@ class Journal extends Model
     {
         return $this->belongsTo(get_class(new ChartOfAccount()), 'chart_of_account_id');
     }
+
+    public function scopeHasValue($query)
+    {
+        $query->where(function ($q) {
+            $q->where('debit', '!=', 0)->orWhere('credit', '!=', 0);
+        });
+    }
 }

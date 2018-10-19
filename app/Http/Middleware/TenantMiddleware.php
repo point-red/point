@@ -26,6 +26,10 @@ class TenantMiddleware
 
             // Permission denied, the project is not owned by that user
             if (auth()->user()) {
+
+                $authUser = auth()->user();
+                $request->merge(compact('authUser'));
+
                 $project = Project::where('code', $request->header('Tenant'))->first();
                 if (! $project) {
                     return $next($request);

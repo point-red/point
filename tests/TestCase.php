@@ -25,7 +25,7 @@ abstract class TestCase extends BaseTestCase
 
         $this->getConnection(DB::getDefaultConnection())->disconnect();
 
-        $this->artisan('tenant:setup-database', [
+        $this->artisan('tenant:seed-fresh-project', [
             'tenant_subdomain' => env('DB_TENANT_DATABASE'),
         ]);
 

@@ -76,7 +76,7 @@ class ResetTenantDatabase extends Command
         $user->phone = $owner->phone;
         $user->save();
 
-        Artisan::call('tenant:setup-database');
+        Artisan::call('tenant:seed-fresh-project');
 
         DB::connection('tenant')->commit();
     }

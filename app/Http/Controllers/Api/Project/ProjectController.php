@@ -99,7 +99,7 @@ class ProjectController extends Controller
         $user->email = auth()->user()->email;
         $user->save();
 
-        Artisan::call('tenant:setup-database');
+        Artisan::call('tenant:seed-fresh-project');
 
         DB::connection('tenant')->commit();
 

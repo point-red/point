@@ -9,6 +9,7 @@ use App\Http\Resources\ApiResource;
 use App\Model\Master\Address;
 use App\Model\Master\Customer;
 use App\Http\Controllers\Controller;
+use App\Model\Master\Group;
 use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
@@ -42,6 +43,20 @@ class CustomerController extends Controller
         $customer->fill($request->all());
         $customer->save();
 
+        if ($request->get('group')['name']) {
+
+            $group = Group::find($request->get('group')['id']);
+
+            if (!$group) {
+                $group = new Group;
+                $group->name = $request->get('group')['name'];
+                $group->type = Customer::class;
+                $group->save();
+            }
+
+            $group->customers()->attach($customer);
+        }
+
         Address::saveFromRelation($customer, $request->get('addresses'));
 
         DB::connection('tenant')->commit();
@@ -71,17 +86,29 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $customer = Customer::findOrFail($id);
         $customer->fill($request->all());
         $customer->save();
 
-        if ($request->has('addresses')) {
-            for ($i = 0; $i < count($request->get('addresses')); $i++) {
-                $address = Address::findOrFail($request->get('addresses')[$i]['id']);
-                $address->address = $request->get('addresses')[$i]['address'];
-                $address->save();
+        if ($request->get('group')['name']) {
+
+            $group = Group::find($request->get('group')['id']);
+
+            if (!$group) {
+                $group = new Group;
+                $group->name = $request->get('group')['name'];
+                $group->type = Customer::class;
+                $group->save();
             }
+
+            $group->customers()->attach($customer);
         }
+
+        Address::saveFromRelation($customer, $request->get('addresses'));
+
+        DB::connection('tenant')->commit();
 
         return new ApiResource($customer);
     }

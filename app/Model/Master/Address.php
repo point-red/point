@@ -35,14 +35,14 @@ class Address extends MasterModel
                 $address = new Address;
             }
 
-            $address->label = $addresses[$i]['label'];
+            $address->label = $addresses[$i]['label'] ?? null;
             $address->address = $addresses[$i]['address'];
-            $address->city = $addresses[$i]['city'];
-            $address->state = $addresses[$i]['state'];
-            $address->country = $addresses[$i]['country'];
-            $address->zip_code = $addresses[$i]['zip_code'];
-            $address->latitude = $addresses[$i]['latitude'];
-            $address->longitude = $addresses[$i]['longitude'];
+            $address->city = $addresses[$i]['city'] ?? null;
+            $address->state = $addresses[$i]['state'] ?? null;
+            $address->country = $addresses[$i]['country'] ?? null;
+            $address->zip_code = $addresses[$i]['zip_code'] ?? null;
+            $address->latitude = $addresses[$i]['latitude'] ?? null;
+            $address->longitude = $addresses[$i]['longitude'] ?? null;
             $address->addressable_type = get_class($obj);
             $address->addressable_id = $obj->id;
             $address->save();

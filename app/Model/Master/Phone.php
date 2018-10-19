@@ -35,10 +35,10 @@ class Phone extends MasterModel
                 $phone = new Phone;
             }
 
-            $phone->label = $phones[$i]['label'];
-            $phone->country_code = $phones[$i]['country_code'];
+            $phone->label = $phones[$i]['label'] ?? null;
+            $phone->country_code = $phones[$i]['country_code'] ?? null;
             $phone->number = $phones[$i]['number'];
-            $phone->is_main = $phones[$i]['is_main'];
+            $phone->is_main = $phones[$i]['is_main'] ?? null;
             $phone->phoneable_type = get_class($obj);
             $phone->phoneable_id = $obj->id;
             $phone->save();

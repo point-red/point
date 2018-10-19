@@ -35,12 +35,12 @@ class ContactPerson extends MasterModel
                 $contactPerson = new ContactPerson;
             }
 
-            $contactPerson->code = $contactPersons[$i]['code'];
-            $contactPerson->department = $contactPersons[$i]['department'];
-            $contactPerson->title = $contactPersons[$i]['title'];
+            $contactPerson->code = $contactPersons[$i]['code'] ?? null;
+            $contactPerson->department = $contactPersons[$i]['department'] ?? null;
+            $contactPerson->title = $contactPersons[$i]['title'] ?? null;
             $contactPerson->name = $contactPersons[$i]['name'];
-            $contactPerson->phone = $contactPersons[$i]['phone'];
-            $contactPerson->email = $contactPersons[$i]['email'];
+            $contactPerson->phone = $contactPersons[$i]['phone'] ?? null;
+            $contactPerson->email = $contactPersons[$i]['email'] ?? null;
             $contactPerson->contactable_type = get_class($obj);
             $contactPerson->contactable_id = $obj->id;
             $contactPerson->save();

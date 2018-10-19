@@ -36,10 +36,10 @@ class Bank extends MasterModel
             }
 
             $bank->name = $banks[$i]['name'];
-            $bank->branch = $banks[$i]['branch'];
+            $bank->branch = $banks[$i]['branch'] ?? null;
             $bank->account_number = $banks[$i]['account_number'];
             $bank->account_name = $banks[$i]['account_name'];
-            $bank->notes = $banks[$i]['notes'];
+            $bank->notes = $banks[$i]['notes'] ?? null;
             $bank->bankable_type = get_class($obj);
             $bank->bankable_id = $obj->id;
             $bank->save();

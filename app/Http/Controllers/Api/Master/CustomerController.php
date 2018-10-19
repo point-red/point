@@ -7,9 +7,13 @@ use App\Http\Requests\Master\Customer\UpdateCustomerRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Master\Address;
+use App\Model\Master\Bank;
+use App\Model\Master\ContactPerson;
 use App\Model\Master\Customer;
 use App\Http\Controllers\Controller;
+use App\Model\Master\Email;
 use App\Model\Master\Group;
+use App\Model\Master\Phone;
 use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
@@ -58,6 +62,10 @@ class CustomerController extends Controller
         }
 
         Address::saveFromRelation($customer, $request->get('addresses'));
+        Phone::saveFromRelation($customer, $request->get('phones'));
+        Email::saveFromRelation($customer, $request->get('emails'));
+        ContactPerson::saveFromRelation($customer, $request->get('contacts'));
+        Bank::saveFromRelation($customer, $request->get('banks'));
 
         DB::connection('tenant')->commit();
 
@@ -107,6 +115,10 @@ class CustomerController extends Controller
         }
 
         Address::saveFromRelation($customer, $request->get('addresses'));
+        Phone::saveFromRelation($customer, $request->get('phones'));
+        Email::saveFromRelation($customer, $request->get('emails'));
+        ContactPerson::saveFromRelation($customer, $request->get('contacts'));
+        Bank::saveFromRelation($customer, $request->get('banks'));
 
         DB::connection('tenant')->commit();
 

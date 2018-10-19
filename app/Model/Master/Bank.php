@@ -15,4 +15,34 @@ class Bank extends MasterModel
     {
         return $this->morphTo();
     }
+
+    public static function saveFromRelation($obj, $banks)
+    {
+        // Delete bank
+        if ($banks) {
+            $ids = array_column($banks, 'id');
+            Bank::where('bankable_id', $obj->id)
+                ->where('bankable_type', get_class($obj))
+                ->whereNotIn('id', $ids)->delete();
+        }
+
+        for ($i = 0; $i < count($banks); $i++) {
+            // If bank has id then update existing bank
+            // If not then create new bank
+            if (isset($banks[$i]['id'])) {
+                $bank = Bank::findOrFail($banks[$i]['id']);
+            } else {
+                $bank = new Bank;
+            }
+
+            $bank->name = $banks[$i]['name'];
+            $bank->branch = $banks[$i]['branch'];
+            $bank->account_number = $banks[$i]['account_number'];
+            $bank->account_name = $banks[$i]['account_name'];
+            $bank->notes = $banks[$i]['notes'];
+            $bank->bankable_type = get_class($obj);
+            $bank->bankable_id = $obj->id;
+            $bank->save();
+        }
+    }
 }

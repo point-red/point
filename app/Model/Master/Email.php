@@ -15,4 +15,32 @@ class Email extends MasterModel
     {
         return $this->morphTo();
     }
+
+    public static function saveFromRelation($obj, $emails)
+    {
+        // Delete email
+        if ($emails) {
+            $ids = array_column($emails, 'id');
+            Email::where('emailable_id', $obj->id)
+                ->where('emailable_type', get_class($obj))
+                ->whereNotIn('id', $ids)->delete();
+        }
+
+        for ($i = 0; $i < count($emails); $i++) {
+            // If email has id then update existing email
+            // If not then create new email
+            if (isset($emails[$i]['id'])) {
+                $email = Email::findOrFail($emails[$i]['id']);
+            } else {
+                $email = new Email;
+            }
+
+            $email->label = $emails[$i]['label'];
+            $email->email = $emails[$i]['email'];
+            $email->is_main = $emails[$i]['is_main'];
+            $email->emailable_type = get_class($obj);
+            $email->emailable_id = $obj->id;
+            $email->save();
+        }
+    }
 }

@@ -15,4 +15,33 @@ class Phone extends MasterModel
     {
         return $this->morphTo();
     }
+
+    public static function saveFromRelation($obj, $phones)
+    {
+        // Delete phone
+        if ($phones) {
+            $ids = array_column($phones, 'id');
+            Phone::where('phoneable_id', $obj->id)
+                ->where('phoneable_type', get_class($obj))
+                ->whereNotIn('id', $ids)->delete();
+        }
+
+        for ($i = 0; $i < count($phones); $i++) {
+            // If phone has id then update existing phone
+            // If not then create new phone
+            if (isset($phones[$i]['id'])) {
+                $phone = Phone::findOrFail($phones[$i]['id']);
+            } else {
+                $phone = new Phone;
+            }
+
+            $phone->label = $phones[$i]['label'];
+            $phone->country_code = $phones[$i]['country_code'];
+            $phone->number = $phones[$i]['number'];
+            $phone->is_main = $phones[$i]['is_main'];
+            $phone->phoneable_type = get_class($obj);
+            $phone->phoneable_id = $obj->id;
+            $phone->save();
+        }
+    }
 }

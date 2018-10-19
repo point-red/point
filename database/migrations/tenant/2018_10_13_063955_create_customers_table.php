@@ -21,11 +21,10 @@ class CreateCustomersTable extends Migration
             $table->text('notes')->nullable();
             $table->boolean('disabled')->default(false);
             $table->decimal('credit_ceiling', 65, 30)->default(0);
-            $table->timestamps();
-            
-            $table->unsignedInteger('pricing_group_id')->nullable()->index();
             $table->unsignedInteger('created_by');
             $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('pricing_group_id')->nullable()->index();
+            $table->timestamps();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');

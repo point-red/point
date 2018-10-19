@@ -39,6 +39,9 @@ class CutOffController extends Controller
         $date = date('Y-m-d 23:59:59', strtotime($request->get('date')));
         $increment = CutOff::where('date', '>=', $fromDate)->where('date', '<=', $untilDate)->count();
 
+        $lastBalance = Journal::groupBy('date')->orderBy('date', 'desc')->get()->toArray();
+        log_object($lastBalance);
+
         $cutOff = new CutOff;
         $cutOff->date = $date;
         $cutOff->number = 'CUTOFF/'.date('ym', strtotime($request->get('date'))).'/'.sprintf('%04d', ++$increment);

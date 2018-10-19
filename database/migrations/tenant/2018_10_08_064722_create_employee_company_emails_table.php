@@ -18,12 +18,14 @@ class CreateEmployeeCompanyEmailsTable extends Migration
             $table->unsignedInteger('employee_id')->index();
             $table->string('email');
             $table->boolean('is_main')->default(false);
-            // Relationship
-            $table->foreign('employee_id')
-                ->references('id')
-                ->on('employees')
-                ->onDelete('cascade');
+            $table->unsignedInteger('created_by');
+            $table->unsignedInteger('updated_by');
             $table->timestamps();
+
+            // Relationship
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
         });
     }
 

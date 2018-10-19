@@ -19,12 +19,13 @@ class CreateKpiTemplateIndicatorsTable extends Migration
             $table->string('name');
             $table->unsignedDecimal('weight', 5, 2);
             $table->unsignedInteger('target');
+            $table->unsignedInteger('created_by');
+            $table->unsignedInteger('updated_by');
             $table->timestamps();
 
-            $table->foreign('kpi_template_group_id')
-                ->references('id')
-                ->on('kpi_template_groups')
-                ->onDelete('cascade');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('kpi_template_group_id')->references('id')->on('kpi_template_groups')->onDelete('cascade');
         });
     }
 

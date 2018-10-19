@@ -32,32 +32,18 @@ class CreateEmployeesTable extends Migration
             $table->string('job_title')->nullable();
             $table->unsignedInteger('kpi_template_id')->nullable()->index();
             $table->text('notes')->nullable();
+            $table->unsignedInteger('created_by');
+            $table->unsignedInteger('updated_by');
             $table->timestamps();
+
             // Relationship
-            $table->foreign('employee_group_id')
-                ->references('id')
-                ->on('employee_groups')
-                ->onDelete('set null');
-
-            $table->foreign('employee_gender_id')
-                ->references('id')
-                ->on('employee_genders')
-                ->onDelete('set null');
-
-            $table->foreign('employee_marital_status_id')
-                ->references('id')
-                ->on('employee_marital_statuses')
-                ->onDelete('set null');
-
-            $table->foreign('employee_religion_id')
-                ->references('id')
-                ->on('employee_religions')
-                ->onDelete('set null');
-
-            $table->foreign('kpi_template_id')
-                ->references('id')
-                ->on('kpi_templates')
-                ->onDelete('set null');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('employee_group_id')->references('id')->on('employee_groups')->onDelete('set null');
+            $table->foreign('employee_gender_id')->references('id')->on('employee_genders')->onDelete('set null');
+            $table->foreign('employee_marital_status_id')->references('id')->on('employee_marital_statuses')->onDelete('set null');
+            $table->foreign('employee_religion_id')->references('id')->on('employee_religions')->onDelete('set null');
+            $table->foreign('kpi_template_id')->references('id')->on('kpi_templates')->onDelete('set null');
         });
     }
 

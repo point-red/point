@@ -20,7 +20,9 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::with('group')->paginate(request()->get('paginate') ?? 20);
+        $customers = Customer::with('groups')
+            ->with('addresses')
+            ->paginate(request()->get('paginate') ?? 20);
 
         return new ApiCollection($customers);
     }
@@ -40,15 +42,7 @@ class CustomerController extends Controller
         $customer->fill($request->all());
         $customer->save();
 
-        if ($request->has('addresses')) {
-            for ($i = 0; $i < count($request->get('addresses')); $i++) {
-                $address = new Address;
-                $address->address = $request->get('addresses')[$i]['address'];
-                $address->addressable_type = get_class($customer);
-                $address->addressable_id = $customer->id;
-                $address->save();
-            }
-        }
+        Address::saveFromRelation($customer, $request->get('addresses'));
 
         DB::connection('tenant')->commit();
 

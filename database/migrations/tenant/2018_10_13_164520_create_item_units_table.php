@@ -21,6 +21,11 @@ class CreateItemUnitsTable extends Migration
             $table->boolean('disabled')->default(false);
             $table->timestamps();
             $table->unsignedInteger('item_id');
+            $table->unsignedInteger('created_by');
+            $table->unsignedInteger('updated_by');
+
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
         });
     }

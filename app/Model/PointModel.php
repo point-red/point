@@ -2,11 +2,14 @@
 
 namespace App\Model;
 
+use App\Traits\EloquentFilters;
 use Illuminate\Database\Eloquent\Model;
 
 class PointModel extends Model
 {
     protected $user_logs = true;
+
+    use EloquentFilters;
 
     public function save(array $options = [])
     {
@@ -38,5 +41,4 @@ class PointModel extends Model
             $this->created_by = auth()->user()->id;
         }
     }
-
 }

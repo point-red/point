@@ -3,9 +3,9 @@
 namespace App\Model\HumanResource\Employee\Employee;
 
 use App\Model\HumanResource\Employee\Employee;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class EmployeeAddress extends Model
+class EmployeeAddress extends MasterModel
 {
     protected $connection = 'tenant';
 

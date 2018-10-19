@@ -4,6 +4,14 @@ namespace App\Traits;
 
 trait EloquentFilters
 {
+    public function scopeEloquentFilter($query, $request)
+    {
+        $query->fields($request->get('fields'))
+            ->sortBy($request->get('sort_by'))
+            ->filters($request->get('filters'))
+            ->includes($request->get('includes'));
+    }
+
     public function scopeSortBy($query, $values)
     {
         if ($values) {

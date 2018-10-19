@@ -24,7 +24,13 @@ class CreateItemsTable extends Migration
             $table->string('weight')->nullable();
             $table->boolean('disabled')->default(false);
             $table->unsignedInteger('stock_reminder')->default(0);
+
+            $table->unsignedInteger('created_by');
+            $table->unsignedInteger('updated_by');
             $table->timestamps();
+
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
         });
     }

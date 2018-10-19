@@ -42,7 +42,9 @@ class GroupController extends Controller
             return response()->json($this->groupTypeIsNotAvailableResponse);
         }
 
-        $groups = Group::where('type', $this->masterNamespace . capitalize($groupType))->get();
+        $groups = Group::where('type', $this->masterNamespace . capitalize($groupType))
+            ->eloquentFilter($request)
+            ->paginate($request->get('limit') ?? 20);
 
         return new ApiCollection($groups);
     }

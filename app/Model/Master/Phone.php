@@ -38,7 +38,7 @@ class Phone extends MasterModel
             $phone->label = $phones[$i]['label'] ?? null;
             $phone->country_code = $phones[$i]['country_code'] ?? null;
             $phone->number = $phones[$i]['number'];
-            $phone->is_main = $phones[$i]['is_main'] ?? null;
+            $phone->is_main = $phones[$i]['is_main'] ?? false;
             $phone->phoneable_type = get_class($obj);
             $phone->phoneable_id = $obj->id;
             $phone->save();

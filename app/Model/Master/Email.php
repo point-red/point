@@ -37,7 +37,7 @@ class Email extends MasterModel
 
             $email->label = $emails[$i]['label'] ?? null;
             $email->email = $emails[$i]['email'];
-            $email->is_main = $emails[$i]['is_main'] ?? null;
+            $email->is_main = $emails[$i]['is_main'] ?? false;
             $email->emailable_type = get_class($obj);
             $email->emailable_id = $obj->id;
             $email->save();

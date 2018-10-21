@@ -25,7 +25,8 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::with('groups')
+        $customers = Customer::eloquentFilter(request())
+            ->with('groups')
             ->with('addresses')
             ->with('emails')
             ->with('banks')

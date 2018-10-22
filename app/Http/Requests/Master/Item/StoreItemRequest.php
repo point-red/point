@@ -24,7 +24,7 @@ class StoreItemRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            // TODO: specify rule
         ];
     }
 }

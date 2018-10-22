@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\Master\Item\StoreItemRequest;
+use App\Http\Requests\Master\Item\UpdateItemRequest;
 use App\Http\Controllers\Controller;
+use App\Model\Master\Item;
+use App\Model\Master\ItemUnit;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {
@@ -14,28 +20,44 @@ class ItemController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $items = Item::eloquentFilter(request())
+            ->with('groups')
+            ->with('units')
+            // ->with('contact_people')
+            ->paginate(request()->get('paginate') ?? 20);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return new ApiCollection($items);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\Master\Customer\StoreCustomerRequest $request
+     *
+     * @return \App\Http\Resources\ApiResource
      */
     public function store(Request $request)
     {
-        //
+        DB::connection('tenant')->beginTransaction();
+
+        $item = new Item;
+        $item->fill($request->all());
+        $item->save();
+
+        $units = $request->get('units');
+        $unitsToBeInserted = [];
+        if ($units) {
+            foreach($units as $unit) {
+                $itemUnit = new ItemUnit();
+                $itemUnit->fill($unit);
+                array_push($unitsToBeInserted, $itemUnit);
+            }
+        }
+        $item->units()->saveMany($unitsToBeInserted);
+        
+        DB::connection('tenant')->commit();
+        
+        return new ApiResource($item);
     }
 
     /**
@@ -46,30 +68,41 @@ class ItemController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        $item = Item::eloquentFilter(request())
+            ->with('units')
+            ->findOrFail($id);
+        return new ApiResource($item);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param \App\Http\Requests\Master\Item\UpdateItemRequest $request
+     *
+     * @return \App\Http\Resources\ApiResource
      */
-    public function update(Request $request, $id)
+    public function update(UpdateItemRequest $request, $id)
     {
-        //
+        DB::connection('tenant')->beginTransaction();
+
+        $item = Item::findOrFail($id);
+        $item->fill($request->all());
+        $item->save();
+
+        $units = $request->get('units');
+        $unitsToBeInserted = [];
+        if ($units) {
+            foreach($units as $unit) {
+                $itemUnit = new ItemUnit();
+                $itemUnit->fill($unit);
+                array_push($unitsToBeInserted, $itemUnit);
+            }
+        }
+        $item->units()->saveMany($unitsToBeInserted);
+        
+        DB::connection('tenant')->commit();
+        
+        return new ApiResource($item);
     }
 
     /**
@@ -80,6 +113,9 @@ class ItemController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $item = Item::findOrFail($id);
+        $item->delete();
+
+        return response()->json([], 204);
     }
 }

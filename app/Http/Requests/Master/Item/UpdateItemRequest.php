@@ -24,7 +24,7 @@ class UpdateItemRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            // TODO: specify rule
         ];
     }
 }

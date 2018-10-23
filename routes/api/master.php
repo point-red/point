@@ -13,7 +13,7 @@ Route::prefix('master')->namespace('Master')->group(function () {
     // Master
     Route::apiResource('groups', 'GroupController');
     Route::apiResource('warehouses', 'WarehouseController');
-    // Route::apiResource('items', 'ItemController');
+    Route::apiResource('items', 'ItemController');
     // Route::apiResource('services', 'ServiceController');
     Route::apiResource('customers', 'CustomerController');
     // Route::apiResource('suppliers', 'SupplierController');

@@ -86,7 +86,15 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-        return new ApiResource(Customer::findOrFail($id));
+        $customers = Customer::eloquentFilter(request())
+            ->with('groups')
+            ->with('addresses')
+            ->with('emails')
+            ->with('banks')
+            ->with('phones')
+            // ->with('contact_people')
+            ->findOrFail($id);
+        return new ApiResource($customers);
     }
 
     /**

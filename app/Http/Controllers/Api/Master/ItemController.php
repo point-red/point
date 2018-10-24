@@ -23,7 +23,7 @@ class ItemController extends Controller
         $items = Item::eloquentFilter(request())
             ->with('groups')
             ->with('units')
-            // ->with('contact_people')
+            ->with('contactPersons')
             ->paginate(request()->get('paginate') ?? 20);
 
         return new ApiCollection($items);
@@ -69,7 +69,9 @@ class ItemController extends Controller
     public function show($id)
     {
         $item = Item::eloquentFilter(request())
+            ->with('groups')
             ->with('units')
+            ->with('contactPersons')
             ->findOrFail($id);
         return new ApiResource($item);
     }

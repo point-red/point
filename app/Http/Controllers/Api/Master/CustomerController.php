@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Model\Master\Email;
 use App\Model\Master\Group;
 use App\Model\Master\Phone;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
@@ -21,18 +22,19 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return \App\Http\Resources\ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        $customers = Customer::eloquentFilter(request())
+        $customers = Customer::eloquentFilter($request)
             ->with('groups')
             ->with('addresses')
             ->with('emails')
             ->with('banks')
             ->with('phones')
-            // ->with('contact_people')
-            ->paginate(request()->get('paginate') ?? 20);
+            ->with('contactPersons')
+            ->paginate($request->get('paginate') ?? 20);
 
         return new ApiCollection($customers);
     }
@@ -80,20 +82,21 @@ class CustomerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     *
+     * @param Request $request
+     * @param  int $id
      * @return \App\Http\Resources\ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $customers = Customer::eloquentFilter(request())
+        $customers = Customer::eloquentFilter($request)
             ->with('groups')
             ->with('addresses')
             ->with('emails')
             ->with('banks')
             ->with('phones')
-            // ->with('contact_people')
+            ->with('contactPersons')
             ->findOrFail($id);
+
         return new ApiResource($customers);
     }
 

@@ -4,7 +4,7 @@ namespace App\Model\Master;
 
 use App\Model\MasterModel;
 
-class Customer extends MasterModel
+class Supplier extends MasterModel
 {
     protected $connection = 'tenant';
 
@@ -13,8 +13,6 @@ class Customer extends MasterModel
         'name',
         'tax_identification_number',
         'notes',
-        'credit_ceiling',
-        'pricing_group_id',
     ];
 
     /**

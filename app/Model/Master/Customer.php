@@ -15,6 +15,7 @@ class Customer extends MasterModel
         'notes',
         'credit_ceiling',
         'pricing_group_id',
+        'disabled',
     ];
 
     /**

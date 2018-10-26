@@ -13,6 +13,7 @@ class Supplier extends MasterModel
         'name',
         'tax_identification_number',
         'notes',
+        'disabled',
     ];
 
     /**

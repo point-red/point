@@ -4,20 +4,14 @@ namespace App\Model\Master;
 
 use App\Model\MasterModel;
 
-class Item extends MasterModel
+class Allocation extends MasterModel
 {
     protected $connection = 'tenant';
 
     protected $fillable = [
-        'code',
         'name',
-        'chart_of_account_id',
-        'barcode',
+        'code',
         'notes',
-        'size',
-        'color',
-        'weight',
-        'stock_reminder',
         'disabled',
     ];
 
@@ -27,13 +21,5 @@ class Item extends MasterModel
     public function groups()
     {
         return $this->morphToMany(get_class(new Group()), 'groupable');
-    }
-
-    /**
-     * Get all of the units for the items.
-     */
-    public function units()
-    {
-        return $this->hasMany(get_class(new ItemUnit()));
     }
 }

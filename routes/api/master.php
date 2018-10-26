@@ -14,12 +14,11 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::apiResource('groups', 'GroupController');
     Route::apiResource('warehouses', 'WarehouseController');
     Route::apiResource('items', 'ItemController');
-    // Route::apiResource('services', 'ServiceController');
+    Route::apiResource('services', 'ServiceController');
     Route::apiResource('customers', 'CustomerController');
     Route::apiResource('suppliers', 'SupplierController');
     // Route::apiResource('employees', 'EmployeeController');
     // Route::apiResource('kpi/templates', 'KpiTemplateController');
     // Route::apiResource('expeditions', 'ExpeditionController');
-    // Route::apiResource('allocations', 'AllocationController');
-    // Route::apiResource('allocations', 'AllocationController');
+    Route::apiResource('allocations', 'AllocationController');
 });

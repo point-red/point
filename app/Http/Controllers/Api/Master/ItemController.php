@@ -16,14 +16,13 @@ class ItemController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return ApiCollection
      */
     public function index()
     {
         $items = Item::eloquentFilter(request())
             ->with('groups')
             ->with('units')
-            ->with('contactPersons')
             ->paginate(request()->get('paginate') ?? 20);
 
         return new ApiCollection($items);
@@ -64,15 +63,15 @@ class ItemController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return ApiResource
      */
     public function show($id)
     {
         $item = Item::eloquentFilter(request())
             ->with('groups')
             ->with('units')
-            ->with('contactPersons')
             ->findOrFail($id);
+
         return new ApiResource($item);
     }
 

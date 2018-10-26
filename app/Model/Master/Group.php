@@ -9,6 +9,14 @@ class Group extends MasterModel
     protected $connection = 'tenant';
 
     /**
+     * Get all of the suppliers that are assigned this group.
+     */
+    public function suppliers()
+    {
+        return $this->morphedByMany(get_class(new Supplier()), 'groupable');
+    }
+
+    /**
      * Get all of the customers that are assigned this group.
      */
     public function customers()
@@ -22,5 +30,21 @@ class Group extends MasterModel
     public function items()
     {
         return $this->morphedByMany(get_class(new Item()), 'groupable');
+    }
+
+    /**
+     * Get all of the services that are assigned this group.
+     */
+    public function services()
+    {
+        return $this->morphedByMany(get_class(new Service()), 'groupable');
+    }
+
+    /**
+     * Get all of the allocations that are assigned this group.
+     */
+    public function allocations()
+    {
+        return $this->morphedByMany(get_class(new Allocation()), 'groupable');
     }
 }

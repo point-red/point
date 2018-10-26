@@ -17,7 +17,6 @@ class CreateServicesTable extends Migration
             $table->increments('id');
             $table->string('code')->nullable()->unique();
             $table->string('name');
-            $table->string('');
             $table->text('notes')->nullable();
             $table->boolean('disabled')->default(false);
             $table->unsignedInteger('created_by');

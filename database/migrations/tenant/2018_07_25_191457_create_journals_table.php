@@ -15,7 +15,6 @@ class CreateJournalsTable extends Migration
     {
         Schema::create('journals', function (Blueprint $table) {
             $table->increments('id');
-            $table->datetime('date');
             $table->string('form_number')->index();
             $table->unsignedInteger('chart_of_account_id')->index();
             $table->decimal('debit', 65, 30)->default(0);

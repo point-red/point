@@ -26,7 +26,7 @@ class Item extends MasterModel
      */
     public function groups()
     {
-        return $this->morphToMany(get_class(new Group()), 'groupable');
+        return $this->morphToMany(Group::class, 'groupable');
     }
 
     /**
@@ -34,6 +34,6 @@ class Item extends MasterModel
      */
     public function units()
     {
-        return $this->hasMany(get_class(new ItemUnit()));
+        return $this->hasMany(ItemUnit::class);
     }
 }

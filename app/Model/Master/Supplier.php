@@ -2,6 +2,7 @@
 
 namespace App\Model\Master;
 
+use App\Model\Accounting\Journal;
 use App\Model\MasterModel;
 
 class Supplier extends MasterModel
@@ -21,7 +22,7 @@ class Supplier extends MasterModel
      */
     public function groups()
     {
-        return $this->morphToMany(get_class(new Group()), 'groupable');
+        return $this->morphToMany(Group::class, 'groupable');
     }
 
     /**
@@ -29,7 +30,7 @@ class Supplier extends MasterModel
      */
     public function contactPersons()
     {
-        return $this->morphMany(get_class(new ContactPerson()), 'contactable');
+        return $this->morphMany(ContactPerson::class, 'contactable');
     }
 
     /**
@@ -37,7 +38,7 @@ class Supplier extends MasterModel
      */
     public function addresses()
     {
-        return $this->morphMany(get_class(new Address()), 'addressable');
+        return $this->morphMany(Address::class, 'addressable');
     }
 
     /**
@@ -45,7 +46,7 @@ class Supplier extends MasterModel
      */
     public function phones()
     {
-        return $this->morphMany(get_class(new Phone()), 'phoneable');
+        return $this->morphMany(Phone::class, 'phoneable');
     }
 
     /**
@@ -53,7 +54,7 @@ class Supplier extends MasterModel
      */
     public function emails()
     {
-        return $this->morphMany(get_class(new Email()), 'emailable');
+        return $this->morphMany(Email::class, 'emailable');
     }
 
     /**
@@ -61,6 +62,14 @@ class Supplier extends MasterModel
      */
     public function banks()
     {
-        return $this->morphMany(get_class(new Bank()), 'bankable');
+        return $this->morphMany(Bank::class, 'bankable');
+    }
+
+    /**
+     * Get all of the customer's journals.
+     */
+    public function journalable()
+    {
+        return $this->morphMany(Journal::class, 'journalable');
     }
 }

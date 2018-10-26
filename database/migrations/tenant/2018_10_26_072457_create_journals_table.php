@@ -16,12 +16,12 @@ class CreateJournalsTable extends Migration
         Schema::create('journals', function (Blueprint $table) {
             $table->increments('id');
             $table->string('form_number')->index();
-            $table->string('form_number_reference')->index();
+            $table->string('form_number_reference')->nullable()->index();
             $table->unsignedInteger('chart_of_account_id')->index();
             $table->decimal('debit', 65, 30)->default(0);
             $table->decimal('credit', 65, 30)->default(0);
-            $table->integer('journalable_id');
-            $table->string('journalable_type');
+            $table->integer('journalable_id')->nullable();
+            $table->string('journalable_type')->nullable();
             $table->timestamps();
 
             $table->foreign('chart_of_account_id')

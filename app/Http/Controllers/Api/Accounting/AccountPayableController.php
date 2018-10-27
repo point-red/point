@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Api\Accounting;
 
 use App\Http\Resources\ApiCollection;
-use App\Model\Accounting\Journal;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Model\Accounting\Journal;
+use App\Model\Master\Supplier;
+use Illuminate\Http\Request;
 
 class AccountPayableController extends Controller
 {
@@ -17,36 +18,63 @@ class AccountPayableController extends Controller
      */
     public function index(Request $request)
     {
-        // Total Account Payable
-        // Option = all / settled / unsettled
-        $request->get('status');
-        // Account Payable aging (days)
-        $request->get('age');
-        $request->get('supplier_id');
+        $accounts = optional(\App\Helpers\Accounting\Account::currentLiabilities())->pluck('id') ?? [];
 
-        $journals = Journal::all();
+        $journalPayments = $this->getJournalPayments($accounts);
+
+        $journals = Journal::leftJoinSub($journalPayments, 'journal_payment', function ($join) {
+                $join->on('journals.form_number', '=', 'journal_payment.form_number_reference');
+            })->selectRaw('SUM(credit) as credit')
+            ->addSelect('journals.date', 'journals.form_number', 'journal_payment.debit')
+            ->whereIn('chart_of_account_id', $accounts)
+            ->where('credit', '>', 0)
+            ->groupBy('form_number');
+
+        // Filter Status | null = all / settled / unsettled
+        $journals = $this->filterStatus($journals, $request->get('status'));
+
+        // Filter Account Payable aging (days)
+        $journals = $this->filterAging($journals, $request->get('age'));
+
+        // Filter Debt owner
+        $journals = $this->filterOwner($journals, $request->get('owner_id'));
+
+        // Filter Specific invoice
+        $journals = $this->filterForm($journals, $request->get('form_number'));
 
         return new ApiCollection($journals);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param Request $request
-     * @return ApiCollection
-     */
-    public function show(Request $request)
+    private function filterStatus($journals, $option)
     {
-        // Total Account Payable
-        // Option = all / settled / unsettled
-        $request->get('status');
-        // Account Payable aging (days)
-        $request->get('age');
-        $request->get('type'); // supplier / employee / expedition
-        $request->get('form_number');
+        if ($option === 'settled') {
+            return $journals->havingRaw('credit - debit = 0');
+        } else if ($option === 'unsettled') {
+            return $journals->havingRaw('credit - debit > 0');
+        }
+    }
 
-        $journals = Journal::all();
+    private function filterAging($journals, $age)
+    {
+        return $journals->where('date', now()->subDay($age));
+    }
 
-        return new ApiCollection($journals);
+    private function filterOwner($journals, $ownerId)
+    {
+        return $journals->where('journalable_type', Supplier::class)->where('journalable_id', $ownerId);
+    }
+
+    private function filterForm($journals, $formNumber)
+    {
+        return $journals->where('form_number', $formNumber);
+    }
+
+    private function getJournalPayments($accounts)
+    {
+        return Journal::selectRaw('SUM(debit) as debit')
+            ->addSelect('form_number_reference')
+            ->whereIn('chart_of_account_id', $accounts)
+            ->where('debit', '>', 0)
+            ->groupBy('form_number_reference');
     }
 }

@@ -24,6 +24,7 @@ class CreateFormCancellationsTable extends Migration
             $table->unsignedInteger('requested_by');
             $table->unsignedInteger('requested_to');
 
+            $table->foreign('form_id')->references('id')->on('forms')->onDelete('cascade');
             $table->foreign('requested_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('requested_to')->references('id')->on('users')->onDelete('restrict');
 

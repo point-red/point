@@ -30,12 +30,13 @@ class CreateInventoriesTable extends Migration
             $table->foreign('warehouse_id')
                 ->references('id')
                 ->on('warehouses')
-                ->onDelete('cascade');
+                ->onDelete('restrict');
 
             $table->foreign('item_id')
                 ->references('id')
                 ->on('items')
-                ->onDelete('cascade');
+                ->onUpdate('restrict')
+                ->onDelete('restrict');
 
             $table->foreign('form_number')
                 ->references('number')

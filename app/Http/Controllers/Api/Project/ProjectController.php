@@ -56,7 +56,7 @@ class ProjectController extends Controller
 
         // Create new database for tenant project
         $dbName = 'point_'.strtolower($request->get('code'));
-        Artisan::call('tenant:create-database', [
+        Artisan::call('tenant:database:create', [
             'db_name' => $dbName,
         ]);
 
@@ -84,11 +84,7 @@ class ProjectController extends Controller
         $projectUser->save();
 
         // Migrate database
-        Artisan::call('migrate', [
-            '--database' => 'tenant',
-            '--path' => 'database/migrations/tenant',
-            '--force' => true,
-        ]);
+        Artisan::call('tenant:migrate', $dbName);
 
         // Clone user point into their database
         $user = new User;
@@ -156,7 +152,7 @@ class ProjectController extends Controller
         $project->delete();
 
         // Delete database tenant
-        Artisan::call('tenant:delete-database', [
+        Artisan::call('tenant:database:delete', [
             'db_name' => 'point_'.strtolower($project->code),
         ]);
 

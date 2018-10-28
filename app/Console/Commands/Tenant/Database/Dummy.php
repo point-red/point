@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Tenant\Database;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
-class SeedDummyDatabase extends Command
+class Dummy extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'tenant:seed-dummy {tenant_subdomain}';
+    protected $signature = 'tenant:seed:dummy {db_name}';
 
     /**
      * The console command description.
@@ -48,9 +48,9 @@ class SeedDummyDatabase extends Command
 
         $this->line(Artisan::output());
 
-        $tenantSubdomain = $this->argument('tenant_subdomain');
+        $dbName = strtolower($this->argument('dbName'));
 
-        config()->set('database.connections.tenant.database', $tenantSubdomain);
+        config()->set('database.connections.tenant.database', $dbName);
         DB::connection('tenant')->reconnect();
 
         $this->line('Artisan call seed tenant dummy database seeder');

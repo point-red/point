@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Tenant\Database;
 
 use App\Model\Auth\Role;
 use App\Model\Master\User;
@@ -8,24 +8,21 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
-class SeedFreshProject extends Command
+class FirstSeed extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'tenant:seed-fresh-project';
+    protected $signature = 'tenant:seed:first {db_name}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Seed fresh project';
-
-    // Default user of this project
-    protected $user = '';
+    protected $description = 'Seed new tenant (project) with required data';
 
     /**
      * Create a new command instance.

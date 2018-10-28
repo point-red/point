@@ -24,6 +24,7 @@ class CreateFormApprovalsTable extends Migration
             $table->string('token');
             $table->string('reason')->nullable();
 
+            $table->foreign('form_id')->references('id')->on('forms')->onDelete('cascade');
             $table->foreign('requested_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('requested_to')->references('id')->on('users')->onDelete('restrict');
 

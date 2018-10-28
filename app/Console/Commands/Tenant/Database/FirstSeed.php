@@ -41,6 +41,10 @@ class FirstSeed extends Command
      */
     public function handle()
     {
+        config()->set('database.connections.tenant.database', strtolower($this->argument('db_name')));
+        DB::connection('tenant')->reconnect();
+
+        $this->line('Seeding Tenant database seeder');
         // seeding default database for tenant
         Artisan::call('db:seed', [
             '--database' => 'tenant',
@@ -51,6 +55,7 @@ class FirstSeed extends Command
             '--class' => 'ChartOfAccountSeeder',
         ]);
 
+        $this->line('assign default role for owner');
         $this->assignDefaultRoleForOwner();
         $this->seedEmployeeData();
     }

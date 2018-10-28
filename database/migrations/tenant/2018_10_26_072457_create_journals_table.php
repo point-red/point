@@ -27,11 +27,12 @@ class CreateJournalsTable extends Migration
             $table->foreign('chart_of_account_id')
                 ->references('id')
                 ->on('chart_of_accounts')
-                ->onDelete('cascade');
+                ->onDelete('restrict');
 
             $table->foreign('form_number_reference')
                 ->references('number')
                 ->on('forms')
+                ->onUpdate('cascade')
                 ->onDelete('cascade');
 
             $table->foreign('form_number')

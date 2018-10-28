@@ -32,8 +32,7 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\Master\Item\StoreItemRequest $request
-     *
+     * @param StoreItemRequest $request
      * @return \App\Http\Resources\ApiResource
      */
     public function store(StoreItemRequest $request)
@@ -118,9 +117,9 @@ class ItemController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\Master\Item\UpdateItemRequest $request
-     *
-     * @return \App\Http\Resources\ApiResource
+     * @param UpdateItemRequest $request
+     * @param $id
+     * @return ApiResource
      */
     public function update(UpdateItemRequest $request, $id)
     {

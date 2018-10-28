@@ -18,8 +18,8 @@ class CreateMasterHistoriesTable extends Migration
             $table->unsignedInteger('historyable_id');
             $table->string('historyable_type');
             $table->string('column_name');
-            $table->text('old');
-            $table->text('new');
+            $table->text('old')->nullable();
+            $table->text('new')->nullable();
             $table->timestamp('updated_at')->useCurrent();
             $table->unsignedInteger('updated_by')->index()->nullable();
 

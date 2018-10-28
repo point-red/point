@@ -46,6 +46,8 @@ class Migrates extends Command
             // Recreate new database for tenant project
             $databaseName = 'point_'.strtolower($project->code);
 
+            $this->line('Migrate ' . $project->code);
+
             // Update tenant database name in configuration
             config()->set('database.connections.tenant.database', strtolower($databaseName));
             DB::connection('tenant')->reconnect();
@@ -56,8 +58,6 @@ class Migrates extends Command
                 '--path' => 'database/migrations/tenant',
                 '--force' => true,
             ]);
-
-            info($project->code.' migrated');
         }
     }
 }

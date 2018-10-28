@@ -11,7 +11,6 @@ use App\Model\Master\Group;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Stmt\TryCatch;
 
 class ItemController extends Controller
 {
@@ -94,7 +93,7 @@ class ItemController extends Controller
                         }
                         array_push($newGroups, $newGroup);
                     }
-                    $newItem->groups()->attach($newGroups);
+                    $newItem->groups()->attach(array_column($newGroups, 'id'));
                 }
             }
         );

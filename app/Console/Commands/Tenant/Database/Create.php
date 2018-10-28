@@ -1,26 +1,26 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Tenant\Database;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class CreateTenantDatabase extends Command
+class Create extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'tenant:create-database {db_name}';
+    protected $signature = 'tenant:database:create {db_name}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create tenant database';
+    protected $description = 'Create database for tenant';
 
     /**
      * Create a new command instance.

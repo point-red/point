@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Tenant\Database;
 
-use App\Model\Master\User;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
-class ResetTenantDatabase extends Command
+class Reset extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'tenant:reset-database {project}';
+    protected $signature = 'tenant:database:reset {project_code}';
 
     /**
      * The console command description.
@@ -44,24 +43,9 @@ class ResetTenantDatabase extends Command
         $project = Project::where('code', $this->argument('project'))->first();
 
         // Recreate new database for tenant project
-        $databaseName = 'point_'.strtolower($project->code);
-
-        Artisan::call('tenant:create-database', [
-            'db_name' => $databaseName,
-        ]);
-
-        // Update tenant database name in configuration
-        config()->set('database.connections.tenant.database', $databaseName);
-        DB::connection('tenant')->reconnect();
-        DB::connection('tenant')->beginTransaction();
-
-        Artisan::call('migrate', [
-            '--database' => 'tenant',
-            '--path' => 'database/migrations/tenant',
-            '--force' => true,
-        ]);
-
-        info('database migrated');
+        $dbName = 'point_'.strtolower($project->code);
+        Artisan::call('tenant:database:create', ['db_name' => $dbName]);
+        Artisan::call('tenant:migrate', ['db_name' => $dbName]);
 
         // Clone user point into their database
         $owner = $project->owner;
@@ -76,7 +60,7 @@ class ResetTenantDatabase extends Command
         $user->phone = $owner->phone;
         $user->save();
 
-        Artisan::call('tenant:seed-fresh-project');
+        Artisan::call('tenant:seed:first', ['db_name' => $dbName]);
 
         DB::connection('tenant')->commit();
     }

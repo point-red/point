@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Tenant\Database;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
-class MigrateTenantDatabase extends Command
+class Migrates extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'tenant:migrate';
+    protected $signature = 'tenant:migrates';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Migrate database for all tenant';
+    protected $description = 'Run migration command for all tenant in database';
 
     /**
      * Create a new command instance.

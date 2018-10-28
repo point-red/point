@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Tenant\Database;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
-class SeedTenantDatabase extends Command
+class Seeds extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'tenant:seed {class}';
+    protected $signature = 'tenant:seeds {class}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Seed to all tenant database';
+    protected $description = 'Run seed command for all tenant in database';
 
     /**
      * Create a new command instance.
@@ -44,11 +44,11 @@ class SeedTenantDatabase extends Command
 
         $projects = Project::all();
 
-        $this->line('Total Project : '.$projects->count());
+        $this->line('Total Project : ' . $projects->count());
 
         foreach ($projects as $project) {
-            $this->line(++$increment.'. Seed : '.$project->code);
-            config()->set('database.connections.tenant.database', 'point_'.strtolower($project->code));
+            $this->line(++$increment.'. Seed : ' . $project->code);
+            config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
             Artisan::call('db:seed', [

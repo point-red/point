@@ -21,8 +21,7 @@ class ProjectController extends Controller
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     *
-     * @return \App\Http\Controllers\Api\Project\ApiCollection
+     * @return ApiCollection
      */
     public function index(Request $request)
     {
@@ -39,15 +38,14 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     *
+     * @param StoreProjectRequest $request
      * @return \App\Http\Resources\Project\Project\ProjectResource
      */
     public function store(StoreProjectRequest $request)
     {
         // User only allowed to create max 1 project
         $numberOfProject = Project::where('owner_id', auth()->user()->id)->count();
-        if ($numberOfProject >= 1) {
+        if ($numberOfProject >= 1 && auth()->user()->id != 1) {
             return response()->json([
                 'code' => 422,
                 'message' => 'Beta user only allowed to create 1 project',
@@ -56,9 +54,7 @@ class ProjectController extends Controller
 
         // Create new database for tenant project
         $dbName = 'point_'.strtolower($request->get('code'));
-        Artisan::call('tenant:database:create', [
-            'db_name' => $dbName,
-        ]);
+        Artisan::call('tenant:database:create', ['db_name' => $dbName]);
 
         // Update tenant database name in configuration
         config()->set('database.connections.tenant.database', $dbName);
@@ -84,7 +80,7 @@ class ProjectController extends Controller
         $projectUser->save();
 
         // Migrate database
-        Artisan::call('tenant:migrate', $dbName);
+        Artisan::call('tenant:migrate', ['db_name' => $dbName]);
 
         // Clone user point into their database
         $user = new User;
@@ -95,7 +91,7 @@ class ProjectController extends Controller
         $user->email = auth()->user()->email;
         $user->save();
 
-        Artisan::call('tenant:seed-fresh-project');
+        Artisan::call('tenant:seed:first', ['db_name' => $dbName]);
 
         DB::connection('tenant')->commit();
 

@@ -19,8 +19,8 @@ class CreateKpisTable extends Migration
             $table->unsignedInteger('scorer_id')->index();
             $table->string('name');
             $table->date('date');
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');

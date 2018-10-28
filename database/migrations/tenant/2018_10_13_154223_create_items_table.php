@@ -26,8 +26,8 @@ class CreateItemsTable extends Migration
             $table->boolean('disabled')->default(false);
             $table->unsignedInteger('stock_reminder')->default(0);
 
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');

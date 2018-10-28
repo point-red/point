@@ -32,8 +32,8 @@ class CreateEmployeesTable extends Migration
             $table->string('job_title')->nullable();
             $table->unsignedInteger('kpi_template_id')->nullable()->index();
             $table->text('notes')->nullable();
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             // Relationship

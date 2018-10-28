@@ -18,8 +18,8 @@ class CreateChartOfAccountTypesTable extends Migration
             $table->string('name');
             $table->string('alias');
             $table->boolean('is_debit'); // plus value is in debit, otherwise credit
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');

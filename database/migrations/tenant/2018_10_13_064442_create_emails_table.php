@@ -23,8 +23,8 @@ class CreateEmailsTable extends Migration
             $table->unsignedInteger('emailable_id');
             $table->string('emailable_type');
 
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');

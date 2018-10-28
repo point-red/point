@@ -20,8 +20,8 @@ class CreateWarehousesTable extends Migration
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
             $table->text('notes')->nullable();
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');

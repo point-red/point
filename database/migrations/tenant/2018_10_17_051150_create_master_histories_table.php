@@ -21,7 +21,7 @@ class CreateMasterHistoriesTable extends Migration
             $table->text('old');
             $table->text('new');
             $table->timestamp('updated_at')->useCurrent();
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('updated_by')->index()->nullable();
 
             $table->foreign('updated_by')
                 ->references('id')

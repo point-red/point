@@ -24,7 +24,7 @@ class PointModel extends Model
     }
 
     /**
-     * Determine if the model uses timestamps.
+     * Determine if the model uses logs.
      *
      * @return bool
      */
@@ -35,10 +35,10 @@ class PointModel extends Model
 
     public function updateUserLog()
     {
-        $this->updated_by = auth()->user()->id;
+        $this->updated_by = optional(auth()->user())->id;
 
         if (!$this->exists) {
-            $this->created_by = auth()->user()->id;
+            $this->created_by = optional(auth()->user())->id;
         }
     }
 }

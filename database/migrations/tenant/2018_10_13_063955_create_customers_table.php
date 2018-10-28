@@ -21,8 +21,8 @@ class CreateCustomersTable extends Migration
             $table->text('notes')->nullable();
             $table->boolean('disabled')->default(false);
             $table->decimal('credit_ceiling', 65, 30)->default(0);
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->unsignedInteger('pricing_group_id')->nullable()->index();
             $table->timestamps();
 

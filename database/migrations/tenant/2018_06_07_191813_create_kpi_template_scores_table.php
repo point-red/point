@@ -18,8 +18,8 @@ class CreateKpiTemplateScoresTable extends Migration
             $table->unsignedInteger('kpi_template_indicator_id')->index();
             $table->string('description');
             $table->unsignedInteger('score');
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');

@@ -18,8 +18,8 @@ class CreateEmployeeSalaryHistoriesTable extends Migration
             $table->unsignedInteger('employee_id')->index();
             $table->date('date');
             $table->double('salary');
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             // Relationship

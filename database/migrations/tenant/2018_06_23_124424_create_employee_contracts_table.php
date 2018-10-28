@@ -20,8 +20,8 @@ class CreateEmployeeContractsTable extends Migration
             $table->date('contract_end')->nullable();
             $table->string('link');
             $table->text('notes')->nullable();
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             // Relationship

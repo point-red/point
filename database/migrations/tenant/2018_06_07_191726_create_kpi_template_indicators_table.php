@@ -19,8 +19,8 @@ class CreateKpiTemplateIndicatorsTable extends Migration
             $table->string('name');
             $table->unsignedDecimal('weight', 5, 2);
             $table->unsignedInteger('target');
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');

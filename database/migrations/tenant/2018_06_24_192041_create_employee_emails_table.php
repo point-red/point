@@ -18,8 +18,8 @@ class CreateEmployeeEmailsTable extends Migration
             $table->unsignedInteger('employee_id')->index();
             $table->string('email');
             $table->boolean('is_main')->default(false);
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             // Relationship

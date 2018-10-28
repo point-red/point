@@ -17,8 +17,8 @@ class CreateGroupsTable extends Migration
             $table->increments('id');
             $table->string('type');
             $table->string('name');
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             $table->unique(['type', 'name']);

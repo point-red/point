@@ -20,8 +20,8 @@ class CreateSuppliersTable extends Migration
             $table->string('name');
             $table->text('notes')->nullable();
             $table->boolean('disabled')->default(false);
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');

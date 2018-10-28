@@ -21,8 +21,8 @@ class CreatePriceListsTable extends Migration
             $table->decimal('price', 65, 30);
             $table->decimal('discount_percent', 33, 30)->nullable();
             $table->decimal('discount_value', 65, 30)->default(0);
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             $table->foreign('pricing_group_id')->references('id')->on('pricing_groups')->onDelete('cascade');

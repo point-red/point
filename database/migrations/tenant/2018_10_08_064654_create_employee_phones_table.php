@@ -19,8 +19,8 @@ class CreateEmployeePhonesTable extends Migration
             $table->string('country_code')->nullable();
             $table->string('phone');
             $table->boolean('is_main')->default(false);
-            $table->unsignedInteger('created_by');
-            $table->unsignedInteger('updated_by');
+            $table->unsignedInteger('created_by')->index()->nullable();
+            $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
             // Relationship

@@ -20,6 +20,6 @@ class ItemUnit extends MasterModel
      */
     public function item()
     {
-        return $this->belongsTo(get_class(new Item()));
+        return $this->belongsTo(Item::class);
     }
 }

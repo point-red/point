@@ -8,6 +8,8 @@ class Group extends MasterModel
 {
     protected $connection = 'tenant';
 
+    protected $fillable = ['name', 'type'];
+
     /**
      * Get all of the suppliers that are assigned this group.
      */

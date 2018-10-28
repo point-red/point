@@ -50,6 +50,9 @@ class SeedFreshProject extends Command
             '--class' => 'TenantDatabaseSeeder',
             '--force' => true,
         ]);
+        Artisan::call('db:seed', [
+            '--class' => 'ChartOfAccountSeeder',
+        ]);
 
         $this->assignDefaultRoleForOwner();
         $this->seedEmployeeData();

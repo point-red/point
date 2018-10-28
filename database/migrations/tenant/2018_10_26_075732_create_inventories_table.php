@@ -40,6 +40,7 @@ class CreateInventoriesTable extends Migration
             $table->foreign('form_number')
                 ->references('number')
                 ->on('forms')
+                ->onUpdate('cascade')
                 ->onDelete('cascade');
         });
     }

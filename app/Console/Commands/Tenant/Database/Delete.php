@@ -13,7 +13,7 @@ class Delete extends Command
      *
      * @var string
      */
-    protected $signature = 'tenant:database:delete';
+    protected $signature = 'tenant:database:delete {db_name}';
 
     /**
      * The console command description.

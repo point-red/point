@@ -16,7 +16,7 @@ class CreateServicesTable extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->increments('id');
             $table->string('code')->nullable()->unique();
-            $table->string('name');
+            $table->string('name')->index();
             $table->text('notes')->nullable();
             $table->boolean('disabled')->default(false);
             $table->unsignedInteger('created_by')->index()->nullable();

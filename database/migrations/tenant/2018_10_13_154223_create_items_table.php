@@ -18,7 +18,7 @@ class CreateItemsTable extends Migration
             $table->unsignedInteger('chart_of_account_id');
             $table->string('code')->nullable();
             $table->string('barcode')->nullable();
-            $table->string('name');
+            $table->string('name')->index();
             $table->string('size')->nullable();
             $table->string('color')->nullable();
             $table->string('weight')->nullable();

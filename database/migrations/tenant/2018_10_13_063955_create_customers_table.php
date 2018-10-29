@@ -17,7 +17,7 @@ class CreateCustomersTable extends Migration
             $table->increments('id');
             $table->string('code')->nullable()->unique();
             $table->string('tax_identification_number')->nullable();
-            $table->string('name');
+            $table->string('name')->index();
             $table->text('notes')->nullable();
             $table->boolean('disabled')->default(false);
             $table->decimal('credit_ceiling', 65, 30)->default(0);

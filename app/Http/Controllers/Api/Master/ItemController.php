@@ -7,6 +7,7 @@ use App\Http\Requests\Master\Item\UpdateItemRequest;
 use App\Http\Controllers\Controller;
 use App\Model\Master\Item;
 use App\Model\Master\ItemUnit;
+use App\Model\Master\Group;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use Illuminate\Support\Facades\DB;
@@ -36,26 +37,69 @@ class ItemController extends Controller
      */
     public function store(StoreItemRequest $request)
     {
-        DB::connection('tenant')->beginTransaction();
+        /**
+         * $request params
+         * 1. items Array
+         * 2. groups Array
+         * 3. group Object
+         * 4. units Array
+         * 5. unit Object
+         * 6. item fillable
+         */
+        $newItems = [];
+        DB::connection('tenant')->transaction(
+            function () use ($request, &$newItems) {
+                $items = [];
+                if ($request->get('items')) {
+                    $items = $request->get('items');
+                } else {
+                    array_push($items, $request->all());
+                }
 
-        $item = new Item;
-        $item->fill($request->all());
-        $item->save();
+                foreach ($items as $item) {
+                    $newItem = new Item;
+                    $newItem->fill($item);
+                    $newItem->save(); // this will trigger INSERT for each item
 
-        $units = $request->get('units');
-        $unitsToBeInserted = [];
-        if ($units) {
-            foreach($units as $unit) {
-                $itemUnit = new ItemUnit();
-                $itemUnit->fill($unit);
-                array_push($unitsToBeInserted, $itemUnit);
+                    $newUnits = [];
+                    if (array_key_exists('units', $item)) {
+                        $units = $item['units'];
+                        foreach ($units as $unit) {
+                            $newUnit = new ItemUnit;
+                            $newUnit->fill($unit);
+                            array_push($newUnits, $newUnit);
+                        }
+                    } elseif (array_key_exists('unit', $item)) {
+                        $newUnit = new ItemUnit;
+                        $newUnit->fill($unit);
+                        array_push($newUnits, $newUnit);
+                    }
+                    $newItem->units()->saveMany($newUnits);
+
+                    $groups = [];
+                    if (array_key_exists('groups', $item)) {
+                        $groups = $item['groups'];
+                    } elseif (array_key_exists('group', $item)) {
+                        array_push($groups, $item['group']);
+                    }
+                    $newGroups = [];
+                    foreach ($groups as $group) {
+                        if (!array_key_exists('id', $group)) {
+                            $newGroup = Group::firstOrCreate([
+                                'name' => $group['name'],
+                                'type' => Item::class
+                            ]);
+                        } else {
+                            $newGroup = Group::find($group['id']);
+                        }
+                        array_push($newGroups, $newGroup);
+                    }
+                    $newItem->groups()->attach(array_column($newGroups, 'id'));
+                    array_push($newItems, $newItem);
+                }
             }
-        }
-        $item->units()->saveMany($unitsToBeInserted);
-        
-        DB::connection('tenant')->commit();
-        
-        return new ApiResource($item);
+        );
+        return Response()->json($newItems);
     }
 
     /**
@@ -92,16 +136,16 @@ class ItemController extends Controller
         $units = $request->get('units');
         $unitsToBeInserted = [];
         if ($units) {
-            foreach($units as $unit) {
+            foreach ($units as $unit) {
                 $itemUnit = new ItemUnit();
                 $itemUnit->fill($unit);
                 array_push($unitsToBeInserted, $itemUnit);
             }
         }
         $item->units()->saveMany($unitsToBeInserted);
-        
+
         DB::connection('tenant')->commit();
-        
+
         return new ApiResource($item);
     }
 

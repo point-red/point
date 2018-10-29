@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePinPointSalesVisitationDetailsTable extends Migration
+class CreatePinPointSalesVisitationSimilarProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,11 @@ class CreatePinPointSalesVisitationDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('pin_point_sales_visitation_details', function (Blueprint $table) {
+        Schema::create('pin_point_sales_visitation_similar_products', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('sales_visitation_id')->index();
-            $table->unsignedInteger('item_id')->index();
-            $table->decimal('quantity', 65, 30);
-            $table->decimal('price', 65, 30);
+            $table->string('name');
             $table->foreign('sales_visitation_id')->references('id')->on('sales_visitations')->onDelete('cascade');
-            $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');
         });
     }
 
@@ -31,6 +28,6 @@ class CreatePinPointSalesVisitationDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pin_point_sales_visitation_details');
+        Schema::dropIfExists('pin_point_sales_visitation_similar_products');
     }
 }

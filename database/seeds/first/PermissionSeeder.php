@@ -1,7 +1,6 @@
 <?php
 
 use App\Model\Auth\Role;
-use App\Model\Master\User;
 use App\Model\Auth\Permission;
 use Illuminate\Database\Seeder;
 
@@ -56,6 +55,14 @@ class PermissionSeeder extends Seeder
         }
     }
 
+    private function setPluginPermission()
+    {
+        Permission::createIfNotExists('menu plugin');
+
+        $this->setScaleWeightPermission();
+        $this->setPinPointPermission();
+    }
+
     private function setScaleWeightPermission()
     {
         Permission::createIfNotExists('menu scale weight');
@@ -72,10 +79,24 @@ class PermissionSeeder extends Seeder
         }
     }
 
-    private function setPluginPermission()
+    private function setPinPointPermission()
     {
-        Permission::createIfNotExists('menu plugin');
+        Permission::createIfNotExists('menu pin point');
 
-        $this->setScaleWeightPermission();
+        $allPermission = [
+            'pin point master',
+            'pin point sales visitation form',
+        ];
+
+        Permission::createIfNotExists('read pin point sales visitation form report');
+        Permission::createIfNotExists('read pin point sales visitation report');
+        Permission::createIfNotExists('read pin point attendance report');
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
     }
 }

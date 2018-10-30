@@ -23,6 +23,7 @@ class CreateItemsTable extends Migration
             $table->string('color')->nullable();
             $table->string('weight')->nullable();
             $table->text('notes')->nullable();
+            $table->boolean('taxable')->default(true);
             $table->boolean('disabled')->default(false);
             $table->unsignedInteger('stock_reminder')->default(0);
 

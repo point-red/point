@@ -18,7 +18,8 @@ class CreateFormsTable extends Migration
             $table->datetime('date');
             $table->string('number')->nullable()->unique();
             $table->string('edited_number')->nullable();
-            $table->string('edited_notes')->nullable();
+            $table->text('edited_notes')->nullable();
+            $table->text('notes')->nullable();
             $table->unsignedInteger('created_by')->index();
             $table->unsignedInteger('updated_by')->index();
             $table->boolean('done')->default(false);

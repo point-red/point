@@ -34,5 +34,6 @@ Route::prefix('v1')->namespace('Api')->group(function () {
 
         // Plugin
         require base_path('routes/api/plugin/scale-weight.php');
+        require base_path('routes/api/plugin/pin-point.php');
     });
 });

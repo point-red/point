@@ -52,8 +52,7 @@ class AlterData extends Command
             // TODO: ADD NOTES IN FORM
             // TODO: EDIT EDITED NOTES IN FORM (FROM STRING TO TEXT)
 
-            // DB::connection('tenant')->statement('ALTER TABLE `chart_of_account_types` ADD COLUMN created_by int(10) unsigned');
-            // DB::connection('tenant')->statement('ALTER TABLE `chart_of_account_types` ADD CONSTRAINT chart_of_account_types_created_by_foreign FOREIGN KEY (created_by) REFERENCES users(id)');
+            DB::connection('tenant')->statement('ALTER TABLE `items` MODIFY COLUMN chart_of_account_id int(10) unsigned');
 
             $this->line('Migrate ' . $project->code);
             Artisan::call('tenant:migrate', ['db_name' => 'point_' . strtolower($project->code)]);

@@ -9,4 +9,6 @@ class SalesVisitationInterestReason extends Model
     protected $connection = 'tenant';
 
     protected $table = 'pin_point_sales_visitation_interest_reasons';
+
+    public $timestamps = false;
 }

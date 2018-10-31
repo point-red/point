@@ -13,7 +13,7 @@ class StoreSalesVisitationRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,14 @@ class StoreSalesVisitationRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'customer' => 'required',
+            'group' => 'required',
+            'address' => 'required',
+            'phone' => 'required',
+            'similar_product' => 'required',
+            'interest_reason' => 'required',
+            'not_interest_reason' => 'required',
+            'payment_method' => 'required',
         ];
     }
 }

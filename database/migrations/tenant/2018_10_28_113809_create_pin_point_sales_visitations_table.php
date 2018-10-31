@@ -17,10 +17,16 @@ class CreatePinPointSalesVisitationsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('form_id');
             $table->unsignedInteger('customer_id');
-            $table->text('notes');
+            $table->string('name');
+            $table->string('group');
+            $table->string('address');
+            $table->string('phone');
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
+            $table->text('notes')->nullable();
             $table->string('payment_method'); // cash or credit
-            $table->date('due_date');
-            $table->decimal('payment_received', 65, 30);
+            $table->date('due_date')->nullable();
+            $table->decimal('payment_received', 65, 30)->nullable();
             $table->timestamps();
 
             $table->foreign('form_id')->references('id')->on('forms')->onDelete('cascade');

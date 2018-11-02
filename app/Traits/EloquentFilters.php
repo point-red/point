@@ -53,8 +53,15 @@ trait EloquentFilters
     public function scopeIncludes($query, $values)
     {
         if ($values) {
-            foreach (explode(',', $values) as $value) {
-                if ($this->hasRelation($value)) {
+            // Support multiple call relation
+            foreach (explode(';', $values) as $value) {
+                // Eager Loading Specific Columns:
+                // You may not always need every column from the relationships you are retrieving.
+                // For this reason, Eloquent allows you to specify which columns
+                // of the relationship you would like to retrieve:
+                // https://laravel.com/docs/5.7/eloquent-relationships#eager-loading
+                $relation = explode(':', $value)[0];
+                if ($this->hasRelation($relation)) {
                     $query->with($value);
                 }
             }

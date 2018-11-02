@@ -22,4 +22,7 @@ Route::prefix('master')->namespace('Master')->group(function () {
     // Route::apiResource('kpi/templates', 'KpiTemplateController');
     // Route::apiResource('expeditions', 'ExpeditionController');
     Route::apiResource('allocations', 'AllocationController');
+
+    Route::apiResource('price-list-items', 'PriceListItemController');
+    Route::apiResource('price-list-services', 'PriceListServiceController');
 });

@@ -20,6 +20,6 @@ class CloudStorageController extends Controller
         $cloudStorage = CloudStorage::where('key', $request->get('key'))->first();
         $file = $cloudStorage->file_name . '.' . $cloudStorage->file_ext;
 
-        return Storage::disk('s3')->download($cloudStorage->path, $file);
+        return Storage::disk($cloudStorage->disk)->download($cloudStorage->path, $file);
     }
 }

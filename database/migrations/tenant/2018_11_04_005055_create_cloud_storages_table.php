@@ -17,10 +17,12 @@ class CreateCloudStoragesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('owner_id');
             $table->string('tenant');
+            $table->string('feature');
             $table->string('file_name');
             $table->string('file_ext');
             $table->string('key');
             $table->string('path');
+            $table->string('disk');
             $table->string('download_url');
             $table->datetime('expired_at');
             $table->timestamps();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
 use App\Exports\ScaleWeightItemExport;
 use App\Model\CloudStorage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
@@ -28,6 +29,7 @@ class ScaleWeightItemExportController extends Controller
         $cloudStorage = new CloudStorage;
         $cloudStorage->file_name = $fileName;
         $cloudStorage->file_ext = $fileExt;
+        $cloudStorage->feature = 'scale weight item';
         $cloudStorage->key = $key;
         $cloudStorage->path = $path;
         $cloudStorage->tenant = $tenant;

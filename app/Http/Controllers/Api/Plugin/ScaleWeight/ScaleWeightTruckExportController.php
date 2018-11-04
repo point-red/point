@@ -18,7 +18,7 @@ class ScaleWeightTruckExportController extends Controller
         $fileName = strtoupper($tenant) .' - Scale Weight Truck Report - '. date('dMY', strtotime($request->get('date_from'))) . '-' . date('dMY', strtotime($request->get('date_to')));
         $fileExt = 'xlsx';
         $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
-        $result = Excel::store(new ScaleWeightTruckExport(), $path, 's3');
+        $result = Excel::store(new ScaleWeightTruckExport($request->get('date_from'), $request->get('date_to')), $path, env('STORAGE_DISK'));
 
         if (!$result) {
             return response()->json([
@@ -29,8 +29,10 @@ class ScaleWeightTruckExportController extends Controller
         $cloudStorage = new CloudStorage;
         $cloudStorage->file_name = $fileName;
         $cloudStorage->file_ext = $fileExt;
+        $cloudStorage->feature = 'scale weight truck';
         $cloudStorage->key = $key;
         $cloudStorage->path = $path;
+        $cloudStorage->disk = env('STORAGE_DISK');
         $cloudStorage->tenant = $tenant;
         $cloudStorage->owner_id = auth()->user()->id;
         $cloudStorage->expired_at = Carbon::now()->addDay(1);

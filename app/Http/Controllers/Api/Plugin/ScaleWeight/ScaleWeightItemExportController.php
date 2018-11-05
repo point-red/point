@@ -15,10 +15,14 @@ class ScaleWeightItemExportController extends Controller
     {
         $tenant = strtolower($request->header('Tenant'));
         $key = str_random(16);
-        $fileName = strtoupper($tenant) .' - Scale Weight Item Report - '. date('dMY', strtotime($request->get('date_from'))) . '-' . date('dMY', strtotime($request->get('date_to')));
+        $fileName = strtoupper($tenant)
+            . ' - Scale Weight Item Report - '
+            . date('dMY', strtotime($request->get('date_from')))
+            . '-'
+            . date('dMY', strtotime($request->get('date_to')));
         $fileExt = 'xlsx';
         $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
-        $result = Excel::store(new ScaleWeightItemExport(), $path, 's3');
+        $result = Excel::store(new ScaleWeightItemExport($request->get('date_from'), $request->get('date_to')), $path, env('STORAGE_DISK'));
 
         if (!$result) {
             return response()->json([
@@ -32,6 +36,7 @@ class ScaleWeightItemExportController extends Controller
         $cloudStorage->feature = 'scale weight item';
         $cloudStorage->key = $key;
         $cloudStorage->path = $path;
+        $cloudStorage->disk = env('STORAGE_DISK');
         $cloudStorage->tenant = $tenant;
         $cloudStorage->owner_id = auth()->user()->id;
         $cloudStorage->expired_at = Carbon::now()->addDay(1);

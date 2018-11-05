@@ -15,8 +15,8 @@ class CreateCloudStoragesTable extends Migration
     {
         Schema::create('cloud_storages', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('owner_id');
-            $table->string('tenant');
+            $table->unsignedInteger('owner_id')->nullable();
+            $table->unsignedInteger('project_id')->nullable();
             $table->string('feature');
             $table->string('file_name');
             $table->string('file_ext');
@@ -26,6 +26,16 @@ class CreateCloudStoragesTable extends Migration
             $table->string('download_url');
             $table->datetime('expired_at');
             $table->timestamps();
+
+            $table->foreign('owner_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+
+            $table->foreign('project_id')
+                ->references('id')
+                ->on('projects')
+                ->onDelete('cascade');
         });
     }
 

@@ -8,6 +8,10 @@ class Group extends MasterModel
 {
     protected $connection = 'tenant';
 
+    protected $fillable = ['name', 'code', 'type'];
+
+    private $masterNamespace = 'App\Model\Master\\';
+
     /**
      * Get all of the suppliers that are assigned this group.
      */
@@ -46,5 +50,16 @@ class Group extends MasterModel
     public function allocations()
     {
         return $this->morphedByMany(get_class(new Allocation()), 'groupable');
+    }
+
+    /**
+     * Set the group's type.
+     *
+     * @param  string  $value
+     * @return void
+     */
+    public function setTypeAttribute($value)
+    {
+        $this->attributes['type'] = $this->masterNamespace . capitalize($value);
     }
 }

@@ -24,7 +24,8 @@ class UpdateGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
+            'name' => 'min:1',
+            'code' => 'min:1',
         ];
     }
 }

@@ -15,7 +15,6 @@ class GroupController extends Controller
 {
     private $availableGroupTypes = ['supplier', 'customer', 'item'];
 
-    private $masterNamespace = 'App\Model\Master\\';
 
     private $groupTypeIsNotAvailableResponse = [
         'code' => 400,
@@ -39,7 +38,7 @@ class GroupController extends Controller
      */
     public function index(Request $request)
     {
-        $groupType = $request->get('group_type');
+        $groupType = $request->get('type');
 
         if (!$this->isGroupTypeAvailable($groupType)) {
             return response()->json($this->groupTypeIsNotAvailableResponse);
@@ -60,16 +59,13 @@ class GroupController extends Controller
      */
     public function store(StoreGroupRequest $request)
     {
-        $groupType = $request->get('group_type');
+        $groupType = $request->get('type');
 
         if (!$this->isGroupTypeAvailable($groupType)) {
             return response()->json($this->groupTypeIsNotAvailableResponse);
         }
 
-        $group = new Group;
-        $group->name = $request->get('name');
-        $group->type = $this->masterNamespace . capitalize($groupType);
-        $group->save();
+        $group = Group::create($request->all());
 
         return new ApiResource($group);
     }
@@ -83,12 +79,6 @@ class GroupController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $groupType = $request->get('group_type');
-
-        if (!$this->isGroupTypeAvailable($groupType)) {
-            return response()->json($this->groupTypeIsNotAvailableResponse);
-        }
-
         $group = Group::findOrFail($id);
 
         return new ApiResource($group);
@@ -103,15 +93,8 @@ class GroupController extends Controller
      */
     public function update(UpdateGroupRequest $request, $id)
     {
-        $groupType = $request->get('group_type');
-
-        if (!$this->isGroupTypeAvailable($groupType)) {
-            return response()->json($this->groupTypeIsNotAvailableResponse);
-        }
-
         $group = Group::findOrFail($id);
-        $group->name = $request->get('name');
-        $group->type = $this->masterNamespace . capitalize($groupType);
+        $group->fill($request->all());
         $group->save();
 
         return new ApiResource($group);
@@ -126,7 +109,7 @@ class GroupController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $groupType = $request->get('group_type');
+        $groupType = $request->get('type');
 
         if (!$this->isGroupTypeAvailable($groupType)) {
             return response()->json($this->groupTypeIsNotAvailableResponse);

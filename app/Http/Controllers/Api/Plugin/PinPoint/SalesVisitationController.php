@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
 use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
 use App\Http\Resources\ApiResource;
+use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Item;
@@ -21,11 +22,17 @@ class SalesVisitationController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return SalesVisitationCollection
      */
     public function index()
     {
-        //
+        $salesVisitationForm = SalesVisitation::with('form.createdBy')
+            ->with('interestReasons')
+            ->with('notInterestReasons')
+            ->with('similarProducts')
+            ->with('details.item')
+            ->get();
+        return new SalesVisitationCollection($salesVisitationForm);
     }
 
     /**
@@ -37,6 +44,10 @@ class SalesVisitationController extends Controller
     public function store(StoreSalesVisitationRequest $request)
     {
         DB::connection('tenant')->beginTransaction();
+
+        if ($request->get('interest_reason') == '' && $request->get('interest_reason') == '') {
+            return response()->json([],422);
+        }
 
         $customer = Customer::where('name', $request->get('customer'))->first();
 

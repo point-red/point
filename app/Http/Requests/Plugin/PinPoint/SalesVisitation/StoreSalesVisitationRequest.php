@@ -29,8 +29,6 @@ class StoreSalesVisitationRequest extends FormRequest
             'address' => 'required',
             'phone' => 'required',
             'similar_product' => 'required',
-            'interest_reason' => 'required',
-            'not_interest_reason' => 'required',
             'payment_method' => 'required',
         ];
     }

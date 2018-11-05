@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class CloudStorage extends Model
 {
-    protected $connection = 'tenant';
+    protected $connection = 'mysql';
 }

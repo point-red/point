@@ -15,6 +15,7 @@ class GroupController extends Controller
 {
     private $availableGroupTypes = ['supplier', 'customer', 'item'];
 
+    private $masterNamespace = 'App\Model\Master\\';
 
     private $groupTypeIsNotAvailableResponse = [
         'code' => 400,
@@ -109,14 +110,7 @@ class GroupController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $groupType = $request->get('type');
-
-        if (!$this->isGroupTypeAvailable($groupType)) {
-            return response()->json($this->groupTypeIsNotAvailableResponse);
-        }
-
         $group = Group::findOrFail($id);
-
         $group->delete();
 
         return response()->json([], 204);

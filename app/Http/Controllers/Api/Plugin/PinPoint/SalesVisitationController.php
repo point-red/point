@@ -26,12 +26,19 @@ class SalesVisitationController extends Controller
      */
     public function index()
     {
-        $salesVisitationForm = SalesVisitation::with('form.createdBy')
+        $salesVisitationForm = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
+            ->with('form.createdBy')
             ->with('interestReasons')
             ->with('notInterestReasons')
             ->with('similarProducts')
-            ->with('details.item')
-            ->get();
+            ->with('details.item');
+
+        if (!tenant()->hasPermissionTo('read pin point sales visitation form')) {
+            $salesVisitationForm = $salesVisitationForm->where('forms.created_by', auth()->user()->id);
+        }
+
+        $salesVisitationForm = $salesVisitationForm->get();
+
         return new SalesVisitationCollection($salesVisitationForm);
     }
 

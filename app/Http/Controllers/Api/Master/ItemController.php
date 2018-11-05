@@ -89,7 +89,7 @@ class ItemController extends Controller
             }
             $newItem->units()->saveMany($unitsToBeInserted);
 
-            $newItem->groups()->attach($request->get('groups'));
+            $newItem->groups()->attach($item['groups']);
         }
 
         DB::connection('tenant')->commit();

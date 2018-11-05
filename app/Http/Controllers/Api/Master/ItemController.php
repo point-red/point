@@ -78,7 +78,7 @@ class ItemController extends Controller
             $newItem->fill($item);
             $newItem->save();
 
-            $units = $request->get('units');
+            $units = $item['units'];
             $unitsToBeInserted = [];
             if ($units) {
                 foreach($units as $unit) {

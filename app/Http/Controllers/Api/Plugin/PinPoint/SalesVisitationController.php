@@ -57,7 +57,7 @@ class SalesVisitationController extends Controller
     {
         DB::connection('tenant')->beginTransaction();
 
-        if ($request->get('interest_reason') == '' && $request->get('interest_reason') == '') {
+        if ($request->get('interest_reason') == '' && $request->get('not_interest_reason') == '') {
             return response()->json([],422);
         }
 

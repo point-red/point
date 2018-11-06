@@ -4,9 +4,18 @@ namespace App\Model;
 
 class MasterModel extends PointModel
 {
+    protected $user_logs = true;
+
     public function save(array $options = [])
     {
         $this->logUpdatedColumn();
+
+        // First we need to create a fresh query instance and touch the creation and
+        // update timestamp on the model which are maintained by us for developer
+        // convenience. Then we will just continue saving the model instances.
+        if ($this->usesUserLogs()) {
+            $this->updateUserLog();
+        }
 
         return parent::save();
     }
@@ -57,5 +66,24 @@ class MasterModel extends PointModel
     public function histories()
     {
         return $this->morphMany(get_class(new MasterHistory()), 'historyable');
+    }
+
+    /**
+     * Determine if the model uses logs.
+     *
+     * @return bool
+     */
+    public function usesUserLogs()
+    {
+        return $this->user_logs;
+    }
+
+    public function updateUserLog()
+    {
+        $this->updated_by = optional(auth()->user())->id;
+
+        if (!$this->exists) {
+            $this->created_by = optional(auth()->user())->id;
+        }
     }
 }

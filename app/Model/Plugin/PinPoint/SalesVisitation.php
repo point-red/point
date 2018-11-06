@@ -11,8 +11,6 @@ class SalesVisitation extends PointModel
 
     protected $table = 'pin_point_sales_visitations';
 
-    protected $user_logs = false;
-
     public function form() {
         return $this->belongsTo(Form::class);
     }

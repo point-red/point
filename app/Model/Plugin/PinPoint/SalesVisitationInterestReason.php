@@ -12,8 +12,6 @@ class SalesVisitationInterestReason extends PointModel
 
     public $timestamps = false;
 
-    protected $user_logs = false;
-
     public function salesVisitation()
     {
         return $this->belongsTo(SalesVisitation::class, 'sales_visitation_id');

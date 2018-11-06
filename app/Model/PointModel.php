@@ -11,6 +11,11 @@ class PointModel extends Model
 
     use EloquentFilters;
 
+    public static function getTableName()
+    {
+        return with(new static)->getTable();
+    }
+
     public function save(array $options = [])
     {
         // First we need to create a fresh query instance and touch the creation and

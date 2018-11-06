@@ -3,9 +3,9 @@
 namespace App\Model\Plugin\PinPoint;
 
 use App\Model\Form;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\PointModel;
 
-class SalesVisitation extends Model
+class SalesVisitation extends PointModel
 {
     protected $connection = 'tenant';
 

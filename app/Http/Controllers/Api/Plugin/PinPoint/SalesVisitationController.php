@@ -22,9 +22,10 @@ class SalesVisitationController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return SalesVisitationCollection
      */
-    public function index()
+    public function index(Request $request)
     {
         $salesVisitationForm = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
             ->with('form.createdBy')
@@ -32,6 +33,10 @@ class SalesVisitationController extends Controller
             ->with('notInterestReasons')
             ->with('similarProducts')
             ->with('details.item');
+
+        $dateFrom = date('Y-m-d 00:00:00', strtotime($request->get('date_from')));
+        $dateTo = date('Y-m-d 23:59:59', strtotime($request->get('date_to')));
+        $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$dateFrom, $dateTo]);
 
         if (!tenant()->hasPermissionTo('read pin point sales visitation form')) {
             $salesVisitationForm = $salesVisitationForm->where('forms.created_by', auth()->user()->id);

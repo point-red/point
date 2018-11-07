@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateItemUnitsTable extends Migration
+class CreatePriceListItemsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,21 +13,23 @@ class CreateItemUnitsTable extends Migration
      */
     public function up()
     {
-        Schema::create('item_units', function (Blueprint $table) {
+        Schema::create('price_list_items', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('label');
-            $table->string('name');
-            $table->decimal('converter', 65, 30)->default(1);
-            $table->boolean('disabled')->default(false);
-            $table->unsignedInteger('item_id');
+            $table->unsignedInteger('pricing_group_id');
+            $table->unsignedInteger('item_unit_id');
+            $table->date('date');
+            $table->decimal('price', 65, 30);
+            $table->decimal('discount_percent', 33, 30)->nullable();
+            $table->decimal('discount_value', 65, 30)->default(0);
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
-
             $table->timestamps();
+
+            $table->foreign('pricing_group_id')->references('id')->on('pricing_groups')->onDelete('cascade');
+            $table->foreign('item_unit_id')->references('id')->on('item_units')->onDelete('cascade');
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
-            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
         });
     }
 
@@ -38,6 +40,6 @@ class CreateItemUnitsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('item_units');
+        Schema::dropIfExists('price_list_items');
     }
 }

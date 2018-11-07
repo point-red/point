@@ -14,6 +14,7 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::apiResource('groups', 'GroupController');
     Route::apiResource('warehouses', 'WarehouseController');
     Route::apiResource('items', 'ItemController');
+    Route::post('items/bulk', 'ItemController@storeMany');
     Route::apiResource('services', 'ServiceController');
     Route::apiResource('customers', 'CustomerController');
     Route::apiResource('suppliers', 'SupplierController');
@@ -21,4 +22,7 @@ Route::prefix('master')->namespace('Master')->group(function () {
     // Route::apiResource('kpi/templates', 'KpiTemplateController');
     // Route::apiResource('expeditions', 'ExpeditionController');
     Route::apiResource('allocations', 'AllocationController');
+
+    Route::apiResource('price-list-items', 'PriceListItemController');
+    Route::apiResource('price-list-services', 'PriceListServiceController');
 });

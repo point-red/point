@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Master;
 use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
 use App\Http\Controllers\Controller;
+use App\Model\Master\Group;
 use App\Model\Master\Item;
 use App\Model\Master\ItemUnit;
 use App\Http\Resources\ApiCollection;
@@ -52,10 +53,48 @@ class ItemController extends Controller
             }
         }
         $item->units()->saveMany($unitsToBeInserted);
+
+        $item->groups()->attach($request->get('groups'));
         
         DB::connection('tenant')->commit();
         
         return new ApiResource($item);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param StoreItemRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storeMany(StoreItemRequest $request)
+    {
+        DB::connection('tenant')->beginTransaction();
+
+        $items = $request->get('items');
+
+        foreach ($items as $item) {
+            $newItem = new Item;
+            $newItem->fill($item);
+            $newItem->save();
+
+            $units = $request->get('units');
+            $unitsToBeInserted = [];
+            if ($units) {
+                foreach($units as $unit) {
+                    $itemUnit = new ItemUnit();
+                    $itemUnit->fill($unit);
+                    array_push($unitsToBeInserted, $itemUnit);
+                }
+            }
+            $newItem->units()->saveMany($unitsToBeInserted);
+
+            $newItem->groups()->attach($request->get('groups'));
+        }
+
+        DB::connection('tenant')->commit();
+
+        return response()->json([], 201);
     }
 
     /**

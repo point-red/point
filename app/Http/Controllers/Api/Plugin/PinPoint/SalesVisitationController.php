@@ -32,7 +32,8 @@ class SalesVisitationController extends Controller
             ->with('interestReasons')
             ->with('notInterestReasons')
             ->with('similarProducts')
-            ->with('details.item');
+            ->with('details.item')
+            ->select('pin_point_sales_visitations.*');
 
         $dateFrom = date('Y-m-d 00:00:00', strtotime($request->get('date_from')));
         $dateTo = date('Y-m-d 23:59:59', strtotime($request->get('date_to')));

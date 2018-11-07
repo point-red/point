@@ -33,8 +33,15 @@ class SupplierController extends Controller
             ->with('emails')
             ->with('banks')
             ->with('phones')
-            ->with('contactPersons')
-            ->paginate($request->get('paginate') ?? 20);
+            ->with('contactPersons');
+
+        if ($request->get('group_id')) {
+            $suppliers = $suppliers->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
+                ->where('groupables.groupable_type', Supplier::class)
+                ->where('groupables.group_id', '=', 1);
+        }
+
+        $suppliers = $suppliers->paginate($request->get('paginate') ?? 20);
 
         return new ApiCollection($suppliers);
     }

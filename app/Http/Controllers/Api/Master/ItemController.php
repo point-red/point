@@ -10,6 +10,7 @@ use App\Model\Master\Item;
 use App\Model\Master\ItemUnit;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
@@ -17,14 +18,22 @@ class ItemController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        $items = Item::eloquentFilter(request())
+        $items = Item::eloquentFilter($request)
             ->with('groups')
-            ->with('units')
-            ->paginate(request()->get('paginate') ?? 20);
+            ->with('units');
+
+        if ($request->get('group_id')) {
+            $items = $items->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
+                ->where('groupables.groupable_type', Item::class)
+                ->where('groupables.group_id', '=', 1);
+        }
+
+        $items = $items->paginate($request->get('paginate') ?? 20);
 
         return new ApiCollection($items);
     }

@@ -25,4 +25,5 @@ Route::prefix('master')->namespace('Master')->group(function () {
 
     Route::apiResource('price-list-items', 'PriceListItemController');
     Route::apiResource('price-list-services', 'PriceListServiceController');
+    Route::apiResource('pricing-groups', 'PricingGroupController');
 });

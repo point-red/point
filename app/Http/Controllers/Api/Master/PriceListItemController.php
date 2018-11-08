@@ -19,7 +19,14 @@ class PriceListItemController extends Controller
     public function index(Request $request)
     {
         $priceListItem = PriceListItem::with('itemUnit.item')
-            ->paginate($request->get('limit') ?? 50);
+            ->where('date','<=', $request->get('date'))
+            ->where('pricing_group_id','<=', $request->get('pricing_group_id'))
+            ->whereIn('date', function () {
+                return PriceListItem::selectRaw('max(date) as date')->groupBy('item_unit_id')->pluck('date');
+            })
+            ->groupBy('item_unit_id');
+
+        $priceListItem = pagination($priceListItem, $request->get('limit'));
 
         return new ApiCollection($priceListItem);
     }

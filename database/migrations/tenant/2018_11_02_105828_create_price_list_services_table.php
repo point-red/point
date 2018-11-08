@@ -21,6 +21,7 @@ class CreatePriceListServicesTable extends Migration
             $table->decimal('price', 65, 30);
             $table->decimal('discount_percent', 33, 30)->nullable();
             $table->decimal('discount_value', 65, 30)->default(0);
+            $table->string('notes');
             $table->unsignedInteger('created_by')->nullable();
             $table->unsignedInteger('updated_by')->nullable();
             $table->timestamps();

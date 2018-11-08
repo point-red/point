@@ -23,9 +23,7 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $items = Item::eloquentFilter($request)
-            ->with('groups')
-            ->with('units');
+        $items = Item::eloquentFilter($request);
 
         if ($request->get('group_id')) {
             $items = $items->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
@@ -33,7 +31,7 @@ class ItemController extends Controller
                 ->where('groupables.group_id', '=', 1);
         }
 
-        $items = $items->paginate($request->get('paginate') ?? 20);
+        $items = pagination($items, $request->get('limit'));
 
         return new ApiCollection($items);
     }

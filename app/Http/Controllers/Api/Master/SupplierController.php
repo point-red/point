@@ -41,7 +41,7 @@ class SupplierController extends Controller
                 ->where('groupables.group_id', '=', 1);
         }
 
-        $suppliers = $suppliers->paginate($request->get('paginate') ?? 20);
+        $suppliers = pagination($suppliers, request()->get('limit'));
 
         return new ApiCollection($suppliers);
     }

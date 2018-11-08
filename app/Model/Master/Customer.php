@@ -9,6 +9,8 @@ class Customer extends MasterModel
 {
     protected $connection = 'tenant';
 
+    protected $casts = ['credit_ceiling' => 'double'];
+
     protected $fillable = [
         'code',
         'name',

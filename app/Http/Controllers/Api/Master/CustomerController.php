@@ -41,7 +41,7 @@ class CustomerController extends Controller
                 ->where('groupables.group_id', '=', 1);
         }
 
-        $customers = $customers->paginate($request->get('paginate') ?? 20);
+        $customers = pagination($customers, $request->get('limit'));
 
         return new ApiCollection($customers);
     }

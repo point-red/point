@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Api\Master;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Model\Master\PricingGroup;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use Illuminate\Support\Facades\DB;
 
 class PricingGroupController extends Controller
 {
@@ -12,19 +16,13 @@ class PricingGroupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        $pricingGroup = PricingGroup::eloquentFilter($request);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $pricingGroup = pagination($pricingGroup, $request->get('limit'));
+
+        return new ApiCollection($pricingGroup);
     }
 
     /**
@@ -35,7 +33,13 @@ class PricingGroupController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        DB::connection('tenant')->transaction(function () use ($request) {
+            $pricingGroup = new PricingGroup;
+            $pricingGroup->fill($request->all());
+            $pricingGroup->save();
+
+            return new ApiResource($pricingGroup);
+        });
     }
 
     /**
@@ -44,20 +48,11 @@ class PricingGroupController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        //
-    }
+        $pricingGroup = PricingGroup::eloquentFilter($request)->findOrFail($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        return new ApiResource($pricingGroup);
     }
 
     /**
@@ -69,7 +64,13 @@ class PricingGroupController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        DB::connection('tenant')->transaction(function () {
+            $pricingGroup = PricingGroup::findOrFail($id);
+            $pricingGroup->fill($request->all());
+            $pricingGroup->save();
+
+            return new ApiResource($pricingGroup);
+        });
     }
 
     /**
@@ -80,6 +81,9 @@ class PricingGroupController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $pricingGroup = PricingGroup::findOrFail($id);
+        $pricingGroup->delete();
+
+        return response()->json([], 204);
     }
 }

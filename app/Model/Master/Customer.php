@@ -76,4 +76,12 @@ class Customer extends MasterModel
     {
         return $this->morphMany(Journal::class, 'journalable');
     }
+
+    /**
+     * Get the customer's pricing group.
+     */
+    public function pricingGroup()
+    {
+        return $this->belongsTo(PricingGroup::class);
+    }
 }

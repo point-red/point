@@ -38,10 +38,9 @@ class PricingGroupController extends Controller
 
         DB::connection('tenant')->transaction(function () use ($pricingGroup) {
             $pricingGroup->save();
-            $pricingGroup = new ApiResource($pricingGroup);
         });
 
-        return $pricingGroup;
+        return new ApiResource($pricingGroup);
     }
 
     /**

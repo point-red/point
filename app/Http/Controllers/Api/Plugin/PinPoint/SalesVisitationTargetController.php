@@ -20,19 +20,25 @@ class SalesVisitationTargetController extends Controller
     public function index(Request $request)
     {
         $date = $request->get('date') == '' ? now() : $request->get('date');
-        $targets = User::leftJoin(SalesVisitationTarget::getTableName(), function($join) use ($date) {
-            $join->on(SalesVisitationTarget::getTableName().'.user_id', '=', 'users.id')
-                ->whereBetween('date', [
-                    date('Y-m-d 00:00:00', strtotime($date)),
-                    date('Y-m-d 23:59:59', strtotime($date))
-                ]);
-        })->select('users.*')
+
+        $query = SalesVisitationTarget::whereIn('date', function ($query) use ($date) {
+            $query->selectRaw('max(date)')
+                ->from(SalesVisitationTarget::getTableName())
+                ->where('date', '<=', $date)
+                ->groupBy('user_id');
+        });
+
+        $targets = User::leftJoinSub($query, 'query', function ($join) {
+            $join->on('users.id', '=', 'query.user_id');
+        })->select('query.id as id')
+            ->addSelect('users.*')
+            ->addSelect('users.name as name')
             ->addSelect('users.id as user_id')
-            ->addSelect(SalesVisitationTarget::getTableName().'.id as id')
-            ->addSelect(SalesVisitationTarget::getTableName().'.date as date')
-            ->addSelect(SalesVisitationTarget::getTableName().'.call as call')
-            ->addSelect(SalesVisitationTarget::getTableName().'.effective_call as effective_call')
-            ->addSelect(SalesVisitationTarget::getTableName().'.value as value')
+            ->addSelect('query.date as date')
+            ->addSelect('query.call as call')
+            ->addSelect('query.effective_call as effective_call')
+            ->addSelect('query.value as value')
+            ->groupBy('user_id')
             ->get();
 
         return new ApiCollection($targets);

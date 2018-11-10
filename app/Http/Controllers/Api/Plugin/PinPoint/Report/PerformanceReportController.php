@@ -74,7 +74,7 @@ class PerformanceReportController extends Controller
             ->addSelect('query.call as call')
             ->addSelect('query.effective_call as effective_call')
             ->addSelect('query.value as value')
-            ->groupBy('user_id');
+            ->groupBy('users.id');
 
         return $targets;
     }

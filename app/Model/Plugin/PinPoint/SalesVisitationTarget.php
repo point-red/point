@@ -3,9 +3,9 @@
 namespace App\Model\Plugin\PinPoint;
 
 use App\Model\Master\User;
-use App\Model\PointModel;
+use App\Model\MasterModel;
 
-class SalesVisitationTarget extends PointModel
+class SalesVisitationTarget extends MasterModel
 {
     protected $connection = 'tenant';
 

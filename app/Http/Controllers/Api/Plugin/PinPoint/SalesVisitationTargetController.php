@@ -38,7 +38,7 @@ class SalesVisitationTargetController extends Controller
             ->addSelect('query.call as call')
             ->addSelect('query.effective_call as effective_call')
             ->addSelect('query.value as value')
-            ->groupBy('user_id')
+            ->groupBy('users.id')
             ->get();
 
         return new ApiCollection($targets);

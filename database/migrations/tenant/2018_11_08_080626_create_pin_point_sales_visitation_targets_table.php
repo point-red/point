@@ -21,8 +21,12 @@ class CreatePinPointSalesVisitationTargetsTable extends Migration
             $table->unsignedInteger('effective_call');
             $table->unsignedDecimal('value', 65, 30);
             $table->timestamps();
+            $table->unsignedInteger('created_by')->index();
+            $table->unsignedInteger('updated_by')->index();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
         });
     }
 

@@ -13,6 +13,11 @@ class SalesVisitationDetail extends PointModel
 
     public $timestamps = false;
 
+    public function salesVisitation()
+    {
+        return $this->belongsTo(SalesVisitation::class, 'sales_visitation_id');
+    }
+
     public function item() {
         return $this->belongsTo(Item::class);
     }

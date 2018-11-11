@@ -29,6 +29,7 @@ class SalesVisitationFormExport implements WithMultipleSheets
         $sheets[] = new InterestReasonSheet($this->dateFrom, $this->dateTo);
         $sheets[] = new NotInterestReasonSheet($this->dateFrom, $this->dateTo);
         $sheets[] = new SimilarProductSheet($this->dateFrom, $this->dateTo);
+        $sheets[] = new ItemSoldSheet($this->dateFrom, $this->dateTo);
 
         return $sheets;
     }

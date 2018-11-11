@@ -3,7 +3,7 @@
 namespace App\Exports\PinPoint;
 
 use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
+use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -13,7 +13,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeExport;
 
-class NotInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize
+class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize
 {
     /**
      * ScaleWeightItemExport constructor.
@@ -32,11 +32,11 @@ class NotInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wi
     */
     public function query()
     {
-        return SalesVisitationNotInterestReason::query()
-            ->join(SalesVisitation::getTableName(),SalesVisitation::getTableName() . '.id', '=', SalesVisitationNotInterestReason::getTableName() . '.sales_visitation_id')
+        return SalesVisitationDetail::query()
+            ->join(SalesVisitation::getTableName(),SalesVisitation::getTableName() . '.id', '=', SalesVisitationDetail::getTableName() . '.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName() . '.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-            ->select(SalesVisitationNotInterestReason::getTableName().'.*')
+            ->select(SalesVisitationDetail::getTableName().'.*')
             ->addSelect(SalesVisitation::getTableName().'.name as customerName');
     }
 
@@ -50,7 +50,10 @@ class NotInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wi
             'Time',
             'Sales',
             'Customer',
-            'Not Interest Reason',
+            'Item',
+            'Quantity',
+            'Price',
+            'Total',
         ];
     }
 
@@ -65,7 +68,10 @@ class NotInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wi
             date('H:i', strtotime($row->salesVisitation->form->date)),
             $row->salesVisitation->form->createdBy->first_name . ' ' . $row->salesVisitation->form->createdBy->last_name,
             $row->customerName,
-            $row->name,
+            $row->item->name,
+            $row->quantity,
+            $row->price,
+            $row->quantity * $row->price,
         ];
     }
 
@@ -74,7 +80,7 @@ class NotInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wi
      */
     public function title(): string
     {
-        return 'Not Interest Reason';
+        return 'Item Sold';
     }
 
     /**
@@ -87,7 +93,7 @@ class NotInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wi
                 $event->writer->setCreator('Point');
             },
             AfterSheet::class => function(AfterSheet $event) {
-                $event->sheet->getDelegate()->getStyle('A1:E1')->getFont()->setBold(true);
+                $event->sheet->getDelegate()->getStyle('A1:H1')->getFont()->setBold(true);
                 $styleArray = [
                     'borders' => [
                         'allBorders' => [
@@ -96,7 +102,7 @@ class NotInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wi
                         ],
                     ],
                 ];
-                $event->getSheet()->getStyle('A1:E100')->applyFromArray($styleArray);
+                $event->getSheet()->getStyle('A1:H100')->applyFromArray($styleArray);
             },
         ];
     }

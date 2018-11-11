@@ -8,6 +8,7 @@ Route::prefix('plugin')->namespace('Plugin')->group(function () {
 
         Route::apiResource('sales-visitation-targets', 'SalesVisitationTargetController');
         Route::prefix('report')->namespace('Report')->group(function () {
+            Route::post('performance/export', 'PerformanceReportExportController@export');
             Route::get('performance', 'PerformanceReportController@index');
         });
     });

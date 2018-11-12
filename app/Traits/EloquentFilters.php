@@ -12,13 +12,26 @@ trait EloquentFilters
             ->includes($request->get('includes'));
     }
 
+
+    /**
+     * @param $query
+     * @param $values
+     *
+     * Examples :
+     * ?sort_by=name sort name ascending
+     * ?sort_by=-name sort name descending
+     */
     public function scopeSortBy($query, $values)
     {
         if ($values) {
             $fields = explode(',', $values);
             foreach ($fields as $value) {
-                $sort = substr($value, 0, 1) == '+' ? 'asc' : 'desc';
-                $field = substr($value, 1, strlen($value));
+                $sort = substr($value, 0, 1) == '-' ? 'desc' : 'asc';
+                if ($sort == 'desc') {
+                    $field = substr($value, 1, strlen($value));
+                } else {
+                    $field = substr($value, 0, strlen($value));
+                }
                 $query->orderBy($field, $sort);
             }
         }

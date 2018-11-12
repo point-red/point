@@ -31,16 +31,12 @@ class PricingGroupController extends Controller
      *
      * @param  \Illuminate\Http\Request $request
      * @return ApiResource
-     * @throws \Throwable
      */
     public function store(Request $request)
     {
         $pricingGroup = new PricingGroup;
         $pricingGroup->fill($request->all());
-
-        DB::connection('tenant')->transaction(function () use ($pricingGroup) {
-            $pricingGroup->save();
-        });
+        $pricingGroup->save();
 
         return new ApiResource($pricingGroup);
     }

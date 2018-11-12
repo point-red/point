@@ -7,15 +7,17 @@ use App\Model\Master\User;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationTarget;
-use Illuminate\Support\Collection;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class DailySheet implements FromCollection, WithHeadings, WithMapping, WithTitle, ShouldAutoSize
+class DailySheet implements FromView, WithTitle, ShouldAutoSize, WithEvents, WithColumnFormatting
 {
     /**
      * Constructor.
@@ -29,65 +31,6 @@ class DailySheet implements FromCollection, WithHeadings, WithMapping, WithTitle
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
         $this->date = $date;
-    }
-
-    /**
-     * @return array
-     */
-    public function headings(): array
-    {
-        $array = [
-            'Name',
-            'Target Call',
-            'Target Effective Call',
-            'Target Value',
-            'Actual Call',
-            'Actual Effective Call',
-            'Actual Value',
-            'Actual Call (%)',
-            'Actual Effective Call (%)',
-            'Actual Value (%)',
-        ];
-
-        foreach (Item::all() as $item) {
-            array_push($array, $item->name);
-        }
-
-        return $array;
-    }
-
-    /**
-     * @param mixed $row
-     * @return array
-     */
-    public function map($row): array
-    {
-        $array = [
-            $row->name,
-            $row->target_call,
-            $row->target_effective_call,
-            $row->target_value,
-            $row->actual_call,
-            $row->actual_effective_call,
-            $row->actual_value,
-            $row->target_call > 0 ? $row->actual_call / $row->target_call * 100 . '%' : 0 . '%',
-            $row->target_effective_call > 0 ? $row->actual_effective_call / $row->target_effective_call * 100 . '%' : 0 . '%',
-            $row->target_value > 0 ? $row->actual_value / $row->target_value * 100 . '%' : 0 . '%',
-        ];
-
-        foreach (Item::all() as $item) {
-            foreach ($row->items as $itemSold) {
-                if ($item->id == $itemSold->item_id) {
-                    array_push($array, $itemSold->quantity);
-                    break;
-                } else {
-                    array_push($array, 0);
-                }
-            }
-        }
-
-
-        return $array;
     }
 
     /**
@@ -173,9 +116,9 @@ class DailySheet implements FromCollection, WithHeadings, WithMapping, WithTitle
     }
 
     /**
-     * @return Collection
+     * @return View
      */
-    public function collection()
+    public function view(): View
     {
         $queryTarget = $this->queryTarget($this->dateFrom);
         $queryCall = $this->queryCall($this->dateFrom, $this->dateTo);
@@ -183,7 +126,7 @@ class DailySheet implements FromCollection, WithHeadings, WithMapping, WithTitle
         $queryValue = $this->queryValue($this->dateFrom, $this->dateTo);
         $details = $this->queryDetails($this->dateFrom, $this->dateTo);
 
-        $result = User::query()->leftJoinSub($queryTarget, 'queryTarget', function ($join) {
+        $users = User::query()->leftJoinSub($queryTarget, 'queryTarget', function ($join) {
             $join->on('users.id', '=', 'queryTarget.user_id');
         })->leftJoinSub($queryCall, 'queryCall', function ($join) {
             $join->on('users.id', '=', 'queryCall.created_by');
@@ -205,7 +148,7 @@ class DailySheet implements FromCollection, WithHeadings, WithMapping, WithTitle
             ->groupBy('users.id')
             ->get();
 
-        foreach ($result as $user) {
+        foreach ($users as $user) {
             $values = array_values($details->filter(function ($value) use ($user) {
                 return $value->created_by == $user->id;
             })->all());
@@ -217,6 +160,62 @@ class DailySheet implements FromCollection, WithHeadings, WithMapping, WithTitle
             $user->items = $values;
         }
 
-        return $result;
+        return view('exports.plugin.pin-point.performance.daily', [
+            'users' => $users,
+            'items' => Item::all(),
+            'targetCall' => 0,
+            'targetEffectiveCall' => 0,
+            'targetValue' => 0,
+            'actualCall' => 0,
+            'actualEffectiveCall' => 0,
+            'actualValue' => 0,
+            'actualCallPercentage' => 0,
+            'actualEffectiveCallPercentage' => 0,
+            'actualValuePercentage' => 0,
+            'totalItemSold' => [],
+        ]);
+    }
+
+    /**
+     * @return array
+     */
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function(AfterSheet $event) {
+                $event->sheet->getDelegate()->getStyle('A1:K2')->getFont()->setBold(true);
+                $event->sheet->getDelegate()->getStyle('A1:K2')->getFont()->setSize(13);
+                $styleArray = [
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['argb' => '00000000']
+                        ],
+                    ],
+                    'alignment' => [
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                    ],
+                ];
+                $event->getSheet()->getStyle('A1:K2')->applyFromArray($styleArray);
+            },
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function columnFormats(): array
+    {
+        return [
+            'C' => NumberFormat::FORMAT_NUMBER,
+            'D' => NumberFormat::FORMAT_NUMBER,
+            'E' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'F' => NumberFormat::FORMAT_NUMBER,
+            'G' => NumberFormat::FORMAT_NUMBER,
+            'H' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1,
+            'I' => NumberFormat::FORMAT_PERCENTAGE_00,
+            'J' => NumberFormat::FORMAT_PERCENTAGE_00,
+            'K' => NumberFormat::FORMAT_PERCENTAGE_00,
+        ];
     }
 }

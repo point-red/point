@@ -80,7 +80,7 @@ class GroupController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $group = Group::findOrFail($id);
+        $group = Group::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($group);
     }

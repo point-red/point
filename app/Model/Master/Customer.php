@@ -9,6 +9,8 @@ class Customer extends MasterModel
 {
     protected $connection = 'tenant';
 
+    protected $casts = ['credit_ceiling' => 'double'];
+
     protected $fillable = [
         'code',
         'name',
@@ -73,5 +75,13 @@ class Customer extends MasterModel
     public function journalable()
     {
         return $this->morphMany(Journal::class, 'journalable');
+    }
+
+    /**
+     * Get the customer's pricing group.
+     */
+    public function pricingGroup()
+    {
+        return $this->belongsTo(PricingGroup::class);
     }
 }

@@ -33,8 +33,15 @@ class CustomerController extends Controller
             ->with('emails')
             ->with('banks')
             ->with('phones')
-            ->with('contactPersons')
-            ->paginate($request->get('paginate') ?? 20);
+            ->with('contactPersons');
+
+        if ($request->get('group_id')) {
+            $customers = $customers->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
+                ->where('groupables.groupable_type', Customer::class)
+                ->where('groupables.group_id', '=', 1);
+        }
+
+        $customers = pagination($customers, $request->get('limit'));
 
         return new ApiCollection($customers);
     }

@@ -39,7 +39,7 @@ class GroupController extends Controller
      */
     public function index(Request $request)
     {
-        $groupType = $request->get('group_type');
+        $groupType = $request->get('type');
 
         if (!$this->isGroupTypeAvailable($groupType)) {
             return response()->json($this->groupTypeIsNotAvailableResponse);
@@ -60,7 +60,7 @@ class GroupController extends Controller
      */
     public function store(StoreGroupRequest $request)
     {
-        $groupType = $request->get('group_type');
+        $groupType = $request->get('type');
 
         if (!$this->isGroupTypeAvailable($groupType)) {
             return response()->json($this->groupTypeIsNotAvailableResponse);
@@ -83,7 +83,7 @@ class GroupController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $groupType = $request->get('group_type');
+        $groupType = $request->get('type');
 
         if (!$this->isGroupTypeAvailable($groupType)) {
             return response()->json($this->groupTypeIsNotAvailableResponse);
@@ -103,7 +103,7 @@ class GroupController extends Controller
      */
     public function update(UpdateGroupRequest $request, $id)
     {
-        $groupType = $request->get('group_type');
+        $groupType = $request->get('type');
 
         if (!$this->isGroupTypeAvailable($groupType)) {
             return response()->json($this->groupTypeIsNotAvailableResponse);
@@ -126,7 +126,7 @@ class GroupController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $groupType = $request->get('group_type');
+        $groupType = $request->get('type');
 
         if (!$this->isGroupTypeAvailable($groupType)) {
             return response()->json($this->groupTypeIsNotAvailableResponse);

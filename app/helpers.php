@@ -57,4 +57,21 @@ if (! function_exists('get_invitation_code')) {
         }
     }
 
+    if (! function_exists('pagination')) {
+        /**
+         * Paginate collection.
+         *
+         * @param $query
+         * @param null $limit
+         * @return string
+         */
+        function pagination($query, $limit = null)
+        {
+            if (!$limit) {
+                return $query->paginate(1000);
+            }
+
+            return $query->paginate($limit);
+        }
+    }
 }

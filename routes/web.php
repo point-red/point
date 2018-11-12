@@ -12,3 +12,7 @@
 */
 
 Route::view('/', 'welcome');
+
+Route::namespace('Web')->group(function () {
+    Route::get('/download', 'CloudStorageController@download');
+});

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
 use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
 use App\Http\Resources\ApiResource;
+use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Item;
@@ -21,11 +22,30 @@ class SalesVisitationController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return SalesVisitationCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $salesVisitationForm = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
+            ->with('form.createdBy')
+            ->with('interestReasons')
+            ->with('notInterestReasons')
+            ->with('similarProducts')
+            ->with('details.item')
+            ->select('pin_point_sales_visitations.*');
+
+        $dateFrom = date('Y-m-d 00:00:00', strtotime($request->get('date_from')));
+        $dateTo = date('Y-m-d 23:59:59', strtotime($request->get('date_to')));
+        $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$dateFrom, $dateTo]);
+
+        if (!tenant()->hasPermissionTo('read pin point sales visitation form')) {
+            $salesVisitationForm = $salesVisitationForm->where('forms.created_by', auth()->user()->id);
+        }
+
+        $salesVisitationForm = $salesVisitationForm->get();
+
+        return new SalesVisitationCollection($salesVisitationForm);
     }
 
     /**
@@ -37,6 +57,10 @@ class SalesVisitationController extends Controller
     public function store(StoreSalesVisitationRequest $request)
     {
         DB::connection('tenant')->beginTransaction();
+
+        if ($request->get('interest_reason') == '' && $request->get('not_interest_reason') == '') {
+            return response()->json([],422);
+        }
 
         $customer = Customer::where('name', $request->get('customer'))->first();
 

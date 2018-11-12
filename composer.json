@@ -13,6 +13,7 @@
         "laravel/passport": "^7.0",
         "laravel/tinker": "~1.0",
         "league/flysystem-aws-s3-v3": "~1.0",
+        "maatwebsite/excel": "^3.1",
         "point-red/laravel-database-management": "^1.0",
         "spatie/laravel-permission": "^2.12"
     },

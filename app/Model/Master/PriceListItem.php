@@ -2,9 +2,9 @@
 
 namespace App\Model\Master;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class PriceListItem extends Model
+class PriceListItem extends MasterModel
 {
     protected $connection = 'tenant';
 

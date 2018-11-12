@@ -18,13 +18,16 @@ class PriceListItemController extends Controller
      */
     public function index(Request $request)
     {
-        $priceListItem = PriceListItem::with('itemUnit.item')
-            ->where('date','<=', $request->get('date'))
-            ->where('pricing_group_id','<=', $request->get('pricing_group_id'))
-            ->whereIn('date', function () {
-                return PriceListItem::selectRaw('max(date) as date')->groupBy('item_unit_id')->pluck('date');
-            })
-            ->groupBy('item_unit_id');
+        $date = $request->get('date') ?? now();
+
+        $ids = PriceListItem::selectRaw('max(date) as date')
+            ->addSelect('id')
+            ->where('date', '<=', $date)
+            ->where('pricing_group_id','=', $request->get('pricing_group_id'))
+            ->groupBy('item_unit_id')
+            ->pluck('id');
+
+        $priceListItem = PriceListItem::with('itemUnit.item')->whereIn('id', $ids);
 
         $priceListItem = pagination($priceListItem, $request->get('limit'));
 
@@ -40,7 +43,7 @@ class PriceListItemController extends Controller
     public function store(Request $request)
     {
         $priceListItem = new PriceListItem;
-        $priceListItem->fill($request);
+        $priceListItem->fill($request->all());
         $priceListItem->save();
 
         return new ApiResource($priceListItem);
@@ -69,7 +72,7 @@ class PriceListItemController extends Controller
     public function update(Request $request, $id)
     {
         $priceListItem = PriceListItem::findOrFail($id);
-        $priceListItem->fill($request);
+        $priceListItem->fill($request->all());
         $priceListItem->save();
 
         return new ApiResource($priceListItem);

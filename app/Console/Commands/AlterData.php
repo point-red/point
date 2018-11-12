@@ -51,6 +51,10 @@ class AlterData extends Command
             // TODO: ADD TAXABLE COLUMN IN ITEMS AND SERVICES
             // TODO: ADD NOTES IN FORM
             // TODO: EDIT EDITED NOTES IN FORM (FROM STRING TO TEXT)
+            // TODO: ITEM (CODE & BARCODE UNIQUE)
+            // $table->boolean('unit_default')->default(false);
+            // $table->boolean('unit_default_purchase')->default(false);
+            // $table->boolean('unit_default_sales')->default(false);
 
             DB::connection('tenant')->statement('ALTER TABLE `items` MODIFY COLUMN chart_of_account_id int(10) unsigned');
 

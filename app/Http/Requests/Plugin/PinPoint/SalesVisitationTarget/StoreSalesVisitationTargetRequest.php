@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Plugin\PinPoint\SalesVisitation;
+namespace App\Http\Requests\Plugin\PinPoint\SalesVisitationTarget;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreSalesVisitationRequest extends FormRequest
+class StoreSalesVisitationTargetRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +24,7 @@ class StoreSalesVisitationRequest extends FormRequest
     public function rules()
     {
         return [
-            'customer' => 'required',
-            'group' => 'required',
-            'address' => 'required',
-            'phone' => 'required',
-            'similar_product' => 'required',
-            'payment_method' => 'required',
+            //
         ];
     }
 }

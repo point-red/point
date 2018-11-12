@@ -22,7 +22,7 @@ class Cors
             'Access-Control-Allow-Methods' => 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
             'Access-Control-Allow-Headers' => 'Tenant, Authorization, Content-Type, X-Requested-With, Origin',
             'Access-Control-Allow-Credentials' => 'true',
-            'Access-Control-Max-Age' => 86400 // 24 hour
+            'Access-Control-Max-Age' => 86400, // 24 hour
         ];
 
         foreach($headers as $key => $value) {

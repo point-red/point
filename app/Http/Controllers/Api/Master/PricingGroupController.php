@@ -14,7 +14,8 @@ class PricingGroupController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return ApiCollection
      */
     public function index(Request $request)
     {
@@ -28,25 +29,28 @@ class PricingGroupController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @return ApiResource
+     * @throws \Throwable
      */
     public function store(Request $request)
     {
-        DB::connection('tenant')->transaction(function () use ($request) {
-            $pricingGroup = new PricingGroup;
-            $pricingGroup->fill($request->all());
-            $pricingGroup->save();
+        $pricingGroup = new PricingGroup;
+        $pricingGroup->fill($request->all());
 
-            return new ApiResource($pricingGroup);
+        DB::connection('tenant')->transaction(function () use ($pricingGroup) {
+            $pricingGroup->save();
         });
+
+        return new ApiResource($pricingGroup);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param  int $id
+     * @return ApiResource
      */
     public function show(Request $request, $id)
     {
@@ -58,19 +62,21 @@ class PricingGroupController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
+     * @return ApiResource
+     * @throws \Throwable
      */
     public function update(Request $request, $id)
     {
-        DB::connection('tenant')->transaction(function () {
-            $pricingGroup = PricingGroup::findOrFail($id);
-            $pricingGroup->fill($request->all());
-            $pricingGroup->save();
+        $pricingGroup = PricingGroup::findOrFail($id);
+        $pricingGroup->fill($request->all());
 
-            return new ApiResource($pricingGroup);
+        DB::connection('tenant')->transaction(function ($pricingGroup) {
+            $pricingGroup->save();
         });
+
+        return new ApiResource($pricingGroup);
     }
 
     /**

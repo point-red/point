@@ -9,7 +9,6 @@ class PricingGroup extends MasterModel
     protected $connection = 'tenant';
 
     protected $fillable = [
-        'name',
         'label',
         'notes'
     ];

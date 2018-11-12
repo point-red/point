@@ -41,6 +41,7 @@ class PerformanceReportController extends Controller
             ->addSelect('queryCall.total as call')
             ->addSelect('queryEffectiveCall.total as effective_call')
             ->addSelect('queryValue.value as value')
+            ->where('queryTarget.call', '>', 0)
             ->groupBy('users.id')
             ->get();
 

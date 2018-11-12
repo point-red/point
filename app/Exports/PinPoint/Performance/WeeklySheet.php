@@ -15,7 +15,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
-class DailySheet implements FromCollection, WithHeadings, WithMapping, WithTitle, ShouldAutoSize
+class WeeklySheet implements FromCollection, WithHeadings, WithMapping, WithTitle, ShouldAutoSize
 {
     /**
      * Constructor.

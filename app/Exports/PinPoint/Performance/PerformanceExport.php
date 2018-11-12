@@ -2,6 +2,7 @@
 
 namespace App\Exports\PinPoint\Performance;
 
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class PerformanceExport implements WithMultipleSheets
@@ -31,6 +32,27 @@ class PerformanceExport implements WithMultipleSheets
             $dateFrom = date('Y-m-'.$i.' 00:00:00', strtotime($this->dateFrom));
             $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
             $sheets[] = new DailySheet($i, $dateFrom, $dateTo);
+        }
+
+        $date = Carbon::parse(date('Y-m-01 00:00:00', strtotime($this->dateFrom)));
+        $months = $date->daysInMonth;
+        $j = 1;
+        for ($i = 1; $i <= $months; $i++) {
+            if ($date->englishDayOfWeek == 'Sunday') {
+                $dateFrom = date('Y-m-'.$j.' 00:00:00', strtotime($this->dateFrom));
+                $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
+                $sheets[] = new WeeklySheet($j . ' - ' . $i, $dateFrom, $dateTo);
+                $j = $i+1;
+            }
+
+            if ($i == $months && $date->englishDayOfWeek != 'Sunday') {
+                $dateFrom = date('Y-m-'.$j.' 00:00:00', strtotime($this->dateFrom));
+                $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
+                $sheets[] = new WeeklySheet($j . ' - ' . $i, $dateFrom, $dateTo);
+                $j = $i+1;
+            }
+
+            $date->addDay(1);
         }
 
         return $sheets;

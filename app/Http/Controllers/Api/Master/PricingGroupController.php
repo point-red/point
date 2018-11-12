@@ -33,13 +33,14 @@ class PricingGroupController extends Controller
      */
     public function store(Request $request)
     {
-        DB::connection('tenant')->transaction(function () use ($request) {
-            $pricingGroup = new PricingGroup;
-            $pricingGroup->fill($request->all());
-            $pricingGroup->save();
+        $pricingGroup = new PricingGroup;
+        $pricingGroup->fill($request->all());
 
-            return new ApiResource($pricingGroup);
+        DB::connection('tenant')->transaction(function () use ($pricingGroup) {
+            $pricingGroup->save();
         });
+
+        return new ApiResource($pricingGroup);
     }
 
     /**
@@ -64,13 +65,14 @@ class PricingGroupController extends Controller
      */
     public function update(Request $request, $id)
     {
-        DB::connection('tenant')->transaction(function () {
-            $pricingGroup = PricingGroup::findOrFail($id);
-            $pricingGroup->fill($request->all());
-            $pricingGroup->save();
+        $pricingGroup = PricingGroup::findOrFail($id);
+        $pricingGroup->fill($request->all());
 
-            return new ApiResource($pricingGroup);
+        DB::connection('tenant')->transaction(function ($pricingGroup) {
+            $pricingGroup->save();
         });
+
+        return new ApiResource($pricingGroup);
     }
 
     /**

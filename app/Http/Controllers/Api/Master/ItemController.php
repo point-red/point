@@ -85,7 +85,7 @@ class ItemController extends Controller
             $newItem->fill($item);
             $newItem->save();
 
-            $units = $request->get('units');
+            $units = $item['units'];
             $unitsToBeInserted = [];
             if ($units) {
                 foreach($units as $unit) {
@@ -96,7 +96,7 @@ class ItemController extends Controller
             }
             $newItem->units()->saveMany($unitsToBeInserted);
 
-            $newItem->groups()->attach($request->get('groups'));
+            $newItem->groups()->attach($item['groups']);
         }
 
         DB::connection('tenant')->commit();

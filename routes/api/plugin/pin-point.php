@@ -8,8 +8,22 @@ Route::prefix('plugin')->namespace('Plugin')->group(function () {
 
         Route::apiResource('sales-visitation-targets', 'SalesVisitationTargetController');
         Route::prefix('report')->namespace('Report')->group(function () {
-            Route::post('performance/export', 'PerformanceReportExportController@export');
-            Route::get('performance', 'PerformanceReportController@index');
+            Route::post('performances/export', 'PerformanceReportExportController@export');
+            Route::get('performances', 'PerformanceReportController@index');
+
+            Route::prefix('accumulation')->namespace('Accumulation')->group(function () {
+                Route::post('interest-reasons/export', 'InterestReasonReportController@export');
+                Route::get('interest-reasons', 'InterestReasonReportController@index');
+
+                Route::post('not-interest-reasons/export', 'NotInterestReasonReportController@export');
+                Route::get('not-interest-reasons', 'NotInterestReasonReportController@index');
+
+                Route::post('similar-products/export', 'SimilarProductReportController@export');
+                Route::get('similar-products', 'SimilarProductReportController@index');
+
+                Route::post('repeat-orders/export', 'RepeatOrderReportController@export');
+                Route::get('repeat-orders', 'RepeatOrderReportController@index');
+            });
         });
     });
 });

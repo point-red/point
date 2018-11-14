@@ -56,7 +56,7 @@ class AlterData extends Command
             // $table->boolean('unit_default_purchase')->default(false);
             // $table->boolean('unit_default_sales')->default(false);
 
-            DB::connection('tenant')->statement('ALTER TABLE `items` MODIFY COLUMN chart_of_account_id int(10) unsigned');
+            DB::connection('tenant')->statement('ALTER TABLE `groups` ADD COLUMN code varchar(255)');
 
             $this->line('Migrate ' . $project->code);
             Artisan::call('tenant:migrate', ['db_name' => 'point_' . strtolower($project->code)]);

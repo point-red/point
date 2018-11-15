@@ -28,4 +28,7 @@ Route::prefix('accounting')->namespace('Accounting')->group(function () {
         Route::get('inventory-turn-overs', 'InventoryTurnOverController@index');
         Route::get('average-collection-period-ratios', 'AverageCollectionPeriodRatioController@index');
     });
+
+    Route::get('account-payable', 'AccountPayableController@index');
+    Route::get('account-receivable', 'AccountReceivableController@index');
 });

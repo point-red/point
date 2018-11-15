@@ -152,6 +152,42 @@ class ItemController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateMany(Request $request)
+    {
+        DB::connection('tenant')->beginTransaction();
+
+        $items = $request->get('items');
+
+        foreach ($items as $item) {
+            $newItem = Item::findOrFail($item->id);
+            $newItem->fill($item);
+            $newItem->save();
+
+            $units = $item['units'];
+            $unitsToBeInserted = [];
+            if ($units) {
+                foreach($units as $unit) {
+                    $itemUnit = new ItemUnit();
+                    $itemUnit->fill($unit);
+                    array_push($unitsToBeInserted, $itemUnit);
+                }
+            }
+            $newItem->units()->saveMany($unitsToBeInserted);
+
+            $newItem->groups()->attach($item['groups']);
+        }
+
+        DB::connection('tenant')->commit();
+
+        return response()->json([], 200);
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id

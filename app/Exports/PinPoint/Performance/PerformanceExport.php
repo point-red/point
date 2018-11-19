@@ -41,14 +41,14 @@ class PerformanceExport implements WithMultipleSheets
             if ($date->englishDayOfWeek == 'Sunday') {
                 $dateFrom = date('Y-m-'.$j.' 00:00:00', strtotime($this->dateFrom));
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
-                $sheets[] = new WeeklySheet($j . ' - ' . $i, $dateFrom, $dateTo);
+                $sheets[] = new WeeklySheet($j . ' - ' . $i, $dateFrom, $dateTo, $i - $j);
                 $j = $i+1;
             }
 
             if ($i == $months && $date->englishDayOfWeek != 'Sunday') {
                 $dateFrom = date('Y-m-'.$j.' 00:00:00', strtotime($this->dateFrom));
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
-                $sheets[] = new WeeklySheet($j . ' - ' . $i, $dateFrom, $dateTo);
+                $sheets[] = new WeeklySheet($j . ' - ' . $i, $dateFrom, $dateTo, $i - $j);
                 $j = $i+1;
             }
 

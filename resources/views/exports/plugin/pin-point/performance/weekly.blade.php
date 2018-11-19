@@ -31,9 +31,9 @@
     <tbody>
     @foreach($users as $user)
         <?php
-            $targetCall += $user->target_call;
-            $targetEffectiveCall += $user->target_effective_call;
-            $targetValue += $user->target_value;
+            $targetCall += $user->target_call * $totalDay;
+            $targetEffectiveCall += $user->target_effective_call * $totalDay;
+            $targetValue += $user->target_value * $totalDay;
             $actualCall += $user->actual_call;
             $actualEffectiveCall += $user->actual_effective_call;
             $actualValue += $user->actual_value;
@@ -44,9 +44,9 @@
         <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $user->name  }}</td>
-            <td>{{ $user->target_call  }}</td>
-            <td>{{ $user->target_effective_call  }}</td>
-            <td>{{ $user->target_value  }}</td>
+            <td>{{ $user->target_call * $totalDay }}</td>
+            <td>{{ $user->target_effective_call * $totalDay }}</td>
+            <td>{{ $user->target_value * $totalDay }}</td>
             <td>{{ $user->actual_call ?? 0 }}</td>
             <td>{{ $user->actual_effective_call ?? 0 }}</td>
             <td>{{ $user->actual_value ?? 0 }}</td>

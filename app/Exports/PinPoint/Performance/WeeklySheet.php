@@ -29,12 +29,14 @@ class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnForm
      * @param string $date
      * @param string $dateFrom
      * @param string $dateTo
+     * @param int $totalDay
      */
-    public function __construct(string $date, string $dateFrom, string $dateTo)
+    public function __construct(string $date, string $dateFrom, string $dateTo, int $totalDay)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
         $this->date = $date;
+        $this->totalDay = $totalDay;
     }
 
     /**
@@ -167,6 +169,7 @@ class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnForm
         return view('exports.plugin.pin-point.performance.weekly', [
             'users' => $users,
             'items' => Item::all(),
+            'totalDay' => $this->totalDay,
             'targetCall' => 0,
             'targetEffectiveCall' => 0,
             'targetValue' => 0,

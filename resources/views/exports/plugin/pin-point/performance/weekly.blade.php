@@ -71,6 +71,7 @@
         </tr>
     @endforeach
     </tbody>
+    @if(count($users))
     <tfoot>
         <tr>
             <td></td> <!-- # -->
@@ -89,4 +90,5 @@
             @endfor
         </tr>
     </tfoot>
+    @endif
 </table>

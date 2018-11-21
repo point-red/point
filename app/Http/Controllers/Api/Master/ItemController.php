@@ -151,6 +151,11 @@ class ItemController extends Controller
             }
         }
         $item->units()->saveMany($unitsToBeInserted);
+
+        $groups = $request->get('groups');
+        if (is_array($groups)) {
+            $item->groups()->sync($groups);
+        }
         
         DB::connection('tenant')->commit();
         

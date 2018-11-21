@@ -139,7 +139,11 @@ class ItemController extends Controller
         $unitsToBeInserted = [];
         if ($units) {
             foreach($units as $unit) {
-                $itemUnit = new ItemUnit();
+                if (isset($unit['id'])) {
+                    $itemUnit = ItemUnit::where('id', $unit['id'])->first();
+                } else {
+                    $itemUnit = new ItemUnit();
+                }
                 $itemUnit->fill($unit);
                 array_push($unitsToBeInserted, $itemUnit);
             }

@@ -137,7 +137,9 @@ class ItemController extends Controller
 
         $units = $request->get('units');
         $unitsToBeInserted = [];
+
         if ($units) {
+            ItemUnit::where('item_id', $id)->whereNotIn('id', array_column($units, 'id'))->delete();
             foreach($units as $unit) {
                 if (isset($unit['id'])) {
                     $itemUnit = ItemUnit::where('id', $unit['id'])->first();

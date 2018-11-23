@@ -26,20 +26,19 @@ class PriceListItemController extends Controller
         $pricingGroupId = $request->get('pricing_group_id');
 
         $priceListItem = ItemUnit::join('items', Item::getTableName().'.id', '=', ItemUnit::getTableName().'.item_id')
-            ->with(['pricing' => function($q) use ($pricingGroupId) {
+            ->eloquentFilter($request)
+            ->with(['pricing' => function($q) use ($pricingGroupId, $date) {
                 $q->rightJoin(PricingGroup::getTableName(), PricingGroup::getTableName().'.id', '=', PriceListItem::getTableName().'.pricing_group_id');
                 if ($pricingGroupId) {
                     $q->where(PricingGroup::getTableName().'.id', $pricingGroupId);
                 }
-                $q->select(PriceListItem::getTableName().'.price')
+                $q->where('date', '<=', $date)
+                    ->select(PriceListItem::getTableName().'.price')
                     ->addSelect(PriceListItem::getTableName().'.discount_percent')
                     ->addSelect(PriceListItem::getTableName().'.discount_value')
                     ->addSelect('item_unit_id')
                     ->addSelect('pricing_group_id');
-            }])->select(ItemUnit::getTableName().'.id')
-            ->addSelect(Item::getTableName().'.name as item')
-            ->addSelect(ItemUnit::getTableName().'.label as unit')
-            ->where('date', '<=', $date);
+            }])->with('item')->select(ItemUnit::getTableName().'.*');
 
         $priceListItem = pagination($priceListItem, $request->get('limit'));
 

@@ -22,4 +22,9 @@ class ItemUnit extends MasterModel
     {
         return $this->belongsTo(get_class(new Item()));
     }
+
+    public function pricing()
+    {
+        return $this->hasMany(PriceListItem::class);
+    }
 }

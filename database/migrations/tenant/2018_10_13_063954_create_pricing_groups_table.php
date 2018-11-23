@@ -16,7 +16,7 @@ class CreatePricingGroupsTable extends Migration
         Schema::create('pricing_groups', function (Blueprint $table) {
             $table->increments('id');
             $table->string('label');
-            $table->text('notes');
+            $table->text('notes')->nullable();
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();

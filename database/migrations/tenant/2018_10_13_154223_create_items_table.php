@@ -26,9 +26,9 @@ class CreateItemsTable extends Migration
             $table->boolean('taxable')->default(true);
             $table->boolean('disabled')->default(false);
             $table->unsignedInteger('stock_reminder')->default(0);
-            $table->boolean('unit_default')->default(false);
-            $table->boolean('unit_default_purchase')->default(false);
-            $table->boolean('unit_default_sales')->default(false);
+            $table->unsignedInteger('unit_default')->nullable();
+            $table->unsignedInteger('unit_default_purchase')->nullable();
+            $table->unsignedInteger('unit_default_sales')->nullable();
 
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
@@ -37,6 +37,9 @@ class CreateItemsTable extends Migration
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
+            $table->foreign('unit_default')->references('id')->on('item_unit_id')->onDelete('set null');
+            $table->foreign('unit_default_purchase')->references('id')->on('item_unit_id')->onDelete('set null');
+            $table->foreign('unit_default_sales')->references('id')->on('item_unit_id')->onDelete('set null');
         });
     }
 

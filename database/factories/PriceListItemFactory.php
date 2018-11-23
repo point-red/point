@@ -2,7 +2,7 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(Model::class, function (Faker $faker) {
+$factory->define(\App\Model\Master\PriceListItem::class, function (Faker $faker) {
     return [
         //
     ];

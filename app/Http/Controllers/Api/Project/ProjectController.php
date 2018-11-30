@@ -45,7 +45,7 @@ class ProjectController extends Controller
         // User only allowed to create max 1 project
         $numberOfProject = Project::where('owner_id', auth()->user()->id)->count();
         // TODO: disable new project creation
-        if ($numberOfProject >= 0) {
+        if ($numberOfProject >= 1) {
             return response()->json([
                 'code' => 422,
                 'message' => 'We are updating our server, currently you cannot create new project',

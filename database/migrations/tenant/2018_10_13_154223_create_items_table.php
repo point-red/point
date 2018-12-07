@@ -37,9 +37,6 @@ class CreateItemsTable extends Migration
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
-            $table->foreign('unit_default')->references('id')->on('item_unit_id')->onDelete('set null');
-            $table->foreign('unit_default_purchase')->references('id')->on('item_unit_id')->onDelete('set null');
-            $table->foreign('unit_default_sales')->references('id')->on('item_unit_id')->onDelete('set null');
         });
     }
 

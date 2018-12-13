@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
-use App\Helpers\Purchase\PurchaseRequestHelper;
-use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Form;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseRequestController extends Controller
@@ -29,9 +26,29 @@ class PurchaseRequestController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return ApiResource
+     * Request :
+     *  - required_date (Date)
+     *  - form_number (String)
+     *  - employee_id (Int)
+     *  - supplier_id (Int, Optional)
+     *  - items (Array) :
+     *      - item_id (Int)
+     *      - quantity (Decimal)
+     *      - unit (String)
+     *      - converter (Decimal)
+     *      - price (Decimal)
+     *      - description (String Optional)
+     *      - allocation_id (Int Optional)
+     *  - services (Array) :
+     *      - service_id (Int)
+     *      - quantity (Decimal)
+     *      - price (Decimal)
+     *      - description (String Optional)
+     *      - allocation_id (Int Optional)
+     *
+     * @param \Illuminate\Http\Request $request
      * @throws \Throwable
+     * @return ApiResource
      */
     public function store(Request $request)
     {
@@ -51,19 +68,22 @@ class PurchaseRequestController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        //
+        $purchaseRequest = PurchaseRequest::with('form', 'items', 'services', 'employee', 'supplier')
+            ->findOrFail($id);
+
+        return new ApiResource($purchaseRequest);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -74,7 +94,7 @@ class PurchaseRequestController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

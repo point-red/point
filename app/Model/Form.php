@@ -11,6 +11,7 @@ class Form extends PointModel
     protected $user_logs = true;
 
     protected $fillable = [
+        'number',
         'date',
         'notes',
         'done',

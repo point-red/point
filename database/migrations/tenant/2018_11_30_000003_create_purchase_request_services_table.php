@@ -18,6 +18,7 @@ class CreatePurchaseRequestServicesTable extends Migration
             $table->unsignedInteger('purchase_request_id');
             $table->unsignedInteger('service_id');
             $table->decimal('quantity', 65, 30);
+            $table->decimal('price', 65, 30);
             $table->text('description');
             $table->unsignedInteger('allocation_id')->nullable();
 

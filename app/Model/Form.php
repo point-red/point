@@ -10,7 +10,12 @@ class Form extends PointModel
 
     protected $user_logs = true;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'date',
+        'notes',
+        'done',
+        'approved',
+    ];
 
     public function save(array $options = [])
     {

@@ -27,8 +27,12 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         require base_path('routes/api/account.php');
         require base_path('routes/api/project.php');
 
+        // Global Transaction
+        Route::resource('transactions', 'TransactionController');
+
         // Tenant
         require base_path('routes/api/master.php');
+        require base_path('routes/api/purchase.php');
         require base_path('routes/api/accounting.php');
         require base_path('routes/api/human-resource.php');
 

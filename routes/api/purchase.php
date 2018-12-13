@@ -1,7 +1,7 @@
 <?php
 
-Route::prefix('purchasing')->namespace('Purchasing')->group(function () {
-    // Route::apiResource('purchase-request', 'PurchaseRequestController');
+Route::prefix('purchase')->namespace('Purchase')->group(function () {
+    Route::apiResource('purchase-request', 'PurchaseRequest\\PurchaseRequestController');
     // Route::apiResource('purchase-order', 'PurchaseOrderController');
     // Route::apiResource('downpayment', 'DownpaymentController');
     // Route::apiResource('received-order', 'ReceivedOrderController');

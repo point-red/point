@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
+use App\Helpers\Purchase\PurchaseRequestHelper;
+use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
 use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Form;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseRequestController extends Controller
 {
@@ -23,12 +29,23 @@ class PurchaseRequestController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @return ApiResource
+     * @throws \Throwable
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'employee_id' => 'required',
+        ]);
+
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+            $purchaseRequest = PurchaseRequest::create($request->all());
+
+            return new ApiResource($purchaseRequest);
+        });
+
+        return $result;
     }
 
     /**

@@ -18,7 +18,14 @@ class PriceListService extends Model
         'notes',
     ];
 
-    public function service() {
+    protected $casts = [
+        'price'            => 'double',
+        'discount_percent' => 'double',
+        'discount_value'   => 'double',
+    ];
+
+    public function service()
+    {
         return $this->belongsTo(Service::class);
     }
 }

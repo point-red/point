@@ -15,6 +15,10 @@ class ItemUnit extends MasterModel
         'item_id',
     ];
 
+    protected $casts = [
+        'converter' => 'double',
+    ];
+
     /**
      * Get the item for this unit.
      */
@@ -23,6 +27,9 @@ class ItemUnit extends MasterModel
         return $this->belongsTo(get_class(new Item()));
     }
 
+    /**
+     * Get the price for this unit
+     */
     public function pricing()
     {
         return $this->hasMany(PriceListItem::class);

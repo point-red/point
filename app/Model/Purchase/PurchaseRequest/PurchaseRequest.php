@@ -3,7 +3,10 @@
 namespace App\Model\Purchase\PurchaseRequest;
 
 use App\Model\Form;
-use App\Model\Master\Item;
+use App\Model\HumanResource\Employee\Employee;
+use App\Model\Master\Supplier;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequestService;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseRequest extends Model
@@ -13,15 +16,34 @@ class PurchaseRequest extends Model
     public $timestamps = false;
 
     protected $fillable = [
-      'form_id',
-      'required_date',
-      'employee_id',
-      'supplier_id',
+        'required_date',
+        'employee_id',
+        'supplier_id',
     ];
 
-    public function purchaseRequestItems()
+    public function form()
+    {
+        return $this->belongsTo(Form::class);
+    }
+
+    public function items()
     {
         return $this->hasMany(PurchaseRequestItem::class);
+    }
+
+    public function services()
+    {
+        return $this->hasMany(PurchaseRequestService::class);
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
     }
 
     public static function create($data)
@@ -31,23 +53,29 @@ class PurchaseRequest extends Model
         $form->save();
 
         $purchaseRequest = new PurchaseRequest;
-        $purchaseRequest->form_id = $form->id;
         $purchaseRequest->fill($data);
+        $purchaseRequest->form_id = $form->id;
         $purchaseRequest->save();
 
         $array = [];
-        $purchaseRequestItems = $data->purchase_request_items ?? [];
-        foreach($purchaseRequestItems as $purchaseRequestItem) {
-            if (!$purchaseRequestItem->item_id) {
-                $item = new Item;
-                $item->fill($purchaseRequestItem->item);
-                $item->save();
-
-                $purchaseRequestItem->item_id = $item->id;
-            }
-            array_push($array, (new PurchaseRequestItem())->fill($purchaseRequestItem));
+        $items = $data['items'] ?? [];
+        foreach ($items as $item) {
+            $purchaseRequestItem = new PurchaseRequestItem;
+            $purchaseRequestItem->fill($item);
+            $purchaseRequestItem->purchase_request_id = $purchaseRequest->id;
+            array_push($array, $purchaseRequestItem);
         }
-        $purchaseRequest->purchaseRequestItems()->saveMany($array);
+        $purchaseRequest->items()->saveMany($array);
+
+        $array    = [];
+        $services = $data['services'] ?? [];
+        foreach ($services as $service) {
+            $purchaseRequestService = new PurchaseRequestService;
+            $purchaseRequestService->fill($service);
+            $purchaseRequestService->purchase_request_id = $purchaseRequest->id;
+            array_push($array, $purchaseRequestService);
+        }
+        $purchaseRequest->services()->saveMany($array);
 
         return $purchaseRequest;
     }

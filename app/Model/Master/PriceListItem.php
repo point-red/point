@@ -18,7 +18,14 @@ class PriceListItem extends MasterModel
         'notes',
     ];
 
-    public function itemUnit() {
+    protected $casts = [
+        'price'            => 'double',
+        'discount_percent' => 'double',
+        'discount_value'   => 'double',
+    ];
+
+    public function itemUnit()
+    {
         return $this->belongsTo(ItemUnit::class);
     }
 }

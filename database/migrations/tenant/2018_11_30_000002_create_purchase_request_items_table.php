@@ -20,6 +20,7 @@ class CreatePurchaseRequestItemsTable extends Migration
             $table->decimal('quantity', 65, 30);
             $table->string('unit');
             $table->decimal('converter', 65, 30);
+            $table->decimal('price', 65, 30);
             $table->text('description');
             $table->unsignedInteger('allocation_id')->nullable();
 

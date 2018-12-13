@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +27,7 @@ class PurchaseRequestController extends Controller
      *
      * Request :
      *  - required_date (Date)
-     *  - form_number (String)
+     *  - number (String)
      *  - employee_id (Int)
      *  - supplier_id (Int, Optional)
      *  - items (Array) :
@@ -73,7 +72,7 @@ class PurchaseRequestController extends Controller
      */
     public function show($id)
     {
-        $purchaseRequest = PurchaseRequest::with('form', 'items', 'services', 'employee', 'supplier')
+        $purchaseRequest = PurchaseRequest::with('form', 'items.allocation', 'services.allocation', 'employee', 'supplier')
             ->findOrFail($id);
 
         return new ApiResource($purchaseRequest);

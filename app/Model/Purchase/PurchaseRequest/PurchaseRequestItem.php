@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
+use App\Model\Master\Allocation;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseRequestItem extends Model
@@ -24,4 +25,9 @@ class PurchaseRequestItem extends Model
         'price'     => 'double',
         'converter' => 'double',
     ];
+
+    public function allocation()
+    {
+        return $this->belongsTo(Allocation::class);
+    }
 }

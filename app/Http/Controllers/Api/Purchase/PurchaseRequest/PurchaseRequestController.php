@@ -19,7 +19,9 @@ class PurchaseRequestController extends Controller
      */
     public function index(Request $request)
     {
-        return new ApiCollection(PurchaseRequest::all());
+        $purchaseRequests = PurchaseRequest::eloquentFilter($request)->get();
+
+        return new ApiCollection($purchaseRequests);
     }
 
     /**
@@ -68,7 +70,7 @@ class PurchaseRequestController extends Controller
      * Display the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return ApiResource
      */
     public function show($id)
     {

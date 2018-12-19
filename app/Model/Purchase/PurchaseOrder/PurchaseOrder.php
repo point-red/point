@@ -6,9 +6,10 @@ use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
+use App\Model\TransactionModel;
 use Illuminate\Database\Eloquent\Model;
 
-class PurchaseOrder extends Model
+class PurchaseOrder extends TransactionModel
 {
     protected $connection = 'tenant';
 

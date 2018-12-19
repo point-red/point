@@ -5,11 +5,9 @@ namespace App\Model\Purchase\PurchaseRequest;
 use App\Model\Form;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestService;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\TransactionModel;
 
-class PurchaseRequest extends Model
+class PurchaseRequest extends TransactionModel
 {
     protected $connection = 'tenant';
 

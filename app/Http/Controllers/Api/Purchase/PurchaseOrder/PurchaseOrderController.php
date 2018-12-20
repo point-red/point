@@ -19,7 +19,14 @@ class PurchaseOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseOrders = PurchaseOrder::eloquentFilter($request)->get();
+        $purchaseOrders = PurchaseOrder::eloquentFilter($request)
+            ->with('form')
+            ->with('purchaseRequest')
+            ->with('warehouse')
+            ->with('supplier')
+            ->with('items.allocation')
+            ->with('services.allocation')
+            ->get();
 
         return new ApiCollection($purchaseOrders);
     }
@@ -83,12 +90,19 @@ class PurchaseOrderController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $purchaseOrder = PurchaseOrder::with('form', 'supplier', 'items.allocation', 'services.allocation', 'purchaseRequest', 'warehouse')
+        $purchaseOrder = PurchaseOrder::eloquentFilter($request)
+            ->with('form')
+            ->with('purchaseRequest')
+            ->with('warehouse')
+            ->with('supplier')
+            ->with('items.allocation')
+            ->with('services.allocation')
             ->findOrFail($id);
 
         return new ApiResource($purchaseOrder);
@@ -114,6 +128,10 @@ class PurchaseOrderController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $purchaseOrder = PurchaseOrder::findOrFail($id);
+
+        $purchaseOrder->delete();
+
+        return response()->json([], 204);
     }
 }

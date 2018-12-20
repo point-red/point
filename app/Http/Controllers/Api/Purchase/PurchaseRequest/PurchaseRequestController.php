@@ -19,7 +19,13 @@ class PurchaseRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseRequests = PurchaseRequest::eloquentFilter($request)->get();
+        $purchaseRequests = PurchaseRequest::eloquentFilter($request)
+            ->with('form')
+            ->with('employee')
+            ->with('supplier')
+            ->with('items.allocation')
+            ->with('services.allocation')
+            ->get();
 
         return new ApiCollection($purchaseRequests);
     }
@@ -60,7 +66,13 @@ class PurchaseRequestController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseRequest = PurchaseRequest::create($request->all());
 
-            return new ApiResource($purchaseRequest);
+            return new ApiResource($purchaseRequest
+                ->load('form')
+                ->load('employee')
+                ->load('supplier')
+                ->load('items.allocation')
+                ->load('services.allocation')
+            );
         });
 
         return $result;
@@ -69,12 +81,18 @@ class PurchaseRequestController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param Request $request
      * @param int $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::with('form', 'items.allocation', 'services.allocation', 'employee', 'supplier')
+        $purchaseRequest = PurchaseRequest::eloquentFilter($request)
+            ->with('form')
+            ->with('employee')
+            ->with('supplier')
+            ->with('items.allocation')
+            ->with('services.allocation')
             ->findOrFail($id);
 
         return new ApiResource($purchaseRequest);
@@ -100,6 +118,10 @@ class PurchaseRequestController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $purchaseRequest = PurchaseRequest::findOrFail($id);
+
+        $purchaseRequest->delete();
+
+        return response()->json([], 204);
     }
 }

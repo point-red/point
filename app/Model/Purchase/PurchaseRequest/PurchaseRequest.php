@@ -65,7 +65,7 @@ class PurchaseRequest extends TransactionModel
         }
         $purchaseRequest->items()->saveMany($array);
 
-        $array    = [];
+        $array = [];
         $services = $data['services'] ?? [];
         foreach ($services as $service) {
             $purchaseRequestService = new PurchaseRequestService;

@@ -72,9 +72,9 @@ class PurchaseOrderController extends Controller
     public function store(Request $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $purchaseRequest = PurchaseOrder::create($request->all());
+            $purchaseOrder = PurchaseOrder::create($request->all());
 
-            return new ApiResource($purchaseRequest);
+            return new ApiResource($purchaseOrder);
         });
 
         return $result;

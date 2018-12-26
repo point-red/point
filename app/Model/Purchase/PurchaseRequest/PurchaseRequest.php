@@ -48,6 +48,7 @@ class PurchaseRequest extends TransactionModel
     {
         $form = new Form;
         $form->fill($data);
+        $form->generateFormNumber($data);
         $form->save();
 
         $purchaseRequest = new PurchaseRequest;

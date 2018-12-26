@@ -47,7 +47,10 @@ class PurchaseRequest extends TransactionModel
 
     public function purchaseOrders()
     {
-        return $this->hasMany(PurchaseOrder::class, 'purchase_request_id');
+        return $this->hasMany(PurchaseOrder::class, 'purchase_request_id')
+            ->join('forms', 'forms.id', '=', 'purchase_orders.form_id')
+            ->where('forms.canceled', '=', 0)
+            ->orWhereNull('forms.canceled');
     }
 
     public static function create($data)

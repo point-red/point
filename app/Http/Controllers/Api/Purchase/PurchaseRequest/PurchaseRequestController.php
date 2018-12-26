@@ -120,15 +120,21 @@ class PurchaseRequestController extends Controller
     public function destroy($id)
     {
         $purchaseRequest = PurchaseRequest::with('form', 'purchaseOrders')->findOrFail($id);
-        if ($purchaseRequest && $purchaseRequest->purchaseOrders) {
-            $purchaseRequest->form->number   = null;
-            $purchaseRequest->form->canceled = true;
-            $purchaseRequest->form->save();
-
-            return response()->json([], 204);
-        } else {
-            // locked by purchase orders
-            return response()->json([], 400);
+        $purchaseOrders = $purchaseRequest->purchaseOrders;
+        if (count($purchaseOrders) > 0) {
+            // can not delete if at least 1 active purchase orders
+            $purchaseOrderNumbers = array_column($purchaseOrders->toArray(), 'number');
+            $errors = array(
+                'code'    => 422,
+                'message' => 'Referenced by purchase orders [' . implode('], [', $purchaseOrderNumbers) . '].'
+            );
+            return response()->json($errors, 422);
         }
+
+        $purchaseRequest->form->number   = null;
+        $purchaseRequest->form->canceled = true;
+        $purchaseRequest->form->save();
+
+        return response()->json([], 204);
     }
 }

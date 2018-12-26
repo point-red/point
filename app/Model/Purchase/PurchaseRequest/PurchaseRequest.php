@@ -6,6 +6,7 @@ use App\Model\Form;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 
 class PurchaseRequest extends TransactionModel
 {
@@ -42,6 +43,11 @@ class PurchaseRequest extends TransactionModel
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class, 'purchase_request_id');
     }
 
     public static function create($data)

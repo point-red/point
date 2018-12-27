@@ -7,6 +7,7 @@ use App\Http\Resources\ApiResource;
 use App\Model\Purchase\PurchaseReceived\PurchaseReceived;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseReceivedController extends Controller
 {

@@ -92,8 +92,8 @@ class Form extends PointModel
 
         $formNumber = $this->convertTemplateDate($formNumber);
         $formNumber = $this->convertTemplateIncrement($formNumber);
-        $formNumber = $this->convertTemplateMasterId('/{cus=(\d)}/', $customerId, $formNumber);
-        $formNumber = $this->convertTemplateMasterId('/{sup=(\d)}/', $supplierId, $formNumber);
+        $formNumber = $this->convertTemplateMasterId('/{customerId=(\d)}/', $customerId, $formNumber);
+        $formNumber = $this->convertTemplateMasterId('/{supplierId=(\d)}/', $supplierId, $formNumber);
         $formNumber = $this->convertTemplateCodeCustomer($formNumber, $customerId);
         $formNumber = $this->convertTemplateCodeSupplier($formNumber, $supplierId);
         $formNumber = $this->convertTemplateRoman($formNumber);

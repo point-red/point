@@ -7,7 +7,6 @@ use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\TransactionModel;
-use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrder extends TransactionModel
 {
@@ -83,7 +82,7 @@ class PurchaseOrder extends TransactionModel
         }
         $purchaseOrder->items()->saveMany($array);
 
-        $array    = [];
+        $array = [];
         $services = $data['services'] ?? [];
         foreach ($services as $service) {
             $purchaseOrderService = new PurchaseOrderService;

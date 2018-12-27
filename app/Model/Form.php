@@ -72,6 +72,36 @@ class Form extends PointModel
     }
 
     /**
+     * @param $formatNumber
+     * @param null $customerId
+     * @param null $supplierId
+     *
+     * {customerId=4} - 4 is for pad a string to 4 digit (0001)
+     * {supplierId=4} - 4 is for pad a string to 4 digit (0001)
+     * {code_customer} - customer code
+     * {code_supplier} - supplier code
+     *
+     * use [] to convert int into roman number
+     * example :
+     * PO/{Y}-{m}-{d}/{increment=3} => PO/2018-12-26/001
+     * PO/{Y}/[{m}]/{increment=4} => PO/2018/XII/0001
+     */
+    public function generateFormNumber($formatNumber, $customerId = null, $supplierId = null)
+    {
+        $formNumber = $formatNumber;
+
+        $formNumber = $this->convertTemplateDate($formNumber);
+        $formNumber = $this->convertTemplateIncrement($formNumber);
+        $formNumber = $this->convertTemplateMasterId('/{cus=(\d)}/', $customerId, $formNumber);
+        $formNumber = $this->convertTemplateMasterId('/{sup=(\d)}/', $supplierId, $formNumber);
+        $formNumber = $this->convertTemplateCodeCustomer($formNumber, $customerId);
+        $formNumber = $this->convertTemplateCodeSupplier($formNumber, $supplierId);
+        $formNumber = $this->convertTemplateRoman($formNumber);
+
+        $this->number = $formNumber;
+    }
+
+    /**
      * PHP date: https://www.w3schools.com/php/func_date_date_format.asp
      * {d} - The day of the month (from 01 to 31)
      * {j} - The day of the month without leading zeros (1 to 31)
@@ -110,72 +140,80 @@ class Form extends PointModel
      * {c} - The ISO-8601 date (e.g. 2013-05-05T16:34:42+00:00)
      * {r} - The RFC 2822 formatted date (e.g. Fri, 12 Apr 2013 12:01:05 +0200)
      * {U} - The seconds since the Unix Epoch (January 1 1970 00:00:00 GMT)
-     * 
-     * Point custom format:
-     * {cus=4} - customer_id with at least n fixed digits, 0/1 = no padding zero
-     * {sup=4} - supplier_id with at least n fixed digits, 0/1 = no padding zero
-     * {code_cus} - customer code
-     * {code_sup} - supplier code
-     * {incr=4} - increment that reset to 1 each month
-     * 
-     * use [] to convert int into roman number
-     * 
-     * example
-     * PO/{Y}-{m}-{d}/{incr=3}      =>   PO/2018-12-26/001
-     * PO/{Y}/[{m}]/{incr=4}        =>   PO/2018/XII/0001
+     *
+     * @param $formNumber
+     * @return mixed
      */
-    public function generateFormNumber($formatNumber, $customerId = null, $supplierId = null)
+    private function convertTemplateDate($formNumber)
     {
-        $formNumber = $formatNumber;
-        $time = strtotime($this->date);
-
-        // Replace markdowns for date
         preg_match_all('/{([a-zA-Z])}/', $formNumber, $arr);
         foreach ($arr[0] as $key => $value) {
             $code = $arr[1][$key];
-            $formNumber = str_replace($value, Date($code, $time), $formNumber);
+            $formNumber = str_replace($value, Date($code, strtotime($this->date)), $formNumber);
         }
 
-        preg_match_all('/{incr=(\d)}/', $formNumber, $arr);
+        return $formNumber;
+    }
+
+    /**
+     * @param $formNumber
+     * @return mixed
+     *
+     * Example:
+     * {increment=4} - 4 is for pad a string to 4 digit (0001)
+     */
+    private function convertTemplateIncrement($formNumber)
+    {
+        preg_match_all('/{increment=(\d)}/', $formNumber, $arr);
         foreach ($arr[0] as $key => $value) {
             $padUntil = $arr[1][$key];
             $increment = Form::where('formable_type', $this->formable_type)
                 ->whereNotNull('number')
-                ->whereMonth('date', Date('n', $time))
+                ->whereMonth('date', Date('n', strtotime($this->date)))
                 ->count();
             $result = str_pad($increment+1, $padUntil, '0', STR_PAD_LEFT);
             $formNumber = str_replace($value, $result, $formNumber);
         }
 
-        // Replace Point's markdowns
-        $formNumber = $this->padMasterId('/{cus=(\d)}/', $customerId, $formNumber);
-        $formNumber = $this->padMasterId('/{sup=(\d)}/', $supplierId, $formNumber);
-        
-        if (strpos($formNumber, '{code_cus}') !== false) {
-            $customer = Customer::findOrFail($customerId);
-            $formNumber = str_replace("{code_cus}", $customer->code, $formNumber);
-        }
+        return $formNumber;
+    }
 
-        if (strpos($formNumber, '{code_sup}') !== false) {
-            $supplier = Supplier::findOrFail($supplierId);
-            $formNumber = str_replace("{code_sup}", $supplier->code, $formNumber);
-        }
-
-        // Replace number to roman number
+    private function convertTemplateRoman($formNumber)
+    {
         preg_match_all('/\[(\d+)\]/', $formNumber, $arr);
         foreach ($arr[0] as $key => $value) {
             $num = $this->numberToRoman($arr[1][$key]);
             $formNumber = str_replace($value, $num, $formNumber);
         }
 
-        $this->number = $formNumber;
+        return $formNumber;
+    }
+
+    private function convertTemplateCodeCustomer($formNumber, $customerId)
+    {
+        $pattern = '{code_customer}';
+        if (strpos($formNumber, $pattern) !== false) {
+            $customer = Customer::findOrFail($customerId);
+            $formNumber = str_replace($pattern, $customer->code, $formNumber);
+        }
+
+        return $formNumber;
+    }
+
+    private function convertTemplateCodeSupplier($formNumber, $supplierId)
+    {
+        $pattern = '{code_supplier}';
+        if (strpos($formNumber, $pattern) !== false) {
+            $supplier = Supplier::findOrFail($supplierId);
+            $formNumber = str_replace($pattern, $supplier->code, $formNumber);
+        }
+
+        return $formNumber;
     }
 
     /**
      * Roman converter
-     *
      * @param $integer
-     *
      * @return string
      */
     private function numberToRoman($integer)
@@ -183,10 +221,10 @@ class Form extends PointModel
         $table = array('M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1);
         $return = '';
         while ($integer > 0) {
-            foreach ($table as $rom => $arb) {
-                if ($integer >= $arb) {
-                    $integer -= $arb;
-                    $return .= $rom;
+            foreach ($table as $key => $value) {
+                if ($integer >= $value) {
+                    $integer -= $value;
+                    $return .= $key;
                     break;
                 }
             }
@@ -204,7 +242,7 @@ class Form extends PointModel
      *
      * @return string
      */
-    private function padMasterId($pattern, $masterId, $formNumber) {
+    private function convertTemplateMasterId($pattern, $masterId, $formNumber) {
         preg_match_all($pattern, $formNumber, $arr);
         foreach ($arr[0] as $key => $value) {
             $padUntil = $arr[1][$key];

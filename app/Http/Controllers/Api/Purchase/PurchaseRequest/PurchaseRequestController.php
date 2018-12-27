@@ -34,8 +34,9 @@ class PurchaseRequestController extends Controller
      * Store a newly created resource in storage.
      *
      * Request :
-     *  - required_date (Date)
      *  - number (String)
+     *  - date (Date)
+     *  - required_date (Date)
      *  - employee_id (Int)
      *  - supplier_id (Int, Optional)
      *  - items (Array) :
@@ -118,9 +119,21 @@ class PurchaseRequestController extends Controller
      */
     public function destroy($id)
     {
-        $purchaseRequest = PurchaseRequest::findOrFail($id);
+        $purchaseRequest = PurchaseRequest::with('form', 'purchaseOrders')->findOrFail($id);
+        $purchaseOrders = $purchaseRequest->purchaseOrders;
+        if (count($purchaseOrders) > 0) {
+            // can not delete if at least 1 active purchase orders
+            $purchaseOrderNumbers = array_column($purchaseOrders->toArray(), 'number');
+            $errors = array(
+                'code'    => 422,
+                'message' => 'Referenced by purchase orders [' . implode('], [', $purchaseOrderNumbers) . '].'
+            );
+            return response()->json($errors, 422);
+        }
 
-        $purchaseRequest->delete();
+        $purchaseRequest->form->number   = null;
+        $purchaseRequest->form->canceled = true;
+        $purchaseRequest->form->save();
 
         return response()->json([], 204);
     }

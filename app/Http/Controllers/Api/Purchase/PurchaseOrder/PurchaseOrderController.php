@@ -37,6 +37,7 @@ class PurchaseOrderController extends Controller
      * Request :
      *
      *  - number (String)
+     *  - date (String YYYY-MM-DD hh:mm:ss)
      *  - purchase_request_id (Int, Optional)
      *  - purchase_contract_id (Int, Optional)
      *  - supplier_id (Int)

@@ -3,6 +3,7 @@
 namespace App\Model\Purchase\PurchaseOrder;
 
 use App\Model\Master\Allocation;
+use App\Model\Master\Item;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrderItem extends Model
@@ -31,6 +32,11 @@ class PurchaseOrderItem extends Model
         'discount_value'   => 'double',
         'converter'        => 'double',
     ];
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
 
     public function allocation()
     {

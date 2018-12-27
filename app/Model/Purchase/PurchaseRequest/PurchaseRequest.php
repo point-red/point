@@ -21,7 +21,7 @@ class PurchaseRequest extends TransactionModel
 
     public function form()
     {
-        return $this->belongsTo(Form::class);
+        return $this->morphOne(Form::class, 'formable');
     }
 
     public function items()
@@ -46,15 +46,16 @@ class PurchaseRequest extends TransactionModel
 
     public static function create($data)
     {
-        $form = new Form;
-        $form->fill($data);
-        $form->generateFormNumber($data);
-        $form->save();
-
         $purchaseRequest = new PurchaseRequest;
         $purchaseRequest->fill($data);
-        $purchaseRequest->form_id = $form->id;
         $purchaseRequest->save();
+
+        $form = new Form;
+        $form->fill($data);
+        $form->formable_id = $purchaseRequest->id;
+        $form->formable_type = PurchaseRequest::class;
+        $form->generateFormNumber($data['number']);
+        $form->save();
 
         $array = [];
         $items = $data['items'] ?? [];

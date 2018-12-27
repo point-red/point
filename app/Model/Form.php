@@ -3,6 +3,8 @@
 namespace App\Model;
 
 use App\Model\Master\User;
+use App\Model\Master\Customer;
+use App\Model\Master\Supplier;
 
 class Form extends PointModel
 {
@@ -110,107 +112,63 @@ class Form extends PointModel
      * {U} - The seconds since the Unix Epoch (January 1 1970 00:00:00 GMT)
      * 
      * Point custom format:
-     * {inc=4} - increment with at least n fixed digit, 0/1 = no padding zero
      * {cus=4} - customer_id with at least n fixed digits, 0/1 = no padding zero
      * {sup=4} - supplier_id with at least n fixed digits, 0/1 = no padding zero
      * {code_cus} - customer code
      * {code_sup} - supplier code
+     * {incr=4} - increment that reset to 1 each month
      * 
-     * use [{}] to convert int into roman number
+     * use [] to convert int into roman number
      * 
      * example
-     * PO/{Y}-{m}-{d}/{inc=3}      =>   PO/2018-12-26/001
-     * PO/{Y}/[{m}]/{inc=4}        =>   PO/2018/XII/0001
+     * PO/{Y}-{m}-{d}/{incr=3}      =>   PO/2018-12-26/001
+     * PO/{Y}/[{m}]/{incr=4}        =>   PO/2018/XII/0001
      */
-    public function generateFormNumber($data)
+    public function generateFormNumber($formatNumber, $customerId = null, $supplierId = null)
     {
-        $form_number = $data['number'];
-        $time = strtotime($data['date']);
+        $formNumber = $formatNumber;
+        $time = strtotime($this->date);
 
-        $form_number = str_replace("{d}", Date('d', $time), $form_number);
-        $form_number = str_replace("{j}", Date('j', $time), $form_number);
-        $form_number = str_replace("{D}", Date('D', $time), $form_number);
-        $form_number = str_replace("{l}", Date('l', $time), $form_number);
-        $form_number = str_replace("{N}", Date('N', $time), $form_number);
-        $form_number = str_replace("{S}", Date('S', $time), $form_number);
-        $form_number = str_replace("{w}", Date('w', $time), $form_number);
-        $form_number = str_replace("{z}", Date('z', $time), $form_number);
-        $form_number = str_replace("{W}", Date('W', $time), $form_number);
-        $form_number = str_replace("{F}", Date('F', $time), $form_number);
-        $form_number = str_replace("{m}", Date('m', $time), $form_number);
-        $form_number = str_replace("{M}", Date('M', $time), $form_number);
-        $form_number = str_replace("{n}", Date('n', $time), $form_number);
-        $form_number = str_replace("{t}", Date('t', $time), $form_number);
-        $form_number = str_replace("{L}", Date('L', $time), $form_number);
-        $form_number = str_replace("{o}", Date('o', $time), $form_number);
-        $form_number = str_replace("{Y}", Date('Y', $time), $form_number);
-        $form_number = str_replace("{y}", Date('y', $time), $form_number);
-        $form_number = str_replace("{a}", Date('a', $time), $form_number);
-        $form_number = str_replace("{A}", Date('A', $time), $form_number);
-        $form_number = str_replace("{B}", Date('B', $time), $form_number);
-        $form_number = str_replace("{g}", Date('g', $time), $form_number);
-        $form_number = str_replace("{G}", Date('G', $time), $form_number);
-        $form_number = str_replace("{h}", Date('h', $time), $form_number);
-        $form_number = str_replace("{H}", Date('H', $time), $form_number);
-        $form_number = str_replace("{i}", Date('i', $time), $form_number);
-        $form_number = str_replace("{s}", Date('s', $time), $form_number);
-        $form_number = str_replace("{u}", Date('u', $time), $form_number);
-        $form_number = str_replace("{e}", Date('e', $time), $form_number);
-        $form_number = str_replace("{I}", Date('I', $time), $form_number);
-        $form_number = str_replace("{O}", Date('O', $time), $form_number);
-        $form_number = str_replace("{P}", Date('P', $time), $form_number);
-        $form_number = str_replace("{T}", Date('T', $time), $form_number);
-        $form_number = str_replace("{Z}", Date('Z', $time), $form_number);
-        $form_number = str_replace("{c}", Date('c', $time), $form_number);
-        $form_number = str_replace("{r}", Date('r', $time), $form_number);
-        $form_number = str_replace("{U}", Date('U', $time), $form_number);
+        // Replace markdowns for date
+        preg_match_all('/{([a-zA-Z])}/', $formNumber, $arr);
+        foreach ($arr[0] as $key => $value) {
+            $code = $arr[1][$key];
+            $formNumber = str_replace($value, Date($code, $time), $formNumber);
+        }
 
-        // TODO how to get the increment $inc
-        $patternInc = "/{inc=(\d)}/";
-        preg_match_all($patternInc, $form_number, $arr);
+        preg_match_all('/{incr=(\d)}/', $formNumber, $arr);
         foreach ($arr[0] as $key => $value) {
             $padUntil = $arr[1][$key];
-            // $inc = getIncrementNumber();
-            $inc = rand(1,9999);
-            $result = str_pad($inc, $padUntil, "0", STR_PAD_LEFT);
-            $form_number = str_replace($value, $result, $form_number);
+            $increment = Form::where('formable_type', $this->formable_type)
+                ->whereNotNull('number')
+                ->whereMonth('date', Date('n', $time))
+                ->count();
+            $result = str_pad($increment+1, $padUntil, '0', STR_PAD_LEFT);
+            $formNumber = str_replace($value, $result, $formNumber);
         }
+
+        // Replace Point's markdowns
+        $formNumber = $this->padMasterId('/{cus=(\d)}/', $customerId, $formNumber);
+        $formNumber = $this->padMasterId('/{sup=(\d)}/', $supplierId, $formNumber);
         
-        $patternCus = "/{cus=(\d)}/";
-        preg_match_all($patternCus, $form_number, $arr);
-        foreach ($arr[0] as $key => $value) {
-            $padUntil = $arr[1][$key];
-            $result = str_pad($data['customer_id'], $padUntil, "0", STR_PAD_LEFT);
-            $form_number = str_replace($value, $result, $form_number);
-        }
-        
-        $patternSup = "/{sup=(\d)}/";
-        preg_match_all($patternSup, $form_number, $arr);
-        foreach ($arr[0] as $key => $value) {
-            $padUntil = $arr[1][$key];
-            $result = str_pad($data['supplier_id'], $padUntil, "0", STR_PAD_LEFT);
-            $form_number = str_replace($value, $result, $form_number);
+        if (strpos($formNumber, '{code_cus}') !== false) {
+            $customer = Customer::findOrFail($customerId);
+            $formNumber = str_replace("{code_cus}", $customer->code, $formNumber);
         }
 
-        if (strpos($form_number, '{code_cus}') !== false) {
-            $customer = Customer::findOrFail($data['customer_id']);
-            $form_number = str_replace("{code_cus}", $customer->code, $form_number);
+        if (strpos($formNumber, '{code_sup}') !== false) {
+            $supplier = Supplier::findOrFail($supplierId);
+            $formNumber = str_replace("{code_sup}", $supplier->code, $formNumber);
         }
 
-        if (strpos($form_number, '{code_sup}') !== false) {
-            $supplier = Supplier::findOrFail($data['supplier_id']);
-            $form_number = str_replace("{code_sup}", $supplier->code, $form_number);
-        }
-
-        // TODO how to convert to roman number
-        $patternRom = "/\[(\d+)\]/";
-        preg_match_all($patternRom, $form_number, $arr);
+        // Replace number to roman number
+        preg_match_all('/\[(\d+)\]/', $formNumber, $arr);
         foreach ($arr[0] as $key => $value) {
             $num = $this->numberToRoman($arr[1][$key]);
-            $form_number = str_replace($value, $num, $form_number);
+            $formNumber = str_replace($value, $num, $formNumber);
         }
 
-        $this->number = $form_number;
+        $this->number = $formNumber;
     }
 
     /**
@@ -235,5 +193,24 @@ class Form extends PointModel
         }
 
         return $return;
+    }
+
+    /**
+     * Convert masterId and add zero pads to the left
+     * 
+     * @param $pattern
+     * @param $masterId
+     * @param $formNumber
+     *
+     * @return string
+     */
+    private function padMasterId($pattern, $masterId, $formNumber) {
+        preg_match_all($pattern, $formNumber, $arr);
+        foreach ($arr[0] as $key => $value) {
+            $padUntil = $arr[1][$key];
+            $result = str_pad($masterId, $padUntil, '0', STR_PAD_LEFT);
+            $formNumber = str_replace($value, $result, $formNumber);
+        }
+        return $formNumber;
     }
 }

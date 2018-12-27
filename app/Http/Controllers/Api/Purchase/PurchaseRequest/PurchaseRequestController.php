@@ -34,6 +34,7 @@ class PurchaseRequestController extends Controller
      * Store a newly created resource in storage.
      *
      * Request :
+     *  - required_date (Date)
      *  - number (String)
      *  - date (Date)
      *  - required_date (Date)

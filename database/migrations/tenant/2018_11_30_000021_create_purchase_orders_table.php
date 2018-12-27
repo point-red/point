@@ -15,7 +15,6 @@ class CreatePurchaseOrdersTable extends Migration
     {
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('form_id');
             $table->unsignedInteger('purchase_request_id')->nullable();
             $table->unsignedInteger('purchase_contract_id')->nullable();
             $table->unsignedInteger('supplier_id');
@@ -29,7 +28,6 @@ class CreatePurchaseOrdersTable extends Migration
             $table->string('type_of_tax'); // include / exclude / non
             $table->decimal('tax', 65, 30);
 
-            $table->foreign('form_id')->references('id')->on('forms')->onDelete('restrict');
             $table->foreign('purchase_request_id')->references('id')->on('purchase_requests')->onDelete('restrict');
             $table->foreign('purchase_contract_id')->references('id')->on('purchase_contracts')->onDelete('restrict');
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');

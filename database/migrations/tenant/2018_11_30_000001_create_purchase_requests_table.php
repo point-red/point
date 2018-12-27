@@ -15,12 +15,10 @@ class CreatePurchaseRequestsTable extends Migration
     {
         Schema::create('purchase_requests', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('form_id');
             $table->date('required_date');
             $table->unsignedInteger('employee_id');
             $table->unsignedInteger('supplier_id')->nullable();
 
-            $table->foreign('form_id')->references('id')->on('forms')->onDelete('restrict');
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('restrict');
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');
         });

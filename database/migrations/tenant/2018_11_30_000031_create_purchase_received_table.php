@@ -15,14 +15,12 @@ class CreatePurchaseReceivedTable extends Migration
     {
         Schema::create('purchase_received', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('form_id');
             $table->unsignedInteger('supplier_id');
             $table->unsignedInteger('warehouse_id');
             $table->unsignedInteger('purchase_order_id');
             $table->string('driver')->nullable();
             $table->string('license_plate')->nullable();
 
-            $table->foreign('form_id')->references('id')->on('forms')->onDelete('cascade');
             $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('restrict');
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');
             $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('restrict');

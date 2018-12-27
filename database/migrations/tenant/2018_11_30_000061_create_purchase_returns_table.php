@@ -15,12 +15,10 @@ class CreatePurchaseReturnsTable extends Migration
     {
         Schema::create('purchase_returns', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('form_id');
             $table->unsignedInteger('purchase_invoice_id');
             $table->unsignedInteger('supplier_id');
             $table->decimal('tax', 65, 30);
 
-            $table->foreign('form_id')->references('id')->on('forms')->onDelete('restrict');
             $table->foreign('purchase_invoice_id')->references('id')->on('purchase_invoices')->onDelete('restrict');
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');
         });

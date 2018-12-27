@@ -15,7 +15,6 @@ class CreatePurchaseInvoicesTable extends Migration
     {
         Schema::create('purchase_invoices', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('form_id');
             $table->unsignedInteger('supplier_id');
             $table->date('due_date');
             $table->decimal('delivery_fee', 65, 30);
@@ -24,7 +23,6 @@ class CreatePurchaseInvoicesTable extends Migration
             $table->string('type_of_tax'); // include / exclude / non
             $table->decimal('tax', 65, 30);
 
-            $table->foreign('form_id')->references('id')->on('forms')->onDelete('restrict');
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');
         });
     }

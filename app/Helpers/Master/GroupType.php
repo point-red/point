@@ -8,7 +8,7 @@ use App\Model\Master\Supplier;
 
 class GroupType
 {
-    public static $typeClass = [
+    private static $typeClass = [
         'supplier' => Supplier::class,
         'customer' => Customer::class,
         'item' => Item::class,

@@ -41,6 +41,7 @@ class Reset extends Command
      */
     public function handle()
     {
+        $this->line('Start reset database tenant');
         $project = Project::where('code', $this->argument('project_code'))->first();
 
         if (! $project) {
@@ -55,6 +56,7 @@ class Reset extends Command
         // Recreate new database for tenant project
         $dbName = 'point_'.strtolower($project->code);
         $this->line('1/4. Recreate database');
+        Artisan::call('tenant:database:delete', ['db_name' => $dbName]);
         Artisan::call('tenant:database:create', ['db_name' => $dbName]);
         $this->line('2/4. Migrate database');
         Artisan::call('tenant:migrate', ['db_name' => $dbName]);

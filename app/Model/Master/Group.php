@@ -2,6 +2,7 @@
 
 namespace App\Model\Master;
 
+use App\Helpers\Master\GroupType;
 use App\Model\MasterModel;
 
 class Group extends MasterModel
@@ -9,8 +10,6 @@ class Group extends MasterModel
     protected $connection = 'tenant';
 
     protected $fillable = ['name', 'code', 'type'];
-
-    private $masterNamespace = 'App\Model\Master\\';
 
     /**
      * Get all of the suppliers that are assigned this group.
@@ -60,6 +59,6 @@ class Group extends MasterModel
      */
     public function setTypeAttribute($value)
     {
-        $this->attributes['type'] = $this->masterNamespace . capitalize($value);
+        $this->attributes['type'] = GroupType::getTypeClass($value);
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Feature\Purchase\PurchaseReceived;
+namespace Tests\Feature\Purchase\PurchaseReceive;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class PurchaseReceivedValidationTest extends TestCase
+class PurchaseReceiveTest extends TestCase
 {
     /**
      * A basic test example.

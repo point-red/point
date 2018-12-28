@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api\Purchase\PurchaseReceived;
+namespace App\Http\Controllers\Api\Purchase\PurchaseReceive;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Form;
-use App\Model\Purchase\PurchaseReceived\PurchaseReceived;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PurchaseReceivedController extends Controller
+class PurchaseReceiveController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,14 +20,14 @@ class PurchaseReceivedController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseReceiveds = PurchaseReceived::eloquentFilter($request)
-            ->join(Form::getTableName(), PurchaseReceived::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
-            ->select(PurchaseReceived::getTableName() . '.*')
-            ->where(Form::getTableName() . '.formable_type', PurchaseReceived::class)
+        $purchaseReceives = PurchaseReceive::eloquentFilter($request)
+            ->join(Form::getTableName(), PurchaseReceive::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
+            ->select(PurchaseReceive::getTableName() . '.*')
+            ->where(Form::getTableName() . '.formable_type', PurchaseReceive::class)
             ->with('form')
             ->get();
 
-        return new ApiCollection($purchaseReceiveds);
+        return new ApiCollection($purchaseReceives);
     }
 
     /**
@@ -79,9 +79,9 @@ class PurchaseReceivedController extends Controller
     public function store(Request $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $purchaseReceived = PurchaseReceived::create($request->all());
+            $purchaseReceive = PurchaseReceive::create($request->all());
 
-            return new ApiResource($purchaseReceived
+            return new ApiResource($purchaseReceive
                 ->load('form')
                 ->load('supplier')
                 ->load('items.allocation')
@@ -101,7 +101,7 @@ class PurchaseReceivedController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseReceived = PurchaseReceived::eloquentFilter($request)
+        $purchaseReceive = PurchaseReceive::eloquentFilter($request)
             ->with('form')
             ->with('purchaseOrder')
             ->with('warehouse')
@@ -110,7 +110,7 @@ class PurchaseReceivedController extends Controller
             ->with('services.allocation')
             ->findOrFail($id);
 
-        return new ApiResource($purchaseReceived);
+        return new ApiResource($purchaseReceive);
     }
 
     /**
@@ -133,9 +133,9 @@ class PurchaseReceivedController extends Controller
      */
     public function destroy($id)
     {
-        $purchaseReceived = PurchaseReceived::findOrFail($id);
+        $purchaseReceive = PurchaseReceive::findOrFail($id);
 
-        $purchaseReceived->delete();
+        $purchaseReceive->delete();
 
         return response()->json([], 204);
     }

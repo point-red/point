@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePurchaseReceivedTable extends Migration
+class CreatePurchaseReceiveTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePurchaseReceivedTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_received', function (Blueprint $table) {
+        Schema::create('purchase_receive', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('supplier_id');
             $table->unsignedInteger('warehouse_id');
@@ -34,6 +34,6 @@ class CreatePurchaseReceivedTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchase_receiveds');
+        Schema::dropIfExists('purchase_receives');
     }
 }

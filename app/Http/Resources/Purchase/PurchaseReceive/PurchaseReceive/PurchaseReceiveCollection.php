@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources\Purchase\PurchaseReceived\PurchaseReceived;
+namespace App\Http\Resources\Purchase\PurchaseReceive\PurchaseReceive;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class PurchaseReceivedCollection extends ResourceCollection
+class PurchaseReceiveCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.

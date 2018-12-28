@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Purchase\PurchaseReceived\PurchaseReceived;
+namespace App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePurchaseReceivedRequest extends FormRequest
+class StorePurchaseReceiveRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class UpdatePurchaseReceivedRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**

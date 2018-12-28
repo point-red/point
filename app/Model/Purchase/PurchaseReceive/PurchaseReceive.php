@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Purchase\PurchaseReceived;
+namespace App\Model\Purchase\PurchaseReceive;
 
 use App\Model\Form;
 use App\Model\Master\Supplier;
@@ -8,11 +8,11 @@ use App\Model\Master\Warehouse;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\TransactionModel;
 
-class PurchaseReceived extends TransactionModel
+class PurchaseReceive extends TransactionModel
 {
     protected $connection = 'tenant';
     
-    protected $table = 'purchase_received';
+    protected $table = 'purchase_receives';
 
     public $timestamps = false;
 
@@ -31,12 +31,12 @@ class PurchaseReceived extends TransactionModel
 
     public function items()
     {
-        return $this->hasMany(PurchaseReceivedItem::class);
+        return $this->hasMany(PurchaseReceiveItem::class);
     }
 
     public function services()
     {
-        return $this->hasMany(PurchaseReceivedService::class);
+        return $this->hasMany(PurchaseReceiveService::class);
     }
 
     public function supplier()
@@ -56,46 +56,46 @@ class PurchaseReceived extends TransactionModel
 
     public static function create($data)
     {
-        $purchaseReceived = new PurchaseReceived;
-        $purchaseReceived->fill($data);
+        $purchaseReceive = new PurchaseReceive;
+        $purchaseReceive->fill($data);
         if (!is_null($data['purchase_order_id'])) {
             $purchaseOrder = PurchaseOrder::findOrFail($purchaseOrderId);
-            $purchaseReceived->supplier_id = $purchaseOrder->supplier->id;
+            $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
         }
         else {
-            $purchaseReceived->supplier_id = $data['supplier_id'];
+            $purchaseReceive->supplier_id = $data['supplier_id'];
         }
-        $purchaseReceived->save();
+        $purchaseReceive->save();
 
         $form = new Form;
         $form->fill($data);
-        $form->formable_id = $purchaseReceived->id;
-        $form->formable_type = PurchaseReceived::class;
+        $form->formable_id = $purchaseReceive->id;
+        $form->formable_type = PurchaseReceive::class;
         $form->generateFormNumber($data['number']);
         $form->save();
 
         $array = [];
         $items = $data['items'] ?? [];
         foreach ($items as $item) {
-            $purchaseReceivedItem = new PurchaseReceivedItem;
-            $purchaseReceivedItem->fill($item);
-            $purchaseReceivedItem->purchase_received_id = $purchaseReceived->id;
-            array_push($array, $purchaseReceivedItem);
+            $purchaseReceiveItem = new PurchaseReceiveItem;
+            $purchaseReceiveItem->fill($item);
+            $purchaseReceiveItem->purchase_receive_id = $purchaseReceive->id;
+            array_push($array, $purchaseReceiveItem);
         }
-        $purchaseReceived->items()->saveMany($array);
+        $purchaseReceive->items()->saveMany($array);
 
         $array = [];
         $services = $data['services'] ?? [];
         foreach ($services as $service) {
-            $purchaseReceivedService = new PurchaseReceivedService;
-            $purchaseReceivedService->fill($service);
-            $purchaseReceivedService->purchase_received_id = $purchaseReceived->id;
-            array_push($array, $purchaseReceivedService);
+            $purchaseReceiveService = new PurchaseReceiveService;
+            $purchaseReceiveService->fill($service);
+            $purchaseReceiveService->purchase_receive_id = $purchaseReceive->id;
+            array_push($array, $purchaseReceiveService);
         }
-        $purchaseReceived->services()->saveMany($array);
+        $purchaseReceive->services()->saveMany($array);
 
-        $purchaseReceived->form();
+        $purchaseReceive->form();
 
-        return $purchaseReceived;
+        return $purchaseReceive;
     }
 }

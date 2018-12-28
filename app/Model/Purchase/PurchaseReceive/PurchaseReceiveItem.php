@@ -1,28 +1,31 @@
 <?php
 
-namespace App\Model\Purchase\PurchaseReceived;
+namespace App\Model\Purchase\PurchaseReceive;
 
 use App\Model\Master\Allocation;
-use App\Model\Master\Service;
+use App\Model\Master\Item;
 use Illuminate\Database\Eloquent\Model;
 
-class PurchaseReceivedService extends Model
+class PurchaseReceiveItem extends Model
 {
     protected $connection = 'tenant';
     
     public $timestamps = false;
 
     protected $fillable = [
-        'service_id',
+        'item_id',
         'quantity',
+        'unit',
+        'converter',
     ];
 
     protected $casts = [
         'quantity'  => 'double',
+        'converter' => 'double',
     ];
 
-    public function service() {
-        return $this->belongsTo(Service::class);
+    public function item() {
+        return $this->belongsTo(Item::class);
     }
 
     public function allocation()

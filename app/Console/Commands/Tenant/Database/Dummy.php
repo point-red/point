@@ -48,7 +48,7 @@ class Dummy extends Command
 
         $this->line(Artisan::output());
 
-        $dbName = strtolower($this->argument('dbName'));
+        $dbName = strtolower($this->argument('db_name'));
 
         config()->set('database.connections.tenant.database', $dbName);
         DB::connection('tenant')->reconnect();

@@ -75,10 +75,10 @@ class PurchaseOrder extends TransactionModel
         $array = [];
         $items = $data['items'] ?? [];
         foreach ($items as $item) {
-            $purchaseOrderitem = new PurchaseOrderItem;
-            $purchaseOrderitem->fill($item);
-            $purchaseOrderitem->purchase_order_id = $purchaseOrder->id;
-            array_push($array, $purchaseOrderitem);
+            $purchaseOrderItem = new PurchaseOrderItem;
+            $purchaseOrderItem->fill($item);
+            $purchaseOrderItem->purchase_order_id = $purchaseOrder->id;
+            array_push($array, $purchaseOrderItem);
         }
         $purchaseOrder->items()->saveMany($array);
 

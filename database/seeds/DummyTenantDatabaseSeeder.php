@@ -14,5 +14,7 @@ class DummyTenantDatabaseSeeder extends Seeder
         // Kpi
         $this->call(DummyKpiTemplateSeeder::class);
         $this->call(DummyEmployeeSeeder::class);
+        $this->call(DummyMasterSeeder::class);
+        $this->call(ChartOfAccountSeeder::class);
     }
 }

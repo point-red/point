@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseReceived;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\Form;
 use App\Model\Purchase\PurchaseReceived\PurchaseReceived;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseReceivedController extends Controller
@@ -20,12 +21,10 @@ class PurchaseReceivedController extends Controller
     public function index(Request $request)
     {
         $purchaseReceiveds = PurchaseReceived::eloquentFilter($request)
+            ->join(Form::getTableName(), PurchaseReceived::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
+            ->select(PurchaseReceived::getTableName() . '.*')
+            ->where(Form::getTableName() . '.formable_type', PurchaseReceived::class)
             ->with('form')
-            ->with('purchaseRequest')
-            ->with('warehouse')
-            ->with('supplier')
-            ->with('items.allocation')
-            ->with('services.allocation')
             ->get();
 
         return new ApiCollection($purchaseReceiveds);

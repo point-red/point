@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Purchase\PurchaseOrder;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\Form;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,12 +21,10 @@ class PurchaseOrderController extends Controller
     public function index(Request $request)
     {
         $purchaseOrders = PurchaseOrder::eloquentFilter($request)
+            ->join(Form::getTableName(), PurchaseOrder::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
+            ->select(PurchaseOrder::getTableName() . '.*')
+            ->where(Form::getTableName() . '.formable_type', PurchaseOrder::class)
             ->with('form')
-            ->with('purchaseRequest')
-            ->with('warehouse')
-            ->with('supplier')
-            ->with('items.allocation')
-            ->with('services.allocation')
             ->get();
 
         return new ApiCollection($purchaseOrders);

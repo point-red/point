@@ -331,11 +331,15 @@ trait EloquentFilters
      */
     private function convertJavascriptObjectToArray($values)
     {
-        if (is_array($values)) {
+        if (is_null($values)) {
+            return [];
+        }
+
+        if (!is_array($values)) {
             return json_decode($values, true);
         }
 
-        return [];
+        return $values;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Model\Purchase\PurchaseRequest;
 
 use App\Model\Master\Allocation;
+use App\Model\Master\Service;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseRequestService extends Model
@@ -23,6 +24,11 @@ class PurchaseRequestService extends Model
         'quantity' => 'double',
         'price'    => 'double',
     ];
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
+    }
 
     public function allocation()
     {

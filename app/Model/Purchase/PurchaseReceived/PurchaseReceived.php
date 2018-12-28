@@ -10,6 +10,8 @@ use App\Model\TransactionModel;
 
 class PurchaseReceived extends TransactionModel
 {
+    protected $connection = 'tenant';
+    
     protected $table = 'purchase_received';
 
     public $timestamps = false;
@@ -56,6 +58,13 @@ class PurchaseReceived extends TransactionModel
     {
         $purchaseReceived = new PurchaseReceived;
         $purchaseReceived->fill($data);
+        if (!is_null($data['purchase_order_id'])) {
+            $purchaseOrder = PurchaseOrder::findOrFail($purchaseOrderId);
+            $purchaseReceived->supplier_id = $purchaseOrder->supplier->id;
+        }
+        else {
+            $purchaseReceived->supplier_id = $data['supplier_id'];
+        }
         $purchaseReceived->save();
 
         $form = new Form;

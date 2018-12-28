@@ -62,4 +62,33 @@ class Group extends MasterModel
     {
         $this->attributes['type'] = $this->masterNamespace . capitalize($value);
     }
+
+    public $typeClass = [
+        'supplier' => Supplier::class,
+        'customer' => Customer::class,
+        'item' => Item::class,
+    ];
+
+    public $groupTypeIsNotAvailableResponse = [
+        'code' => 400,
+        'message' => 'Group type is not available'
+    ];
+
+    public function isGroupTypeAvailable($groupType)
+    {
+        if (!array_key_exists($groupType, $this->typeClass)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getTypeClass($type)
+    {
+        foreach ($this->typeClass as $key => $value) {
+            if ($key == $type) {
+                return $value;
+            }
+        }
+    }
 }

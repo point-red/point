@@ -2,8 +2,12 @@
 
 namespace App\Http\Requests\Master\Group;
 
+use App\Helpers\Master\GroupType;
+use App\Model\Master\Customer;
+use App\Model\Master\Group;
+use App\Model\Master\Item;
+use App\Model\Master\Supplier;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreGroupRequest extends FormRequest
 {
@@ -25,7 +29,14 @@ class StoreGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
+            'name' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if (Group::where('name', $value)->where('type', GroupType::getTypeClass($this->type))->count() > 0) {
+                        $fail($attribute.' is already exists.');
+                    }
+                },
+            ]
         ];
     }
 }

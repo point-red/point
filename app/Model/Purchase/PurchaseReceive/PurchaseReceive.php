@@ -59,7 +59,7 @@ class PurchaseReceive extends TransactionModel
         $purchaseReceive = new PurchaseReceive;
         $purchaseReceive->fill($data);
         if (!is_null($data['purchase_order_id'])) {
-            $purchaseOrder = PurchaseOrder::findOrFail($purchaseOrderId);
+            $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
             $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
         }
         else {

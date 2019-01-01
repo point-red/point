@@ -24,8 +24,9 @@ class PurchaseReceiveController extends Controller
             ->join(Form::getTableName(), PurchaseReceive::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
             ->select(PurchaseReceive::getTableName() . '.*')
             ->where(Form::getTableName() . '.formable_type', PurchaseReceive::class)
-            ->with('form')
-            ->get();
+            ->with('form');
+
+        $purchaseReceives = pagination($purchaseReceives, $request->get('limit'));
 
         return new ApiCollection($purchaseReceives);
     }

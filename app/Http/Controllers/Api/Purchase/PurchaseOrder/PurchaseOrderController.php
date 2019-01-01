@@ -24,8 +24,9 @@ class PurchaseOrderController extends Controller
             ->join(Form::getTableName(), PurchaseOrder::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
             ->select(PurchaseOrder::getTableName() . '.*')
             ->where(Form::getTableName() . '.formable_type', PurchaseOrder::class)
-            ->with('form')
-            ->get();
+            ->with('form');
+
+        $purchaseOrders = pagination($purchaseOrders, $request->get('limit'));
 
         return new ApiCollection($purchaseOrders);
     }

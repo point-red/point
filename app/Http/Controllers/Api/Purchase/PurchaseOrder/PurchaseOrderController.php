@@ -107,7 +107,9 @@ class PurchaseOrderController extends Controller
             ->with('purchaseRequest')
             ->with('warehouse')
             ->with('supplier')
+            ->with('items.item')
             ->with('items.allocation')
+            ->with('services.service')
             ->with('services.allocation')
             ->findOrFail($id);
 

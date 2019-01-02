@@ -13,7 +13,7 @@ class CreatePurchaseReceiveTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_receive', function (Blueprint $table) {
+        Schema::create('purchase_receives', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('supplier_id');
             $table->unsignedInteger('warehouse_id');

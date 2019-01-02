@@ -28,7 +28,7 @@ class CreatePurchaseInvoiceItemsTable extends Migration
             $table->unsignedInteger('allocation_id')->nullable();
 
             $table->foreign('purchase_invoice_id')->references('id')->on('purchase_invoices')->onDelete('cascade');
-            $table->foreign('purchase_receive_id')->references('id')->on('purchase_receive')->onDelete('cascade');
+            $table->foreign('purchase_receive_id')->references('id')->on('purchase_receives')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');
             $table->foreign('allocation_id')->references('id')->on('allocations')->onDelete('restrict');
         });

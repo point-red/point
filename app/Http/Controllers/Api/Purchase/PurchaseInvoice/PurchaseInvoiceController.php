@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Form;
+use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -22,6 +23,7 @@ class PurchaseInvoiceController extends Controller
     {
         $purchaseInvoices = PurchaseInvoice::eloquentFilter($request)
             ->join(Form::getTableName(), PurchaseInvoice::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
+            ->join(Supplier::getTableName(), PurchaseInvoice::getTableName() . '.supplier_id', '=', Supplier::getTableName() . '.id')
             ->select(PurchaseInvoice::getTableName() . '.*')
             ->where(Form::getTableName() . '.formable_type', PurchaseInvoice::class)
             ->with('form')

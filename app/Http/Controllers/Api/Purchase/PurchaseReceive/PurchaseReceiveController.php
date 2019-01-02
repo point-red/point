@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Form;
+use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,7 @@ class PurchaseReceiveController extends Controller
     {
         $purchaseReceives = PurchaseReceive::eloquentFilter($request)
             ->join(Form::getTableName(), PurchaseReceive::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
+            ->join(Supplier::getTableName(), PurchaseOrder::getTableName() . '.supplier_id', '=', Supplier::getTableName() . '.id')
             ->select(PurchaseReceive::getTableName() . '.*')
             ->where(Form::getTableName() . '.formable_type', PurchaseReceive::class)
             ->with('form');

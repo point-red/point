@@ -24,8 +24,9 @@ class PurchaseOrderController extends Controller
             ->join(Form::getTableName(), PurchaseOrder::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
             ->select(PurchaseOrder::getTableName() . '.*')
             ->where(Form::getTableName() . '.formable_type', PurchaseOrder::class)
-            ->with('form')
-            ->get();
+            ->with('form');
+
+        $purchaseOrders = pagination($purchaseOrders, $request->get('limit'));
 
         return new ApiCollection($purchaseOrders);
     }
@@ -106,7 +107,9 @@ class PurchaseOrderController extends Controller
             ->with('purchaseRequest')
             ->with('warehouse')
             ->with('supplier')
+            ->with('items.item')
             ->with('items.allocation')
+            ->with('services.service')
             ->with('services.allocation')
             ->findOrFail($id);
 

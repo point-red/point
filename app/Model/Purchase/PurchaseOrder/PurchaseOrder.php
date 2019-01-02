@@ -29,6 +29,13 @@ class PurchaseOrder extends TransactionModel
         'tax',
     ];
 
+    protected $casts = [
+        'delivery_fee'  => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double',
+        'tax' => 'double',
+    ];
+
     public function form()
     {
         return $this->morphOne(Form::class, 'formable');
@@ -69,7 +76,7 @@ class PurchaseOrder extends TransactionModel
         $form->fill($data);
         $form->formable_id = $purchaseOrder->id;
         $form->formable_type = PurchaseOrder::class;
-        $form->generateFormNumber($data['number']);
+        $form->generateFormNumber($data['number'], null, $data['supplier_id']);
         $form->save();
 
         $array = [];

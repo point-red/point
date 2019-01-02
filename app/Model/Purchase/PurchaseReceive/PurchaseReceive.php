@@ -59,7 +59,7 @@ class PurchaseReceive extends TransactionModel
         $purchaseReceive = new PurchaseReceive;
         $purchaseReceive->fill($data);
         if (!is_null($data['purchase_order_id'])) {
-            $purchaseOrder = PurchaseOrder::findOrFail($purchaseOrderId);
+            $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
             $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
         }
         else {
@@ -71,7 +71,7 @@ class PurchaseReceive extends TransactionModel
         $form->fill($data);
         $form->formable_id = $purchaseReceive->id;
         $form->formable_type = PurchaseReceive::class;
-        $form->generateFormNumber($data['number']);
+        $form->generateFormNumber($data['number'], null, $data['supplier_id']);
         $form->save();
 
         $array = [];

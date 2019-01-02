@@ -42,7 +42,7 @@ class EmployeeController extends Controller
             ->with('addresses')
             ->with('phones')
             ->select('employees.*')
-            ->filters($request->get('filters'))
+            ->eloquentFilter($request)
             ->fields($request->get('fields'))
             ->sortBy($request->get('sort_by'))
             ->includes($request->get('includes'))

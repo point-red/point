@@ -55,11 +55,12 @@ class AlterData extends Command
             // $table->boolean('unit_default')->default(false);
             // $table->boolean('unit_default_purchase')->default(false);
             // $table->boolean('unit_default_sales')->default(false);
-
-            DB::connection('tenant')->statement('ALTER TABLE `groups` ADD COLUMN code varchar(255)');
+//            ALTER TABLE pin_point_sales_visitations ADD COLUMN is_repeat_order BOOLEAN DEFAULT false
+//            DB::connection('tenant')->statement('ALTER TABLE `groups` ADD COLUMN code varchar(255)');
+            DB::connection('tenant')->statement('ALTER TABLE `pin_point_sales_visitations` ADD COLUMN is_repeat_order BOOLEAN DEFAULT false AFTER payment_received');
 
             $this->line('Migrate ' . $project->code);
-            Artisan::call('tenant:migrate', ['db_name' => 'point_' . strtolower($project->code)]);
+//            Artisan::call('tenant:migrate', ['db_name' => 'point_' . strtolower($project->code)]);
         }
     }
 }

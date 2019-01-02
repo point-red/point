@@ -27,6 +27,7 @@ class CreatePinPointSalesVisitationsTable extends Migration
             $table->string('payment_method'); // cash or credit
             $table->date('due_date')->nullable();
             $table->decimal('payment_received', 65, 30)->nullable();
+            $table->boolean('is_repeat_order')->default(false);
             $table->timestamps();
 
             $table->foreign('form_id')->references('id')->on('forms')->onDelete('cascade');

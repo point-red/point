@@ -63,11 +63,14 @@ class SalesVisitationController extends Controller
         }
 
         $customer = Customer::where('name', $request->get('customer'))->first();
+        $isNewCustomer = false;
 
         if (!$customer) {
             $customer = new Customer;
             $customer->name = $request->get('customer');
             $customer->save();
+
+            $isNewCustomer = true;
         }
 
         $form = new Form;
@@ -167,6 +170,11 @@ class SalesVisitationController extends Controller
                     $detail->quantity = $array_quantity[$i];
                     $detail->save();
                 }
+            }
+
+            if (count($array_item) > 0 && $isNewCustomer == false) {
+                $salesVisitation->is_repeat_order = true;
+                $salesVisitation->save();
             }
         }
 

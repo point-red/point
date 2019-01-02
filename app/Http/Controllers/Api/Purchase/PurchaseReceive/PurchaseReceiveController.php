@@ -22,6 +22,7 @@ class PurchaseReceiveController extends Controller
     {
         $purchaseReceives = PurchaseReceive::eloquentFilter($request)
             ->join(Form::getTableName(), PurchaseReceive::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
+            ->join(Supplier::getTableName(), PurchaseOrder::getTableName() . '.supplier_id', '=', Supplier::getTableName() . '.id')
             ->select(PurchaseReceive::getTableName() . '.*')
             ->where(Form::getTableName() . '.formable_type', PurchaseReceive::class)
             ->with('form');

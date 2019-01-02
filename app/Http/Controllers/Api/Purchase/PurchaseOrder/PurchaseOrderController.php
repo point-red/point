@@ -22,6 +22,7 @@ class PurchaseOrderController extends Controller
     {
         $purchaseOrders = PurchaseOrder::eloquentFilter($request)
             ->join(Form::getTableName(), PurchaseOrder::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
+            ->join(Supplier::getTableName(), PurchaseOrder::getTableName() . '.supplier_id', '=', Supplier::getTableName() . '.id')
             ->select(PurchaseOrder::getTableName() . '.*')
             ->where(Form::getTableName() . '.formable_type', PurchaseOrder::class)
             ->with('form');

@@ -22,6 +22,7 @@ class PurchaseInvoiceController extends Controller
     {
         $purchaseInvoices = PurchaseInvoice::eloquentFilter($request)
             ->join(Form::getTableName(), PurchaseInvoice::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
+            ->join(Supplier::getTableName(), PurchaseInvoice::getTableName() . '.supplier_id', '=', Supplier::getTableName() . '.id')
             ->select(PurchaseInvoice::getTableName() . '.*')
             ->where(Form::getTableName() . '.formable_type', PurchaseInvoice::class)
             ->with('form')

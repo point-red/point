@@ -43,9 +43,6 @@ class EmployeeController extends Controller
             ->with('phones')
             ->select('employees.*')
             ->eloquentFilter($request)
-            ->fields($request->get('fields'))
-            ->sortBy($request->get('sort_by'))
-            ->includes($request->get('includes'))
             ->paginate($request->get('paginate') ?? 20);
 
         $additional = [];
@@ -170,10 +167,7 @@ class EmployeeController extends Controller
             ->with('addresses')
             ->with('phones')
             ->select('employees.*')
-            ->filters($request->get('filters'))
-            ->fields($request->get('fields'))
-            ->sortBy($request->get('sort_by'))
-            ->includes($request->get('includes'))
+            ->eloquentFilter($request)
             ->first();
 
         return new ApiResource($employee);

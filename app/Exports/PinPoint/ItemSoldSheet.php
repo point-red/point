@@ -54,6 +54,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             'Quantity',
             'Price',
             'Total',
+            'Repeat',
         ];
     }
 
@@ -72,6 +73,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             $row->quantity,
             $row->price,
             $row->quantity * $row->price,
+            $row->salesVisitation->is_repeat_order == 1 ? 'Repeat' : '',
         ];
     }
 
@@ -93,7 +95,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
                 $event->writer->setCreator('Point');
             },
             AfterSheet::class => function(AfterSheet $event) {
-                $event->sheet->getDelegate()->getStyle('A1:H1')->getFont()->setBold(true);
+                $event->sheet->getDelegate()->getStyle('A1:I1')->getFont()->setBold(true);
                 $styleArray = [
                     'borders' => [
                         'allBorders' => [
@@ -102,7 +104,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
                         ],
                     ],
                 ];
-                $event->getSheet()->getStyle('A1:H100')->applyFromArray($styleArray);
+                $event->getSheet()->getStyle('A1:I100')->applyFromArray($styleArray);
             },
         ];
     }

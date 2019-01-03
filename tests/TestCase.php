@@ -20,23 +20,22 @@ abstract class TestCase extends BaseTestCase
 
         Artisan::call('config:clear');
 
-        $this->getConnection(DB::getDefaultConnection())->disconnect();
-
-        config()->set('database.connections.tenant.driver', env('DB_TENANT_DRIVER'));
-        config()->set('database.connections.tenant.database', env('DB_TENANT_DATABASE'));
-
-        DB::connection('tenant')->reconnect();
-
-        Artisan::call('migrate:refresh', [
-            '--database' => 'tenant',
-            '--path' => 'database/migrations/tenant',
-            '--force' => true,
-        ]);
+        if (!defined('LARAVEL_START')) {
+            define('LARAVEL_START', microtime(true));
+        }
 
         $this->headers = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
+
+        $this->artisan('migrate:refresh', [
+            '--database' => 'tenant',
+            '--path' => 'database/migrations/tenant',
+        ]);
+
+        DB::connection('mysql')->reconnect();
+        DB::connection('tenant')->reconnect();
     }
 
     protected function signIn()

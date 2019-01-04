@@ -23,7 +23,7 @@ class PurchaseReceiveController extends Controller
     {
         $purchaseReceives = PurchaseReceive::eloquentFilter($request)
             ->join(Form::getTableName(), PurchaseReceive::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
-            ->join(Supplier::getTableName(), PurchaseOrder::getTableName() . '.supplier_id', '=', Supplier::getTableName() . '.id')
+            ->join(Supplier::getTableName(), PurchaseReceive::getTableName() . '.supplier_id', '=', Supplier::getTableName() . '.id')
             ->select(PurchaseReceive::getTableName() . '.*')
             ->where(Form::getTableName() . '.formable_type', PurchaseReceive::class)
             ->with('form');
@@ -106,10 +106,12 @@ class PurchaseReceiveController extends Controller
     {
         $purchaseReceive = PurchaseReceive::eloquentFilter($request)
             ->with('form')
-            ->with('purchaseOrder')
+            ->with('purchaseOrder.form')
             ->with('warehouse')
             ->with('supplier')
+            ->with('items.item')
             ->with('items.allocation')
+            ->with('services.service')
             ->with('services.allocation')
             ->findOrFail($id);
 

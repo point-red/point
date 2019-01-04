@@ -71,7 +71,7 @@ class PurchaseReceive extends TransactionModel
         $form->fill($data);
         $form->formable_id = $purchaseReceive->id;
         $form->formable_type = PurchaseReceive::class;
-        $form->generateFormNumber($data['number'], null, $data['supplier_id']);
+        $form->generateFormNumber($data['number'], null, $purchaseReceive->supplier_id);
         $form->save();
 
         $array = [];

@@ -50,7 +50,11 @@ class PurchaseInvoice extends Model
         $form->fill($data);
         $form->formable_id = $purchaseInvoice->id;
         $form->formable_type = PurchaseInvoice::class;
-        $form->generateFormNumber($data['number'], null, $data['supplier_id']);
+        $form->generateFormNumber(
+            isset($data['number']) ? $data['number'] : 'P-INVOICE{y}{m}{increment=4}',
+            null,
+            $purchaseReceive->supplier_id
+        );
         $form->save();
 
         $array = [];

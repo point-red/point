@@ -76,7 +76,11 @@ class PurchaseOrder extends TransactionModel
         $form->fill($data);
         $form->formable_id = $purchaseOrder->id;
         $form->formable_type = PurchaseOrder::class;
-        $form->generateFormNumber($data['number'], null, $data['supplier_id']);
+        $form->generateFormNumber(
+            isset($data['number']) ? $data['number'] : 'PO{y}{m}{increment=4}',
+            null,
+            isset($data['supplier_id']) ? $data['supplier_id'] : null
+        );
         $form->save();
 
         $array = [];

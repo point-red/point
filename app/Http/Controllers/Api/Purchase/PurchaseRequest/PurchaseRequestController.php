@@ -66,6 +66,7 @@ class PurchaseRequestController extends Controller
     {
         $request->validate([
             'employee_id' => 'required',
+            'date' => 'required',
         ]);
 
         $result = DB::connection('tenant')->transaction(function () use ($request) {

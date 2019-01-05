@@ -3,9 +3,9 @@
 namespace Tests;
 
 use App\User;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -29,19 +29,14 @@ abstract class TestCase extends BaseTestCase
             'Content-Type' => 'application/json',
         ];
 
-        $this->artisan('migrate:refresh', [
-            '--database' => 'tenant',
-            '--path' => 'database/migrations/tenant',
-        ]);
-
         DB::connection('mysql')->reconnect();
         DB::connection('tenant')->reconnect();
     }
 
     protected function signIn()
     {
-        $this->user = factory(User::class)->create();
+        $user = User::first();
 
-        $this->actingAs($this->user, 'api');
+        $this->actingAs($user, 'api');
     }
 }

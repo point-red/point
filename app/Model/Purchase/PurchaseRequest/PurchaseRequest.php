@@ -63,7 +63,11 @@ class PurchaseRequest extends TransactionModel
         $form->fill($data);
         $form->formable_id = $purchaseRequest->id;
         $form->formable_type = PurchaseRequest::class;
-        $form->generateFormNumber($data['number'], null, $data['supplier_id']);
+        if (isset($data['number'])) {
+            $form->generateFormNumber($data['number'], null, $data['supplier_id']);
+        } else {
+            $form->generateFormNumber('PO/{Y}/[{m}]/{increment=4}', null, null);
+        }
         $form->save();
 
         $array = [];

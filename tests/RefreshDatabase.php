@@ -54,7 +54,6 @@ trait RefreshDatabase
     protected function refreshTestDatabase()
     {
         if (! RefreshDatabaseState::$migrated) {
-            print_r('HERE TOO');
             $this->artisan('migrate:fresh', $this->shouldDropViews() ? [
                 '--drop-views' => true,
             ] : []);

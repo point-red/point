@@ -121,7 +121,7 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->items[$key]->quantity_pending = $purchaseOrderItem->quantity - PurchaseReceiveItem::join('purchase_receives', 'purchase_receives.id', '=', 'purchase_receive_items.purchase_receive_id')
                     ->join('forms', 'purchase_receives.form_id', '=', 'forms.id')
                     ->where('purchase_order_item_id', $purchaseOrderItem->id)
-                    ->where('forms.canceled', false)
+                    ->where('forms.canceled', '!=', true)
                     ->sum('purchase_receive_items.quantity');
         }
 

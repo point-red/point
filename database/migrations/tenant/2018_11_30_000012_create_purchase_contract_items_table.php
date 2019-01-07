@@ -14,6 +14,7 @@ class CreatePurchaseContractItemsTable extends Migration
     public function up()
     {
         Schema::create('purchase_contract_items', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('purchase_contract_id');
             $table->unsignedInteger('item_unit_id');
             $table->decimal('price', 65, 30);

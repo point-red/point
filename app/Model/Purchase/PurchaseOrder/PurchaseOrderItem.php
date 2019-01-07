@@ -13,6 +13,7 @@ class PurchaseOrderItem extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'purchase_request_item_id',
         'item_id',
         'quantity',
         'price',

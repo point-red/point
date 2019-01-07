@@ -14,6 +14,7 @@ class CreatePurchaseReturnItemsTable extends Migration
     public function up()
     {
         Schema::create('purchase_return_items', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('purchase_return_id');
             $table->unsignedInteger('item_id');
             $table->decimal('quantity', 65, 30);

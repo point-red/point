@@ -6,7 +6,7 @@ use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
 use App\Model\Accounting\CutOffDetail;
 
-class CutOffSeeder extends Seeder
+class DummyCutOffSeeder extends Seeder
 {
     /**
      * Run the database seeds.

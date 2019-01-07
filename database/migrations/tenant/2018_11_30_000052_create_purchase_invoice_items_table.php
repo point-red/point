@@ -14,6 +14,7 @@ class CreatePurchaseInvoiceItemsTable extends Migration
     public function up()
     {
         Schema::create('purchase_invoice_items', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('purchase_invoice_id');
             $table->unsignedInteger('purchase_receive_id')->nullable();
             $table->unsignedInteger('item_id');

@@ -14,7 +14,9 @@ class CreatePurchaseOrderItemsTable extends Migration
     public function up()
     {
         Schema::create('purchase_order_items', function (Blueprint $table) {
+            $table->increments('id');
             $table->unsignedInteger('purchase_order_id');
+            $table->unsignedInteger('purchase_request_item_id')->nullable();
             $table->unsignedInteger('item_id');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);
@@ -27,6 +29,7 @@ class CreatePurchaseOrderItemsTable extends Migration
             $table->unsignedInteger('allocation_id')->nullable();
 
             $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('cascade');
+            $table->foreign('purchase_request_item_id')->references('id')->on('purchase_request_items')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');
             $table->foreign('allocation_id')->references('id')->on('allocations')->onDelete('restrict');
         });

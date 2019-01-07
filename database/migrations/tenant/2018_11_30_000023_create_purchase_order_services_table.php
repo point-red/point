@@ -16,6 +16,7 @@ class CreatePurchaseOrderServicesTable extends Migration
         Schema::create('purchase_order_services', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('purchase_order_id');
+            $table->unsignedInteger('purchase_request_service_id')->nullable();
             $table->unsignedInteger('service_id');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);
@@ -26,6 +27,7 @@ class CreatePurchaseOrderServicesTable extends Migration
             $table->unsignedInteger('allocation_id')->nullable();
 
             $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('cascade');
+            $table->foreign('purchase_request_service_id')->references('id')->on('purchase_request_services')->onDelete('cascade');
             $table->foreign('service_id')->references('id')->on('services')->onDelete('restrict');
             $table->foreign('allocation_id')->references('id')->on('allocations')->onDelete('restrict');
         });

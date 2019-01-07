@@ -13,6 +13,7 @@ class PurchaseOrderService extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'purchase_request_service_id',
         'service_id',
         'quantity',
         'price',

@@ -138,7 +138,7 @@ trait EloquentFilters
             // search each word that separate by space
             $words = explode(' ', $value);
             foreach ($words as $word) {
-                $query->where($key, 'like', '%' . $word . '%');
+                $query->where($key, 'like', '%'.$word.'%');
             }
         }
     }
@@ -184,7 +184,7 @@ trait EloquentFilters
      */
     public function scopeFilterNull($query, $values)
     {
-        if (!is_null($values)) {
+        if (! is_null($values)) {
             $columns = explode(',', $values);
 
             foreach ($columns as $key => $column) {
@@ -202,7 +202,7 @@ trait EloquentFilters
      */
     public function scopeFilterNotNull($query, $values)
     {
-        if (!is_null($values)) {
+        if (! is_null($values)) {
             $columns = explode(',', $values);
 
             foreach ($columns as $key => $column) {
@@ -258,7 +258,7 @@ trait EloquentFilters
             // search each word that separate by space
             $words = explode(' ', $value);
             foreach ($words as $word) {
-                $query->orWhere($key, 'like', '%' . $word . '%');
+                $query->orWhere($key, 'like', '%'.$word.'%');
             }
         }
     }
@@ -295,7 +295,7 @@ trait EloquentFilters
      */
     public function scopeOrFilterNull($query, $values)
     {
-        if (!is_null($values)) {
+        if (! is_null($values)) {
             $columns = explode(',', $values);
 
             foreach ($columns as $key => $column) {
@@ -310,7 +310,7 @@ trait EloquentFilters
      */
     public function scopeOrFilterNotNull($query, $values)
     {
-        if (!is_null($values)) {
+        if (! is_null($values)) {
             $columns = explode(',', $values);
 
             foreach ($columns as $key => $column) {
@@ -320,7 +320,7 @@ trait EloquentFilters
     }
 
     /**
-     * If values is javascript object then convert it to array
+     * If values is javascript object then convert it to array.
      *
      * @param $values
      *
@@ -332,7 +332,7 @@ trait EloquentFilters
             return [];
         }
 
-        if (!is_array($values)) {
+        if (! is_array($values)) {
             return json_decode($values, true);
         }
 

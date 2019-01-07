@@ -2,14 +2,14 @@
 
 namespace App\Model\Purchase\PurchaseReceive;
 
-use App\Model\Master\Allocation;
 use App\Model\Master\Service;
+use App\Model\Master\Allocation;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseReceiveService extends Model
 {
     protected $connection = 'tenant';
-    
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -21,7 +21,8 @@ class PurchaseReceiveService extends Model
         'quantity'  => 'double',
     ];
 
-    public function service() {
+    public function service()
+    {
         return $this->belongsTo(Service::class);
     }
 

@@ -2,16 +2,14 @@
 
 namespace Tests\Feature\Purchase\PurchaseOrder;
 
-use App\Model\Accounting\ChartOfAccountType;
-use App\Model\HumanResource\Employee\Employee;
+use Tests\TestCase;
+use ChartOfAccountSeeder;
 use App\Model\Master\Item;
+use Tests\RefreshDatabase;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
-use ChartOfAccountSeeder;
-use Tests\TestCase;
-use Tests\RefreshDatabase;
+use App\Model\Accounting\ChartOfAccountType;
+use App\Model\HumanResource\Employee\Employee;
 
 class PurchaseTest extends TestCase
 {
@@ -75,7 +73,7 @@ class PurchaseTest extends TestCase
                     'converter' => 1,
                     'price' => 3000,
                     'description' => 'Test',
-                ]
+                ],
             ],
         ];
 

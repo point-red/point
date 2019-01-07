@@ -3,8 +3,8 @@
 namespace App\Console\Commands\Tenant\Database;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class BackupClone extends Command
 {
@@ -40,15 +40,15 @@ class BackupClone extends Command
     public function handle()
     {
         // tenant subdomain equal to tenant database name
-        $backupDatabase = 'backup_' . $this->argument('project_code');
-        $sourceDatabase = 'point_' . $this->argument('project_code');
+        $backupDatabase = 'backup_'.$this->argument('project_code');
+        $sourceDatabase = 'point_'.$this->argument('project_code');
 
         // drop tenant database if exists
         $process = new Process('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "drop database if exists '.$backupDatabase.'"');
         $process->run();
 
         // executes after the command finishes
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             $this->line($process->getOutput());
             throw new ProcessFailedException($process);
         }
@@ -58,20 +58,20 @@ class BackupClone extends Command
         $process->run();
 
         // executes after the command finishes
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             $this->line($process->getOutput());
             throw new ProcessFailedException($process);
         }
 
         // clone source database to backup database
-        $process = new Process('mysqldump -u ' . env('DB_TENANT_USERNAME')
-            . ' -p' . env('DB_TENANT_PASSWORD') . ' ' . $sourceDatabase
-            . ' | mysql -u ' . env('DB_TENANT_USERNAME')
-            . ' -p' . env('DB_TENANT_PASSWORD') . ' ' . $backupDatabase);
+        $process = new Process('mysqldump -u '.env('DB_TENANT_USERNAME')
+            .' -p'.env('DB_TENANT_PASSWORD').' '.$sourceDatabase
+            .' | mysql -u '.env('DB_TENANT_USERNAME')
+            .' -p'.env('DB_TENANT_PASSWORD').' '.$backupDatabase);
         $process->run();
 
         // executes after the command finishes
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             $this->line($process->getOutput());
             throw new ProcessFailedException($process);
         }

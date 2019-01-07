@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseOrder;
 
+use App\Model\Form;
+use Illuminate\Http\Request;
+use App\Model\Master\Supplier;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Form;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PurchaseOrderController extends Controller
 {
@@ -22,10 +22,10 @@ class PurchaseOrderController extends Controller
     public function index(Request $request)
     {
         $purchaseOrders = PurchaseOrder::eloquentFilter($request)
-            ->join(Form::getTableName(), PurchaseOrder::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
-            ->join(Supplier::getTableName(), PurchaseOrder::getTableName() . '.supplier_id', '=', Supplier::getTableName() . '.id')
-            ->select(PurchaseOrder::getTableName() . '.*')
-            ->where(Form::getTableName() . '.formable_type', PurchaseOrder::class)
+            ->join(Form::getTableName(), PurchaseOrder::getTableName().'.id', '=', Form::getTableName().'.formable_id')
+            ->join(Supplier::getTableName(), PurchaseOrder::getTableName().'.supplier_id', '=', Supplier::getTableName().'.id')
+            ->select(PurchaseOrder::getTableName().'.*')
+            ->where(Form::getTableName().'.formable_type', PurchaseOrder::class)
             ->with('form');
 
         $purchaseOrders = pagination($purchaseOrders, $request->get('limit'));

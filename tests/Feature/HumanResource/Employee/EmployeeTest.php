@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\HumanResource\Employee;
 
-use Tests\RefreshDatabase;
 use Tests\TestCase;
+use Tests\RefreshDatabase;
 
 class EmployeeTest extends TestCase
 {
@@ -20,7 +20,7 @@ class EmployeeTest extends TestCase
     public function create_employee_test()
     {
         $data = [
-            'name' => 'John Doe'
+            'name' => 'John Doe',
         ];
 
         // API Request

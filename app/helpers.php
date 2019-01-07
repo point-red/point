@@ -67,7 +67,7 @@ if (! function_exists('get_invitation_code')) {
          */
         function pagination($query, $limit = null)
         {
-            if (!$limit) {
+            if (! $limit) {
                 return $query->paginate(1000);
             }
 
@@ -77,7 +77,7 @@ if (! function_exists('get_invitation_code')) {
 
     if (! function_exists('date_from')) {
         /**
-         * Convert hour:minute:second into 00:00:00
+         * Convert hour:minute:second into 00:00:00.
          *
          * @param $date
          * @param bool $first
@@ -95,7 +95,7 @@ if (! function_exists('get_invitation_code')) {
 
     if (! function_exists('date_to')) {
         /**
-         * Convert hour:minute:second into 00:00:00
+         * Convert hour:minute:second into 00:00:00.
          *
          * @param $date
          * @param bool $last

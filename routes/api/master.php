@@ -13,9 +13,9 @@ Route::prefix('master')->namespace('Master')->group(function () {
     // Master
     Route::apiResource('groups', 'GroupController');
     Route::apiResource('warehouses', 'WarehouseController');
-	Route::post('items/{id}/attach-groups', 'ItemGroupController@attach');
-	Route::post('items/{id}/detach-groups', 'ItemGroupController@detach');
-	Route::post('items/{id}/sync-groups', 'ItemGroupController@sync');
+    Route::post('items/{id}/attach-groups', 'ItemGroupController@attach');
+    Route::post('items/{id}/detach-groups', 'ItemGroupController@detach');
+    Route::post('items/{id}/sync-groups', 'ItemGroupController@sync');
     Route::post('items/bulk', 'ItemController@storeMany');
     Route::put('items/bulk', 'ItemController@updateMany');
     Route::patch('items/bulk', 'ItemController@updateMany');

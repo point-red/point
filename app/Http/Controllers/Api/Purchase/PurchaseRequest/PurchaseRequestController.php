@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
+use App\Model\Form;
+use Illuminate\Http\Request;
+use App\Model\Master\Supplier;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Form;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PurchaseRequestController extends Controller
 {
@@ -22,10 +22,10 @@ class PurchaseRequestController extends Controller
     public function index(Request $request)
     {
         $purchaseRequests = PurchaseRequest::eloquentFilter($request)
-            ->join(Form::getTableName(), PurchaseRequest::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
-            ->join(Supplier::getTableName(), PurchaseRequest::getTableName() . '.supplier_id', '=', Supplier::getTableName() . '.id')
-            ->select(PurchaseRequest::getTableName() . '.*')
-            ->where(Form::getTableName() . '.formable_type', PurchaseRequest::class)
+            ->join(Form::getTableName(), PurchaseRequest::getTableName().'.id', '=', Form::getTableName().'.formable_id')
+            ->join(Supplier::getTableName(), PurchaseRequest::getTableName().'.supplier_id', '=', Supplier::getTableName().'.id')
+            ->select(PurchaseRequest::getTableName().'.*')
+            ->where(Form::getTableName().'.formable_type', PurchaseRequest::class)
             ->with('form');
 
         $purchaseRequests = pagination($purchaseRequests, $request->get('limit'));
@@ -131,14 +131,15 @@ class PurchaseRequestController extends Controller
         if (count($purchaseOrders) > 0) {
             // can not delete if at least 1 active purchase orders
             $purchaseOrderNumbers = array_column($purchaseOrders->toArray(), 'number');
-            $errors = array(
+            $errors = [
                 'code'    => 422,
-                'message' => 'Referenced by purchase orders [' . implode('], [', $purchaseOrderNumbers) . '].'
-            );
+                'message' => 'Referenced by purchase orders ['.implode('], [', $purchaseOrderNumbers).'].',
+            ];
+
             return response()->json($errors, 422);
         }
 
-        $purchaseRequest->form->number   = null;
+        $purchaseRequest->form->number = null;
         $purchaseRequest->form->canceled = true;
         $purchaseRequest->form->save();
 

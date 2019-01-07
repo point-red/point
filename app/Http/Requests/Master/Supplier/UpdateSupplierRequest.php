@@ -24,7 +24,7 @@ class UpdateSupplierRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:tenant.suppliers,name,' . $this->id
+            'name' => 'required|unique:tenant.suppliers,name,'.$this->id,
         ];
     }
 }

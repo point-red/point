@@ -11,23 +11,28 @@ class SalesVisitation extends PointModel
 
     protected $table = 'pin_point_sales_visitations';
 
-    public function form() {
+    public function form()
+    {
         return $this->belongsTo(Form::class);
     }
 
-    public function interestReasons() {
+    public function interestReasons()
+    {
         return $this->hasMany(SalesVisitationInterestReason::class);
     }
 
-    public function notInterestReasons() {
+    public function notInterestReasons()
+    {
         return $this->hasMany(SalesVisitationNotInterestReason::class);
     }
 
-    public function similarProducts() {
+    public function similarProducts()
+    {
         return $this->hasMany(SalesVisitationSimilarProduct::class);
     }
 
-    public function details() {
+    public function details()
+    {
         return $this->hasMany(SalesVisitationDetail::class);
     }
 }

@@ -22,7 +22,7 @@ class MasterModel extends PointModel
 
     public function logUpdatedColumn()
     {
-        if (!$this->exists) {
+        if (! $this->exists) {
             return;
         }
 
@@ -42,7 +42,7 @@ class MasterModel extends PointModel
         $array = [];
 
         foreach ($attrs as $attr) {
-            if (!in_array($attr, $ignoreFields)) {
+            if (! in_array($attr, $ignoreFields)) {
                 if ($this->$attr != $oldData->$attr) {
                     $row = [];
                     $row['historyable_type'] = $class;
@@ -82,7 +82,7 @@ class MasterModel extends PointModel
     {
         $this->updated_by = optional(auth()->user())->id;
 
-        if (!$this->exists) {
+        if (! $this->exists) {
             $this->created_by = optional(auth()->user())->id;
         }
     }

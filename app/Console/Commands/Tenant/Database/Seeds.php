@@ -4,8 +4,8 @@ namespace App\Console\Commands\Tenant\Database;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class Seeds extends Command
 {
@@ -44,11 +44,11 @@ class Seeds extends Command
 
         $projects = Project::all();
 
-        $this->line('Total Project : ' . $projects->count());
+        $this->line('Total Project : '.$projects->count());
 
         foreach ($projects as $project) {
-            $this->line(++$increment.'. Seed : ' . $project->code);
-            config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
+            $this->line(++$increment.'. Seed : '.$project->code);
+            config()->set('database.connections.tenant.database', 'point_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
             Artisan::call('db:seed', [

@@ -24,7 +24,7 @@ class UpdateCustomerRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:tenant.customers,name,' . $this->id
+            'name' => 'required|unique:tenant.customers,name,'.$this->id,
         ];
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Model\Purchase\PurchaseOrder;
 
-use App\Model\Master\Allocation;
 use App\Model\Master\Item;
+use App\Model\Master\Allocation;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrderItem extends Model

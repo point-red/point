@@ -2,8 +2,8 @@
 
 namespace App\Model\Master;
 
-use App\Model\Accounting\Journal;
 use App\Model\MasterModel;
+use App\Model\Accounting\Journal;
 
 class Supplier extends MasterModel
 {

@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
+use App\Model\Plugin\PinPoint\SalesVisitation;
+use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 
 class AlterData extends Command
 {
@@ -46,8 +46,8 @@ class AlterData extends Command
         foreach ($projects as $project) {
 //            $this->line('Clone ' . $project->code);
 //            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
-            $this->line('Alter ' . $project->code);
-            config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
+            $this->line('Alter '.$project->code);
+            config()->set('database.connections.tenant.database', 'point_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
             $salesVisitations = SalesVisitation::join(SalesVisitationDetail::getTableName(),
@@ -55,7 +55,7 @@ class AlterData extends Command
                 ->select(SalesVisitation::getTableName().'.*')
                 ->get();
 
-            $this->line('Sales Visitations ' . $salesVisitations->count());
+            $this->line('Sales Visitations '.$salesVisitations->count());
 
             foreach ($salesVisitations as $salesVisitation) {
                 if (SalesVisitation::where('customer_id', $salesVisitation->customer_id)->where('id', '<', $salesVisitation->id)->first()) {

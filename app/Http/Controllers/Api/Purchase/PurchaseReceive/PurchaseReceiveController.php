@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseReceive;
 
+use App\Model\Form;
+use Illuminate\Http\Request;
+use App\Model\Master\Supplier;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Form;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PurchaseReceiveController extends Controller
 {
@@ -22,10 +22,10 @@ class PurchaseReceiveController extends Controller
     public function index(Request $request)
     {
         $purchaseReceives = PurchaseReceive::eloquentFilter($request)
-            ->join(Form::getTableName(), PurchaseReceive::getTableName() . '.id', '=', Form::getTableName() . '.formable_id')
-            ->join(Supplier::getTableName(), PurchaseReceive::getTableName() . '.supplier_id', '=', Supplier::getTableName() . '.id')
-            ->select(PurchaseReceive::getTableName() . '.*')
-            ->where(Form::getTableName() . '.formable_type', PurchaseReceive::class)
+            ->join(Form::getTableName(), PurchaseReceive::getTableName().'.id', '=', Form::getTableName().'.formable_id')
+            ->join(Supplier::getTableName(), PurchaseReceive::getTableName().'.supplier_id', '=', Supplier::getTableName().'.id')
+            ->select(PurchaseReceive::getTableName().'.*')
+            ->where(Form::getTableName().'.formable_type', PurchaseReceive::class)
             ->with('form');
 
         $purchaseReceives = pagination($purchaseReceives, $request->get('limit'));

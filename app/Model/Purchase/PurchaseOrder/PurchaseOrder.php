@@ -5,8 +5,8 @@ namespace App\Model\Purchase\PurchaseOrder;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\TransactionModel;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 
 class PurchaseOrder extends TransactionModel
 {
@@ -68,14 +68,14 @@ class PurchaseOrder extends TransactionModel
 
     public static function create($data)
     {
-        $purchaseOrder = new PurchaseOrder;
+        $purchaseOrder = new self;
         $purchaseOrder->fill($data);
         $purchaseOrder->save();
 
         $form = new Form;
         $form->fill($data);
         $form->formable_id = $purchaseOrder->id;
-        $form->formable_type = PurchaseOrder::class;
+        $form->formable_type = self::class;
         $form->generateFormNumber(
             isset($data['number']) ? $data['number'] : 'PO{y}{m}{increment=4}',
             null,

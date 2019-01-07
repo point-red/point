@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Model\Project\Project;
-use App\Model\Project\ProjectUser;
 use App\User;
+use App\Model\Project\Project;
 use Illuminate\Console\Command;
+use App\Model\Project\ProjectUser;
 use Illuminate\Support\Facades\Artisan;
 
 class NewCommand extends Command

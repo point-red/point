@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Model\Master\Item;
+use Illuminate\Http\Request;
+use App\Model\Master\ItemUnit;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
-use App\Http\Controllers\Controller;
-use App\Model\Master\Group;
-use App\Model\Master\Item;
-use App\Model\Master\ItemUnit;
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {
@@ -53,7 +52,7 @@ class ItemController extends Controller
         $units = $request->get('units');
         $unitsToBeInserted = [];
         if ($units) {
-            foreach($units as $unit) {
+            foreach ($units as $unit) {
                 $itemUnit = new ItemUnit();
                 $itemUnit->fill($unit);
                 array_push($unitsToBeInserted, $itemUnit);
@@ -62,9 +61,9 @@ class ItemController extends Controller
         $item->units()->saveMany($unitsToBeInserted);
 
         $item->groups()->attach($request->get('groups'));
-        
+
         DB::connection('tenant')->commit();
-        
+
         return new ApiResource($item);
     }
 
@@ -88,7 +87,7 @@ class ItemController extends Controller
             $units = $item['units'];
             $unitsToBeInserted = [];
             if ($units) {
-                foreach($units as $unit) {
+                foreach ($units as $unit) {
                     $itemUnit = new ItemUnit();
                     $itemUnit->fill($unit);
                     array_push($unitsToBeInserted, $itemUnit);
@@ -140,7 +139,7 @@ class ItemController extends Controller
 
         if ($units) {
             ItemUnit::where('item_id', $id)->whereNotIn('id', array_column($units, 'id'))->delete();
-            foreach($units as $unit) {
+            foreach ($units as $unit) {
                 if (isset($unit['id'])) {
                     $itemUnit = ItemUnit::where('id', $unit['id'])->first();
                 } else {
@@ -156,9 +155,9 @@ class ItemController extends Controller
         if (is_array($groups)) {
             $item->groups()->sync($groups);
         }
-        
+
         DB::connection('tenant')->commit();
-        
+
         return new ApiResource($item);
     }
 
@@ -182,7 +181,7 @@ class ItemController extends Controller
             $units = $item['units'];
             $unitsToBeInserted = [];
             if ($units) {
-                foreach($units as $unit) {
+                foreach ($units as $unit) {
                     $itemUnit = new ItemUnit();
                     $itemUnit->fill($unit);
                     array_push($unitsToBeInserted, $itemUnit);

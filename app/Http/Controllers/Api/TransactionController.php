@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\ApiResource;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 
 class TransactionController extends Controller
 {
@@ -30,7 +30,6 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-
             $result = new \stdClass();
 
             if ($request->has('items')) {
@@ -71,7 +70,7 @@ class TransactionController extends Controller
         });
 
         return response()->json([
-            'data' => $result
+            'data' => $result,
         ], 201);
     }
 

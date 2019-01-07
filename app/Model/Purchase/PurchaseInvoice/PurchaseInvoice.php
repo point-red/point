@@ -42,14 +42,14 @@ class PurchaseInvoice extends Model
 
     public static function create($data)
     {
-        $purchaseInvoice = new PurchaseInvoice;
+        $purchaseInvoice = new self;
         $purchaseInvoice->fill($data);
         $purchaseInvoice->save();
 
         $form = new Form;
         $form->fill($data);
         $form->formable_id = $purchaseInvoice->id;
-        $form->formable_type = PurchaseInvoice::class;
+        $form->formable_type = self::class;
         $form->generateFormNumber(
             isset($data['number']) ? $data['number'] : 'P-INVOICE{y}{m}{increment=4}',
             null,

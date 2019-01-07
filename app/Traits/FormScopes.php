@@ -6,7 +6,7 @@ trait FormScopes
 {
     public function scopeJoinForm($query)
     {
-        $query->join('forms', 'forms.id', '=', $this->table . '.form_id')
+        $query->join('forms', 'forms.id', '=', $this->table.'.form_id')
             ->join('form_approvals', 'form_approvals.id', '=', 'forms.form_id')
             ->join('form_cancellations', 'form_cancellations.id', '=', 'forms.form_id');
     }

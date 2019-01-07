@@ -24,7 +24,7 @@ class StoreAllocationRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:tenant.allocations'
+            'name' => 'required|unique:tenant.allocations',
         ];
     }
 }

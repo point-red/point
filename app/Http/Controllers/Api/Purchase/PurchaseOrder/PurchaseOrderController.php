@@ -119,8 +119,9 @@ class PurchaseOrderController extends Controller
 
         foreach ($purchaseOrder->items as $key => $purchaseOrderItem) {
             $purchaseOrder->items[$key]->quantity_pending = $purchaseOrderItem->quantity - PurchaseReceiveItem::join('purchase_receives', 'purchase_receives.id', '=', 'purchase_receive_items.purchase_receive_id')
-                    ->join('purchase_receives', 'purchase_receives.form_id', '=', 'forms.id')
+                    ->join('forms', 'purchase_receives.form_id', '=', 'forms.id')
                     ->where('purchase_order_item_id', $purchaseOrderItem->id)
+                    ->where('forms.canceled', false)
                     ->sum('purchase_receive_items.quantity');
         }
 

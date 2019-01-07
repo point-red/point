@@ -3,8 +3,8 @@
 namespace Tests\Feature\Master;
 
 use Tests\TestCase;
+use Tests\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CustomerTest extends TestCase
 {
@@ -17,49 +17,17 @@ class CustomerTest extends TestCase
         $this->signIn();
     }
 
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function testExample()
+    /** @test */
+    public function create_customer_test()
     {
-        $data = ['name' => 'Andi Doe'];
+        $data = [
+            'name' => 'John Doe'
+        ];
 
         // API Request
         $response = $this->json('POST', 'api/v1/master/customers', $data, [$this->headers]);
-
-        // Check JSON Response
-        $response->assertJson([
-            'data' => $data,
-        ]);
 
         // Check Status Response
         $response->assertStatus(201);
-
-        // Check Database
-        $this->assertDatabaseHas('customers', $data);
-
-        $data = ['name' => 'Andi Doe'];
-
-        // API Request
-        $response = $this->json('POST', 'api/v1/master/customers', $data, [$this->headers]);
-
-        // Check JSON Response
-        $response->assertJson([
-            "code" => 422,
-            "message" => "The given data was invalid.",
-            "errors" => [
-                "name" => [
-                    0 => "The name has already been taken."
-                ]
-            ]
-        ]);
-
-        // Check Status Response
-        $response->assertStatus(422);
-
-        // Check Database
-        $this->assertDatabaseHas('customers', $data);
     }
 }

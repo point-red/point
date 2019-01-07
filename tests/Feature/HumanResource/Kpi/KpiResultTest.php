@@ -3,8 +3,8 @@
 namespace Tests\Feature\Master;
 
 use Tests\TestCase;
+use Tests\RefreshDatabase;
 use App\Model\HumanResource\Kpi\KpiResult;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiResultTest extends TestCase
 {
@@ -31,7 +31,7 @@ class KpiResultTest extends TestCase
 
         $response->assertStatus(201);
 
-        $this->assertDatabaseHas('kpi_results', $data);
+        $this->assertDatabaseHas('kpi_results', $data, 'tenant');
     }
 
     /** @test */
@@ -64,7 +64,7 @@ class KpiResultTest extends TestCase
                 'score_max' => $kpiResult->score_max,
                 'criteria' => $kpiResult->criteria,
                 'notes' => $kpiResult->notes,
-            ]);
+            ], 'tenant');
         }
 
         $response->assertStatus(200);
@@ -87,7 +87,7 @@ class KpiResultTest extends TestCase
 
         $response->assertJson(['data' => $data]);
 
-        $this->assertDatabaseHas('kpi_results', $data);
+        $this->assertDatabaseHas('kpi_results', $data, 'tenant');
 
         $response->assertStatus(200);
     }
@@ -103,6 +103,6 @@ class KpiResultTest extends TestCase
 
         $this->assertDatabaseMissing('kpi_results', [
             'id' => $kpiResult->id,
-        ]);
+        ], 'tenant');
     }
 }

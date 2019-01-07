@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
 use App\Model\HumanResource\Kpi\KpiIndicator;
+use App\Model\HumanResource\Kpi\KpiScore;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
 
@@ -95,6 +96,14 @@ class EmployeeAssessmentController extends Controller
                 $kpiIndicator->score_percentage = $kpiIndicator->weight * $kpiIndicator->score / $kpiIndicator->target;
                 $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
                 $kpiIndicator->save();
+
+                for ($scoreIndex = 0; $scoreIndex < count($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores']); $scoreIndex++) {
+                    $kpiScore = new KpiScore();
+                    $kpiScore->kpi_indicator_id = $kpiIndicator->id;
+                    $kpiScore->description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['description'];
+                    $kpiScore->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['score'];
+                    $kpiScore->save();
+                }
             }
         }
 
@@ -136,6 +145,8 @@ class EmployeeAssessmentController extends Controller
     public function update(Request $request, $id)
     {
         //
+        Log::debug('It came to update function.');
+
     }
 
     /**

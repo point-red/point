@@ -98,14 +98,14 @@ class PurchaseReceive extends TransactionModel
         $done = true;
         foreach ($purchaseOrder->items as $purchaseOrderItem) {
             $totalQuantityReceived = PurchaseReceiveItem::join('purchase_receives', 'purchase_receives.id', '=', 'purchase_receive_items.purchase_receive_id')
-                ->join('purchase_receives', 'purchase_receives.form_id', '=', 'forms.id')
+                ->join('forms', 'purchase_receives.form_id', '=', 'forms.id')
                 ->where('purchase_order_item_id', $purchaseOrderItem->id)
                 ->sum('purchase_receive_items.quantity');
             if ($purchaseOrderItem->quantity - $totalQuantityReceived > 0) {
                 $done = false;
             }
         }
-        
+
         if ($done == true) {
             $purchaseOrder->form->done = true;
             $purchaseOrder->form->save();

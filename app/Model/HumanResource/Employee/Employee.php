@@ -2,11 +2,11 @@
 
 namespace App\Model\HumanResource\Employee;
 
+use App\Model\MasterModel;
+use App\Model\HumanResource\Kpi\KpiTemplate;
+use App\Model\HumanResource\Employee\Employee\EmployeePhone;
 use App\Model\HumanResource\Employee\Employee\EmployeeAddress;
 use App\Model\HumanResource\Employee\Employee\EmployeeCompanyEmail;
-use App\Model\HumanResource\Employee\Employee\EmployeePhone;
-use App\Model\HumanResource\Kpi\KpiTemplate;
-use App\Model\MasterModel;
 
 class Employee extends MasterModel
 {

@@ -2,10 +2,10 @@
 
 namespace App\Exports;
 
-use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
 use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
 
 class ScaleWeightItemExport implements FromQuery, WithHeadings, WithMapping
 {
@@ -22,8 +22,8 @@ class ScaleWeightItemExport implements FromQuery, WithHeadings, WithMapping
     }
 
     /**
-    * @return \Illuminate\Database\Eloquent\Builder
-    */
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function query()
     {
         return ScaleWeightItem::query()->whereBetween('time', [$this->dateFrom, $this->dateTo]);

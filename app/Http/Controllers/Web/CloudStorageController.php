@@ -18,7 +18,7 @@ class CloudStorageController extends Controller
     public function download(Request $request)
     {
         $cloudStorage = CloudStorage::where('key', $request->get('key'))->first();
-        $file = $cloudStorage->file_name . '.' . $cloudStorage->file_ext;
+        $file = $cloudStorage->file_name.'.'.$cloudStorage->file_ext;
 
         return Storage::disk($cloudStorage->disk)->download($cloudStorage->path, $file);
     }

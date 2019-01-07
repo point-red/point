@@ -10,7 +10,7 @@ class PricingGroup extends MasterModel
 
     protected $fillable = [
         'label',
-        'notes'
+        'notes',
     ];
 
     /**

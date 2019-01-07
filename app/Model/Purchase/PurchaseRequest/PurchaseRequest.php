@@ -3,9 +3,9 @@
 namespace App\Model\Purchase\PurchaseRequest;
 
 use App\Model\Form;
-use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 
 class PurchaseRequest extends TransactionModel
@@ -55,14 +55,14 @@ class PurchaseRequest extends TransactionModel
 
     public static function create($data)
     {
-        $purchaseRequest = new PurchaseRequest;
+        $purchaseRequest = new self;
         $purchaseRequest->fill($data);
         $purchaseRequest->save();
 
         $form = new Form;
         $form->fill($data);
         $form->formable_id = $purchaseRequest->id;
-        $form->formable_type = PurchaseRequest::class;
+        $form->formable_type = self::class;
         $form->generateFormNumber(
             isset($data['number']) ? $data['number'] : 'PR{y}{m}{increment=4}',
             null,

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
 use App\Model\Master\User;
-use App\Model\Plugin\PinPoint\SalesVisitationTarget;
 use Illuminate\Http\Request;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Model\Plugin\PinPoint\SalesVisitationTarget;
 
 class SalesVisitationTargetController extends Controller
 {
@@ -58,11 +58,11 @@ class SalesVisitationTargetController extends Controller
             if ($target['call'] != '' && $target['effective_call'] != '' && $target['value'] != '') {
                 $newTarget = SalesVisitationTarget::where('user_id', $target['user_id'])
                     ->where('date', $target['date'])->first();
-                if (!$newTarget) {
-                    info(++$i . ' new');
+                if (! $newTarget) {
+                    info(++$i.' new');
                     $newTarget = new SalesVisitationTarget;
                 } else {
-                    info(++$i . ' old ' . $target['date']);
+                    info(++$i.' old '.$target['date']);
                 }
                 $newTarget->date = $target['date'];
                 $newTarget->user_id = $target['user_id'];

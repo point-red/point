@@ -19,7 +19,7 @@ abstract class TestCase extends PointTestCase
 
         Artisan::call('config:clear');
 
-        if (!defined('LARAVEL_START')) {
+        if (! defined('LARAVEL_START')) {
             define('LARAVEL_START', microtime(true));
         }
 

@@ -45,7 +45,7 @@ class Form extends PointModel
     {
         $this->updated_by = optional(auth()->user())->id;
 
-        if (!$this->exists) {
+        if (! $this->exists) {
             $this->created_by = optional(auth()->user())->id;
         }
     }
@@ -139,7 +139,7 @@ class Form extends PointModel
      * {Z} - Timezone offset in seconds. The offset for timezones west of UTC is negative (-43200 to 50400)
      * {c} - The ISO-8601 date (e.g. 2013-05-05T16:34:42+00:00)
      * {r} - The RFC 2822 formatted date (e.g. Fri, 12 Apr 2013 12:01:05 +0200)
-     * {U} - The seconds since the Unix Epoch (January 1 1970 00:00:00 GMT)
+     * {U} - The seconds since the Unix Epoch (January 1 1970 00:00:00 GMT).
      *
      * @param $formNumber
      * @return mixed
@@ -149,7 +149,7 @@ class Form extends PointModel
         preg_match_all('/{([a-zA-Z])}/', $formNumber, $arr);
         foreach ($arr[0] as $key => $value) {
             $code = $arr[1][$key];
-            $formNumber = str_replace($value, Date($code, strtotime($this->date)), $formNumber);
+            $formNumber = str_replace($value, date($code, strtotime($this->date)), $formNumber);
         }
 
         return $formNumber;
@@ -167,11 +167,11 @@ class Form extends PointModel
         preg_match_all('/{increment=(\d)}/', $formNumber, $arr);
         foreach ($arr[0] as $key => $value) {
             $padUntil = $arr[1][$key];
-            $increment = Form::where('formable_type', $this->formable_type)
+            $increment = self::where('formable_type', $this->formable_type)
                 ->whereNotNull('number')
-                ->whereMonth('date', Date('n', strtotime($this->date)))
+                ->whereMonth('date', date('n', strtotime($this->date)))
                 ->count();
-            $result = str_pad($increment+1, $padUntil, '0', STR_PAD_LEFT);
+            $result = str_pad($increment + 1, $padUntil, '0', STR_PAD_LEFT);
             $formNumber = str_replace($value, $result, $formNumber);
         }
 
@@ -212,13 +212,13 @@ class Form extends PointModel
     }
 
     /**
-     * Roman converter
+     * Roman converter.
      * @param $integer
      * @return string
      */
     private function numberToRoman($integer)
     {
-        $table = array('M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1);
+        $table = ['M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1];
         $return = '';
         while ($integer > 0) {
             foreach ($table as $key => $value) {
@@ -234,21 +234,23 @@ class Form extends PointModel
     }
 
     /**
-     * Convert masterId and add zero pads to the left
-     * 
+     * Convert masterId and add zero pads to the left.
+     *
      * @param $pattern
      * @param $masterId
      * @param $formNumber
      *
      * @return string
      */
-    private function convertTemplateMasterId($pattern, $masterId, $formNumber) {
+    private function convertTemplateMasterId($pattern, $masterId, $formNumber)
+    {
         preg_match_all($pattern, $formNumber, $arr);
         foreach ($arr[0] as $key => $value) {
             $padUntil = $arr[1][$key];
             $result = str_pad($masterId, $padUntil, '0', STR_PAD_LEFT);
             $formNumber = str_replace($value, $result, $formNumber);
         }
+
         return $formNumber;
     }
 }

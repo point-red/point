@@ -7,7 +7,7 @@ use App\Model\MasterModel;
 class ItemUnit extends MasterModel
 {
     protected $connection = 'tenant';
-    
+
     protected $fillable = [
         'name',
         'label',
@@ -28,7 +28,7 @@ class ItemUnit extends MasterModel
     }
 
     /**
-     * Get the price for this unit
+     * Get the price for this unit.
      */
     public function pricing()
     {

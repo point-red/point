@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Http\Resources\ApiResource;
-use App\Http\Resources\Master\PriceListCollection;
 use App\Model\Master\Item;
-use App\Model\Master\ItemUnit;
-use App\Model\Master\PriceListItem;
-use App\Model\Master\PricingGroup;
 use Illuminate\Http\Request;
+use App\Model\Master\ItemUnit;
+use App\Model\Master\PricingGroup;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\PriceListItem;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Master\PriceListCollection;
 
 class PriceListItemController extends Controller
 {
@@ -27,7 +27,7 @@ class PriceListItemController extends Controller
 
         $priceListItem = ItemUnit::join('items', Item::getTableName().'.id', '=', ItemUnit::getTableName().'.item_id')
             ->eloquentFilter($request)
-            ->with(['pricing' => function($q) use ($pricingGroupId, $date) {
+            ->with(['pricing' => function ($q) use ($pricingGroupId, $date) {
                 $q->rightJoin(PricingGroup::getTableName(), PricingGroup::getTableName().'.id', '=', PriceListItem::getTableName().'.pricing_group_id');
                 if ($pricingGroupId) {
                     $q->where(PricingGroup::getTableName().'.id', $pricingGroupId);

@@ -3,8 +3,8 @@
 namespace App\Console\Commands\Tenant\Database;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class Seed extends Command
 {
@@ -42,8 +42,8 @@ class Seed extends Command
         config()->set('database.connections.tenant.database', strtolower($this->argument('db_name')));
         DB::connection('tenant')->reconnect();
 
-        $this->line('seed ' . $this->argument('db_name'));
-        $this->line('seed ' . $this->argument('class'));
+        $this->line('seed '.$this->argument('db_name'));
+        $this->line('seed '.$this->argument('class'));
 
         Artisan::call('db:seed', [
             '--database' => 'tenant',

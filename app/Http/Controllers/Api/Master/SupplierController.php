@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Http\Requests\Master\Supplier\StoreSupplierRequest;
-use App\Http\Requests\Master\Supplier\UpdateSupplierRequest;
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\Address;
 use App\Model\Master\Bank;
-use App\Model\Master\ContactPerson;
-use App\Model\Master\Supplier;
-use App\Http\Controllers\Controller;
 use App\Model\Master\Email;
 use App\Model\Master\Group;
 use App\Model\Master\Phone;
 use Illuminate\Http\Request;
+use App\Model\Master\Address;
+use App\Model\Master\Supplier;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\ContactPerson;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Http\Requests\Master\Supplier\StoreSupplierRequest;
+use App\Http\Requests\Master\Supplier\UpdateSupplierRequest;
 
 class SupplierController extends Controller
 {
@@ -62,10 +62,9 @@ class SupplierController extends Controller
         $supplier->save();
 
         if ($request->get('group')['name']) {
-
             $group = Group::find($request->get('group')['id']);
 
-            if (!$group) {
+            if (! $group) {
                 $group = new Group;
                 $group->name = $request->get('group')['name'];
                 $group->type = Supplier::class;
@@ -124,10 +123,9 @@ class SupplierController extends Controller
         $supplier->save();
 
         if ($request->get('group')['name']) {
-
             $group = Group::find($request->get('group')['id']);
 
-            if (!$group) {
+            if (! $group) {
                 $group = new Group;
                 $group->name = $request->get('group')['name'];
                 $group->type = Supplier::class;

@@ -5,13 +5,13 @@ namespace App\Model\Purchase\PurchaseReceive;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\TransactionModel;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 
 class PurchaseReceive extends TransactionModel
 {
     protected $connection = 'tenant';
-    
+
     protected $table = 'purchase_receives';
 
     public $timestamps = false;
@@ -56,13 +56,12 @@ class PurchaseReceive extends TransactionModel
 
     public static function create($data)
     {
-        $purchaseReceive = new PurchaseReceive;
+        $purchaseReceive = new self;
         $purchaseReceive->fill($data);
-        if (!is_null($data['purchase_order_id'])) {
+        if (! is_null($data['purchase_order_id'])) {
             $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
             $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
-        }
-        else {
+        } else {
             $purchaseReceive->supplier_id = $data['supplier_id'];
         }
         $purchaseReceive->save();
@@ -70,7 +69,7 @@ class PurchaseReceive extends TransactionModel
         $form = new Form;
         $form->fill($data);
         $form->formable_id = $purchaseReceive->id;
-        $form->formable_type = PurchaseReceive::class;
+        $form->formable_type = self::class;
         $form->generateFormNumber(
             isset($data['number']) ? $data['number'] : 'P-RECEIVE{y}{m}{increment=4}',
             null,

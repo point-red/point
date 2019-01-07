@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint\Report;
 
-use App\Http\Resources\Plugin\PinPoint\Report\Performance\PerformanceCollection;
 use App\Model\Master\User;
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationDetail;
-use App\Http\Controllers\Controller;
-use App\Model\Plugin\PinPoint\SalesVisitationTarget;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Model\Plugin\PinPoint\SalesVisitation;
+use App\Model\Plugin\PinPoint\SalesVisitationDetail;
+use App\Model\Plugin\PinPoint\SalesVisitationTarget;
+use App\Http\Resources\Plugin\PinPoint\Report\Performance\PerformanceCollection;
 
 class PerformanceReportController extends Controller
 {
@@ -110,7 +110,7 @@ class PerformanceReportController extends Controller
 
     public function queryValue($dateFrom, $dateTo)
     {
-        return SalesVisitation::join('forms', 'forms.id','=',SalesVisitation::getTableName().'.form_id')
+        return SalesVisitation::join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->join(SalesVisitationDetail::getTableName(), SalesVisitationDetail::getTableName().'.sales_visitation_id', '=', SalesVisitation::getTableName().'.id')
             ->groupBy('forms.created_by')
             ->selectRaw('sum(quantity * price) as value')
@@ -120,7 +120,7 @@ class PerformanceReportController extends Controller
 
     public function queryDetails($dateFrom, $dateTo)
     {
-        return SalesVisitation::join('forms', 'forms.id','=',SalesVisitation::getTableName().'.form_id')
+        return SalesVisitation::join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->leftJoin(SalesVisitationDetail::getTableName(), SalesVisitationDetail::getTableName().'.sales_visitation_id', '=', SalesVisitation::getTableName().'.id')
             ->rightJoin('items', 'items.id', '=', SalesVisitationDetail::getTableName().'.item_id')
             ->groupBy(SalesVisitationDetail::getTableName().'.item_id')

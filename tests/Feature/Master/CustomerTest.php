@@ -4,7 +4,6 @@ namespace Tests\Feature\Master;
 
 use Tests\TestCase;
 use Tests\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 
 class CustomerTest extends TestCase
 {
@@ -21,7 +20,7 @@ class CustomerTest extends TestCase
     public function create_customer_test()
     {
         $data = [
-            'name' => 'John Doe'
+            'name' => 'John Doe',
         ];
 
         // API Request

@@ -2,10 +2,10 @@
 
 namespace Tests;
 
+use App\User;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
 use App\Model\Master\User as TenantUser;
-use App\User;
 use Illuminate\Contracts\Console\Kernel;
 
 trait RefreshDatabase

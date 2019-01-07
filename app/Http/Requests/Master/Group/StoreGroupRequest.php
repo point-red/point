@@ -2,11 +2,8 @@
 
 namespace App\Http\Requests\Master\Group;
 
-use App\Helpers\Master\GroupType;
-use App\Model\Master\Customer;
 use App\Model\Master\Group;
-use App\Model\Master\Item;
-use App\Model\Master\Supplier;
+use App\Helpers\Master\GroupType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreGroupRequest extends FormRequest
@@ -36,7 +33,7 @@ class StoreGroupRequest extends FormRequest
                         $fail($attribute.' is already exists.');
                     }
                 },
-            ]
+            ],
         ];
     }
 }

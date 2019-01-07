@@ -3,8 +3,8 @@
 namespace App\Console\Commands\Tenant\Database;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class Delete extends Command
 {
@@ -47,7 +47,7 @@ class Delete extends Command
         $process->run();
 
         // executes after the command finishes
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             $this->line($process->getOutput());
             throw new ProcessFailedException($process);
         }

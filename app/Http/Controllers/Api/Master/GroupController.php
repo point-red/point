@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Helpers\Master\GroupType;
-use App\Http\Requests\Master\Group\StoreGroupRequest;
-use App\Http\Requests\Master\Group\UpdateGroupRequest;
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
 use App\Model\Master\Group;
 use Illuminate\Http\Request;
+use App\Helpers\Master\GroupType;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Http\Requests\Master\Group\StoreGroupRequest;
+use App\Http\Requests\Master\Group\UpdateGroupRequest;
 
 class GroupController extends Controller
 {
@@ -23,7 +23,7 @@ class GroupController extends Controller
     {
         $groupType = $request->get('type');
 
-        if (!GroupType::isAvailable($groupType)) {
+        if (! GroupType::isAvailable($groupType)) {
             return response()->json(GroupType::$isNotAvailableResponse);
         }
 
@@ -44,7 +44,7 @@ class GroupController extends Controller
     {
         $groupType = $request->get('type');
 
-        if (!GroupType::isAvailable($groupType)) {
+        if (! GroupType::isAvailable($groupType)) {
             return response()->json(GroupType::$isNotAvailableResponse);
         }
 

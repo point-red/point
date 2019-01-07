@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use App\Http\Resources\ApiCollection;
-use App\Http\Controllers\Controller;
-use App\Model\Accounting\Journal;
-use App\Model\Master\Customer;
 use Illuminate\Http\Request;
+use App\Model\Master\Customer;
+use App\Model\Accounting\Journal;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 
 class AccountReceivableController extends Controller
 {
@@ -23,8 +23,8 @@ class AccountReceivableController extends Controller
         $journalPayments = $this->getJournalPayments($accounts);
 
         $journals = Journal::leftJoinSub($journalPayments, 'journal_payment', function ($join) {
-                $join->on('journals.form_number', '=', 'journal_payment.form_number_reference');
-            })->selectRaw('SUM(debit) as debit')
+            $join->on('journals.form_number', '=', 'journal_payment.form_number_reference');
+        })->selectRaw('SUM(debit) as debit')
             ->addSelect('journals.date', 'journals.form_number', 'journal_payment.credit')
             ->whereIn('chart_of_account_id', $accounts)
             ->where('debit', '>', 0)
@@ -49,7 +49,7 @@ class AccountReceivableController extends Controller
     {
         if ($option === 'settled') {
             return $journals->havingRaw('debit - credit = 0');
-        } else if ($option === 'unsettled') {
+        } elseif ($option === 'unsettled') {
             return $journals->havingRaw('debit - credit > 0');
         }
     }

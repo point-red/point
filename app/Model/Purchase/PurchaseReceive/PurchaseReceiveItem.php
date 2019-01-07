@@ -2,14 +2,14 @@
 
 namespace App\Model\Purchase\PurchaseReceive;
 
-use App\Model\Master\Allocation;
 use App\Model\Master\Item;
+use App\Model\Master\Allocation;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseReceiveItem extends Model
 {
     protected $connection = 'tenant';
-    
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -24,7 +24,8 @@ class PurchaseReceiveItem extends Model
         'converter' => 'double',
     ];
 
-    public function item() {
+    public function item()
+    {
         return $this->belongsTo(Item::class);
     }
 

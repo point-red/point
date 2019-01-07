@@ -21,7 +21,7 @@ class Address extends MasterModel
         if ($addresses) {
             // Delete address
             $ids = array_column($addresses, 'id');
-            Address::where('addressable_id', $obj->id)
+            self::where('addressable_id', $obj->id)
                 ->where('addressable_type', get_class($obj))
                 ->whereNotIn('id', $ids)->delete();
 
@@ -29,9 +29,9 @@ class Address extends MasterModel
                 // If address has id then update existing address
                 // If not then create new address
                 if (isset($addresses[$i]['id'])) {
-                    $address = Address::findOrFail($addresses[$i]['id']);
+                    $address = self::findOrFail($addresses[$i]['id']);
                 } else {
-                    $address = new Address;
+                    $address = new self;
                 }
 
                 $address->label = $addresses[$i]['label'] ?? null;
@@ -47,6 +47,5 @@ class Address extends MasterModel
                 $address->save();
             }
         }
-
     }
 }

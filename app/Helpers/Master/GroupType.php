@@ -2,8 +2,8 @@
 
 namespace App\Helpers\Master;
 
-use App\Model\Master\Customer;
 use App\Model\Master\Item;
+use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 
 class GroupType
@@ -16,12 +16,12 @@ class GroupType
 
     public static $isNotAvailableResponse = [
         'code' => 400,
-        'message' => 'Group type is not available'
+        'message' => 'Group type is not available',
     ];
 
     public static function isAvailable($groupType)
     {
-        if (!array_key_exists($groupType, self::$typeClass)) {
+        if (! array_key_exists($groupType, self::$typeClass)) {
             return false;
         }
 

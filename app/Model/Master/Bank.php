@@ -21,7 +21,7 @@ class Bank extends MasterModel
         if ($banks) {
             // Delete bank
             $ids = array_column($banks, 'id');
-            Bank::where('bankable_id', $obj->id)
+            self::where('bankable_id', $obj->id)
                 ->where('bankable_type', get_class($obj))
                 ->whereNotIn('id', $ids)->delete();
 
@@ -29,9 +29,9 @@ class Bank extends MasterModel
                 // If bank has id then update existing bank
                 // If not then create new bank
                 if (isset($banks[$i]['id'])) {
-                    $bank = Bank::findOrFail($banks[$i]['id']);
+                    $bank = self::findOrFail($banks[$i]['id']);
                 } else {
-                    $bank = new Bank;
+                    $bank = new self;
                 }
 
                 $bank->name = $banks[$i]['name'];
@@ -44,6 +44,5 @@ class Bank extends MasterModel
                 $bank->save();
             }
         }
-
     }
 }

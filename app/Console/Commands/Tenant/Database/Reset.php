@@ -5,8 +5,8 @@ namespace App\Console\Commands\Tenant\Database;
 use App\Model\Master\User;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class Reset extends Command
 {
@@ -45,11 +45,12 @@ class Reset extends Command
         $project = Project::where('code', $this->argument('project_code'))->first();
 
         if (! $project) {
-            $this->line('There is no project "' . strtolower($this->argument('project_code')) . '" in database');
+            $this->line('There is no project "'.strtolower($this->argument('project_code')).'" in database');
+
             return;
         }
 
-        $this->line('Reset project ' . $project->code . ' started');
+        $this->line('Reset project '.$project->code.' started');
 
         DB::connection('tenant')->beginTransaction();
 
@@ -80,6 +81,6 @@ class Reset extends Command
 
         DB::connection('tenant')->commit();
 
-        $this->line('Reset project ' . $project->code . ' finished');
+        $this->line('Reset project '.$project->code.' finished');
     }
 }

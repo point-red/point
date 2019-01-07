@@ -56,14 +56,11 @@ class PurchaseReceive extends TransactionModel
 
     public static function create($data)
     {
+        $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
+
         $purchaseReceive = new self;
         $purchaseReceive->fill($data);
-        if (! is_null($data['purchase_order_id'])) {
-            $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
-            $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
-        } else {
-            $purchaseReceive->supplier_id = $data['supplier_id'];
-        }
+        $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
         $purchaseReceive->save();
 
         $form = new Form;
@@ -96,6 +93,23 @@ class PurchaseReceive extends TransactionModel
             array_push($array, $purchaseReceiveService);
         }
         $purchaseReceive->services()->saveMany($array);
+
+        // Make form done when all item received
+        $done = true;
+        foreach ($purchaseOrder->items as $purchaseOrderItem) {
+            $totalQuantityReceived = PurchaseReceiveItem::join('purchase_receives', 'purchase_receives.id', '=', 'purchase_receive_items.purchase_receive_id')
+                ->join('purchase_receives', 'purchase_receives.form_id', '=', 'forms.id')
+                ->where('purchase_order_item_id', $purchaseOrderItem->id)
+                ->sum('purchase_receive_items.quantity');
+            if ($purchaseOrderItem->quantity - $totalQuantityReceived > 0) {
+                $done = false;
+            }
+        }
+        
+        if ($done == true) {
+            $purchaseOrder->form->done = true;
+            $purchaseOrder->form->save();
+        }
 
         $purchaseReceive->form();
 

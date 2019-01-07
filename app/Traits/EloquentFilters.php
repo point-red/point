@@ -155,7 +155,7 @@ trait EloquentFilters
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $query->where($key, '<=', $value);
+            $query->where($key, '>=', $value);
         }
     }
 
@@ -171,7 +171,7 @@ trait EloquentFilters
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $query->where($key, '>=', $value);
+            $query->where($key, '<=', $value);
         }
     }
 

@@ -117,7 +117,7 @@ class PurchaseOrderController extends Controller
             ->findOrFail($id);
 
         foreach ($purchaseOrder->items as $key => $purchaseOrderItem) {
-            $purchaseOrder->items[$key]->quantity_pending = PurchaseReceiveItem::where('purchase_order_item_id', $purchaseOrderItem->id)->sum('quantity');
+            $purchaseOrder->items[$key]->quantity_pending = $purchaseOrderItem->quantity - PurchaseReceiveItem::where('purchase_order_item_id', $purchaseOrderItem->id)->sum('quantity');
         }
 
         return new ApiResource($purchaseOrder);

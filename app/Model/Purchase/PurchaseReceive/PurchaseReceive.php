@@ -96,14 +96,34 @@ class PurchaseReceive extends TransactionModel
 
         // Make form done when all item received
         $done = true;
+
+        $purchaseOrderItemIds = array_column($purchaseOrder->items->toArray(), 'id');
+
+        $tempArray = PurchaseReceiveItem::whereIn('purchase_order_item_id', $purchaseOrderItemIds)
+            ->join(PurchaseReceive::getTableName(), PurchaseReceive::getTableName().'.id', '=', 'purchase_receive_items.purchase_receive_id')
+            ->join(Form::getTableName(), PurchaseReceive::getTableName().'.id', '=', Form::getTableName().'.formable_id')
+            ->groupBy('purchase_order_item_id')
+            ->select('purchase_receive_items.purchase_order_item_id')
+            ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
+            ->where(function($query) {
+                $query->where(Form::getTableName().'.canceled', false)
+                    ->orWhereNull(Form::getTableName().'.canceled');
+            })->where(function($query) {
+                $query->where(Form::getTableName().'.approved', true)
+                    ->orWhereNull(Form::getTableName().'.approved');
+            })->get();
+
+        $quantityReceivedItems = [];
+
+        foreach ($tempArray as $value) {
+            $quantityReceivedItems[$value['purchase_order_item_id']] = $value['sum_received'];
+        }
+
         foreach ($purchaseOrder->items as $purchaseOrderItem) {
-            $totalQuantityReceived = PurchaseReceiveItem::join('purchase_receives', 'purchase_receives.id', '=', 'purchase_receive_items.purchase_receive_id')
-                ->join('forms', 'purchase_receives.form_id', '=', 'forms.id')
-                ->where('purchase_order_item_id', $purchaseOrderItem->id)
-                ->where('forms.canceled', '!=', true)
-                ->sum('purchase_receive_items.quantity');
-            if ($purchaseOrderItem->quantity - $totalQuantityReceived > 0) {
+            $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;
+            if ($purchaseOrderItem->quantity - $quantityReceived > 0) {
                 $done = false;
+                break;
             }
         }
 

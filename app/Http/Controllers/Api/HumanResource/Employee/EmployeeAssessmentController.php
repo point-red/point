@@ -122,11 +122,12 @@ class EmployeeAssessmentController extends Controller
     {
         $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
             ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
+            ->join('kpi_scores', 'kpi_indicators.id', '=', 'kpi_scores.kpi_indicator_id')
             ->select('kpis.*')
-            ->addSelect(DB::raw('sum(kpi_indicators.weight) / count(DISTINCT kpis.id) as weight'))
-            ->addSelect(DB::raw('sum(kpi_indicators.target) / count(DISTINCT kpis.id) as target'))
-            ->addSelect(DB::raw('sum(kpi_indicators.score) / count(DISTINCT kpis.id) as score'))
-            ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
+            ->addSelect(DB::raw('sum(kpi_indicators.weight) / (count(DISTINCT kpi_indicators.id) / count(DISTINCT kpi_groups.id)) as weight'))
+            ->addSelect(DB::raw('sum(kpi_indicators.target) / (count(DISTINCT kpi_indicators.id) / count(DISTINCT kpi_groups.id)) as target'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score) / (count(DISTINCT kpi_indicators.id) / count(DISTINCT kpi_groups.id)) as score'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / (count(DISTINCT kpi_indicators.id) / count(DISTINCT kpi_groups.id)) as score_percentage'))
             ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'))
             ->where('employee_id', $employeeId)
             ->where('kpis.id', $id)
@@ -142,11 +143,35 @@ class EmployeeAssessmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $employeeId, $id)
     {
-        //
-        Log::debug('It came to update function.');
+        $template = $request->get('template');
 
+        DB::connection('tenant')->beginTransaction();
+
+        $kpi = Kpi::findOrFail($id);
+        $kpi->date = date('Y-m-d', strtotime($request->get('date')));
+        $kpi->save();
+
+        for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
+            $kpiGroup = KpiGroup::findOrFail($template['groups'][$groupIndex]['id']);
+
+            for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
+                $kpiIndicator = KpiIndicator::findOrFail($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['id']);
+                $kpiIndicator->kpi_group_id = $kpiGroup->id;
+                $kpiIndicator->name = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
+                $kpiIndicator->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
+                $kpiIndicator->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
+                $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
+                $kpiIndicator->score_percentage = $kpiIndicator->weight * $kpiIndicator->score / $kpiIndicator->target;
+                $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+                $kpiIndicator->save();
+            }
+        }
+
+        DB::connection('tenant')->commit();
+
+        return new KpiResource($kpi);
     }
 
     /**

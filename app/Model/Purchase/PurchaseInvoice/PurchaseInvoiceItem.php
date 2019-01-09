@@ -12,17 +12,12 @@ class PurchaseInvoiceItem extends Model
 
     public $timestamps = false;
 
-    protected $fillable = [
-        'purchase_order_item_id',
-        'item_id',
-        'quantity',
-        'unit',
-        'converter',
-    ];
-
     protected $casts = [
         'quantity'  => 'double',
         'converter' => 'double',
+        'price' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double'
     ];
 
     public function item()

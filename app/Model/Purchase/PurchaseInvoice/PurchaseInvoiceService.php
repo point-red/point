@@ -12,14 +12,11 @@ class PurchaseInvoiceService extends Model
 
     public $timestamps = false;
 
-    protected $fillable = [
-        'purchase_order_item_id',
-        'service_id',
-        'quantity',
-    ];
-
     protected $casts = [
         'quantity'  => 'double',
+        'price' => 'double',
+        'discount_value' => 'double',
+        'discount_percent' => 'double'
     ];
 
     public function service()

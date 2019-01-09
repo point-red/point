@@ -2,9 +2,10 @@
 
 namespace App\Model\Purchase\PurchaseInvoice;
 
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
 use Illuminate\Database\Eloquent\Model;
+use App\Model\Form;
+use App\Model\Master\Supplier;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
 class PurchaseInvoice extends Model
 {
@@ -44,7 +45,7 @@ class PurchaseInvoice extends Model
 
     public static function create($data)
     {
-        $array = [];
+        // TODO add validation to exclude : canceled / rejected / done purchase receives
         $purchaseReceives = PurchaseReceive::whereIn('id', $data['purchase_receive_ids'])
             ->with('items')
             ->with('services')
@@ -69,13 +70,16 @@ class PurchaseInvoice extends Model
         );
         $form->save();
 
-        foreach ($data['items'] as $value) {
+        $items = [];
+        $dataItems = $data['items'] ?? [];
+        foreach ($dataItems as $value) {
             $items[$value['item_id']]['price'] = $value['price'];
-            $items[$value['item_id']]['discount_percent'] = $value['discount_percent'];
-            $items[$value['item_id']]['discount_value'] = $value['discount_value'];
-            $items[$value['item_id']]['taxable'] = $value['taxable'];
+            $items[$value['item_id']]['discount_percent'] = $value['discount_percent'] ?? null;
+            $items[$value['item_id']]['discount_value'] = $value['discount_value'] ?? 0;
+            $items[$value['item_id']]['taxable'] = $value['taxable'] ?? true;
         }
 
+        $array = [];
         foreach ($purchaseReceives as $purchaseReceive) {
             foreach ($purchaseReceive->items as $purchaseReceiveItem) {
                 $purchaseInvoiceItem = new PurchaseInvoiceItem;
@@ -95,26 +99,26 @@ class PurchaseInvoice extends Model
         }
         $purchaseInvoice->items()->saveMany($array);
 
-        foreach ($data['services'] as $value) {
+        $services = [];
+        $dataServices = $data['services'] ?? [];
+        foreach ($dataServices as $value) {
             $services[$value['service_id']]['price'] = $value['price'];
-            $services[$value['service_id']]['discount_percent'] = $value['discount_percent'];
-            $services[$value['service_id']]['discount_value'] = $value['discount_value'];
-            $services[$value['service_id']]['taxable'] = $value['taxable'];
+            $services[$value['service_id']]['discount_percent'] = $value['discount_percent'] ?? null;
+            $services[$value['service_id']]['discount_value'] = $value['discount_value'] ?? 0;
+            $services[$value['service_id']]['taxable'] = $value['taxable'] ?? 0;
         }
 
         $array = [];
         foreach ($purchaseReceives as $purchaseReceive) {
             foreach ($purchaseReceive->services as $purchaseReceiveService) {
                 $purchaseInvoiceService = new PurchaseInvoiceService;
-                $purchaseInvoiceService->purchase_order_item_id = $purchaseReceiveService->purchase_order_item_id;
-                $purchaseInvoiceService->item_id = $purchaseReceiveService->item_id;
+                $purchaseInvoiceService->purchase_receive_service_id = $purchaseReceiveService->id;
+                $purchaseInvoiceService->service_id = $purchaseReceiveService->service_id;
                 $purchaseInvoiceService->quantity = $purchaseReceiveService->quantity;
-                $purchaseInvoiceService->unit = $purchaseReceiveService->unit;
-                $purchaseInvoiceService->converter = $purchaseReceiveService->converter;
-                $purchaseInvoiceService->price = $items[$purchaseReceiveItem->item_id]['price'];
-                $purchaseInvoiceService->discount_percent = $items[$purchaseReceiveItem->item_id]['discount_percent'];
-                $purchaseInvoiceService->discount_value = $items[$purchaseReceiveItem->item_id]['discount_value'];
-                $purchaseInvoiceService->taxable = $items[$purchaseReceiveItem->item_id]['taxable'];
+                $purchaseInvoiceService->price = $services[$purchaseReceiveService->service_id]['price'];
+                $purchaseInvoiceService->discount_percent = $services[$purchaseReceiveService->service_id]['discount_percent'];
+                $purchaseInvoiceService->discount_value = $services[$purchaseReceiveService->service_id]['discount_value'];
+                $purchaseInvoiceService->taxable = $services[$purchaseReceiveService->service_id]['taxable'];
                 $purchaseInvoiceService->purchase_invoice_id = $purchaseInvoice->id;
                 array_push($array, $purchaseInvoiceService);
             }

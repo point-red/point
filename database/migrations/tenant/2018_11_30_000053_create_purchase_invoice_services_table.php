@@ -16,8 +16,8 @@ class CreatePurchaseInvoiceServicesTable extends Migration
         Schema::create('purchase_invoice_services', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('purchase_invoice_id');
-            $table->unsignedInteger('purchase_receive_id')->nullable();
-            $table->unsignedInteger('purchase_receive_service_id')->nullable();
+            $table->unsignedInteger('purchase_receive_id');
+            $table->unsignedInteger('purchase_receive_service_id');
             $table->unsignedInteger('service_id');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);

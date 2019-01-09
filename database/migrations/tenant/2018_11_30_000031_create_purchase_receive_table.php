@@ -17,7 +17,7 @@ class CreatePurchaseReceiveTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('supplier_id');
             $table->unsignedInteger('warehouse_id');
-            $table->unsignedInteger('purchase_order_id');
+            $table->unsignedInteger('purchase_order_id')->nullable();
             $table->string('driver')->nullable();
             $table->string('license_plate')->nullable();
 

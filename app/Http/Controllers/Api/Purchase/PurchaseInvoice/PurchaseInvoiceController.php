@@ -66,7 +66,6 @@ class PurchaseInvoiceController extends Controller
     {
         $purchaseInvoice = PurchaseInvoice::eloquentFilter($request)
             ->with('form')
-            ->with('purchaseRequest')
             ->with('warehouse')
             ->with('supplier')
             ->with('items.item')

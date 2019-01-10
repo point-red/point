@@ -81,6 +81,8 @@ class PurchaseInvoice extends TransactionModel
 
         $array = [];
         foreach ($purchaseReceives as $purchaseReceive) {
+            $purchaseReceive->form->done = true;
+            $purchaseReceive->form->save();
             foreach ($purchaseReceive->items as $purchaseReceiveItem) {
                 $purchaseInvoiceItem = new PurchaseInvoiceItem;
                 $purchaseInvoiceItem->purchase_receive_id = $purchaseReceiveItem->purchase_receive_id;

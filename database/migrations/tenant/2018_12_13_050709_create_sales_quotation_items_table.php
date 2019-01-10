@@ -15,7 +15,16 @@ class CreateSalesQuotationItemsTable extends Migration
     {
         Schema::create('sales_quotation_items', function (Blueprint $table) {
             $table->increments('id');
-            $table->timestamps();
+            $table->unsignedInteger('sales_quotation_id');
+            $table->unsignedInteger('item_id');
+            $table->decimal('quantity', 65, 30);
+            $table->string('unit');
+            $table->decimal('converter', 65, 30);
+            $table->decimal('price', 65, 30);
+            $table->text('description')->nullable();
+
+            $table->foreign('sales_quotation_id')->references('id')->on('sales_quotations')->onDelete('cascade');
+            $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');
         });
     }
 

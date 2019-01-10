@@ -15,12 +15,10 @@ class CreatePurchasePaymentOrderDetailsTable extends Migration
     {
         Schema::create('purchase_payment_order_details', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('chart_of_account_id')->index();
             $table->unsignedInteger('reference_id')->index();
             $table->string('reference_type')->index();
+            $table->string('notes');
             $table->decimal('amount', 65, 30);
-
-            $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
         });
     }
 

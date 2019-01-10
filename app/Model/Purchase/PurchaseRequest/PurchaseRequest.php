@@ -49,7 +49,7 @@ class PurchaseRequest extends TransactionModel
     {
         return $this->hasMany(PurchaseOrder::class, 'purchase_request_id')
             ->join('forms', 'forms.id', '=', 'purchase_orders.form_id')
-            ->where('forms.canceled', '=', 0)
+            ->where('forms.canceled', false)
             ->orWhereNull('forms.canceled');
     }
 

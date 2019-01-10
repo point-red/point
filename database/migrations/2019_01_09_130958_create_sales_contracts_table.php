@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSalesQuotationsTable extends Migration
+class CreateSalesContractsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class CreateSalesQuotationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sales_quotations', function (Blueprint $table) {
+        Schema::create('sales_contracts', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('customer_id')->nullable();
-
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('restrict');
+            $table->timestamps();
         });
     }
 
@@ -28,6 +26,6 @@ class CreateSalesQuotationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales_quotations');
+        Schema::dropIfExists('sales_contracts');
     }
 }

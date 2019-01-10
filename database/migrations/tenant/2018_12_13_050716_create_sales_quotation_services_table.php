@@ -15,7 +15,14 @@ class CreateSalesQuotationServicesTable extends Migration
     {
         Schema::create('sales_quotation_services', function (Blueprint $table) {
             $table->increments('id');
-            $table->timestamps();
+            $table->unsignedInteger('sales_quotation_id');
+            $table->unsignedInteger('service_id');
+            $table->decimal('quantity', 65, 30);
+            $table->decimal('price', 65, 30);
+            $table->text('description');
+
+            $table->foreign('sales_quotation_id')->references('id')->on('sales_quotations')->onDelete('cascade');
+            $table->foreign('service_id')->references('id')->on('services')->onDelete('restrict');
         });
     }
 

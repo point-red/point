@@ -13,6 +13,8 @@ class PurchaseInvoice extends TransactionModel
 
     public $timestamps = false;
 
+    protected $appends = array('total', 'remaining_amount');
+
     protected $fillable = [
         'supplier_id',
         'due_date',
@@ -41,6 +43,30 @@ class PurchaseInvoice extends TransactionModel
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function getTotalAttribute()
+    {
+        $items = $this->items;
+        $total = $items->reduce(function($carry, $item) {
+            $subtotal = $item->quantity * ($item->price - $item->discount_value);
+            return $carry + $subtotal;
+        }, 0);
+
+        $services = $this->services;
+        $total = $services->reduce(function($carry, $service) {
+            $subtotal = $service->quantity * ($service->price - $service->discount_value);
+            return $carry + $subtotal;
+        }, $total);
+
+        $total += $this->tax - $this->discount_value + $this->delivery_fee;
+
+        return $total;
+    }
+
+    public function getRemainingAmountAttribute()
+    {
+        return $this->total;
     }
 
     public static function create($data)

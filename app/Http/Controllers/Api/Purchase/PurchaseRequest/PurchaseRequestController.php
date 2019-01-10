@@ -26,6 +26,7 @@ class PurchaseRequestController extends Controller
             ->join(Supplier::getTableName(), PurchaseRequest::getTableName().'.supplier_id', '=', Supplier::getTableName().'.id')
             ->select(PurchaseRequest::getTableName().'.*')
             ->where(Form::getTableName().'.formable_type', PurchaseRequest::class)
+            ->whereNotNull(Form::getTableName().'.number')
             ->with('form');
 
         $purchaseRequests = pagination($purchaseRequests, $request->get('limit'));

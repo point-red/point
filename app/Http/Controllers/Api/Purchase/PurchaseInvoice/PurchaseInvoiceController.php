@@ -26,6 +26,7 @@ class PurchaseInvoiceController extends Controller
             ->join(Supplier::getTableName(), PurchaseInvoice::getTableName().'.supplier_id', '=', Supplier::getTableName().'.id')
             ->select(PurchaseInvoice::getTableName().'.*')
             ->where(Form::getTableName().'.formable_type', PurchaseInvoice::class)
+            ->whereNotNull(Form::getTableName().'.number')
             ->with('form')
             ->get();
 

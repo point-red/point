@@ -26,6 +26,7 @@ class PurchaseReceiveController extends Controller
             ->join(Supplier::getTableName(), PurchaseReceive::getTableName().'.supplier_id', '=', Supplier::getTableName().'.id')
             ->select(PurchaseReceive::getTableName().'.*')
             ->where(Form::getTableName().'.formable_type', PurchaseReceive::class)
+            ->whereNotNull(Form::getTableName().'.number')
             ->with('form');
 
         $purchaseReceives = pagination($purchaseReceives, $request->get('limit'));

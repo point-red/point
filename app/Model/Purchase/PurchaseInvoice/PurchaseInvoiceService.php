@@ -28,4 +28,9 @@ class PurchaseInvoiceService extends Model
     {
         return $this->belongsTo(Allocation::class);
     }
+
+    public function purchaseReceive()
+    {
+        return $this->belongsTo(PurchaseReceive::class);
+    }
 }

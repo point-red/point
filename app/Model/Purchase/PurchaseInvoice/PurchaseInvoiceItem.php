@@ -5,6 +5,7 @@ namespace App\Model\Purchase\PurchaseInvoice;
 use App\Model\Master\Allocation;
 use App\Model\Master\Item;
 use Illuminate\Database\Eloquent\Model;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
 class PurchaseInvoiceItem extends Model
 {
@@ -28,5 +29,10 @@ class PurchaseInvoiceItem extends Model
     public function allocation()
     {
         return $this->belongsTo(Allocation::class);
+    }
+
+    public function purchaseReceive()
+    {
+        return $this->belongsTo(PurchaseReceive::class);
     }
 }

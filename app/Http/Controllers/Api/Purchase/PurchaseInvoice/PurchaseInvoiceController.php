@@ -66,12 +66,13 @@ class PurchaseInvoiceController extends Controller
     {
         $purchaseInvoice = PurchaseInvoice::eloquentFilter($request)
             ->with('form')
-            ->with('warehouse')
             ->with('supplier')
             ->with('items.item')
             ->with('items.allocation')
+            ->with('items.purchaseReceive.form')
             ->with('services.service')
             ->with('services.allocation')
+            ->with('services.purchaseReceive.form')
             ->findOrFail($id);
 
         return new ApiResource($purchaseInvoice);

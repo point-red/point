@@ -61,9 +61,9 @@ class DeliveryOrder extends TransactionModel
         $form->formable_id = $deliveryOrder->id;
         $form->formable_type = self::class;
         $form->generateFormNumber(
-            isset($data['number']) ? $data['number'] : 'P-RECEIVE{y}{m}{increment=4}',
-            null,
-            $deliveryOrder->customer_id
+            isset($data['number']) ? $data['number'] : 'DO{y}{m}{increment=4}',
+            $deliveryOrder->customer_id,
+            null
         );
         $form->save();
 

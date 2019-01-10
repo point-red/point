@@ -78,8 +78,8 @@ class SalesOrder extends TransactionModel
         $form->formable_type = self::class;
         $form->generateFormNumber(
             isset($data['number']) ? $data['number'] : 'SO{y}{m}{increment=4}',
-            null,
-            isset($data['customer_id']) ? $data['customer_id'] : null
+            isset($data['customer_id']) ? $data['customer_id'] : null,
+            null
         );
         $form->save();
 

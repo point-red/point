@@ -2,7 +2,7 @@
 
 Route::prefix('sales')->namespace('Sales')->group(function () {
     // Route::apiResource('sales-quotation', 'SalesQuotationController');
-    // Route::apiResource('sales-order', 'SalesOrderController');
+    Route::apiResource('sales-orders', 'SalesOrder\\SalesOrderController');
     // Route::apiResource('downpayment', 'DownpaymentController');
     // Route::apiResource('delivery-order', 'DeliveryOrderController');
     // Route::apiResource('invoice', 'InvoiceController');

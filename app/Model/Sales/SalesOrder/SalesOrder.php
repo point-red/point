@@ -6,9 +6,9 @@ use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\Sales\SalesQuotation\SalesQuotation;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\TransactionModel;
 
-class SalesOrder extends Model
+class SalesOrder extends TransactionModel
 {
     protected $connection = 'tenant';
 

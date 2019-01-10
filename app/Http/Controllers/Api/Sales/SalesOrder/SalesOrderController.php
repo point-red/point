@@ -18,13 +18,14 @@ class SalesOrderController extends Controller
      *
      * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
         $salesOrders = SalesOrder::eloquentFilter($request)
             ->join(Form::getTableName(), SalesOrder::getTableName().'.id', '=', Form::getTableName().'.formable_id')
             ->join(Customer::getTableName(), SalesOrder::getTableName().'.customer_id', '=', Customer::getTableName().'.id')
             ->select(SalesOrder::getTableName().'.*')
             ->where(Form::getTableName().'.formable_type', SalesOrder::class)
+            ->whereNotNull(Form::getTableName().'.number')
             ->with('form');
 
         $salesOrders = pagination($salesOrders, $request->get('limit'));

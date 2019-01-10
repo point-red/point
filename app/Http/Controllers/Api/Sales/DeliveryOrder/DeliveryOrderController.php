@@ -23,9 +23,10 @@ class DeliveryOrderController extends Controller
     {
         $deliverOrders = DeliveryOrder::eloquentFilter($request)
             ->join(Form::getTableName(), DeliveryOrder::getTableName().'.id', '=', Form::getTableName().'.formable_id')
-            ->join(Customer::getTableName(), DeliveryOrder::getTableName().'.supplier_id', '=', Supplier::getTableName().'.id')
+            ->join(Customer::getTableName(), DeliveryOrder::getTableName().'.customer_id', '=', Customer::getTableName().'.id')
             ->select(DeliveryOrder::getTableName().'.*')
             ->where(Form::getTableName().'.formable_type', DeliveryOrder::class)
+            ->whereNotNull(Form::getTableName().'.number')
             ->with('form');
 
         $deliverOrders = pagination($deliverOrders, $request->get('limit'));

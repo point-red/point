@@ -15,7 +15,15 @@ class CreateDeliveryNotesTable extends Migration
     {
         Schema::create('delivery_notes', function (Blueprint $table) {
             $table->increments('id');
-            $table->timestamps();
+            $table->unsignedInteger('customer_id');
+            $table->unsignedInteger('warehouse_id');
+            $table->unsignedInteger('sales_order_id');
+            $table->string('driver')->nullable();
+            $table->string('license_plate')->nullable();
+
+            $table->foreign('sales_order_id')->references('id')->on('sales_orders')->onDelete('restrict');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('restrict');
+            $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('restrict');
         });
     }
 

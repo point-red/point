@@ -15,7 +15,13 @@ class CreateDeliveryOrdersTable extends Migration
     {
         Schema::create('delivery_orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->timestamps();
+            $table->unsignedInteger('customer_id');
+            $table->unsignedInteger('warehouse_id');
+            $table->unsignedInteger('sales_order_id');
+
+            $table->foreign('sales_order_id')->references('id')->on('sales_orders')->onDelete('restrict');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('restrict');
+            $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('restrict');
         });
     }
 

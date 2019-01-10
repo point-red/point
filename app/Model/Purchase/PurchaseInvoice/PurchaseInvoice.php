@@ -2,12 +2,12 @@
 
 namespace App\Model\Purchase\PurchaseInvoice;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use App\Model\TransactionModel;
 
-class PurchaseInvoice extends Model
+class PurchaseInvoice extends TransactionModel
 {
     protected $connection = 'tenant';
 

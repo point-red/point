@@ -61,7 +61,7 @@ class SalesOrderController extends Controller
      * @param  int  $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $salesOrder = SalesOrder::eloquentFilter($request)
             ->with('form')

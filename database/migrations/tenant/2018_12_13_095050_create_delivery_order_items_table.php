@@ -16,8 +16,8 @@ class CreateDeliveryOrderItemsTable extends Migration
         Schema::create('delivery_order_items', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('delivery_order_id');
-            $table->unsignedInteger('sales_order_id')->nullable();
-            $table->unsignedInteger('sales_order_item_id')->nullable();
+            $table->unsignedInteger('sales_order_id');
+            $table->unsignedInteger('sales_order_item_id');
             $table->unsignedInteger('item_id');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);

@@ -73,6 +73,7 @@ class DeliveryOrder extends TransactionModel
             $deliveryOrderItem = new DeliveryOrderItem;
             $deliveryOrderItem->fill($item);
             $deliveryOrderItem->delivery_order_id = $deliveryOrder->id;
+            $deliveryOrderItem->sales_order_id = $salesOrder->id;
             array_push($array, $deliveryOrderItem);
         }
         $deliveryOrder->items()->saveMany($array);

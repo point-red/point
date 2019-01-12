@@ -66,7 +66,7 @@ trait FormScopes
         $query->orWhereNull(Form::getTableName('approved'));
     }
 
-    public function scopeNotRejected()
+    public function scopeNotRejected($query)
     {
         $query->approvalPending()->orApprovalApproved();
     }
@@ -101,7 +101,7 @@ trait FormScopes
         $query->orWhereNull(Form::getTableName('canceled'));
     }
 
-    public function scopeNotCancelled($query)
+    public function scopeNotCanceled($query)
     {
         $query->cancellationPending()->orCancellationRejected();
     }

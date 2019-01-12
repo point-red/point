@@ -6,9 +6,9 @@ use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\TransactionModel;
 
-class DeliveryNote extends Model
+class DeliveryNote extends TransactionModel
 {
     protected $connection = 'tenant';
 
@@ -77,31 +77,21 @@ class DeliveryNote extends Model
         }
         $deliveryNote->items()->saveMany($array);
 
-        // Make form done when all item delivered
-        $done = true;
+        $deliveryOrderItemIds = $deliveryOrder->items->pluck('id');
 
-        $deliveryOrderItemIds = array_column($deliveryOrder->items->toArray(), 'id');
-
-        $tempArray = DeliveryNoteItem::whereIn('delivery_order_item_id', $deliveryOrderItemIds)
-            ->join(DeliveryNote::getTableName(), DeliveryNote::getTableName().'.id', '=', 'delivery_order_items.delivery_order_id')
-            ->join(Form::getTableName(), DeliveryNote::getTableName().'.id', '=', Form::getTableName().'.formable_id')
+        $tempArray = DeliveryNote::joinForm()
+            ->join(DeliveryNote::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_order_id'))
             ->groupBy('delivery_order_item_id')
             ->select('delivery_order_items.delivery_order_item_id')
             ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
-            ->where(function($query) {
-                $query->where(Form::getTableName().'.canceled', false)
-                    ->orWhereNull(Form::getTableName().'.canceled');
-            })->where(function($query) {
-                $query->where(Form::getTableName().'.approved', true)
-                    ->orWhereNull(Form::getTableName().'.approved');
-            })->get();
+            ->whereIn('delivery_order_item_id', $deliveryOrderItemIds)
+            ->active()
+            ->get();
 
-        $quantityDeliveredItems = [];
+        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'delivery_order_item_id');
 
-        foreach ($tempArray as $value) {
-            $quantityDeliveredItems[$value['delivery_order_item_id']] = $value['sum_delivered'];
-        }
-
+        // Make form done when all item delivered
+        $done = true;
         foreach ($deliveryOrder->items as $deliveryOrderItem) {
             $quantityDelivered = $quantityDeliveredItems[$deliveryOrderItem->id] ?? 0;
             if ($deliveryOrderItem->quantity - $quantityDelivered > 0) {

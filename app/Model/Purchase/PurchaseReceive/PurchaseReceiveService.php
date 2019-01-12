@@ -2,11 +2,11 @@
 
 namespace App\Model\Purchase\PurchaseReceive;
 
-use App\Model\Master\Service;
 use App\Model\Master\Allocation;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\Master\Service;
+use App\Model\TransactionModel;
 
-class PurchaseReceiveService extends Model
+class PurchaseReceiveService extends TransactionModel
 {
     protected $connection = 'tenant';
 
@@ -19,7 +19,7 @@ class PurchaseReceiveService extends Model
     ];
 
     protected $casts = [
-        'quantity'  => 'double',
+        'quantity' => 'double',
     ];
 
     public function service()

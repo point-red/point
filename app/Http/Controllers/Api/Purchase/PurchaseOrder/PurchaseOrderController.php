@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseOrder;
 
-use App\Model\Form;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\Supplier;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
 use Illuminate\Http\Request;
-use App\Model\Master\Supplier;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 
 class PurchaseOrderController extends Controller
 {
@@ -24,11 +23,9 @@ class PurchaseOrderController extends Controller
     public function index(Request $request)
     {
         $purchaseOrders = PurchaseOrder::eloquentFilter($request)
-            ->join(Form::getTableName(), PurchaseOrder::getTableName().'.id', '=', Form::getTableName().'.formable_id')
-            ->join(Supplier::getTableName(), PurchaseOrder::getTableName().'.supplier_id', '=', Supplier::getTableName().'.id')
-            ->select(PurchaseOrder::getTableName().'.*')
-            ->where(Form::getTableName().'.formable_type', PurchaseOrder::class)
-            ->whereNotNull(Form::getTableName().'.number')
+            ->join(Supplier::getTableName(), PurchaseOrder::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
+            ->select(PurchaseOrder::getTableName('*'))
+            ->isNotArchived()
             ->with('form');
 
         $purchaseOrders = pagination($purchaseOrders, $request->get('limit'));
@@ -86,13 +83,15 @@ class PurchaseOrderController extends Controller
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseOrder = PurchaseOrder::create($request->all());
-
-            return new ApiResource($purchaseOrder
+            $purchaseOrder
                 ->load('form')
                 ->load('supplier')
+                ->load('items.item')
                 ->load('items.allocation')
-                ->load('services.allocation')
-            );
+                ->load('services.service')
+                ->load('services.allocation');
+
+            return new ApiResource($purchaseOrder);
         });
 
         return $result;
@@ -118,26 +117,17 @@ class PurchaseOrderController extends Controller
             ->with('services.allocation')
             ->findOrFail($id);
 
-        $purchaseOrderItemIds = array_column($purchaseOrder->items->toArray(), 'id');
+        $purchaseOrderItemIds = $purchaseOrder->items->pluck('id');
 
-        $tempArray = PurchaseReceiveItem::whereIn('purchase_order_item_id', $purchaseOrderItemIds)
-            ->join(PurchaseReceive::getTableName(), PurchaseReceive::getTableName().'.id', '=', 'purchase_receive_items.purchase_receive_id')
-            ->join(Form::getTableName(), PurchaseReceive::getTableName().'.id', '=', Form::getTableName().'.formable_id')
-            ->groupBy('purchase_order_item_id')
-            ->select('purchase_receive_items.purchase_order_item_id')
+        $tempArray = PurchaseReceive::isActive()
+            ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
+            ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
             ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
-            ->where(function($query) {
-                $query->where(Form::getTableName().'.canceled', false)
-                    ->orWhereNull(Form::getTableName().'.canceled');
-            })->where(function($query) {
-                $query->where(Form::getTableName().'.approved', true)
-                    ->orWhereNull(Form::getTableName().'.approved');
-            })->get();
+            ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
+            ->groupBy('purchase_order_item_id')
+            ->get();
 
-        $quantityReceivedItems = [];
-        foreach ($tempArray as $value) {
-            $quantityReceivedItems[$value['purchase_order_item_id']] = $value['sum_received'];
-        }
+        $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');
 
         foreach ($purchaseOrder->items as $key => $purchaseOrderItem) {
             $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;

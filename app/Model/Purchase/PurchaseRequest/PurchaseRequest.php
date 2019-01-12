@@ -3,10 +3,10 @@
 namespace App\Model\Purchase\PurchaseRequest;
 
 use App\Model\Form;
-use App\Model\Master\Supplier;
-use App\Model\TransactionModel;
 use App\Model\HumanResource\Employee\Employee;
+use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\TransactionModel;
 
 class PurchaseRequest extends TransactionModel
 {
@@ -47,10 +47,9 @@ class PurchaseRequest extends TransactionModel
 
     public function purchaseOrders()
     {
-        return $this->hasMany(PurchaseOrder::class, 'purchase_request_id')
-            ->join('forms', 'forms.id', '=', 'purchase_orders.form_id')
-            ->where('forms.canceled', false)
-            ->orWhereNull('forms.canceled');
+        return $this->hasMany(PurchaseOrder::class)
+            ->join(Form::getTableName(), Form::getTableName('id'), '=', PurchaseOrder::getTableName('form_id'))
+            ->isActive();
     }
 
     public static function create($data)

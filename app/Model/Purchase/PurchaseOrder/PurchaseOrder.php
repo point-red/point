@@ -5,8 +5,9 @@ namespace App\Model\Purchase\PurchaseOrder;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
-use App\Model\TransactionModel;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
+use App\Model\TransactionModel;
 
 class PurchaseOrder extends TransactionModel
 {
@@ -30,7 +31,7 @@ class PurchaseOrder extends TransactionModel
     ];
 
     protected $casts = [
-        'delivery_fee'  => 'double',
+        'delivery_fee' => 'double',
         'discount_percent' => 'double',
         'discount_value' => 'double',
         'tax' => 'double',
@@ -59,6 +60,11 @@ class PurchaseOrder extends TransactionModel
     public function purchaseRequest()
     {
         return $this->belongsTo(PurchaseRequest::class, 'purchase_request_id');
+    }
+
+    public function purchaseReceives()
+    {
+        return $this->hasMany(PurchaseReceive::class);
     }
 
     public function warehouse()
@@ -102,8 +108,6 @@ class PurchaseOrder extends TransactionModel
             array_push($array, $purchaseOrderService);
         }
         $purchaseOrder->services()->saveMany($array);
-
-        $purchaseOrder->form();
 
         return $purchaseOrder;
     }

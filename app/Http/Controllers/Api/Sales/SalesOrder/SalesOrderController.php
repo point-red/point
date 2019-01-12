@@ -10,6 +10,8 @@ use App\Model\Sales\SalesOrder\SalesOrder;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 
 class SalesOrderController extends Controller
 {
@@ -61,7 +63,7 @@ class SalesOrderController extends Controller
      * @param  int  $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $salesOrder = SalesOrder::eloquentFilter($request)
             ->with('form')
@@ -73,6 +75,33 @@ class SalesOrderController extends Controller
             ->with('services.service')
             ->with('services.allocation')
             ->findOrFail($id);
+        
+            $salesOrderItemIds = array_column($salesOrder->items->toArray(), 'id');
+
+            $tempArray = DeliveryOrderItem::whereIn('sales_order_item_id', $salesOrderItemIds)
+                ->join(DeliveryOrder::getTableName(), DeliveryOrder::getTableName().'.id', '=', 'delivery_order_items.delivery_order_id')
+                ->join(Form::getTableName(), DeliveryOrder::getTableName().'.id', '=', Form::getTableName().'.formable_id')
+                ->groupBy('sales_order_item_id')
+                ->select('delivery_order_items.sales_order_item_id')
+                ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
+                ->where(function($query) {
+                    $query->where(Form::getTableName().'.canceled', false)
+                        ->orWhereNull(Form::getTableName().'.canceled');
+                })->where(function($query) {
+                    $query->where(Form::getTableName().'.approved', true)
+                        ->orWhereNull(Form::getTableName().'.approved');
+                })->get();
+    
+            $quantityDeliveredItems = [];
+    
+            foreach ($tempArray as $value) {
+                $quantityDeliveredItems[$value['sales_order_item_id']] = $value['sum_delivered'];
+            }
+    
+            foreach ($salesOrder->items as $salesOrderItem) {
+                $quantityDelivered = $quantityDeliveredItems[$salesOrderItem->id] ?? 0;
+                $salesOrderItem->quantity_pending = $salesOrderItem->quantity - $quantityDelivered;
+            }
 
         return new ApiResource($salesOrder);
     }

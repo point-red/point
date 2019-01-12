@@ -53,7 +53,7 @@ class DeliveryOrder extends TransactionModel
 
         $deliveryOrder = new self;
         $deliveryOrder->fill($data);
-        $deliveryOrder->customer_id = $salesOrder->customer->id;
+        $deliveryOrder->customer_id = $salesOrder->customer_id;
         $deliveryOrder->save();
 
         $form = new Form;

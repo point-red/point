@@ -2,11 +2,11 @@
 
 namespace App\Model\Purchase\PurchaseOrder;
 
-use App\Model\Master\Service;
 use App\Model\Master\Allocation;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\Master\Service;
+use App\Model\TransactionModel;
 
-class PurchaseOrderService extends Model
+class PurchaseOrderService extends TransactionModel
 {
     protected $connection = 'tenant';
 
@@ -25,10 +25,10 @@ class PurchaseOrderService extends Model
     ];
 
     protected $casts = [
-        'quantity'         => 'double',
-        'price'            => 'double',
+        'quantity' => 'double',
+        'price' => 'double',
         'discount_percent' => 'double',
-        'discount_value'   => 'double',
+        'discount_value' => 'double',
     ];
 
     public function service()

@@ -2,11 +2,11 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
-use App\Model\Master\Item;
 use App\Model\Master\Allocation;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\Master\Item;
+use App\Model\TransactionModel;
 
-class PurchaseRequestItem extends Model
+class PurchaseRequestItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
@@ -22,8 +22,8 @@ class PurchaseRequestItem extends Model
     ];
 
     protected $casts = [
-        'quantity'  => 'double',
-        'price'     => 'double',
+        'quantity' => 'double',
+        'price' => 'double',
         'converter' => 'double',
     ];
 

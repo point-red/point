@@ -9,8 +9,14 @@ class PointModel extends Model
 {
     use EloquentFilters;
 
-    public static function getTableName()
+    public static function getTableName($column = null)
     {
-        return with(new static)->getTable();
+        $tableName = with(new static )->getTable();
+
+        if (isset($column)) {
+            $tableName = "$tableName.$column";
+        }
+
+        return $tableName;
     }
 }

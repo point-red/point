@@ -30,7 +30,7 @@ class SalesOrder extends TransactionModel
     ];
 
     protected $casts = [
-        'delivery_fee'  => 'double',
+        'delivery_fee' => 'double',
         'discount_percent' => 'double',
         'discount_value' => 'double',
         'tax' => 'double',
@@ -102,8 +102,6 @@ class SalesOrder extends TransactionModel
             array_push($array, $salesOrderService);
         }
         $salesOrder->services()->saveMany($array);
-
-        $salesOrder->form();
 
         return $salesOrder;
     }

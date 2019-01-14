@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Master\Supplier;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Form;
+use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseRequestController extends Controller
 {
@@ -22,11 +22,10 @@ class PurchaseRequestController extends Controller
     public function index(Request $request)
     {
         $purchaseRequests = PurchaseRequest::eloquentFilter($request)
-            ->join(Form::getTableName(), PurchaseRequest::getTableName().'.id', '=', Form::getTableName().'.formable_id')
-            ->join(Supplier::getTableName(), PurchaseRequest::getTableName().'.supplier_id', '=', Supplier::getTableName().'.id')
-            ->select(PurchaseRequest::getTableName().'.*')
-            ->where(Form::getTableName().'.formable_type', PurchaseRequest::class)
-            ->whereNotNull(Form::getTableName().'.number')
+            ->join(Supplier::getTableName(), PurchaseRequest::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
+            ->select(PurchaseRequest::getTableName('*'))
+            ->joinForm()
+            ->notArchived()
             ->with('form');
 
         $purchaseRequests = pagination($purchaseRequests, $request->get('limit'));
@@ -72,14 +71,16 @@ class PurchaseRequestController extends Controller
 
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseRequest = PurchaseRequest::create($request->all());
-
-            return new ApiResource($purchaseRequest
+            $purchaseRequest
                 ->load('form')
                 ->load('employee')
                 ->load('supplier')
+                ->load('items.item')
                 ->load('items.allocation')
-                ->load('services.allocation')
-            );
+                ->load('services.service')
+                ->load('services.allocation');
+
+            return new ApiResource($purchaseRequest);
         });
 
         return $result;
@@ -133,8 +134,8 @@ class PurchaseRequestController extends Controller
             // can not delete if at least 1 active purchase orders
             $purchaseOrderNumbers = array_column($purchaseOrders->toArray(), 'number');
             $errors = [
-                'code'    => 422,
-                'message' => 'Referenced by purchase orders ['.implode('], [', $purchaseOrderNumbers).'].',
+                'code' => 422,
+                'message' => 'Referenced by purchase orders [' . implode('], [', $purchaseOrderNumbers) . '].',
             ];
 
             return response()->json($errors, 422);

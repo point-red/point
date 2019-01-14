@@ -48,14 +48,16 @@ class PurchaseInvoice extends TransactionModel
     public function getTotalAttribute()
     {
         $items = $this->items;
-        $total = $items->reduce(function($carry, $item) {
+        $total = $items->reduce(function ($carry, $item) {
             $subtotal = $item->quantity * ($item->price - $item->discount_value);
+
             return $carry + $subtotal;
         }, 0);
 
         $services = $this->services;
-        $total = $services->reduce(function($carry, $service) {
+        $total = $services->reduce(function ($carry, $service) {
             $subtotal = $service->quantity * ($service->price - $service->discount_value);
+
             return $carry + $subtotal;
         }, $total);
 
@@ -152,8 +154,6 @@ class PurchaseInvoice extends TransactionModel
             }
         }
         $purchaseInvoice->services()->saveMany($array);
-
-        $purchaseInvoice->form();
 
         return $purchaseInvoice;
     }

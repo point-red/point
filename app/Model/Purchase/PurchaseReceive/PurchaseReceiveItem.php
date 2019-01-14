@@ -2,11 +2,11 @@
 
 namespace App\Model\Purchase\PurchaseReceive;
 
-use App\Model\Master\Item;
 use App\Model\Master\Allocation;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\Master\Item;
+use App\Model\TransactionModel;
 
-class PurchaseReceiveItem extends Model
+class PurchaseReceiveItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
@@ -21,7 +21,7 @@ class PurchaseReceiveItem extends Model
     ];
 
     protected $casts = [
-        'quantity'  => 'double',
+        'quantity' => 'double',
         'converter' => 'double',
     ];
 

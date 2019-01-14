@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api\Sales\DeliveryOrder;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
 use App\Model\Master\Customer;
+use App\Model\Sales\DeliveryNote\DeliveryNote;
+use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 class DeliveryOrderController extends Controller
@@ -22,11 +23,10 @@ class DeliveryOrderController extends Controller
     public function index(Request $request)
     {
         $deliverOrders = DeliveryOrder::eloquentFilter($request)
-            ->join(Form::getTableName(), DeliveryOrder::getTableName().'.id', '=', Form::getTableName().'.formable_id')
-            ->join(Customer::getTableName(), DeliveryOrder::getTableName().'.customer_id', '=', Customer::getTableName().'.id')
-            ->select(DeliveryOrder::getTableName().'.*')
-            ->where(Form::getTableName().'.formable_type', DeliveryOrder::class)
-            ->whereNotNull(Form::getTableName().'.number')
+            ->join(Customer::getTableName(), DeliveryOrder::getTableName('customer_id'), '=', Customer::getTableName('id'))
+            ->select(DeliveryOrder::getTableName('*'))
+            ->joinForm()
+            ->notArchived()
             ->with('form');
 
         $deliverOrders = pagination($deliverOrders, $request->get('limit'));
@@ -45,12 +45,13 @@ class DeliveryOrderController extends Controller
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $deliveryOrder = DeliveryOrder::create($request->all());
-
-            return new ApiResource($deliveryOrder
+            $deliveryOrder
                 ->load('form')
                 ->load('customer')
-                ->load('items.allocation')
-            );
+                ->load('items.item')
+                ->load('items.allocation');
+
+            return new ApiResource($deliveryOrder);
         });
 
         return $result;
@@ -62,7 +63,7 @@ class DeliveryOrderController extends Controller
      * @param  int  $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $deliveryOrder = DeliveryOrder::eloquentFilter($request)
             ->with('form')
@@ -72,6 +73,24 @@ class DeliveryOrderController extends Controller
             ->with('items.item')
             ->with('items.allocation')
             ->findOrFail($id);
+
+        $deliveryOrderItemIds = $deliveryOrder->items->pluck('id');
+
+        $tempArray = DeliveryNote::joinForm()
+            ->join(DeliveryNoteItem::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_note_id'))
+            ->groupBy('delivery_order_item_id')
+            ->select(DeliveryNoteItem::getTableName('delivery_order_item_id'))
+            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
+            ->whereIn('delivery_order_item_id', $deliveryOrderItemIds)
+            ->active()
+            ->get();
+
+        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'delivery_order_item_id');
+
+        foreach ($deliveryOrder->items as $deliveryOrderItem) {
+            $quantityDelivered = $quantityDeliveredItems[$deliveryOrderItem->id] ?? 0;
+            $deliveryOrderItem->quantity_pending = $deliveryOrderItem->quantity - $quantityDelivered;
+        }
 
         return new ApiResource($deliveryOrder);
     }

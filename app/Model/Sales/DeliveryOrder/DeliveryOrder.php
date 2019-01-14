@@ -77,31 +77,21 @@ class DeliveryOrder extends TransactionModel
         }
         $deliveryOrder->items()->saveMany($array);
 
+        $salesOrderItemIds = $salesOrder->items->pluck('id');
+
+        $tempArray = DeliveryOrder::joinForm()
+            ->join(DeliveryOrderItem::getTableName(), DeliveryOrder::getTableName('id'), '=', DeliveryOrderItem::getTableName('delivery_order_id'))
+            ->groupBy('sales_order_item_id')
+            ->select(DeliveryOrderItem::getTableName('sales_order_item_id'))
+            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
+            ->whereIn('sales_order_item_id', $salesOrderItemIds)
+            ->active()
+            ->get();
+
+        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'sales_order_item_id');
+
         // Make form done when all item delivered
         $done = true;
-
-        $salesOrderItemIds = array_column($salesOrder->items->toArray(), 'id');
-
-        $tempArray = DeliveryOrderItem::whereIn('sales_order_item_id', $salesOrderItemIds)
-            ->join(DeliveryOrder::getTableName(), DeliveryOrder::getTableName().'.id', '=', 'delivery_order_items.delivery_order_id')
-            ->join(Form::getTableName(), DeliveryOrder::getTableName().'.id', '=', Form::getTableName().'.formable_id')
-            ->groupBy('sales_order_item_id')
-            ->select('delivery_order_items.sales_order_item_id')
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
-            ->where(function($query) {
-                $query->where(Form::getTableName().'.canceled', false)
-                    ->orWhereNull(Form::getTableName().'.canceled');
-            })->where(function($query) {
-                $query->where(Form::getTableName().'.approved', true)
-                    ->orWhereNull(Form::getTableName().'.approved');
-            })->get();
-
-        $quantityDeliveredItems = [];
-
-        foreach ($tempArray as $value) {
-            $quantityDeliveredItems[$value['sales_order_item_id']] = $value['sum_delivered'];
-        }
-
         foreach ($salesOrder->items as $salesOrderItem) {
             $quantityDelivered = $quantityDeliveredItems[$salesOrderItem->id] ?? 0;
             if ($salesOrderItem->quantity - $quantityDelivered > 0) {
@@ -114,8 +104,6 @@ class DeliveryOrder extends TransactionModel
             $salesOrder->form->done = true;
             $salesOrder->form->save();
         }
-
-        $deliveryOrder->form();
 
         return $deliveryOrder;
     }

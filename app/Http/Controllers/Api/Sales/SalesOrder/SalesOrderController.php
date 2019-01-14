@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesOrder;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
 use App\Model\Master\Customer;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
-use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 
 class SalesOrderController extends Controller
 {
@@ -23,11 +22,10 @@ class SalesOrderController extends Controller
     public function index(Request $request)
     {
         $salesOrders = SalesOrder::eloquentFilter($request)
-            ->join(Form::getTableName(), SalesOrder::getTableName().'.id', '=', Form::getTableName().'.formable_id')
-            ->join(Customer::getTableName(), SalesOrder::getTableName().'.customer_id', '=', Customer::getTableName().'.id')
-            ->select(SalesOrder::getTableName().'.*')
-            ->where(Form::getTableName().'.formable_type', SalesOrder::class)
-            ->whereNotNull(Form::getTableName().'.number')
+            ->join(Customer::getTableName(), SalesOrder::getTableName('customer_id'), '=', Customer::getTableName('id'))
+            ->select(SalesOrder::getTableName('*'))
+            ->joinForm()
+            ->notArchived()
             ->with('form');
 
         $salesOrders = pagination($salesOrders, $request->get('limit'));
@@ -45,13 +43,13 @@ class SalesOrderController extends Controller
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $salesOrder = SalesOrder::create($request->all());
-
-            return new ApiResource($salesOrder
+            $salesOrder
                 ->load('form')
                 ->load('customer')
                 ->load('items.allocation')
-                ->load('services.allocation')
-            );
+                ->load('services.allocation');
+
+            return new ApiResource($salesOrder);
         });
 
         return $result;
@@ -75,33 +73,24 @@ class SalesOrderController extends Controller
             ->with('services.service')
             ->with('services.allocation')
             ->findOrFail($id);
-        
-            $salesOrderItemIds = array_column($salesOrder->items->toArray(), 'id');
 
-            $tempArray = DeliveryOrderItem::whereIn('sales_order_item_id', $salesOrderItemIds)
-                ->join(DeliveryOrder::getTableName(), DeliveryOrder::getTableName().'.id', '=', 'delivery_order_items.delivery_order_id')
-                ->join(Form::getTableName(), DeliveryOrder::getTableName().'.id', '=', Form::getTableName().'.formable_id')
-                ->groupBy('sales_order_item_id')
-                ->select('delivery_order_items.sales_order_item_id')
-                ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
-                ->where(function($query) {
-                    $query->where(Form::getTableName().'.canceled', false)
-                        ->orWhereNull(Form::getTableName().'.canceled');
-                })->where(function($query) {
-                    $query->where(Form::getTableName().'.approved', true)
-                        ->orWhereNull(Form::getTableName().'.approved');
-                })->get();
-    
-            $quantityDeliveredItems = [];
-    
-            foreach ($tempArray as $value) {
-                $quantityDeliveredItems[$value['sales_order_item_id']] = $value['sum_delivered'];
-            }
-    
-            foreach ($salesOrder->items as $salesOrderItem) {
-                $quantityDelivered = $quantityDeliveredItems[$salesOrderItem->id] ?? 0;
-                $salesOrderItem->quantity_pending = $salesOrderItem->quantity - $quantityDelivered;
-            }
+        $salesOrderItemIds = $salesOrder->items->pluck('id');
+
+        $tempArray = DeliveryOrder::joinForm()
+            ->join(DeliveryOrderItem::getTableName(), DeliveryOrder::getTableName('id'), '=', DeliveryOrderItem::getTableName('delivery_order_id'))
+            ->groupBy('sales_order_item_id')
+            ->select(DeliveryOrderItem::getTableName('sales_order_item_id'))
+            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
+            ->whereIn('sales_order_item_id', $salesOrderItemIds)
+            ->active()
+            ->get();
+
+        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'sales_order_item_id');
+
+        foreach ($salesOrder->items as $salesOrderItem) {
+            $quantityDelivered = $quantityDeliveredItems[$salesOrderItem->id] ?? 0;
+            $salesOrderItem->quantity_pending = $salesOrderItem->quantity - $quantityDelivered;
+        }
 
         return new ApiResource($salesOrder);
     }

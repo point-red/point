@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Master\Supplier;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseInvoiceController extends Controller
 {
@@ -22,13 +21,13 @@ class PurchaseInvoiceController extends Controller
     public function index(Request $request)
     {
         $purchaseInvoices = PurchaseInvoice::eloquentFilter($request)
-            ->join(Form::getTableName(), PurchaseInvoice::getTableName().'.id', '=', Form::getTableName().'.formable_id')
-            ->join(Supplier::getTableName(), PurchaseInvoice::getTableName().'.supplier_id', '=', Supplier::getTableName().'.id')
-            ->select(PurchaseInvoice::getTableName().'.*')
-            ->where(Form::getTableName().'.formable_type', PurchaseInvoice::class)
-            ->whereNotNull(Form::getTableName().'.number')
-            ->with('form')
-            ->get();
+            ->join(Supplier::getTableName(), PurchaseInvoice::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
+            ->select(PurchaseInvoice::getTableName('*'))
+            ->joinForm()
+            ->notArchived()
+            ->with('form');
+
+        $purchaseInvoices = pagination($purchaseInvoices, $request->get('limit'));
 
         return new ApiCollection($purchaseInvoices);
     }
@@ -45,12 +44,15 @@ class PurchaseInvoiceController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseInvoice = PurchaseInvoice::create($request->all());
 
-            return new ApiResource($purchaseInvoice
+            $purchaseInvoice
                 ->load('form')
                 ->load('supplier')
+                ->load('items.item')
                 ->load('items.allocation')
-                ->load('services.allocation')
-            );
+                ->load('services.service')
+                ->load('services.allocation');
+
+            return new ApiResource($purchaseInvoice);
         });
 
         return $result;

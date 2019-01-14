@@ -5,8 +5,8 @@ namespace App\Model\Purchase\PurchaseReceive;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
-use App\Model\TransactionModel;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\TransactionModel;
 
 class PurchaseReceive extends TransactionModel
 {
@@ -94,31 +94,21 @@ class PurchaseReceive extends TransactionModel
         }
         $purchaseReceive->services()->saveMany($array);
 
+        $purchaseOrderItemIds = $purchaseOrder->items->pluck('id')->all();
+
+        $tempArray = PurchaseReceive::joinForm()
+            ->isActive()
+            ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
+            ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
+            ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
+            ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
+            ->groupBy('purchase_order_item_id')
+            ->get();
+
+        $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');
+
         // Make form done when all item received
         $done = true;
-
-        $purchaseOrderItemIds = array_column($purchaseOrder->items->toArray(), 'id');
-
-        $tempArray = PurchaseReceiveItem::whereIn('purchase_order_item_id', $purchaseOrderItemIds)
-            ->join(PurchaseReceive::getTableName(), PurchaseReceive::getTableName().'.id', '=', 'purchase_receive_items.purchase_receive_id')
-            ->join(Form::getTableName(), PurchaseReceive::getTableName().'.id', '=', Form::getTableName().'.formable_id')
-            ->groupBy('purchase_order_item_id')
-            ->select('purchase_receive_items.purchase_order_item_id')
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
-            ->where(function($query) {
-                $query->where(Form::getTableName().'.canceled', false)
-                    ->orWhereNull(Form::getTableName().'.canceled');
-            })->where(function($query) {
-                $query->where(Form::getTableName().'.approved', true)
-                    ->orWhereNull(Form::getTableName().'.approved');
-            })->get();
-
-        $quantityReceivedItems = [];
-
-        foreach ($tempArray as $value) {
-            $quantityReceivedItems[$value['purchase_order_item_id']] = $value['sum_received'];
-        }
-
         foreach ($purchaseOrder->items as $purchaseOrderItem) {
             $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;
             if ($purchaseOrderItem->quantity - $quantityReceived > 0) {
@@ -131,8 +121,6 @@ class PurchaseReceive extends TransactionModel
             $purchaseOrder->form->done = true;
             $purchaseOrder->form->save();
         }
-
-        $purchaseReceive->form();
 
         return $purchaseReceive;
     }

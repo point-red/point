@@ -23,7 +23,8 @@ class PurchaseReceiveController extends Controller
         $purchaseReceives = PurchaseReceive::eloquentFilter($request)
             ->join(Supplier::getTableName(), PurchaseReceive::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
             ->select(PurchaseReceive::getTableName('*'))
-            ->isNotArchived()
+            ->joinForm()
+            ->notArchived()
             ->with('form');
 
         $purchaseReceives = pagination($purchaseReceives, $request->get('limit'));

@@ -23,7 +23,8 @@ class PurchaseInvoiceController extends Controller
         $purchaseInvoices = PurchaseInvoice::eloquentFilter($request)
             ->join(Supplier::getTableName(), PurchaseInvoice::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
             ->select(PurchaseInvoice::getTableName('*'))
-            ->isNotArchived()
+            ->joinForm()
+            ->notArchived()
             ->with('form');
 
         $purchaseInvoices = pagination($purchaseInvoices, $request->get('limit'));

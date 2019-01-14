@@ -25,7 +25,8 @@ class PurchaseOrderController extends Controller
         $purchaseOrders = PurchaseOrder::eloquentFilter($request)
             ->join(Supplier::getTableName(), PurchaseOrder::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
             ->select(PurchaseOrder::getTableName('*'))
-            ->isNotArchived()
+            ->joinForm()
+            ->notArchived()
             ->with('form');
 
         $purchaseOrders = pagination($purchaseOrders, $request->get('limit'));

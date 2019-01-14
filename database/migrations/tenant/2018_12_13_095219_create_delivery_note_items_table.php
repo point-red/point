@@ -16,7 +16,6 @@ class CreateDeliveryNoteItemsTable extends Migration
         Schema::create('delivery_note_items', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('delivery_note_id');
-            $table->unsignedInteger('delivery_order_id');
             $table->unsignedInteger('delivery_order_item_id');
             $table->unsignedInteger('item_id');
             $table->decimal('quantity', 65, 30);
@@ -30,7 +29,6 @@ class CreateDeliveryNoteItemsTable extends Migration
             $table->unsignedInteger('allocation_id')->nullable();
 
             $table->foreign('delivery_note_id')->references('id')->on('delivery_notes')->onDelete('cascade');
-            $table->foreign('delivery_order_id')->references('id')->on('delivery_orders')->onDelete('cascade');
             $table->foreign('delivery_order_item_id')->references('id')->on('delivery_order_items')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');
             $table->foreign('allocation_id')->references('id')->on('allocations')->onDelete('restrict');

@@ -21,11 +21,10 @@ class DeliveryNoteController extends Controller
     public function index(Request $request)
     {
         $deliveryNote = DeliveryNote::eloquentFilter($request)
-            ->join(Form::getTableName(), DeliveryNote::getTableName('id'), '=', Form::getTableName('formable_id'))
             ->join(Customer::getTableName(), DeliveryNote::getTableName('customer_id'), '=', Customer::getTableName('id'))
             ->select(DeliveryNote::getTableName('*'))
-            ->where(Form::getTableName('formable_type'), DeliveryNote::class)
-            ->whereNotNull(Form::getTableName('number'))
+            ->joinForm()
+            ->notArchived()
             ->with('form');
 
         $deliveryNote = pagination($deliveryNote, $request->get('limit'));

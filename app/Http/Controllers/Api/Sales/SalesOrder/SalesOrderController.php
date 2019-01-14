@@ -22,9 +22,9 @@ class SalesOrderController extends Controller
     public function index(Request $request)
     {
         $salesOrders = SalesOrder::eloquentFilter($request)
-            ->joinForm()
             ->join(Customer::getTableName(), SalesOrder::getTableName('customer_id'), '=', Customer::getTableName('id'))
             ->select(SalesOrder::getTableName('*'))
+            ->joinForm()
             ->notArchived()
             ->with('form');
 

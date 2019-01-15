@@ -63,20 +63,20 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping
         $from_sub_q = "FROM " . config('database.connections.tenant.database') . ".scale_weight_items 
                 WHERE license_number = t.license_number AND time BETWEEN t.time_in AND t.time_out ) as";
         $merge = DB::table(config('database.connections.tenant.database') . '.scale_weight_trucks as t')
-            ->whereRaw("DATE_FORMAT(time_in, '%Y-%m-%d') >= '$this->dateFrom'")
-            ->whereRaw("DATE_FORMAT(time_in, '%Y-%m-%d') <= '$this->dateTo'")
-            ->select('license_number', DB::raw("DATE_FORMAT(time_in, '%Y-%m-%d') as date_in"),
-                DB::raw("DATE_FORMAT(time_out, '%Y-%m-%d') as date_out"),
-                DB::raw("DATE_FORMAT(time_in, '%r') as time_in"),
-                DB::raw("DATE_FORMAT(time_out, '%r') as time_out"),
+            ->whereRaw("time_in >= '$this->dateFrom'")
+            ->whereRaw("time_in <= '$this->dateTo'")
+            ->select('license_number', DB::raw("DATE_FORMAT(time_in, '%d/%m/%Y') as date_in"),
+                DB::raw("DATE_FORMAT(time_out, '%d/%m/%Y') as date_out"),
+                DB::raw("DATE_FORMAT(time_in, '%T:%i:%s') as time_in"),
+                DB::raw("DATE_FORMAT(time_out, '%T:%i:%s') as time_out"),
                 'gross_weight', 'net_weight', 'tare_weight', 'machine_code', 'vendor', 'driver', 'form_number',
                 'item', 'user',
                 DB::raw("(SELECT SUM(gross_weight) $from_sub_q item_gross_weight"),
                 DB::raw("(SELECT SUM(net_weight) $from_sub_q item_net_weight"),
                 DB::raw("(SELECT SUM(tare_weight) $from_sub_q item_tare_weight"),
                 DB::raw("(SELECT MAX(vendor) $from_sub_q item_vendor"),
-                DB::raw("(SELECT MAX(DATE_FORMAT(time, '%Y-%m-%d')) $from_sub_q item_date"),
-                DB::raw("(SELECT MAX(DATE_FORMAT(time, '%r')) $from_sub_q item_time"),
+                DB::raw("(SELECT MAX(DATE_FORMAT(time, '%d/%m/%Y')) $from_sub_q item_date"),
+                DB::raw("(SELECT MAX(DATE_FORMAT(time, '%T:%i:%s')) $from_sub_q item_time"),
                 DB::raw("(SELECT MAX(driver) $from_sub_q item_driver"),
                 DB::raw("(SELECT MAX(user) $from_sub_q item_user"),
                 DB::raw("(SELECT MAX(machine_code) $from_sub_q item_machine_code"),

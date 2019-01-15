@@ -7,6 +7,7 @@ Route::prefix('plugin')->namespace('Plugin')->group(function () {
         Route::post('items/export', 'ScaleWeightItemExportController@export');
         Route::apiResource('items', 'ScaleWeightItemController');
         Route::post('merge/export', 'ScaleWeightMergeExportController@export');
+        Route::get('merge/item', 'ScaleWeightMergeController@item');
         Route::apiResource('merge', 'ScaleWeightMergeController');
     });
 });

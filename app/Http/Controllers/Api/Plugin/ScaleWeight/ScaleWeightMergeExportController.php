@@ -23,7 +23,16 @@ class ScaleWeightMergeExportController extends Controller
             . date('dMY', strtotime($request->get('date_to')));
         $fileExt = 'xlsx';
         $path = 'tmp/' . $tenant . '/' . $key . '.' . $fileExt;
-        $result = Excel::store(new ScaleWeightMergeExport($request->get('date_from'), $request->get('date_to'),$request->get('header')), $path, env('STORAGE_DISK'));
+        $cat = ($request->has('cat')) ? $request->get('cat') : [];
+        $result = Excel::store(
+            new ScaleWeightMergeExport(
+                $request->get('date_from'),
+                $request->get('date_to'),
+                $request->get('header'),
+                $cat
+            ),
+            $path, env('STORAGE_DISK')
+        );
 
         if (!$result) {
             return response()->json([

@@ -6,9 +6,9 @@ use App\Model\Master\Item;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 
-class GroupType
+class GroupClassReference
 {
-    private static $typeClass = [
+    private static $classReference = [
         'supplier' => Supplier::class,
         'customer' => Customer::class,
         'item' => Item::class,
@@ -16,12 +16,12 @@ class GroupType
 
     public static $isNotAvailableResponse = [
         'code' => 400,
-        'message' => 'Group type is not available',
+        'message' => 'Group class reference is not valid',
     ];
 
     public static function isAvailable($groupType)
     {
-        if (! array_key_exists($groupType, self::$typeClass)) {
+        if (! array_key_exists($groupType, self::$classReference)) {
             return false;
         }
 
@@ -30,7 +30,7 @@ class GroupType
 
     public static function getTypeClass($type)
     {
-        foreach (self::$typeClass as $key => $value) {
+        foreach (self::$classReference as $key => $value) {
             if ($key == $type) {
                 return $value;
             }

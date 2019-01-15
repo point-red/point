@@ -67,7 +67,7 @@ class SupplierController extends Controller
             if (! $group) {
                 $group = new Group;
                 $group->name = $request->get('group')['name'];
-                $group->type = Supplier::class;
+                $group->class_reference = Supplier::class;
                 $group->save();
             }
 
@@ -128,7 +128,7 @@ class SupplierController extends Controller
             if (! $group) {
                 $group = new Group;
                 $group->name = $request->get('group')['name'];
-                $group->type = Supplier::class;
+                $group->class_reference = Supplier::class;
                 $group->save();
             }
 

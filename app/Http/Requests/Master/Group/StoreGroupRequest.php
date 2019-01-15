@@ -3,7 +3,7 @@
 namespace App\Http\Requests\Master\Group;
 
 use App\Model\Master\Group;
-use App\Helpers\Master\GroupType;
+use App\Helpers\Master\GroupClassReference;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreGroupRequest extends FormRequest
@@ -29,7 +29,7 @@ class StoreGroupRequest extends FormRequest
             'name' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    if (Group::where('name', $value)->where('type', GroupType::getTypeClass($this->type))->count() > 0) {
+                    if (Group::where('name', $value)->where('type', GroupClassReference::getTypeClass($this->type))->count() > 0) {
                         $fail($attribute.' is already exists.');
                     }
                 },

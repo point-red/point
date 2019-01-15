@@ -3,7 +3,7 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
-use App\Helpers\Master\GroupType;
+use App\Helpers\Master\GroupClassReference;
 
 class Group extends MasterModel
 {
@@ -57,8 +57,8 @@ class Group extends MasterModel
      * @param  string  $value
      * @return void
      */
-    public function setTypeAttribute($value)
+    public function setClassReferenceAttribute($value)
     {
-        $this->attributes['type'] = GroupType::getTypeClass($value);
+        $this->attributes['class_reference'] = GroupClassReference::getTypeClass($value);
     }
 }

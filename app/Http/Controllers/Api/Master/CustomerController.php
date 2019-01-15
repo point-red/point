@@ -67,7 +67,7 @@ class CustomerController extends Controller
             if (! $group) {
                 $group = new Group;
                 $group->name = $request->get('group')['name'];
-                $group->type = Customer::class;
+                $group->class_reference = Customer::class;
                 $group->save();
             }
 
@@ -128,7 +128,7 @@ class CustomerController extends Controller
             if (! $group) {
                 $group = new Group;
                 $group->name = $request->get('group')['name'];
-                $group->type = Customer::class;
+                $group->class_reference = Customer::class;
                 $group->save();
             }
 

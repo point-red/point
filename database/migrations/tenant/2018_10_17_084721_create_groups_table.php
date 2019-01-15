@@ -15,7 +15,8 @@ class CreateGroupsTable extends Migration
     {
         Schema::create('groups', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('type');
+            $table->string('type')->nullable();
+            $table->string('class_reference'); // it is full namespace model from master
             $table->string('code')->nullable();
             $table->string('name');
             $table->unsignedInteger('created_by')->index()->nullable();

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Master;
 
 use App\Model\Master\Group;
 use Illuminate\Http\Request;
-use App\Helpers\Master\GroupType;
+use App\Helpers\Master\GroupClassReference;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
@@ -21,13 +21,13 @@ class GroupController extends Controller
      */
     public function index(Request $request)
     {
-        $groupType = $request->get('type');
+        $groupClassReference = $request->get('class_reference');
 
-        if (! GroupType::isAvailable($groupType)) {
-            return response()->json(GroupType::$isNotAvailableResponse);
+        if (! GroupClassReference::isAvailable($groupClassReference)) {
+            return response()->json(GroupClassReference::$isNotAvailableResponse);
         }
 
-        $groups = Group::where('type', GroupType::getTypeClass($groupType))
+        $groups = Group::where('class_reference', GroupClassReference::getTypeClass($groupClassReference))
             ->eloquentFilter($request)
             ->paginate($request->get('limit') ?? 20);
 
@@ -42,10 +42,10 @@ class GroupController extends Controller
      */
     public function store(StoreGroupRequest $request)
     {
-        $groupType = $request->get('type');
+        $groupClassReference = $request->get('class_reference');
 
-        if (! GroupType::isAvailable($groupType)) {
-            return response()->json(GroupType::$isNotAvailableResponse);
+        if (! GroupClassReference::isAvailable($groupClassReference)) {
+            return response()->json(GroupClassReference::$isNotAvailableResponse);
         }
 
         $group = Group::create($request->all());

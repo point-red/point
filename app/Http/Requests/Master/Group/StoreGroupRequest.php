@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Master\Group;
 
-use App\Model\Master\Group;
 use App\Helpers\Master\GroupClassReference;
+use App\Model\Master\Group;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreGroupRequest extends FormRequest
@@ -29,8 +29,9 @@ class StoreGroupRequest extends FormRequest
             'name' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    if (Group::where('name', $value)->where('type', GroupClassReference::getTypeClass($this->type))->count() > 0) {
-                        $fail($attribute.' is already exists.');
+                    $classReference = GroupClassReference::getTypeClass($this->class_reference);
+                    if (Group::where('name', $value)->where('type', $classReference)->count() > 0) {
+                        $fail($attribute . ' is already exists.');
                     }
                 },
             ],

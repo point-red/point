@@ -97,12 +97,12 @@ class PurchaseReceive extends TransactionModel
         $purchaseOrderItemIds = $purchaseOrder->items->pluck('id')->all();
 
         $tempArray = PurchaseReceive::joinForm()
-            ->isActive()
             ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
             ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
             ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
             ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
             ->groupBy('purchase_order_item_id')
+            ->active()
             ->get();
 
         $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');

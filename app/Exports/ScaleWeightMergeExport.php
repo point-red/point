@@ -110,8 +110,12 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
     public function map($row): array
     {
         $a = [];
+        $x = ['Time In', 'Time Out', 'Time'];
         foreach ($this->headers as $header) {
-            $a[] = $row->{$this->key[$header]};
+            if (in_array($header, $x))
+                $a[] = $row->{$this->key[$header]}." ";
+            else
+                $a[] = $row->{$this->key[$header]};
         }
         return $a;
     }
@@ -126,7 +130,7 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
         $i = 0;
         foreach ($this->key as $key => $value) {
             if (in_array($key, $a)) {
-                $format[chr($i + 65)] = NumberFormat::FORMAT_NUMBER_00;
+                $format[chr($i + 65)] = NumberFormat::FORMAT_TEXT;
             }
             $i++;
         }

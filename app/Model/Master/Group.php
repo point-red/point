@@ -2,14 +2,14 @@
 
 namespace App\Model\Master;
 
-use App\Model\MasterModel;
 use App\Helpers\Master\GroupClassReference;
+use App\Model\MasterModel;
 
 class Group extends MasterModel
 {
     protected $connection = 'tenant';
 
-    protected $fillable = ['name', 'code', 'type'];
+    protected $fillable = ['name', 'code', 'type', 'class_reference'];
 
     /**
      * Get all of the suppliers that are assigned this group.

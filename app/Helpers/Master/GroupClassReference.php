@@ -2,8 +2,8 @@
 
 namespace App\Helpers\Master;
 
-use App\Model\Master\Item;
 use App\Model\Master\Customer;
+use App\Model\Master\Item;
 use App\Model\Master\Supplier;
 
 class GroupClassReference
@@ -21,7 +21,7 @@ class GroupClassReference
 
     public static function isAvailable($groupType)
     {
-        if (! array_key_exists($groupType, self::$classReference)) {
+        if (!array_key_exists($groupType, self::$classReference)) {
             return false;
         }
 
@@ -30,10 +30,6 @@ class GroupClassReference
 
     public static function getTypeClass($type)
     {
-        foreach (self::$classReference as $key => $value) {
-            if ($key == $type) {
-                return $value;
-            }
-        }
+        return self::$classReference[$type] ?? null;
     }
 }

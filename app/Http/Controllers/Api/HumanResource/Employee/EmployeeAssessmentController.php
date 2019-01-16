@@ -49,7 +49,7 @@ class EmployeeAssessmentController extends Controller
             $kpis = $kpis->groupBy(DB::raw('year(kpis.date)'));
         }
 
-        $kpis = $kpis->where('employee_id', $employeeId)->orderBy('kpis.date', 'asc')->paginate(20);
+        $kpis = $kpis->where('employee_id', $employeeId)->orderBy('kpis.date', 'asc')->get();
 
         $dates = [];
         $scores = [];

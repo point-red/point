@@ -45,8 +45,8 @@ class ScaleWeightMergeController extends Controller
         if ($request->has('cat')) {
             $merge->whereIn('t.item', $request->cat);
         } else{
-            //karena jika tidak ada yg dipilih akan ditampilkan semua
-            //maka jika tidak ada yg dipilih saya tambahkan ~
+            // with assumption there is no item have name "~"
+            // so it will show nothing
             $merge->whereIn('t.item', ['~']);
         }
 

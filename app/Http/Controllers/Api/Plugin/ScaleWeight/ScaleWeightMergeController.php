@@ -26,6 +26,7 @@ class ScaleWeightMergeController extends Controller
                 DB::raw("DATE_FORMAT(time_out, '%H.%i') as time_out"),
                 'gross_weight', 'net_weight', 'tare_weight', 'machine_code', 'vendor', 'driver', 'form_number',
                 'item', 'user',
+                DB::raw("(SELECT COUNT(*) $from_sub_q box"),
                 DB::raw("(SELECT SUM(gross_weight) $from_sub_q item_gross_weight"),
                 DB::raw("(SELECT SUM(net_weight) $from_sub_q item_net_weight"),
                 DB::raw("(SELECT SUM(tare_weight) $from_sub_q item_tare_weight"),

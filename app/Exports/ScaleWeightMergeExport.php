@@ -8,15 +8,15 @@
 
 namespace App\Exports;
 
-
-use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping
+class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, WithColumnFormatting
 {
 
     private $key = [
@@ -51,8 +51,8 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping
     {
         $this->headers = $headers;
         $this->cat = $cat;
-        $this->dateFrom = date('Y-m-d', strtotime($dateFrom));
-        $this->dateTo = date('Y-m-d', strtotime($dateTo));
+        $this->dateFrom = $dateFrom;
+        $this->dateTo = $dateTo;
     }
 
     /**
@@ -114,5 +114,22 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping
             $a[] = $row->{$this->key[$header]};
         }
         return $a;
+    }
+
+    /**
+     * @return array
+     */
+    public function columnFormats(): array
+    {
+        $a = ['Time In', 'Time Out', 'Time'];
+        $format = [];
+        $i = 0;
+        foreach ($this->key as $key => $value) {
+            if (in_array($key, $a)) {
+                $format[chr($i + 65)] = NumberFormat::FORMAT_NUMBER_00;
+            }
+            $i++;
+        }
+        return $format;
     }
 }

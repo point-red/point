@@ -17,8 +17,8 @@ class ScaleWeightTruckExport implements FromQuery, WithHeadings, WithMapping
      */
     public function __construct(string $dateFrom, string $dateTo)
     {
-        $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
-        $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
+        $this->dateFrom = $dateFrom;
+        $this->dateTo = $dateTo;
     }
 
     /**

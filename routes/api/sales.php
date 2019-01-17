@@ -6,7 +6,7 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     // Route::apiResource('downpayment', 'DownpaymentController');
     Route::apiResource('delivery-orders', 'DeliveryOrder\\DeliveryOrderController');
     Route::apiResource('delivery-notes', 'DeliveryNote\\DeliveryNoteController');
-    Route::apiResource('invoice', 'SalesInvoice\\SalesInvoiceController');
-    // Route::apiResource('return', 'ReturnController');
+    Route::apiResource('sales-invoice', 'SalesInvoice\\SalesInvoiceController');
+    // Route::apiResource('sales-return', 'ReturnController');
     // Route::apiResource('payment-collection', 'PaymentCollectionController');
 });

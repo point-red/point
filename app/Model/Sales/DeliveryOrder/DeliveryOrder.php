@@ -17,7 +17,6 @@ class DeliveryOrder extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'customer_id',
         'warehouse_id',
         'sales_order_id',
     ];
@@ -47,9 +46,42 @@ class DeliveryOrder extends TransactionModel
         return $this->belongsTo(Warehouse::class);
     }
 
+    public function updateIfDone()
+    {
+        $deliveryOrderItems = $deliveryOrder->items;
+        $deliveryOrderItemIds = $deliveryOrder->items->pluck('id');
+
+        $tempArray = DeliveryNote::joinForm()
+            ->join(DeliveryNote::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_order_id'))
+            ->groupBy('delivery_order_item_id')
+            ->select('delivery_order_items.delivery_order_item_id')
+            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
+            ->whereIn('delivery_order_item_id', $deliveryOrderItemIds)
+            ->active()
+            ->get();
+
+        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'delivery_order_item_id');
+
+        // Make form done when all items delivered
+        $done = true;
+        foreach ($deliveryOrderItems as $deliveryOrderItem) {
+            $quantityDelivered = $quantityDeliveredItems[$deliveryOrderItem->id] ?? 0;
+            if ($deliveryOrderItem->quantity - $quantityDelivered > 0) {
+                $done = false;
+                break;
+            }
+        }
+
+        if ($done == true) {
+            $this->form->done = true;
+            $this->form->save();
+        }
+    }
+
     public static function create($data)
     {
         $salesOrder = SalesOrder::findOrFail($data['sales_order_id']);
+        // TODO add check if $salesOrder is canceled / rejected / archived
 
         $deliveryOrder = new self;
         $deliveryOrder->fill($data);
@@ -67,8 +99,9 @@ class DeliveryOrder extends TransactionModel
         );
         $form->save();
 
+        // TODO items is required and must be array
         $array = [];
-        $items = $data['items'] ?? [];
+        $items = $data['items'];
         foreach ($items as $item) {
             $deliveryOrderItem = new DeliveryOrderItem;
             $deliveryOrderItem->fill($item);
@@ -77,33 +110,7 @@ class DeliveryOrder extends TransactionModel
         }
         $deliveryOrder->items()->saveMany($array);
 
-        $salesOrderItemIds = $salesOrder->items->pluck('id');
-
-        $tempArray = DeliveryOrder::joinForm()
-            ->join(DeliveryOrderItem::getTableName(), DeliveryOrder::getTableName('id'), '=', DeliveryOrderItem::getTableName('delivery_order_id'))
-            ->groupBy('sales_order_item_id')
-            ->select(DeliveryOrderItem::getTableName('sales_order_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
-            ->whereIn('sales_order_item_id', $salesOrderItemIds)
-            ->active()
-            ->get();
-
-        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'sales_order_item_id');
-
-        // Make form done when all item delivered
-        $done = true;
-        foreach ($salesOrder->items as $salesOrderItem) {
-            $quantityDelivered = $quantityDeliveredItems[$salesOrderItem->id] ?? 0;
-            if ($salesOrderItem->quantity - $quantityDelivered > 0) {
-                $done = false;
-                break;
-            }
-        }
-
-        if ($done == true) {
-            $salesOrder->form->done = true;
-            $salesOrder->form->save();
-        }
+        $salesOrder->updateIfDone();
 
         return $deliveryOrder;
     }

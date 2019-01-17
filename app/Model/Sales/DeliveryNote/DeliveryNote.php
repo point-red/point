@@ -17,7 +17,6 @@ class DeliveryNote extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'customer_id',
         'warehouse_id',
         'delivery_order_id',
     ];
@@ -50,6 +49,7 @@ class DeliveryNote extends TransactionModel
     public static function create($data)
     {
         $deliveryOrder = DeliveryOrder::findOrFail($data['delivery_order_id']);
+        // TODO add check if $salesOrder is canceled / rejected / archived
 
         $deliveryNote = new self;
         $deliveryNote->fill($data);
@@ -67,8 +67,9 @@ class DeliveryNote extends TransactionModel
         );
         $form->save();
 
+        // TODO items is required and must be array
         $array = [];
-        $items = $data['items'] ?? [];
+        $items = $data['items'];
         foreach ($items as $item) {
             $deliveryNoteItem = new DeliveryOrderItem;
             $deliveryNoteItem->fill($item);
@@ -77,35 +78,7 @@ class DeliveryNote extends TransactionModel
         }
         $deliveryNote->items()->saveMany($array);
 
-        $deliveryOrderItemIds = $deliveryOrder->items->pluck('id');
-
-        $tempArray = DeliveryNote::joinForm()
-            ->join(DeliveryNote::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_order_id'))
-            ->groupBy('delivery_order_item_id')
-            ->select('delivery_order_items.delivery_order_item_id')
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
-            ->whereIn('delivery_order_item_id', $deliveryOrderItemIds)
-            ->active()
-            ->get();
-
-        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'delivery_order_item_id');
-
-        // Make form done when all item delivered
-        $done = true;
-        foreach ($deliveryOrder->items as $deliveryOrderItem) {
-            $quantityDelivered = $quantityDeliveredItems[$deliveryOrderItem->id] ?? 0;
-            if ($deliveryOrderItem->quantity - $quantityDelivered > 0) {
-                $done = false;
-                break;
-            }
-        }
-
-        if ($done == true) {
-            $deliveryOrder->form->done = true;
-            $deliveryOrder->form->save();
-        }
-
-        $deliveryNote->form();
+        $deliveryOrder->updateIfDone();
 
         return $deliveryNote;
     }

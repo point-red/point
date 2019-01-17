@@ -72,7 +72,6 @@ class PurchaseInvoice extends TransactionModel
 
     public static function create($data)
     {
-        // TODO add validation to exclude : canceled / rejected / done purchase receives
         $purchaseReceives = PurchaseReceive::joinForm()
             ->active()
             ->notDone()
@@ -81,7 +80,7 @@ class PurchaseInvoice extends TransactionModel
             ->with('services')
             ->get();
 
-        // TODO check if $purchaseReceives contains at least 1 record and return error
+        // TODO check if $purchaseReceives contains at least 1 record and return error if 0 records
 
         $purchaseInvoice = new self;
         $purchaseInvoice->fill($data);
@@ -99,18 +98,10 @@ class PurchaseInvoice extends TransactionModel
         );
         $form->save();
 
-        $dataItems = $data['items'];
-        if (isset($dataItems) && is_array($dataItems)) {
-            $items = [];
-            foreach ($dataItems as $item) {
-                $itemId = $item['item_id'];
-                $items[$itemId] = array(
-                    'price' => $item['price'],
-                    'discount_percent' => $item['discount_percent'] ?? null,
-                    'discount_value' => $item['discount_value'] ?? 0,
-                    'taxable' => $item['taxable'] ?? true,
-                );
-            }
+        // TODO validation items is optional and must be array
+        $dataItems = $data['items'] ?? [];
+        if (!empty($dataItems) && is_array($dataItems)) {
+            $items = array_column($dataItems, null, 'item_id');
 
             $array = [];
             foreach ($purchaseReceives as $purchaseReceive) {
@@ -138,19 +129,10 @@ class PurchaseInvoice extends TransactionModel
             $purchaseInvoice->items()->saveMany($array);
         }
 
-        // TODO make services required if items is null
+        // TODO validation services is required if items is null and must be array
         $dataServices = $data['services'] ?? [];
-        if (isset($dataServices) && is_array($dataServices)) {
-            $services = [];
-            foreach ($dataServices as $value) {
-                $serviceId = $service['service_id'];
-                $services[$serviceId] = array(
-                    'price' => $value['price'],
-                    'discount_percent' => $value['discount_percent'] ?? null,
-                    'discount_value' => $value['discount_value'] ?? 0,
-                    'taxable' => $value['taxable'] ?? 0,
-                );
-            }
+        if (!empty($dataServices) && is_array($dataServices)) {
+            $services = array_column($dataServices, null, 'service_id');
 
             $array = [];
             foreach ($purchaseReceives as $purchaseReceive) {

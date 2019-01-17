@@ -79,28 +79,34 @@ class PurchaseReceive extends TransactionModel
         );
         $form->save();
 
+        // TODO validation items is optional and must be array
         $array = [];
         $items = $data['items'] ?? [];
-        foreach ($items as $item) {
-            $purchaseReceiveItem = new PurchaseReceiveItem;
-            $purchaseReceiveItem->fill($item);
-            $purchaseReceiveItem->purchase_receive_id = $purchaseReceive->id;
-            array_push($array, $purchaseReceiveItem);
+        if (!empty($items) && is_array($items)) {
+            foreach ($items as $item) {
+                $purchaseReceiveItem = new PurchaseReceiveItem;
+                $purchaseReceiveItem->fill($item);
+                $purchaseReceiveItem->purchase_receive_id = $purchaseReceive->id;
+                array_push($array, $purchaseReceiveItem);
+            }
+            $purchaseReceive->items()->saveMany($array);
         }
-        $purchaseReceive->items()->saveMany($array);
 
+        // TODO validation services is required if items is null and must be array
         $array = [];
         $services = $data['services'] ?? [];
-        foreach ($services as $service) {
-            $purchaseReceiveService = new PurchaseReceiveService;
-            $purchaseReceiveService->fill($service);
-            $purchaseReceiveService->purchase_receive_id = $purchaseReceive->id;
-            array_push($array, $purchaseReceiveService);
+        if (!empty($services) && is_array($services)) {
+            foreach ($services as $service) {
+                $purchaseReceiveService = new PurchaseReceiveService;
+                $purchaseReceiveService->fill($service);
+                $purchaseReceiveService->purchase_receive_id = $purchaseReceive->id;
+                array_push($array, $purchaseReceiveService);
+            }
+            $purchaseReceive->services()->saveMany($array);
         }
-        $purchaseReceive->services()->saveMany($array);
 
         if (isset($purchaseOrder)) {
-            $purchaseOrder->updateDone();
+            $purchaseOrder->updateIfDone();
         }
 
         return $purchaseReceive;

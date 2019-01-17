@@ -57,28 +57,37 @@ class TransferKpiScoreCommand extends Command
 
                 foreach ($kpiGroup->indicators as $kpiIndicator) {
 
-                    $kpi_template_scores = KpiTemplateScore::join('kpi_template_indicators', 'kpi_template_indicators.id', '=', 'kpi_template_scores.kpi_template_indicator_id')
-                        ->join('kpi_template_groups', 'kpi_template_groups.id', '=', 'kpi_template_indicators.kpi_template_group_id')
-                        ->join('kpi_templates', 'kpi_templates.id', '=', 'kpi_template_groups.kpi_template_id')
-                        ->select('kpi_template_scores.*')
-
-                        ->where('kpi_template_indicators.name', $kpiIndicator['name'])
-                        ->where('kpi_template_indicators.weight', $kpiIndicator['weight'])
-                        ->where('kpi_template_indicators.target', $kpiIndicator['target'])
-
-                        ->where('kpi_template_groups.name', $kpiGroup['name'])
-
-                        ->where('kpi_templates.name', $kpi['name'])
-
-                        ->get();
-
                     if (count($kpiIndicator->scores) == 0) {
-                        foreach ($kpi_template_scores as $kpi_template_score) {
+                        $kpi_template_scores = KpiTemplateScore::join('kpi_template_indicators', 'kpi_template_indicators.id', '=', 'kpi_template_scores.kpi_template_indicator_id')
+                            ->join('kpi_template_groups', 'kpi_template_groups.id', '=', 'kpi_template_indicators.kpi_template_group_id')
+                            ->join('kpi_templates', 'kpi_templates.id', '=', 'kpi_template_groups.kpi_template_id')
+                            ->select('kpi_template_scores.*')
+
+                            ->where('kpi_template_indicators.name', $kpiIndicator['name'])
+                            ->where('kpi_template_indicators.weight', $kpiIndicator['weight'])
+                            ->where('kpi_template_indicators.target', $kpiIndicator['target'])
+
+                            ->where('kpi_template_groups.name', $kpiGroup['name'])
+
+                            ->where('kpi_templates.name', $kpi['name'])
+
+                            ->get();
+
+                        if (count($kpi_template_scores) == 0) {
                             $kpiScore = new KpiScore();
                             $kpiScore->kpi_indicator_id = $kpiIndicator['id'];
-                            $kpiScore->description = $kpi_template_score['description'];
-                            $kpiScore->score = $kpi_template_score['score'];
+                            $kpiScore->description = $kpiIndicator['score_description'];
+                            $kpiScore->score = $kpiIndicator['score'];
                             $kpiScore->save();
+                        }
+                        else {
+                            foreach ($kpi_template_scores as $kpi_template_score) {
+                                $kpiScore = new KpiScore();
+                                $kpiScore->kpi_indicator_id = $kpiIndicator['id'];
+                                $kpiScore->description = $kpi_template_score['description'];
+                                $kpiScore->score = $kpi_template_score['score'];
+                                $kpiScore->save();
+                            }
                         }
                     }
                 }

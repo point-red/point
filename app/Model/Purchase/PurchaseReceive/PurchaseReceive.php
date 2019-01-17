@@ -56,11 +56,16 @@ class PurchaseReceive extends TransactionModel
 
     public static function create($data)
     {
-        $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
-
         $purchaseReceive = new self;
         $purchaseReceive->fill($data);
-        $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
+
+        if (isset($data['purchase_order_id'])) {
+            $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
+            // TODO maybe need to add additional check
+            // if the $purchaseOrder canceled / rejected / archived
+            $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
+        }
+
         $purchaseReceive->save();
 
         $form = new Form;
@@ -94,32 +99,8 @@ class PurchaseReceive extends TransactionModel
         }
         $purchaseReceive->services()->saveMany($array);
 
-        $purchaseOrderItemIds = $purchaseOrder->items->pluck('id')->all();
-
-        $tempArray = PurchaseReceive::joinForm()
-            ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
-            ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
-            ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
-            ->groupBy('purchase_order_item_id')
-            ->active()
-            ->get();
-
-        $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');
-
-        // Make form done when all item received
-        $done = true;
-        foreach ($purchaseOrder->items as $purchaseOrderItem) {
-            $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;
-            if ($purchaseOrderItem->quantity - $quantityReceived > 0) {
-                $done = false;
-                break;
-            }
-        }
-
-        if ($done == true) {
-            $purchaseOrder->form->done = true;
-            $purchaseOrder->form->save();
+        if (isset($purchaseOrder)) {
+            $purchaseOrder->updateDone();
         }
 
         return $purchaseReceive;

@@ -72,6 +72,38 @@ class PurchaseOrder extends TransactionModel
         return $this->belongsTo(Warehouse::class);
     }
 
+    public function updateDone()
+    {
+        $purchaseOrderItems = $this->items;
+        $purchaseOrderItemIds = $purchaseOrderItems->pluck('id')->all();
+
+        $tempArray = PurchaseReceive::joinForm()
+            ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
+            ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
+            ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
+            ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
+            ->groupBy('purchase_order_item_id')
+            ->active()
+            ->get();
+
+        $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');
+
+        // Make form done when all item received
+        $done = true;
+        foreach ($purchaseOrderItems as $purchaseOrderItem) {
+            $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;
+            if ($purchaseOrderItem->quantity - $quantityReceived > 0) {
+                $done = false;
+                break;
+            }
+        }
+
+        if ($done === true) {
+            $this->form->done = true;
+            $this->form->save();
+        }
+    }
+
     public static function create($data)
     {
         $purchaseOrder = new self;

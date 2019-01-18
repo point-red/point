@@ -56,11 +56,16 @@ class PurchaseReceive extends TransactionModel
 
     public static function create($data)
     {
-        $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
-
         $purchaseReceive = new self;
         $purchaseReceive->fill($data);
-        $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
+
+        if (isset($data['purchase_order_id'])) {
+            $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
+            // TODO maybe need to add additional check
+            // if the $purchaseOrder canceled / rejected / archived
+            $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
+        }
+
         $purchaseReceive->save();
 
         $form = new Form;
@@ -74,52 +79,34 @@ class PurchaseReceive extends TransactionModel
         );
         $form->save();
 
+        // TODO validation items is optional and must be array
         $array = [];
         $items = $data['items'] ?? [];
-        foreach ($items as $item) {
-            $purchaseReceiveItem = new PurchaseReceiveItem;
-            $purchaseReceiveItem->fill($item);
-            $purchaseReceiveItem->purchase_receive_id = $purchaseReceive->id;
-            array_push($array, $purchaseReceiveItem);
+        if (!empty($items) && is_array($items)) {
+            foreach ($items as $item) {
+                $purchaseReceiveItem = new PurchaseReceiveItem;
+                $purchaseReceiveItem->fill($item);
+                $purchaseReceiveItem->purchase_receive_id = $purchaseReceive->id;
+                array_push($array, $purchaseReceiveItem);
+            }
+            $purchaseReceive->items()->saveMany($array);
         }
-        $purchaseReceive->items()->saveMany($array);
 
+        // TODO validation services is required if items is null and must be array
         $array = [];
         $services = $data['services'] ?? [];
-        foreach ($services as $service) {
-            $purchaseReceiveService = new PurchaseReceiveService;
-            $purchaseReceiveService->fill($service);
-            $purchaseReceiveService->purchase_receive_id = $purchaseReceive->id;
-            array_push($array, $purchaseReceiveService);
-        }
-        $purchaseReceive->services()->saveMany($array);
-
-        $purchaseOrderItemIds = $purchaseOrder->items->pluck('id')->all();
-
-        $tempArray = PurchaseReceive::joinForm()
-            ->isActive()
-            ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
-            ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
-            ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
-            ->groupBy('purchase_order_item_id')
-            ->get();
-
-        $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');
-
-        // Make form done when all item received
-        $done = true;
-        foreach ($purchaseOrder->items as $purchaseOrderItem) {
-            $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;
-            if ($purchaseOrderItem->quantity - $quantityReceived > 0) {
-                $done = false;
-                break;
+        if (!empty($services) && is_array($services)) {
+            foreach ($services as $service) {
+                $purchaseReceiveService = new PurchaseReceiveService;
+                $purchaseReceiveService->fill($service);
+                $purchaseReceiveService->purchase_receive_id = $purchaseReceive->id;
+                array_push($array, $purchaseReceiveService);
             }
+            $purchaseReceive->services()->saveMany($array);
         }
 
-        if ($done == true) {
-            $purchaseOrder->form->done = true;
-            $purchaseOrder->form->save();
+        if (isset($purchaseOrder)) {
+            $purchaseOrder->updateIfDone();
         }
 
         return $purchaseReceive;

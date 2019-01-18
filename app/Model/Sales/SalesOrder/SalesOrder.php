@@ -66,6 +66,38 @@ class SalesOrder extends TransactionModel
         return $this->belongsTo(Warehouse::class);
     }
 
+    public function updateIfDone()
+    {
+        $salesOrderItems = $this->items;
+        $salesOrderItemIds = $salesOrderItems->pluck('id');
+
+        $tempArray = DeliveryOrder::joinForm()
+            ->join(DeliveryOrderItem::getTableName(), DeliveryOrder::getTableName('id'), '=', DeliveryOrderItem::getTableName('delivery_order_id'))
+            ->groupBy('sales_order_item_id')
+            ->select(DeliveryOrderItem::getTableName('sales_order_item_id'))
+            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
+            ->whereIn('sales_order_item_id', $salesOrderItemIds)
+            ->active()
+            ->get();
+
+        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'sales_order_item_id');
+
+        // Make form done when all item delivered
+        $done = true;
+        foreach ($salesOrderItems as $salesOrderItem) {
+            $quantityDelivered = $quantityDeliveredItems[$salesOrderItem->id] ?? 0;
+            if ($salesOrderItem->quantity - $quantityDelivered > 0) {
+                $done = false;
+                break;
+            }
+        }
+
+        if ($done == true) {
+            $this->form->done = true;
+            $this->form->save();
+        }
+    }
+
     public static function create($data)
     {
         $salesOrder = new self;
@@ -83,25 +115,31 @@ class SalesOrder extends TransactionModel
         );
         $form->save();
 
+        // TODO validation items is optional and must be array
         $array = [];
         $items = $data['items'] ?? [];
-        foreach ($items as $item) {
-            $salesOrderItem = new SalesOrderItem;
-            $salesOrderItem->fill($item);
-            $salesOrderItem->sales_order_id = $salesOrder->id;
-            array_push($array, $salesOrderItem);
+        if (!empty($items) && is_array($items)) {
+            foreach ($items as $item) {
+                $salesOrderItem = new SalesOrderItem;
+                $salesOrderItem->fill($item);
+                $salesOrderItem->sales_order_id = $salesOrder->id;
+                array_push($array, $salesOrderItem);
+            }
+            $salesOrder->items()->saveMany($array);
         }
-        $salesOrder->items()->saveMany($array);
 
+        // TODO validation services is required if items is null and must be array
         $array = [];
         $services = $data['services'] ?? [];
-        foreach ($services as $service) {
-            $salesOrderService = new SalesOrderService;
-            $salesOrderService->fill($service);
-            $salesOrderService->sales_order_id = $salesOrder->id;
-            array_push($array, $salesOrderService);
+        if (!empty($services) && is_array($services)) {
+            foreach ($services as $service) {
+                $salesOrderService = new SalesOrderService;
+                $salesOrderService->fill($service);
+                $salesOrderService->sales_order_id = $salesOrder->id;
+                array_push($array, $salesOrderService);
+            }
+            $salesOrder->services()->saveMany($array);
         }
-        $salesOrder->services()->saveMany($array);
 
         return $salesOrder;
     }

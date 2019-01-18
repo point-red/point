@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Model\Master\Item;
-use Illuminate\Http\Request;
-use App\Model\Master\ItemUnit;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
 use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\Item;
+use App\Model\Master\ItemUnit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {
@@ -49,18 +49,21 @@ class ItemController extends Controller
         $item->fill($request->all());
         $item->save();
 
+        // TODO units is required and must be array
         $units = $request->get('units');
         $unitsToBeInserted = [];
-        if ($units) {
-            foreach ($units as $unit) {
-                $itemUnit = new ItemUnit();
-                $itemUnit->fill($unit);
-                array_push($unitsToBeInserted, $itemUnit);
-            }
+        foreach ($units as $unit) {
+            $itemUnit = new ItemUnit();
+            $itemUnit->fill($unit);
+            array_push($unitsToBeInserted, $itemUnit);
         }
         $item->units()->saveMany($unitsToBeInserted);
 
-        $item->groups()->attach($request->get('groups'));
+        // TODO groups is optional and must be array
+        $groups = $request->get('groups');
+        if (isset($groups)) {
+            $item->groups()->attach($groups);
+        }
 
         DB::connection('tenant')->commit();
 
@@ -84,18 +87,21 @@ class ItemController extends Controller
             $newItem->fill($item);
             $newItem->save();
 
+            // TODO units is required and must be array
             $units = $item['units'];
             $unitsToBeInserted = [];
-            if ($units) {
-                foreach ($units as $unit) {
-                    $itemUnit = new ItemUnit();
-                    $itemUnit->fill($unit);
-                    array_push($unitsToBeInserted, $itemUnit);
-                }
+            foreach ($units as $unit) {
+                $itemUnit = new ItemUnit();
+                $itemUnit->fill($unit);
+                array_push($unitsToBeInserted, $itemUnit);
             }
             $newItem->units()->saveMany($unitsToBeInserted);
 
-            $newItem->groups()->attach($item['groups']);
+            // TODO groups is optional and must be array
+            $groups = $item['groups'];
+            if (isset($groups)) {
+                $newItem->groups()->attach($groups);
+            }
         }
 
         DB::connection('tenant')->commit();
@@ -109,9 +115,9 @@ class ItemController extends Controller
      * @param  int  $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $item = Item::eloquentFilter(request())
+        $item = Item::eloquentFilter($request)
             ->with('groups')
             ->with('units')
             ->findOrFail($id);
@@ -134,25 +140,24 @@ class ItemController extends Controller
         $item->fill($request->all());
         $item->save();
 
+        // TODO units is required and must be array
         $units = $request->get('units');
         $unitsToBeInserted = [];
-
-        if ($units) {
-            ItemUnit::where('item_id', $id)->whereNotIn('id', array_column($units, 'id'))->delete();
-            foreach ($units as $unit) {
-                if (isset($unit['id'])) {
-                    $itemUnit = ItemUnit::where('id', $unit['id'])->first();
-                } else {
-                    $itemUnit = new ItemUnit();
-                }
-                $itemUnit->fill($unit);
-                array_push($unitsToBeInserted, $itemUnit);
+        ItemUnit::where('item_id', $id)->whereNotIn('id', array_column($units, 'id'))->delete();
+        foreach ($units as $unit) {
+            if (isset($unit['id'])) {
+                $itemUnit = ItemUnit::where('id', $unit['id'])->first();
+            } else {
+                $itemUnit = new ItemUnit();
             }
+            $itemUnit->fill($unit);
+            array_push($unitsToBeInserted, $itemUnit);
         }
         $item->units()->saveMany($unitsToBeInserted);
 
+        // TODO groups is optional and must be array
         $groups = $request->get('groups');
-        if (is_array($groups)) {
+        if (isset($groups)) {
             $item->groups()->sync($groups);
         }
 

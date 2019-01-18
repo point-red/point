@@ -6,6 +6,7 @@ use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\TransactionModel;
 
@@ -72,6 +73,38 @@ class PurchaseOrder extends TransactionModel
         return $this->belongsTo(Warehouse::class);
     }
 
+    public function updateIfDone()
+    {
+        $purchaseOrderItems = $this->items;
+        $purchaseOrderItemIds = $purchaseOrderItems->pluck('id');
+
+        $tempArray = PurchaseReceive::joinForm()
+            ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
+            ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
+            ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
+            ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
+            ->groupBy('purchase_order_item_id')
+            ->active()
+            ->get();
+
+        $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');
+
+        // Make form done when all item received
+        $done = true;
+        foreach ($purchaseOrderItems as $purchaseOrderItem) {
+            $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;
+            if ($purchaseOrderItem->quantity - $quantityReceived > 0) {
+                $done = false;
+                break;
+            }
+        }
+
+        if ($done === true) {
+            $this->form->done = true;
+            $this->form->save();
+        }
+    }
+
     public static function create($data)
     {
         $purchaseOrder = new self;
@@ -89,25 +122,31 @@ class PurchaseOrder extends TransactionModel
         );
         $form->save();
 
+        // TODO validation items is optional and must be array
         $array = [];
         $items = $data['items'] ?? [];
-        foreach ($items as $item) {
-            $purchaseOrderItem = new PurchaseOrderItem;
-            $purchaseOrderItem->fill($item);
-            $purchaseOrderItem->purchase_order_id = $purchaseOrder->id;
-            array_push($array, $purchaseOrderItem);
+        if (!empty($items) && is_array($items)) {
+            foreach ($items as $item) {
+                $purchaseOrderItem = new PurchaseOrderItem;
+                $purchaseOrderItem->fill($item);
+                $purchaseOrderItem->purchase_order_id = $purchaseOrder->id;
+                array_push($array, $purchaseOrderItem);
+            }
+            $purchaseOrder->items()->saveMany($array);
         }
-        $purchaseOrder->items()->saveMany($array);
 
+        // TODO validation services is required if items is null and must be array
         $array = [];
         $services = $data['services'] ?? [];
-        foreach ($services as $service) {
-            $purchaseOrderService = new PurchaseOrderService;
-            $purchaseOrderService->fill($service);
-            $purchaseOrderService->purchase_order_id = $purchaseOrder->id;
-            array_push($array, $purchaseOrderService);
+        if (!empty($services) && is_array($services)) {
+            foreach ($services as $service) {
+                $purchaseOrderService = new PurchaseOrderService;
+                $purchaseOrderService->fill($service);
+                $purchaseOrderService->purchase_order_id = $purchaseOrder->id;
+                array_push($array, $purchaseOrderService);
+            }
+            $purchaseOrder->services()->saveMany($array);
         }
-        $purchaseOrder->services()->saveMany($array);
 
         return $purchaseOrder;
     }

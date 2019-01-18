@@ -22,6 +22,9 @@ class PurchaseReceiveItem extends TransactionModel
 
     protected $casts = [
         'quantity' => 'double',
+        'price' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double',
         'converter' => 'double',
     ];
 

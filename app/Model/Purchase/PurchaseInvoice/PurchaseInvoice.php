@@ -75,9 +75,8 @@ class PurchaseInvoice extends TransactionModel
         $purchaseReceives = PurchaseReceive::joinForm()
             ->active()
             ->notDone()
-            ->whereIn('id', $data['purchase_receive_ids'])
-            ->with('items')
-            ->with('services')
+            ->whereIn(PurchaseReceive::getTableName('id'), $data['purchase_receive_ids'])
+            ->with('form', 'items', 'services')
             ->get();
 
         // TODO check if $purchaseReceives contains at least 1 record and return error if 0 records
@@ -105,8 +104,8 @@ class PurchaseInvoice extends TransactionModel
 
             $array = [];
             foreach ($purchaseReceives as $purchaseReceive) {
-                $purchaseReceive->form->done = true;
-                $purchaseReceive->form->save();
+                $purchaseReceive->form()->update(['done' => true]);
+
                 foreach ($purchaseReceive->items as $purchaseReceiveItem) {
                     $itemId = $purchaseReceiveItem->item_id;
                     $item = $items[$itemId];
@@ -136,8 +135,8 @@ class PurchaseInvoice extends TransactionModel
 
             $array = [];
             foreach ($purchaseReceives as $purchaseReceive) {
-                $purchaseReceive->form->done = true;
-                $purchaseReceive->form->save();
+                $purchaseReceive->form()->update(['done' => true]);
+
                 foreach ($purchaseReceive->services as $purchaseReceiveService) {
                     $serviceId = $purchaseReceiveService->service_id;
                     $service = $services[$serviceId];

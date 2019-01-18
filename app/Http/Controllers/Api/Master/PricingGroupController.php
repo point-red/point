@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use Illuminate\Http\Request;
-use App\Model\Master\PricingGroup;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\PricingGroup;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PricingGroupController extends Controller
 {
@@ -68,7 +68,7 @@ class PricingGroupController extends Controller
         $pricingGroup = PricingGroup::findOrFail($id);
         $pricingGroup->fill($request->all());
 
-        DB::connection('tenant')->transaction(function ($pricingGroup) {
+        DB::connection('tenant')->transaction(function () use ($pricingGroup) {
             $pricingGroup->save();
         });
 

@@ -20,6 +20,9 @@ class PurchaseReceiveService extends TransactionModel
 
     protected $casts = [
         'quantity' => 'double',
+        'price' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double',
     ];
 
     public function service()

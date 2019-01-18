@@ -61,6 +61,11 @@ class PurchaseReceive extends TransactionModel
 
         if (isset($data['purchase_order_id'])) {
             $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
+            $purchaseOrderItems = $purchaseOrder->items->toArray();
+            $purchaseOrderItems = array_column($purchaseOrderItems, null, 'id');
+
+            $purchaseOrderServices = $purchaseOrder->services->toArray();
+            $purchaseOrderServices = array_column($purchaseOrderServices, null, 'id');
             // TODO maybe need to add additional check
             // if the $purchaseOrder canceled / rejected / archived
             $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
@@ -87,6 +92,14 @@ class PurchaseReceive extends TransactionModel
                 $purchaseReceiveItem = new PurchaseReceiveItem;
                 $purchaseReceiveItem->fill($item);
                 $purchaseReceiveItem->purchase_receive_id = $purchaseReceive->id;
+
+                $purchaseOrderItemId = $item['purchase_order_item_id'];
+                if (isset($purchaseOrderItems) && isset($purchaseOrderItems[$purchaseOrderItemId])) {
+                    $purchaseOrderItem = $purchaseOrderItems[$purchaseOrderItemId];
+                    $purchaseReceiveItem->price = $purchaseOrderItem['price'];
+                    $purchaseReceiveItem->discount_percent = $purchaseOrderItem['discount_percent'];
+                    $purchaseReceiveItem->discount_value = $purchaseOrderItem['discount_value'];
+                }
                 array_push($array, $purchaseReceiveItem);
             }
             $purchaseReceive->items()->saveMany($array);
@@ -100,6 +113,14 @@ class PurchaseReceive extends TransactionModel
                 $purchaseReceiveService = new PurchaseReceiveService;
                 $purchaseReceiveService->fill($service);
                 $purchaseReceiveService->purchase_receive_id = $purchaseReceive->id;
+
+                $purchaseOrderServiceId = $service['purchase_order_service_id'];
+                if (isset($purchaseOrderServices) && isset($purchaseOrderServices[$purchaseOrderServiceId])) {
+                    $purchaseOrderService = $purchaseOrderServices[$purchaseOrderServiceId];
+                    $purchaseReceiveService->price = $purchaseOrderService['price'];
+                    $purchaseReceiveService->discount_percent = $purchaseOrderService['discount_percent'];
+                    $purchaseReceiveService->discount_value = $purchaseOrderService['discount_value'];
+                }
                 array_push($array, $purchaseReceiveService);
             }
             $purchaseReceive->services()->saveMany($array);

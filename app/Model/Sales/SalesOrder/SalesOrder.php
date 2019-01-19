@@ -7,6 +7,8 @@ use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\TransactionModel;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
 
 class SalesOrder extends TransactionModel
 {

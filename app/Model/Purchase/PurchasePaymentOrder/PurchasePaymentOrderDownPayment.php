@@ -2,10 +2,10 @@
 
 namespace App\Model\Purchase\PurchasePaymentOrder;
 
-use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use App\Model\TransactionModel;
 
-class PurchasePaymentOrderInvoice extends TransactionModel
+class PurchasePaymentOrderDownPayment extends TransactionModel
 {
     protected $connection = 'tenant';
 
@@ -25,8 +25,8 @@ class PurchasePaymentOrderInvoice extends TransactionModel
         return $this->belongsTo(PurchasePaymentOrder::class);
     }
 
-    public function invoice()
+    public function downpayment()
     {
-        return $this->belongsTo(PurchaseInvoice::class);
+        return $this->belongsTo(PurchaseDownPayment::class);
     }
 }

@@ -13,15 +13,16 @@ class DeliveryNoteItem extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
+        'item_id',
         'delivery_order_item_id',
         'quantity',
         'unit',
         'converter',
-        'description'
+        'description',
     ];
 
     protected $casts = [
-        'quantity'  => 'double',
+        'quantity' => 'double',
         'converter' => 'double',
     ];
 

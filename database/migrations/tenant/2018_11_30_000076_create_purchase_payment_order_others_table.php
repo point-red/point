@@ -15,13 +15,15 @@ class CreatePurchasePaymentOrderOthersTable extends Migration
     {
         Schema::create('purchase_payment_order_others', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('chart_of_account_id')->index();
-            $table->unsignedInteger('allocation_id')->index();
-            $table->string('description')->index();
-            $table->decimal('amount', 65, 30);
+            $table->unsignedInteger('purchase_payment_order_id');
+            $table->unsignedInteger('chart_of_account_id');
+            $table->unsignedDecimal('amount', 65, 30);
+            $table->text('notes');
 
-            $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
-            $table->foreign('allocation_id')->references('id')->on('allocations')->onDelete('restrict');
+            $table->foreign('purchase_payment_order_id', 'purchase_payment_order_others_payment_order_id_f')
+                ->references('id')->on('purchase_payment_orders')->onDelete('cascade');
+            $table->foreign('chart_of_account_id', 'purchase_payment_order_others_chart_of_account_id_f')
+                ->references('id')->on('chart_of_accounts')->onDelete('cascade');
         });
     }
 

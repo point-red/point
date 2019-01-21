@@ -15,8 +15,7 @@ class CreateInventoriesTable extends Migration
     {
         Schema::create('inventories', function (Blueprint $table) {
             $table->increments('id');
-            $table->datetime('date');
-            $table->string('form_number')->index();
+            $table->unsignedInteger('form_id')->index();
             $table->unsignedInteger('warehouse_id')->index();
             $table->unsignedInteger('item_id')->index();
             $table->decimal('quantity', 65, 30)->default(0);
@@ -38,8 +37,8 @@ class CreateInventoriesTable extends Migration
                 ->onUpdate('restrict')
                 ->onDelete('restrict');
 
-            $table->foreign('form_number')
-                ->references('number')
+            $table->foreign('form_id')
+                ->references('id')
                 ->on('forms')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');

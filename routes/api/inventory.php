@@ -1,7 +1,8 @@
 <?php
 
 Route::prefix('inventory')->namespace('Inventory')->group(function () {
-    // Route::apiResource('inventory-usage', 'InventoryUsageController');
-    // Route::apiResource('stock-correction', 'StockCorrectionController');
-    // Route::apiResource('transfer-item', 'TransferItemController');
+    Route::apiResource('inventory-audits', 'InventoryAudit\\AuditController');
+    // Route::apiResource('inventory-usages', 'InventoryUsageController');
+    // Route::apiResource('inventory-corrections', 'InventoryCorrectionController');
+    // Route::apiResource('transfer-items', 'TransferItemController');
 });

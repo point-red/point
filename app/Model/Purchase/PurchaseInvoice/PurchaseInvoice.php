@@ -77,6 +77,7 @@ class PurchaseInvoice extends TransactionModel
         $purchaseReceives = PurchaseReceive::joinForm()
             ->active()
             ->notDone()
+            ->select(PurchaseReceive::getTableName('*'))
             ->whereIn(PurchaseReceive::getTableName('id'), $data['purchase_receive_ids'])
             ->with('form', 'items', 'services')
             ->get();

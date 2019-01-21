@@ -65,6 +65,13 @@ class SalesOrder extends TransactionModel
         return $this->belongsTo(SalesQuotation::class, 'sales_quotation_id');
     }
 
+    public function deliveryOrders()
+    {
+        return $this->hasMany(DeliveryOrder::class)
+            ->joinForm(DeliveryOrder::class)
+            ->active();
+    }
+
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);

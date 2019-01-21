@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateInventoryAuditItemsTable extends Migration
 {
@@ -28,7 +28,7 @@ class CreateInventoryAuditItemsTable extends Migration
                 ->onDelete('cascade');
 
             $table->foreign('item_id')
-                ->references('id')->on('item')
+                ->references('id')->on('items')
                 ->onUpdate('restrict')
                 ->onDelete('restrict');
         });

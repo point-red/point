@@ -18,7 +18,7 @@ class CreateInventoryAuditsTable extends Migration
             $table->unsignedInteger('warehouse_id')->index();
 
             $table->foreign('warehouse_id')
-                ->references('id')->on('warehouse')
+                ->references('id')->on('warehouses')
                 ->onUpdate('restrict')
                 ->onDelete('restrict');
         });

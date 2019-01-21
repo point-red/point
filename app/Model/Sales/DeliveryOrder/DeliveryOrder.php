@@ -21,6 +21,8 @@ class DeliveryOrder extends TransactionModel
         'sales_order_id',
     ];
 
+    protected $defaultNumberPrefix = 'DO';
+
     public function form()
     {
         return $this->morphOne(Form::class, 'formable');
@@ -89,15 +91,7 @@ class DeliveryOrder extends TransactionModel
         $deliveryOrder->save();
 
         $form = new Form;
-        $form->fill($data);
-        $form->formable_id = $deliveryOrder->id;
-        $form->formable_type = self::class;
-        $form->generateFormNumber(
-            isset($data['number']) ? $data['number'] : 'DO{y}{m}{increment=4}',
-            $deliveryOrder->customer_id,
-            null
-        );
-        $form->save();
+        $form->fillData($data, $deliveryOrder);
 
         // TODO items is required and must be array
         $array = [];

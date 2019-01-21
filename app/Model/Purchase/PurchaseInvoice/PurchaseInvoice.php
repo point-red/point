@@ -24,6 +24,8 @@ class PurchaseInvoice extends TransactionModel
         'tax',
     ];
 
+    protected $defaultNumberPrefix = 'PI';
+
     public function form()
     {
         return $this->morphOne(Form::class, 'formable');
@@ -87,15 +89,7 @@ class PurchaseInvoice extends TransactionModel
         $purchaseInvoice->save();
 
         $form = new Form;
-        $form->fill($data);
-        $form->formable_id = $purchaseInvoice->id;
-        $form->formable_type = self::class;
-        $form->generateFormNumber(
-            isset($data['number']) ? $data['number'] : 'PI{y}{m}{increment=4}',
-            null,
-            $purchaseInvoice->supplier_id
-        );
-        $form->save();
+        $form->fillData($data, $purchaseInvoice);
 
         // TODO validation items is optional and must be array
         $dataItems = $data['items'] ?? [];

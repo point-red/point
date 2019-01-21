@@ -17,6 +17,8 @@ class SalesQuotation extends TransactionModel
         'customer_id',
     ];
 
+    protected $defaultNumberPrefix = 'SQ';
+
     public function form()
     {
         return $this->morphOne(Form::class, 'formable');
@@ -52,15 +54,7 @@ class SalesQuotation extends TransactionModel
         $salesQuotation->save();
 
         $form = new Form;
-        $form->fill($data);
-        $form->formable_id = $salesQuotation->id;
-        $form->formable_type = self::class;
-        $form->generateFormNumber(
-            isset($data['number']) ? $data['number'] : 'PR{y}{m}{increment=4}',
-            isset($data['customer_id']) ? $data['customer_id'] : null,
-            null
-        );
-        $form->save();
+        $form->fillData($data, $salesQuotation);
 
         $array = [];
         $items = $data['items'] ?? [];

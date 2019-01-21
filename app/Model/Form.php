@@ -2,9 +2,9 @@
 
 namespace App\Model;
 
-use App\Model\Master\User;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
+use App\Model\Master\User;
 
 class Form extends PointModel
 {
@@ -45,7 +45,7 @@ class Form extends PointModel
     {
         $this->updated_by = optional(auth()->user())->id;
 
-        if (! $this->exists) {
+        if (!$this->exists) {
             $this->created_by = optional(auth()->user())->id;
         }
     }
@@ -71,6 +71,21 @@ class Form extends PointModel
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function fillData($data, $transaction)
+    {
+        $defaultNumberPostfix = '{y}{m}{increment=4}';
+
+        $this->fill($data);
+        $this->formable_id = $transaction->id;
+        $this->formable_type = get_class($transaction);
+        $this->generateFormNumber(
+            $data['number'] ?? $transaction->defaultNumberPrefix . $defaultNumberPostfix,
+            $transaction->customer_id ?? null,
+            $transaction->supplier_id ?? null
+        );
+        $this->save();
+    }
+
     /**
      * @param $formatNumber
      * @param null $customerId
@@ -88,17 +103,15 @@ class Form extends PointModel
      */
     public function generateFormNumber($formatNumber, $customerId = null, $supplierId = null)
     {
-        $formNumber = $formatNumber;
+        $this->number = $formatNumber;
 
-        $formNumber = $this->convertTemplateDate($formNumber);
-        $formNumber = $this->convertTemplateIncrement($formNumber);
-        $formNumber = $this->convertTemplateMasterId('/{customerId=(\d)}/', $customerId, $formNumber);
-        $formNumber = $this->convertTemplateMasterId('/{supplierId=(\d)}/', $supplierId, $formNumber);
-        $formNumber = $this->convertTemplateCodeCustomer($formNumber, $customerId);
-        $formNumber = $this->convertTemplateCodeSupplier($formNumber, $supplierId);
-        $formNumber = $this->convertTemplateRoman($formNumber);
-
-        $this->number = $formNumber;
+        $this->convertTemplateDate();
+        $this->convertTemplateIncrement();
+        $this->convertTemplateMasterId('/{customerId=(\d)}/', $customerId);
+        $this->convertTemplateMasterId('/{supplierId=(\d)}/', $supplierId);
+        $this->convertTemplateCodeCustomer($customerId);
+        $this->convertTemplateCodeSupplier($supplierId);
+        $this->convertTemplateRoman();
     }
 
     /**
@@ -141,30 +154,26 @@ class Form extends PointModel
      * {r} - The RFC 2822 formatted date (e.g. Fri, 12 Apr 2013 12:01:05 +0200)
      * {U} - The seconds since the Unix Epoch (January 1 1970 00:00:00 GMT).
      *
-     * @param $formNumber
      * @return mixed
      */
-    private function convertTemplateDate($formNumber)
+    private function convertTemplateDate()
     {
-        preg_match_all('/{([a-zA-Z])}/', $formNumber, $arr);
+        preg_match_all('/{([a-zA-Z])}/', $this->number, $arr);
         foreach ($arr[0] as $key => $value) {
             $code = $arr[1][$key];
-            $formNumber = str_replace($value, date($code, strtotime($this->date)), $formNumber);
+            $this->number = str_replace($value, date($code, strtotime($this->date)), $this->number);
         }
-
-        return $formNumber;
     }
 
     /**
-     * @param $formNumber
      * @return mixed
      *
      * Example:
-     * {increment=4} - 4 is for pad a string to 4 digit (0001)
+     * {increment=4} - 4 is for pad a string to 4 digits (0001)
      */
-    private function convertTemplateIncrement($formNumber)
+    private function convertTemplateIncrement()
     {
-        preg_match_all('/{increment=(\d)}/', $formNumber, $arr);
+        preg_match_all('/{increment=(\d)}/', $this->number, $arr);
         foreach ($arr[0] as $key => $value) {
             $padUntil = $arr[1][$key];
             $increment = self::where('formable_type', $this->formable_type)
@@ -172,43 +181,35 @@ class Form extends PointModel
                 ->whereMonth('date', date('n', strtotime($this->date)))
                 ->count();
             $result = str_pad($increment + 1, $padUntil, '0', STR_PAD_LEFT);
-            $formNumber = str_replace($value, $result, $formNumber);
+            $this->number = str_replace($value, $result, $this->number);
         }
-
-        return $formNumber;
     }
 
-    private function convertTemplateRoman($formNumber)
+    private function convertTemplateRoman()
     {
-        preg_match_all('/\[(\d+)\]/', $formNumber, $arr);
+        preg_match_all('/\[(\d+)\]/', $this->number, $arr);
         foreach ($arr[0] as $key => $value) {
             $num = $this->numberToRoman($arr[1][$key]);
-            $formNumber = str_replace($value, $num, $formNumber);
+            $this->number = str_replace($value, $num, $this->number);
         }
-
-        return $formNumber;
     }
 
-    private function convertTemplateCodeCustomer($formNumber, $customerId)
+    private function convertTemplateCodeCustomer($customerId)
     {
         $pattern = '{code_customer}';
-        if (strpos($formNumber, $pattern) !== false) {
+        if (strpos($this->number, $pattern) !== false) {
             $customer = Customer::findOrFail($customerId);
-            $formNumber = str_replace($pattern, $customer->code, $formNumber);
+            $this->number = str_replace($pattern, $customer->code, $this->number);
         }
-
-        return $formNumber;
     }
 
-    private function convertTemplateCodeSupplier($formNumber, $supplierId)
+    private function convertTemplateCodeSupplier($supplierId)
     {
         $pattern = '{code_supplier}';
-        if (strpos($formNumber, $pattern) !== false) {
+        if (strpos($this->number, $pattern) !== false) {
             $supplier = Supplier::findOrFail($supplierId);
-            $formNumber = str_replace($pattern, $supplier->code, $formNumber);
+            $this->number = str_replace($pattern, $supplier->code, $this->number);
         }
-
-        return $formNumber;
     }
 
     /**
@@ -238,19 +239,16 @@ class Form extends PointModel
      *
      * @param $pattern
      * @param $masterId
-     * @param $formNumber
      *
      * @return string
      */
-    private function convertTemplateMasterId($pattern, $masterId, $formNumber)
+    private function convertTemplateMasterId($pattern, $masterId)
     {
-        preg_match_all($pattern, $formNumber, $arr);
+        preg_match_all($pattern, $this->number, $arr);
         foreach ($arr[0] as $key => $value) {
             $padUntil = $arr[1][$key];
             $result = str_pad($masterId, $padUntil, '0', STR_PAD_LEFT);
-            $formNumber = str_replace($value, $result, $formNumber);
+            $this->number = str_replace($value, $result, $this->number);
         }
-
-        return $formNumber;
     }
 }

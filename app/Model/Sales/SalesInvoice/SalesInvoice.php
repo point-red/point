@@ -25,6 +25,8 @@ class SalesInvoice extends TransactionModel
         'tax',
     ];
 
+    protected $defaultNumberPrefix = 'INVOICE';
+
     public function form()
     {
         return $this->morphOne(Form::class, 'formable');
@@ -88,15 +90,7 @@ class SalesInvoice extends TransactionModel
         $salesInvoice->save();
 
         $form = new Form;
-        $form->fill($data);
-        $form->formable_id = $salesInvoice->id;
-        $form->formable_type = self::class;
-        $form->generateFormNumber(
-            isset($data['number']) ? $data['number'] : 'INVOICE{y}{m}{increment=4}',
-            $salesInvoice->customer_id,
-            null
-        );
-        $form->save();
+        $form->fillData($data, $salesInvoice);
 
         $items = [];
         $dataItems = $data['items'] ?? [];

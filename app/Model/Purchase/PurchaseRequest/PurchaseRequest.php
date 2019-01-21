@@ -20,6 +20,8 @@ class PurchaseRequest extends TransactionModel
         'supplier_id',
     ];
 
+    protected $defaultNumberPrefix = 'PR';
+
     public function form()
     {
         return $this->morphOne(Form::class, 'formable');
@@ -59,15 +61,7 @@ class PurchaseRequest extends TransactionModel
         $purchaseRequest->save();
 
         $form = new Form;
-        $form->fill($data);
-        $form->formable_id = $purchaseRequest->id;
-        $form->formable_type = self::class;
-        $form->generateFormNumber(
-            isset($data['number']) ? $data['number'] : 'PR{y}{m}{increment=4}',
-            null,
-            isset($data['supplier_id']) ? $data['supplier_id'] : null
-        );
-        $form->save();
+        $form->fillData($data, $purchaseRequest);
 
         $array = [];
         $items = $data['items'] ?? [];

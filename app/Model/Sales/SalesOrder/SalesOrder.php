@@ -5,10 +5,10 @@ namespace App\Model\Sales\SalesOrder;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
-use App\Model\Sales\SalesQuotation\SalesQuotation;
-use App\Model\TransactionModel;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
+use App\Model\Sales\SalesQuotation\SalesQuotation;
+use App\Model\TransactionModel;
 
 class SalesOrder extends TransactionModel
 {
@@ -37,6 +37,8 @@ class SalesOrder extends TransactionModel
         'discount_value' => 'double',
         'tax' => 'double',
     ];
+
+    protected $defaultNumberPrefix = 'SO';
 
     public function form()
     {
@@ -107,15 +109,7 @@ class SalesOrder extends TransactionModel
         $salesOrder->save();
 
         $form = new Form;
-        $form->fill($data);
-        $form->formable_id = $salesOrder->id;
-        $form->formable_type = self::class;
-        $form->generateFormNumber(
-            isset($data['number']) ? $data['number'] : 'SO{y}{m}{increment=4}',
-            isset($data['customer_id']) ? $data['customer_id'] : null,
-            null
-        );
-        $form->save();
+        $form->fillData($data, $salesOrder);
 
         // TODO validation items is optional and must be array
         $array = [];

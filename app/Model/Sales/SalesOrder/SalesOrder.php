@@ -5,10 +5,10 @@ namespace App\Model\Sales\SalesOrder;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
-use App\Model\Sales\SalesQuotation\SalesQuotation;
-use App\Model\TransactionModel;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
+use App\Model\Sales\SalesQuotation\SalesQuotation;
+use App\Model\TransactionModel;
 
 class SalesOrder extends TransactionModel
 {
@@ -61,6 +61,13 @@ class SalesOrder extends TransactionModel
     public function salesQuotation()
     {
         return $this->belongsTo(SalesQuotation::class, 'sales_quotation_id');
+    }
+
+    public function deliveryOrders()
+    {
+        return $this->hasMany(DeliveryOrder::class)
+            ->joinForm(DeliveryOrder::class)
+            ->active();
     }
 
     public function warehouse()

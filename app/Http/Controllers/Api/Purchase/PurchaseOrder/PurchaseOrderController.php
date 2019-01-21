@@ -148,7 +148,11 @@ class PurchaseOrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $purchaseOrder = PurchaseOrder::findOrFail($id);
+
+        $newPurchaseOrder = $purchaseOrder->edit($request);
+
+        return new ApiResource($newPurchaseOrder);
     }
 
     /**

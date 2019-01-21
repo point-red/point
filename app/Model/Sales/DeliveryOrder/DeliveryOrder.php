@@ -5,6 +5,7 @@ namespace App\Model\Sales\DeliveryOrder;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
+use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
 
@@ -44,6 +45,13 @@ class DeliveryOrder extends TransactionModel
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function deliveryNotes()
+    {
+        return $this->hasMany(DeliveryNote::class)
+            ->joinForm(DeliveryNote::class)
+            ->active();
     }
 
     public function updateIfDone()

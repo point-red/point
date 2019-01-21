@@ -48,8 +48,8 @@ class PurchaseRequest extends TransactionModel
     public function purchaseOrders()
     {
         return $this->hasMany(PurchaseOrder::class)
-            ->join(Form::getTableName(), Form::getTableName('id'), '=', PurchaseOrder::getTableName('form_id'))
-            ->isActive();
+            ->joinForm(PurchaseOrder::class)
+            ->active();
     }
 
     public static function create($data)

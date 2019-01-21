@@ -65,7 +65,9 @@ class PurchaseOrder extends TransactionModel
 
     public function purchaseReceives()
     {
-        return $this->hasMany(PurchaseReceive::class);
+        return $this->hasMany(PurchaseReceive::class)
+            ->joinForm(PurchaseReceive::class)
+            ->active();
     }
 
     public function warehouse()

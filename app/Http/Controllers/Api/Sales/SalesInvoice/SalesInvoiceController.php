@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesInvoice;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Master\Customer;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 class SalesInvoiceController extends Controller
@@ -80,13 +80,23 @@ class SalesInvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int  $id
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
-        //
+        // TODO prevent delete if referenced by delivery notes
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+
+            $salesInvoice = SalesInvoice::findOrFail($id);
+
+            $newSalesInvoice = $salesInvoice->edit($request->all());
+
+            return new ApiResource($newSalesInvoice);
+        });
+
+        return $result;
     }
 
     /**

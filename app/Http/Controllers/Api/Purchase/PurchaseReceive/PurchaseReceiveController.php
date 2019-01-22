@@ -122,13 +122,23 @@ class PurchaseReceiveController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int  $id
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
-        //
+        // TODO prevent delete if referenced by purchase invoice
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+
+            $purchaseReceive = PurchaseReceive::findOrFail($id);
+
+            $newPurchaseReceive = $purchaseReceive->edit($request->all());
+
+            return new ApiResource($newPurchaseReceive);
+        });
+
+        return $result;
     }
 
     /**

@@ -142,13 +142,23 @@ class PurchaseOrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int  $id
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
-        //
+        // TODO prevent delete if referenced by purchase receive
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+
+            $purchaseOrder = PurchaseOrder::findOrFail($id);
+            
+            $newPurchaseOrder = $purchaseOrder->edit($request->all());
+
+            return new ApiResource($newPurchaseOrder);
+        });
+
+        return $result;
     }
 
     /**

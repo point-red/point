@@ -38,6 +38,8 @@ class SalesOrder extends TransactionModel
         'tax' => 'double',
     ];
 
+    protected $defaultNumberPrefix = 'SO';
+
     public function form()
     {
         return $this->morphOne(Form::class, 'formable');
@@ -114,15 +116,7 @@ class SalesOrder extends TransactionModel
         $salesOrder->save();
 
         $form = new Form;
-        $form->fill($data);
-        $form->formable_id = $salesOrder->id;
-        $form->formable_type = self::class;
-        $form->generateFormNumber(
-            isset($data['number']) ? $data['number'] : 'SO{y}{m}{increment=4}',
-            isset($data['customer_id']) ? $data['customer_id'] : null,
-            null
-        );
-        $form->save();
+        $form->fillData($data, $salesOrder);
 
         // TODO validation items is optional and must be array
         $array = [];

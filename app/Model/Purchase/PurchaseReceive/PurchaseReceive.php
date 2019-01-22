@@ -24,6 +24,8 @@ class PurchaseReceive extends TransactionModel
         'license_plate',
     ];
 
+    protected $defaultNumberPrefix = 'P-RECEIVE';
+
     public function form()
     {
         return $this->morphOne(Form::class, 'formable');
@@ -74,15 +76,7 @@ class PurchaseReceive extends TransactionModel
         $purchaseReceive->save();
 
         $form = new Form;
-        $form->fill($data);
-        $form->formable_id = $purchaseReceive->id;
-        $form->formable_type = self::class;
-        $form->generateFormNumber(
-            isset($data['number']) ? $data['number'] : 'P-RECEIVE{y}{m}{increment=4}',
-            null,
-            $purchaseReceive->supplier_id
-        );
-        $form->save();
+        $form->fillData($data, $purchaseReceive);
 
         // TODO validation items is optional and must be array
         $array = [];

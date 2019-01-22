@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateFormsTable extends Migration
 {
@@ -17,6 +17,7 @@ class CreateFormsTable extends Migration
             $table->increments('id');
             $table->datetime('date');
             $table->string('number')->nullable()->unique();
+            $table->unsignedInteger('edited_form_id')->nullable();
             $table->string('edited_number')->nullable();
             $table->text('edited_notes')->nullable();
             $table->text('notes')->nullable();
@@ -37,6 +38,7 @@ class CreateFormsTable extends Migration
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('edited_form_id')->references('id')->on('forms')->onDelete('restrict');
 
             $table->timestamps();
         });

@@ -5,6 +5,7 @@ namespace App\Model\Sales\SalesInvoice;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
+use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
 
 class SalesInvoice extends TransactionModel
@@ -24,6 +25,8 @@ class SalesInvoice extends TransactionModel
         'type_of_tax',
         'tax',
     ];
+
+    protected $defaultNumberPrefix = 'INVOICE';
 
     public function form()
     {
@@ -73,87 +76,96 @@ class SalesInvoice extends TransactionModel
 
     public static function create($data)
     {
-        // TODO add validation to exclude : canceled / rejected / done sales receives
-        $salesReceives = DeliveryNote::whereIn('id', $data['delivery_note_ids'])
-            ->with('items')
-            ->with('services')
-            ->get();
+        if (!empty($data['delivery_note_ids']) && is_array($data['delivery_note_ids'])) {
+            $deliveryNotes = DeliveryNote::joinForm()
+                ->active()
+                ->notDone()
+                ->whereIn(DeliveryNote::getTableName('id'), $data['delivery_note_ids'])
+                ->with('form', 'items')
+                ->get();
 
+            // TODO check if $deliveryNotes contains at least 1 record and return error if 0 records
+
+            $customerId = $deliveryNotes[0]->customer_id;
+        }
+        else if (!empty($data['sales_order_ids']) && is_array($data['sales_order_ids'])) {
+            $salesOrders = SalesOrder::joinForm()
+                ->active()
+                ->notDone()
+                ->whereIn(SalesOrder::getTableName('id'), $data['sales_order_ids'])
+                ->with('form', 'services')
+                ->get();
+
+            // TODO check if $salesOrders contains at least 1 record and return error if 0 records
+
+            $customerId = $salesOrders[0]->customer_id;
+        }
+
+        // TODO make sure customerId is not undefined / null
         $salesInvoice = new self;
         $salesInvoice->fill($data);
-        foreach ($salesReceives as $salesReceive) {
-            $salesInvoice->customer_id = $salesReceive->customer_id;
-            break;
-        }
+        $salesInvoice->customer_id = $customerId;
         $salesInvoice->save();
 
         $form = new Form;
-        $form->fill($data);
-        $form->formable_id = $salesInvoice->id;
-        $form->formable_type = self::class;
-        $form->generateFormNumber(
-            isset($data['number']) ? $data['number'] : 'INVOICE{y}{m}{increment=4}',
-            $salesInvoice->customer_id,
-            null
-        );
-        $form->save();
+        $form->fillData($data, $salesInvoice);
 
-        $items = [];
+        // TODO validation items is optional and must be array
         $dataItems = $data['items'] ?? [];
-        foreach ($dataItems as $value) {
-            $items[$value['item_id']]['price'] = $value['price'];
-            $items[$value['item_id']]['discount_percent'] = $value['discount_percent'] ?? null;
-            $items[$value['item_id']]['discount_value'] = $value['discount_value'] ?? 0;
-            $items[$value['item_id']]['taxable'] = $value['taxable'] ?? true;
-        }
+        if (!empty($dataItems) && is_array($dataItems)) {
+            $items = array_column($dataItems, null, 'item_id');
 
-        $array = [];
-        foreach ($salesReceives as $salesReceive) {
-            $salesReceive->form->done = true;
-            $salesReceive->form->save();
-            foreach ($salesReceive->items as $salesReceiveItem) {
-                $salesInvoiceItem = new SalesInvoiceItem;
-                $salesInvoiceItem->delivery_note_id = $salesReceiveItem->delivery_note_id;
-                $salesInvoiceItem->delivery_note_item_id = $salesReceiveItem->id;
-                $salesInvoiceItem->item_id = $salesReceiveItem->item_id;
-                $salesInvoiceItem->quantity = $salesReceiveItem->quantity;
-                $salesInvoiceItem->unit = $salesReceiveItem->unit;
-                $salesInvoiceItem->converter = $salesReceiveItem->converter;
-                $salesInvoiceItem->price = $items[$salesReceiveItem->item_id]['price'];
-                $salesInvoiceItem->discount_percent = $items[$salesReceiveItem->item_id]['discount_percent'];
-                $salesInvoiceItem->discount_value = $items[$salesReceiveItem->item_id]['discount_value'];
-                $salesInvoiceItem->taxable = $items[$salesReceiveItem->item_id]['taxable'];
-                $salesInvoiceItem->sales_invoice_id = $salesInvoice->id;
-                array_push($array, $salesInvoiceItem);
+            $array = [];
+            foreach ($deliveryNotes as $deliveryNote) {
+                $deliveryNote->form()->update(['done' => true]);
+
+                foreach ($deliveryNote->items as $deliveryNoteItem) {
+                    $itemId = $deliveryNoteItem->item_id;
+                    $item = $items[$itemId];
+
+                    $salesInvoiceItem = new SalesInvoiceItem;
+                    $salesInvoiceItem->delivery_note_id = $deliveryNoteItem->delivery_note_id;
+                    $salesInvoiceItem->delivery_note_item_id = $deliveryNoteItem->id;
+                    $salesInvoiceItem->item_id = $itemId;
+                    $salesInvoiceItem->quantity = $deliveryNoteItem->quantity;
+                    $salesInvoiceItem->unit = $deliveryNoteItem->unit;
+                    $salesInvoiceItem->converter = $deliveryNoteItem->converter;
+                    $salesInvoiceItem->price = $item['price'];
+                    $salesInvoiceItem->discount_percent = $item['discount_percent'];
+                    $salesInvoiceItem->discount_value = $item['discount_value'];
+                    $salesInvoiceItem->taxable = $item['taxable'];
+                    $salesInvoiceItem->sales_invoice_id = $salesInvoice->id;
+                    array_push($array, $salesInvoiceItem);
+                }
             }
+            $salesInvoice->items()->saveMany($array);
         }
-        $salesInvoice->items()->saveMany($array);
 
-        $services = [];
+        // TODO validation services is required only if items is null and must be array
         $dataServices = $data['services'] ?? [];
-        foreach ($dataServices as $value) {
-            $services[$value['service_id']]['price'] = $value['price'];
-            $services[$value['service_id']]['discount_percent'] = $value['discount_percent'] ?? null;
-            $services[$value['service_id']]['discount_value'] = $value['discount_value'] ?? 0;
-            $services[$value['service_id']]['taxable'] = $value['taxable'] ?? 0;
-        }
+        if (!empty($dataServices) && is_array($dataServices)) {
+            $services = array_column($dataServices, null, 'service_id');
 
-        $array = [];
-        foreach ($salesReceives as $salesReceive) {
-            foreach ($salesReceive->services as $salesReceiveService) {
-                $salesInvoiceService = new SalesInvoiceService;
-                $salesInvoiceService->delivery_note_service_id = $salesReceiveService->id;
-                $salesInvoiceService->service_id = $salesReceiveService->service_id;
-                $salesInvoiceService->quantity = $salesReceiveService->quantity;
-                $salesInvoiceService->price = $services[$salesReceiveService->service_id]['price'];
-                $salesInvoiceService->discount_percent = $services[$salesReceiveService->service_id]['discount_percent'];
-                $salesInvoiceService->discount_value = $services[$salesReceiveService->service_id]['discount_value'];
-                $salesInvoiceService->taxable = $services[$salesReceiveService->service_id]['taxable'];
-                $salesInvoiceService->sales_invoice_id = $salesInvoice->id;
-                array_push($array, $salesInvoiceService);
+            $array = [];
+            foreach ($salesOrders as $salesOrder) {
+                foreach ($salesOrder->services as $salesOrderService) {
+                    $serviceId = $salesOrderService->service_id;
+                    $service = $services[$serviceId];
+
+                    $salesInvoiceService = new SalesInvoiceService;
+                    $salesInvoiceService->sales_order_service_id = $salesOrderService->id;
+                    $salesInvoiceService->service_id = $salesOrderService->service_id;
+                    $salesInvoiceService->quantity = $salesOrderService->quantity;
+                    $salesInvoiceService->price = $service['price'];
+                    $salesInvoiceService->discount_percent = $service['discount_percent'];
+                    $salesInvoiceService->discount_value = $service['discount_value'];
+                    $salesInvoiceService->taxable = $service['taxable'];
+                    $salesInvoiceService->sales_invoice_id = $salesInvoice->id;
+                    array_push($array, $salesInvoiceService);
+                }
             }
+            $salesInvoice->services()->saveMany($array);
         }
-        $salesInvoice->services()->saveMany($array);
 
         return $salesInvoice;
     }

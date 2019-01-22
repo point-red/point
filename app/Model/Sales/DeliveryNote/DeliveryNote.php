@@ -21,6 +21,8 @@ class DeliveryNote extends TransactionModel
         'delivery_order_id',
     ];
 
+    protected $defaultNumberPrefix = 'DN';
+
     public function form()
     {
         return $this->morphOne(Form::class, 'formable');
@@ -49,7 +51,7 @@ class DeliveryNote extends TransactionModel
     public static function create($data)
     {
         $deliveryOrder = DeliveryOrder::findOrFail($data['delivery_order_id']);
-        // TODO add check if $salesOrder is canceled / rejected / archived
+        // TODO add check if $deliveryOrder is canceled / rejected / archived
 
         $deliveryNote = new self;
         $deliveryNote->fill($data);
@@ -57,15 +59,7 @@ class DeliveryNote extends TransactionModel
         $deliveryNote->save();
 
         $form = new Form;
-        $form->fill($data);
-        $form->formable_id = $deliveryNote->id;
-        $form->formable_type = self::class;
-        $form->generateFormNumber(
-            isset($data['number']) ? $data['number'] : 'DO{y}{m}{increment=4}',
-            $deliveryNote->customer_id,
-            null
-        );
-        $form->save();
+        $form->fillData($data, $deliveryNote);
 
         // TODO items is required and must be array
         $array = [];

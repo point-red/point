@@ -148,11 +148,16 @@ class PurchaseOrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $purchaseOrder = PurchaseOrder::findOrFail($id);
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
 
-        $newPurchaseOrder = $purchaseOrder->edit($request);
+            $purchaseOrder = PurchaseOrder::findOrFail($id);
+            
+            $newPurchaseOrder = $purchaseOrder->edit($request->all());
 
-        return new ApiResource($newPurchaseOrder);
+            return new ApiResource($newPurchaseOrder);
+        });
+
+        return $result;
     }
 
     /**

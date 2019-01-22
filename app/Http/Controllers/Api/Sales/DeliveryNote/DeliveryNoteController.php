@@ -97,13 +97,23 @@ class DeliveryNoteController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int  $id
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
-        //
+        // TODO prevent delete if referenced by sales invoice
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+
+            $salesInvoice = SalesInvoice::findOrFail($id);
+
+            $newSalesInvoice = $salesInvoice->edit($request->all());
+
+            return new ApiResource($newSalesInvoice);
+        });
+
+        return $result;
     }
 
     /**

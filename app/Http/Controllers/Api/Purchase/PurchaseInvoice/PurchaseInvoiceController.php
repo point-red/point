@@ -84,13 +84,23 @@ class PurchaseInvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int  $id
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
-        //
+        // TODO prevent delete if referenced by purchase payment
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+
+            $purchaseInvoice = PurchaseInvoice::findOrFail($id);
+
+            $newPurchaseInvoice = $purchaseInvoice->edit($request->all());
+
+            return new ApiResource($newPurchaseInvoice);
+        });
+
+        return $result;
     }
 
     /**

@@ -98,13 +98,23 @@ class DeliveryOrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int  $id
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
-        //
+        // TODO prevent delete if referenced by delivery notes
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+
+            $deliveryOrder = DeliveryOrder::findOrFail($id);
+
+            $newDeliveryOrder = $deliveryOrder->edit($request->all());
+
+            return new ApiResource($newDeliveryOrder);
+        });
+
+        return $result;
     }
 
     /**

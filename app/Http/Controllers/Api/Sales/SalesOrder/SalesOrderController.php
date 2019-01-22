@@ -98,13 +98,23 @@ class SalesOrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int  $id
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
-        //
+        // TODO prevent delete if referenced by delivery order
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+
+            $salesOrder = SalesOrder::findOrFail($id);
+
+            $newSalesOrder = $salesOrder->edit($request->all());
+
+            return new ApiResource($newSalesOrder);
+        });
+
+        return $result;
     }
 
     /**

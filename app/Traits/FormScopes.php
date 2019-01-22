@@ -9,7 +9,8 @@ trait FormScopes
     public function scopeJoinForm($query, $callerClass = null)
     {
         $callerClass = $callerClass ?? get_class($this);
-        $query->join(Form::getTableName(), Form::getTableName('formable_id'), '=', $callerClass::getTableName('id'))
+        $query->select($callerClass::getTableName('*'))
+            ->join(Form::getTableName(), Form::getTableName('formable_id'), '=', $callerClass::getTableName('id'))
             ->where(Form::getTableName('formable_type'), $callerClass);
     }
 

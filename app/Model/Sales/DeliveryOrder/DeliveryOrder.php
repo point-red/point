@@ -6,6 +6,7 @@ use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
+use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
 
@@ -56,11 +57,11 @@ class DeliveryOrder extends TransactionModel
 
     public function updateIfDone()
     {
-        $deliveryOrderItems = $deliveryOrder->items;
-        $deliveryOrderItemIds = $deliveryOrder->items->pluck('id');
+        $deliveryOrderItems = $this->items;
+        $deliveryOrderItemIds = $deliveryOrderItems->pluck('id');
 
         $tempArray = DeliveryNote::joinForm()
-            ->join(DeliveryNote::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_order_id'))
+            ->join(DeliveryNoteItem::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_note_id'))
             ->groupBy('delivery_order_item_id')
             ->select('delivery_order_items.delivery_order_item_id')
             ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))

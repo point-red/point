@@ -71,9 +71,9 @@ class DeliveryNote extends TransactionModel
         $array = [];
         $items = $data['items'];
         foreach ($items as $item) {
-            $deliveryNoteItem = new DeliveryOrderItem;
+            $deliveryNoteItem = new DeliveryNoteItem;
             $deliveryNoteItem->fill($item);
-            $deliveryNoteItem->delivery_order_id = $deliveryNote->id;
+            $deliveryNoteItem->delivery_note_id = $deliveryNote->id;
             array_push($array, $deliveryNoteItem);
         }
         $deliveryNote->items()->saveMany($array);

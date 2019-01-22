@@ -51,7 +51,7 @@ class DeliveryNote extends TransactionModel
     public static function create($data)
     {
         $deliveryOrder = DeliveryOrder::findOrFail($data['delivery_order_id']);
-        // TODO add check if $salesOrder is canceled / rejected / archived
+        // TODO add check if $deliveryOrder is canceled / rejected / archived
 
         $deliveryNote = new self;
         $deliveryNote->fill($data);

@@ -62,7 +62,7 @@ class InterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithT
     {
         return [
             date('Y-m-d', strtotime($row->salesVisitation->form->date)),
-            date('H:i', strtotime($row->salesVisitation->form->date)),
+            date('H:i', strtotime($row->salesVisitation->form->created_at)),
             $row->salesVisitation->form->createdBy->first_name . ' ' . $row->salesVisitation->form->createdBy->last_name,
             $row->customerName,
             $row->name,

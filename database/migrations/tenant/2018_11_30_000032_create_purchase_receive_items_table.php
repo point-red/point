@@ -18,9 +18,12 @@ class CreatePurchaseReceiveItemsTable extends Migration
             $table->unsignedInteger('purchase_receive_id');
             $table->unsignedInteger('purchase_order_item_id')->nullable();
             $table->unsignedInteger('item_id');
+            $table->decimal('gross_weight', 65, 30)->nullable();
+            $table->decimal('tare_weight', 65, 30)->nullable();
+            $table->decimal('net_weight', 65, 30)->nullable();
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);
-            $table->decimal('discount_percent', 33, 30)->nullable();
+            $table->decimal('discount_percent', 65, 30)->nullable();
             $table->decimal('discount_value', 65, 30)->default(0);
             $table->boolean('taxable')->default(true);
             $table->string('unit');

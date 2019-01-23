@@ -15,6 +15,9 @@ class PurchaseReceiveItem extends TransactionModel
     protected $fillable = [
         'purchase_order_item_id',
         'item_id',
+        'gross_weight',
+        'tare_weight',
+        'net_weight',
         'quantity',
         'unit',
         'converter',

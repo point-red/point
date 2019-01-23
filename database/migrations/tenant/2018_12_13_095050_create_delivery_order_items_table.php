@@ -20,7 +20,7 @@ class CreateDeliveryOrderItemsTable extends Migration
             $table->unsignedInteger('item_id');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);
-            $table->decimal('discount_percent', 33, 30)->nullable();
+            $table->decimal('discount_percent', 65, 30)->nullable();
             $table->decimal('discount_value', 65, 30)->default(0);
             $table->boolean('taxable')->default(true);
             $table->string('unit');

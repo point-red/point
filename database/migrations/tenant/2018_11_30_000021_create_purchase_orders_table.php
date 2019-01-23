@@ -23,7 +23,7 @@ class CreatePurchaseOrdersTable extends Migration
             $table->boolean('cash_only')->default(false);
             $table->boolean('need_down_payment')->default(false);
             $table->decimal('delivery_fee', 65, 30)->default(0);
-            $table->decimal('discount_percent', 33, 30)->nullable();
+            $table->decimal('discount_percent', 65, 30)->nullable();
             $table->decimal('discount_value', 65, 30)->default(0);
             $table->string('type_of_tax'); // include / exclude / non
             $table->decimal('tax', 65, 30);

@@ -96,6 +96,8 @@ class TransferKpiScoreCommand extends Command
                     }
                 }
             }
+
+            DB::connection('tenant')->commit();
         }
     }
 }

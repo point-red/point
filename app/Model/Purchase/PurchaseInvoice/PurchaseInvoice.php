@@ -24,6 +24,13 @@ class PurchaseInvoice extends TransactionModel
         'tax',
     ];
 
+    protected $casts = [
+        'tax' => 'double',
+        'delivery_fee' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double'
+    ];
+
     protected $defaultNumberPrefix = 'PI';
 
     public function form()

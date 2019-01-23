@@ -42,7 +42,6 @@ class Migrate extends Command
         // Update tenant database name in configuration
         config()->set('database.connections.tenant.database', strtolower($this->argument('db_name')));
         DB::connection('tenant')->reconnect();
-        DB::connection('tenant')->beginTransaction();
 
         Artisan::call('migrate', [
             '--database' => 'tenant',

@@ -17,7 +17,7 @@ class KpiGroupResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'kpi_template_id' => $this->kpi_template_id,
+            'kpi_id' => $this->kpi_id,
             'name' => $this->name,
             'weight' => collect($this->indicators)->sum('weight'),
             'target' => collect($this->indicators)->sum('target'),

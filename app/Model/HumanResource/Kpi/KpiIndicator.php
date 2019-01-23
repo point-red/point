@@ -15,4 +15,12 @@ class KpiIndicator extends Model
     {
         return $this->belongsTo(get_class(new KpiGroup()));
     }
+
+    /**
+     * Get the scores for the indicator.
+     */
+    public function scores()
+    {
+        return $this->hasMany(get_class(new KpiScore()));
+    }
 }

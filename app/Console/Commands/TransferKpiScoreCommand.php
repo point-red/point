@@ -62,15 +62,9 @@ class TransferKpiScoreCommand extends Command
                             ->join('kpi_template_groups', 'kpi_template_groups.id', '=', 'kpi_template_indicators.kpi_template_group_id')
                             ->join('kpi_templates', 'kpi_templates.id', '=', 'kpi_template_groups.kpi_template_id')
                             ->select('kpi_template_scores.*')
-
                             ->where('kpi_template_indicators.name', $kpiIndicator['name'])
-                            ->where('kpi_template_indicators.weight', $kpiIndicator['weight'])
-                            ->where('kpi_template_indicators.target', $kpiIndicator['target'])
-
                             ->where('kpi_template_groups.name', $kpiGroup['name'])
-
                             ->where('kpi_templates.name', $kpi['name'])
-
                             ->get();
 
                         if (count($kpi_template_scores) == 0) {

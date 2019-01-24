@@ -15,13 +15,12 @@ class PriceListItem extends MasterModel
         'price',
         'discount_percent',
         'discount_value',
-        'notes',
     ];
 
     protected $casts = [
-        'price'            => 'double',
+        'price' => 'double',
         'discount_percent' => 'double',
-        'discount_value'   => 'double',
+        'discount_value' => 'double',
     ];
 
     public function itemUnit()

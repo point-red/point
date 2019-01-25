@@ -24,6 +24,9 @@ class DeliveryNoteItem extends TransactionModel
     protected $casts = [
         'quantity' => 'double',
         'converter' => 'double',
+        'price' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double'
     ];
 
     public function item()

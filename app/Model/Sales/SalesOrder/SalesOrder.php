@@ -20,6 +20,7 @@ class SalesOrder extends TransactionModel
         'sales_quotation_id',
         'sales_contract_id',
         'customer_id',
+        'customer_name',
         'warehouse_id',
         'eta',
         'cash_only',
@@ -112,6 +113,13 @@ class SalesOrder extends TransactionModel
     public static function create($data)
     {
         $salesOrder = new self;
+
+        // TODO validation customer_name is optional type non empty string
+        if (empty($data['customer_name'])) {
+            $customer = Customer::find($data['customer_id'], ['name']);
+            $data['customer_name'] = $customer->name;
+        }
+
         $salesOrder->fill($data);
         $salesOrder->save();
 

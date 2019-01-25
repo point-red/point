@@ -50,6 +50,13 @@ class SalesQuotation extends TransactionModel
     public static function create($data)
     {
         $salesQuotation = new self;
+
+        // TODO validation customer_name is optional type non empty string
+        if (empty($data['customer_name'])) {
+            $customer = Customer::find($data['customer_id'], ['name']);
+            $data['customer_name'] = $customer->name;
+        }
+
         $salesQuotation->fill($data);
         $salesQuotation->save();
 

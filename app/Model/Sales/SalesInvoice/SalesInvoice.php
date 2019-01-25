@@ -17,7 +17,6 @@ class SalesInvoice extends TransactionModel
     protected $appends = array('total', 'remaining_amount');
 
     protected $fillable = [
-        'customer_id',
         'due_date',
         'delivery_fee',
         'discount_percent',
@@ -83,6 +82,9 @@ class SalesInvoice extends TransactionModel
 
     public static function create($data)
     {
+        // TODO throw error if customer_id is not provided
+        $customerId = $data['customer_id'] ?? null;
+
         if (!empty($data['delivery_note_ids']) && is_array($data['delivery_note_ids'])) {
             $deliveryNotes = DeliveryNote::joinForm()
                 ->active()
@@ -108,10 +110,20 @@ class SalesInvoice extends TransactionModel
             $customerId = $salesOrders[0]->customer_id;
         }
 
-        // TODO make sure customerId is not undefined / null
+        // TODO throw error if $customerId is null or invalid id
+
         $salesInvoice = new self;
         $salesInvoice->fill($data);
         $salesInvoice->customer_id = $customerId;
+
+        if (empty($data['customer_name'])) {
+            $customer = Customer::find($customerId, ['name']);
+            $salesInvoice->customer_name = $customer->name;
+        }
+        else {
+            $salesInvoice->customer_name = $data['customer_name'];
+        }
+
         $salesInvoice->save();
 
         $form = new Form;

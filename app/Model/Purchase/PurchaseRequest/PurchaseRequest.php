@@ -17,7 +17,9 @@ class PurchaseRequest extends TransactionModel
     protected $fillable = [
         'required_date',
         'employee_id',
+        'employee_name',
         'supplier_id',
+        'supplier_name',
     ];
 
     protected $defaultNumberPrefix = 'PR';
@@ -57,31 +59,47 @@ class PurchaseRequest extends TransactionModel
     public static function create($data)
     {
         $purchaseRequest = new self;
+        // TODO validation employee_name is optional type non empty string
+        if (empty($data['employee_name'])) {
+            $employee = Employee::find($data['employee_id'], ['name']);
+            $data['supplier_name'] = $employee->name;
+        }
+        // TODO validation supplier_name is optional type non empty string
+        if (empty($data['supplier_name'])) {
+            $supplier = Supplier::find($data['supplier_id'], ['name']);
+            $data['supplier_name'] = $supplier->name;
+        }
         $purchaseRequest->fill($data);
         $purchaseRequest->save();
 
         $form = new Form;
         $form->fillData($data, $purchaseRequest);
 
-        $array = [];
+        // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
-        foreach ($items as $item) {
-            $purchaseRequestItem = new PurchaseRequestItem;
-            $purchaseRequestItem->fill($item);
-            $purchaseRequestItem->purchase_request_id = $purchaseRequest->id;
-            array_push($array, $purchaseRequestItem);
+        if (!empty($items) && is_array($items)) {
+            $array = [];
+            foreach ($items as $item) {
+                $purchaseRequestItem = new PurchaseRequestItem;
+                $purchaseRequestItem->fill($item);
+                $purchaseRequestItem->purchase_request_id = $purchaseRequest->id;
+                array_push($array, $purchaseRequestItem);
+            }
+            $purchaseRequest->items()->saveMany($array);
         }
-        $purchaseRequest->items()->saveMany($array);
 
-        $array = [];
+        // TODO validation services is required if items is null and must be array
         $services = $data['services'] ?? [];
-        foreach ($services as $service) {
-            $purchaseRequestService = new PurchaseRequestService;
-            $purchaseRequestService->fill($service);
-            $purchaseRequestService->purchase_request_id = $purchaseRequest->id;
-            array_push($array, $purchaseRequestService);
+        if (!empty($services) && is_array($services)) {
+            $array = [];
+            foreach ($services as $service) {
+                $purchaseRequestService = new PurchaseRequestService;
+                $purchaseRequestService->fill($service);
+                $purchaseRequestService->purchase_request_id = $purchaseRequest->id;
+                array_push($array, $purchaseRequestService);
+            }
+            $purchaseRequest->services()->saveMany($array);
         }
-        $purchaseRequest->services()->saveMany($array);
 
         return $purchaseRequest;
     }

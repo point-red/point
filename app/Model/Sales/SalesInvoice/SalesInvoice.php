@@ -26,6 +26,13 @@ class SalesInvoice extends TransactionModel
         'tax',
     ];
 
+    protected $casts = [
+        'delivery_fee' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double',
+        'tax' => 'double',
+    ];
+
     protected $defaultNumberPrefix = 'INVOICE';
 
     public function form()

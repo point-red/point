@@ -65,7 +65,7 @@ class DeliveryOrder extends TransactionModel
         $tempArray = DeliveryNote::joinForm()
             ->join(DeliveryNoteItem::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_note_id'))
             ->groupBy('delivery_order_item_id')
-            ->select('delivery_order_items.delivery_order_item_id')
+            ->select(DeliveryNoteItem::getTableName('delivery_order_item_id'))
             ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
             ->whereIn('delivery_order_item_id', $deliveryOrderItemIds)
             ->active()

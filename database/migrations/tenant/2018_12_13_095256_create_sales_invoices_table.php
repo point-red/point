@@ -17,10 +17,10 @@ class CreateSalesInvoicesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('customer_id');
             $table->string('customer_name');
-            $table->string('billing_address');
+            $table->string('billing_address')->nullable();
             $table->string('billing_phone')->nullable();
             $table->string('billing_email')->nullable();
-            $table->string('shipping_address');
+            $table->string('shipping_address')->nullable();
             $table->string('shipping_phone')->nullable();
             $table->string('shipping_email')->nullable();
             $table->date('due_date');

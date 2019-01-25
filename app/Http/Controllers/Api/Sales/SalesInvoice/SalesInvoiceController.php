@@ -15,9 +15,10 @@ class SalesInvoiceController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
         $salesInvoices = SalesInvoice::eloquentFilter($request)
             ->join(Customer::getTableName(), SalesInvoice::getTableName('customer_id'), '=', Customer::getTableName('id'))
@@ -59,10 +60,11 @@ class SalesInvoiceController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $salesInvoice = SalesInvoice::eloquentFilter($request)
             ->with('form')

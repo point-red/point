@@ -18,6 +18,13 @@ class CreateSalesOrdersTable extends Migration
             $table->unsignedInteger('sales_quotation_id')->nullable();
             $table->unsignedInteger('sales_contract_id')->nullable();
             $table->unsignedInteger('customer_id');
+            $table->string('customer_name');
+            $table->string('billing_address');
+            $table->string('billing_phone')->nullable();
+            $table->string('billing_email')->nullable();
+            $table->string('shipping_address');
+            $table->string('shipping_phone')->nullable();
+            $table->string('shipping_email')->nullable();
             $table->unsignedInteger('warehouse_id')->nullable();
             $table->date('eta'); // estimated time arrival
             $table->boolean('cash_only')->default(false);

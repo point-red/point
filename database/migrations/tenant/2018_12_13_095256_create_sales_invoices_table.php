@@ -16,6 +16,13 @@ class CreateSalesInvoicesTable extends Migration
         Schema::create('sales_invoices', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('customer_id');
+            $table->string('customer_name');
+            $table->string('billing_address');
+            $table->string('billing_phone')->nullable();
+            $table->string('billing_email')->nullable();
+            $table->string('shipping_address');
+            $table->string('shipping_phone')->nullable();
+            $table->string('shipping_email')->nullable();
             $table->date('due_date');
             $table->decimal('delivery_fee', 65, 30)->default(0);
             $table->decimal('discount_percent', 65, 30)->nullable();

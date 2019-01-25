@@ -112,8 +112,9 @@ class PurchaseRequestController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param int  $id
+     * @param int $id
      * @return ApiResource
+     * @throws \Throwable
      */
     public function update(Request $request, $id)
     {

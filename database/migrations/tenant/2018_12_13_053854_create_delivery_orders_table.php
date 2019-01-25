@@ -18,6 +18,13 @@ class CreateDeliveryOrdersTable extends Migration
             $table->unsignedInteger('customer_id');
             $table->unsignedInteger('warehouse_id');
             $table->unsignedInteger('sales_order_id');
+            $table->string('customer_name');
+            $table->string('billing_address');
+            $table->string('billing_phone')->nullable();
+            $table->string('billing_email')->nullable();
+            $table->string('shipping_address');
+            $table->string('shipping_phone')->nullable();
+            $table->string('shipping_email')->nullable();
 
             $table->foreign('sales_order_id')->references('id')->on('sales_orders')->onDelete('restrict');
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('restrict');

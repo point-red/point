@@ -18,6 +18,7 @@ class CreatePurchaseReceiveItemsTable extends Migration
             $table->unsignedInteger('purchase_receive_id');
             $table->unsignedInteger('purchase_order_item_id')->nullable();
             $table->unsignedInteger('item_id');
+            $table->string('item_name');
             $table->decimal('gross_weight', 65, 30)->nullable();
             $table->decimal('tare_weight', 65, 30)->nullable();
             $table->decimal('net_weight', 65, 30)->nullable();

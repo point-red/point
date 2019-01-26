@@ -17,6 +17,7 @@ class CreateSalesQuotationItemsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('sales_quotation_id');
             $table->unsignedInteger('item_id');
+            $table->string('item_name');
             $table->decimal('quantity', 65, 30);
             $table->string('unit');
             $table->decimal('converter', 65, 30);

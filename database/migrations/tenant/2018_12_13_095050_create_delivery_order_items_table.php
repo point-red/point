@@ -18,6 +18,7 @@ class CreateDeliveryOrderItemsTable extends Migration
             $table->unsignedInteger('delivery_order_id');
             $table->unsignedInteger('sales_order_item_id');
             $table->unsignedInteger('item_id');
+            $table->string('item_name');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);
             $table->decimal('discount_percent', 65, 30)->nullable();

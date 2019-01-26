@@ -18,6 +18,7 @@ class CreateSalesOrderItemsTable extends Migration
             $table->unsignedInteger('sales_order_id');
             $table->unsignedInteger('sales_quotation_item_id')->nullable();
             $table->unsignedInteger('item_id');
+            $table->string('item_name');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);
             $table->decimal('discount_percent', 65, 30)->nullable();

@@ -17,6 +17,7 @@ class CreatePurchaseReturnItemsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('purchase_return_id');
             $table->unsignedInteger('item_id');
+            $table->string('item_name');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);
             $table->decimal('discount_percent', 65, 30)->nullable();

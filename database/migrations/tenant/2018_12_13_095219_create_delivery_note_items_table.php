@@ -18,6 +18,7 @@ class CreateDeliveryNoteItemsTable extends Migration
             $table->unsignedInteger('delivery_note_id');
             $table->unsignedInteger('delivery_order_item_id');
             $table->unsignedInteger('item_id');
+            $table->string('item_name');
             $table->decimal('gross_weight', 65, 30)->nullable();
             $table->decimal('tare_weight', 65, 30)->nullable();
             $table->decimal('net_weight', 65, 30)->nullable();

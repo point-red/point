@@ -19,6 +19,7 @@ class CreateSalesInvoiceItemsTable extends Migration
             $table->unsignedInteger('delivery_note_id');
             $table->unsignedInteger('delivery_note_item_id');
             $table->unsignedInteger('item_id');
+            $table->string('item_name');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);
             $table->decimal('discount_percent', 65, 30)->nullable();

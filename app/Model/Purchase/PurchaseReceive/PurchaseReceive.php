@@ -18,6 +18,7 @@ class PurchaseReceive extends TransactionModel
 
     protected $fillable = [
         'supplier_id',
+        'supplier_name',
         'warehouse_id',
         'purchase_order_id',
         'driver',
@@ -61,7 +62,7 @@ class PurchaseReceive extends TransactionModel
         $purchaseReceive = new self;
         $purchaseReceive->fill($data);
 
-        if (isset($data['purchase_order_id'])) {
+        if (!empty($data['purchase_order_id'])) {
             $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
             $purchaseOrderItems = $purchaseOrder->items->toArray();
             $purchaseOrderItems = array_column($purchaseOrderItems, null, 'id');
@@ -70,7 +71,21 @@ class PurchaseReceive extends TransactionModel
             $purchaseOrderServices = array_column($purchaseOrderServices, null, 'id');
             // TODO maybe need to add additional check
             // if the $purchaseOrder canceled / rejected / archived
-            $purchaseReceive->supplier_id = $purchaseOrder->supplier->id;
+            $purchaseReceive->supplier_id = $purchaseOrder->supplier_id;
+            $purchaseReceive->supplier_name = $purchaseOrder->supplier_name;
+        }
+        // TODO throw error if purchase_order_id and supplier_id both null
+        else if (!empty($data['supplier_id'])) {
+            $purchaseReceive->supplier_id = $data['supplier_id'];
+            
+            // TODO validation supplier_name is optional non empty string
+            if (empty($data['supplier_name'])) {
+                $supplier = Supplier::find($data['supplier_id'], ['name']);
+                $purchaseReceive->supplier_name = $supplier->name;
+            }
+            else {
+                $purchaseReceive->supplier_name = $data['supplier_name'];
+            }
         }
 
         $purchaseReceive->save();
@@ -79,9 +94,9 @@ class PurchaseReceive extends TransactionModel
         $form->fillData($data, $purchaseReceive);
 
         // TODO validation items is optional and must be array
-        $array = [];
         $items = $data['items'] ?? [];
         if (!empty($items) && is_array($items)) {
+            $array = [];
             foreach ($items as $item) {
                 $purchaseReceiveItem = new PurchaseReceiveItem;
                 $purchaseReceiveItem->fill($item);
@@ -100,9 +115,9 @@ class PurchaseReceive extends TransactionModel
         }
 
         // TODO validation services is required if items is null and must be array
-        $array = [];
         $services = $data['services'] ?? [];
         if (!empty($services) && is_array($services)) {
+            $array = [];
             foreach ($services as $service) {
                 $purchaseReceiveService = new PurchaseReceiveService;
                 $purchaseReceiveService->fill($service);

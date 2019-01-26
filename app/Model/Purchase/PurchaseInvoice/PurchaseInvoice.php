@@ -93,6 +93,14 @@ class PurchaseInvoice extends TransactionModel
         $purchaseInvoice = new self;
         $purchaseInvoice->fill($data);
         $purchaseInvoice->supplier_id = $purchaseReceives[0]->supplier_id;
+
+        if (empty($data['supplier_name'])) {
+            $supplier = Supplier::find($purchaseReceives[0]->supplier_id, ['name']);
+            $purchaseInvoice->supplier_name = $supplier->name;
+        }
+        else {
+            $purchaseInvoice->supplier_name = $purchaseReceives[0]->supplier_name;
+        }
         $purchaseInvoice->save();
 
         $form = new Form;

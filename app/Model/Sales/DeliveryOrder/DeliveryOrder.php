@@ -21,6 +21,12 @@ class DeliveryOrder extends TransactionModel
     protected $fillable = [
         'warehouse_id',
         'sales_order_id',
+        'billing_address',
+        'billing_phone',
+        'billing_email',
+        'shipping_address',
+        'shipping_phone',
+        'shipping_email',
     ];
 
     protected $defaultNumberPrefix = 'DO';
@@ -97,6 +103,7 @@ class DeliveryOrder extends TransactionModel
         $deliveryOrder = new self;
         $deliveryOrder->fill($data);
         $deliveryOrder->customer_id = $salesOrder->customer_id;
+        $deliveryOrder->customer_name = $salesOrder->customer_name;
         $deliveryOrder->save();
 
         $form = new Form;
@@ -105,10 +112,20 @@ class DeliveryOrder extends TransactionModel
         // TODO items is required and must be array
         $array = [];
         $items = $data['items'];
+
+        $salesOrderItems = $salesOrder->items->toArray();
+        $salesOrderItems = array_column($salesOrderItems, null, 'id');
+
         foreach ($items as $item) {
+            $salesOrderItem = $salesOrderItems[$item['sales_order_item_id']];
+
             $deliveryOrderItem = new DeliveryOrderItem;
             $deliveryOrderItem->fill($item);
             $deliveryOrderItem->delivery_order_id = $deliveryOrder->id;
+            $deliveryOrderItem->price = $salesOrderItem['price'];
+            $deliveryOrderItem->discount_percent = $salesOrderItem['discount_percent'];
+            $deliveryOrderItem->discount_value = $salesOrderItem['discount_value'];
+            $deliveryOrderItem->taxable = $salesOrderItem['taxable'];
             array_push($array, $deliveryOrderItem);
         }
         $deliveryOrder->items()->saveMany($array);

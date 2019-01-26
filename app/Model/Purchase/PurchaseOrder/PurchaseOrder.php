@@ -20,6 +20,7 @@ class PurchaseOrder extends TransactionModel
         'purchase_request_id',
         'purchase_contract_id',
         'supplier_id',
+        'supplier_name',
         'warehouse_id',
         'eta',
         'cash_only',
@@ -112,6 +113,13 @@ class PurchaseOrder extends TransactionModel
     public static function create($data)
     {
         $purchaseOrder = new self;
+
+        // TODO validation supplier_name is optional type non empty string
+        if (empty($data['supplier_name'])) {
+            $supplier = Supplier::find($data['supplier_id'], ['name']);
+            $data['supplier_name'] = $supplier->name;
+        }
+
         $purchaseOrder->fill($data);
         $purchaseOrder->save();
 
@@ -119,9 +127,9 @@ class PurchaseOrder extends TransactionModel
         $form->fillData($data, $purchaseOrder);
 
         // TODO validation items is optional and must be array
-        $array = [];
         $items = $data['items'] ?? [];
         if (!empty($items) && is_array($items)) {
+            $array = [];
             foreach ($items as $item) {
                 $purchaseOrderItem = new PurchaseOrderItem;
                 $purchaseOrderItem->fill($item);
@@ -132,9 +140,9 @@ class PurchaseOrder extends TransactionModel
         }
 
         // TODO validation services is required if items is null and must be array
-        $array = [];
         $services = $data['services'] ?? [];
         if (!empty($services) && is_array($services)) {
+            $array = [];
             foreach ($services as $service) {
                 $purchaseOrderService = new PurchaseOrderService;
                 $purchaseOrderService->fill($service);

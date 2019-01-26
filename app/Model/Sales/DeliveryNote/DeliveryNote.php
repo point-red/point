@@ -55,7 +55,14 @@ class DeliveryNote extends TransactionModel
 
         $deliveryNote = new self;
         $deliveryNote->fill($data);
-        $deliveryNote->customer_id = $deliveryOrder->customer->id;
+        $deliveryNote->customer_id = $deliveryOrder->customer_id;
+        $deliveryNote->customer_name = $deliveryOrder->customer_name;
+        $deliveryNote->billing_address = $deliveryOrder->billing_address;
+        $deliveryNote->billing_phone = $deliveryOrder->billing_phone;
+        $deliveryNote->billing_email = $deliveryOrder->billing_email;
+        $deliveryNote->shipping_address = $deliveryOrder->shipping_address;
+        $deliveryNote->shipping_phone = $deliveryOrder->shipping_phone;
+        $deliveryNote->shipping_email = $deliveryOrder->shipping_email;
         $deliveryNote->save();
 
         $form = new Form;
@@ -64,10 +71,20 @@ class DeliveryNote extends TransactionModel
         // TODO items is required and must be array
         $array = [];
         $items = $data['items'];
+
+        $deliveryOrderItems = $deliveryOrder->items->toArray();
+        $deliveryOrderItems = array_column($deliveryOrderItems, null, 'id');
+
         foreach ($items as $item) {
+            $deliveryOrderItem = $deliveryOrderItems[$item['delivery_order_item_id']];
+
             $deliveryNoteItem = new DeliveryNoteItem;
             $deliveryNoteItem->fill($item);
             $deliveryNoteItem->delivery_note_id = $deliveryNote->id;
+            $deliveryNoteItem->price = $deliveryOrderItem['price'];
+            $deliveryNoteItem->discount_percent = $deliveryOrderItem['discount_percent'];
+            $deliveryNoteItem->discount_value = $deliveryOrderItem['discount_value'];
+            $deliveryNoteItem->taxable = $deliveryOrderItem['taxable'];
             array_push($array, $deliveryNoteItem);
         }
         $deliveryNote->items()->saveMany($array);

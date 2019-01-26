@@ -29,7 +29,10 @@ class DeliveryNoteItem extends TransactionModel
         'converter' => 'double',
         'price' => 'double',
         'discount_percent' => 'double',
-        'discount_value' => 'double'
+        'discount_value' => 'double',
+        'gross_weight' => 'double',
+        'tare_weight' => 'double',
+        'net_weight' => 'double',
     ];
 
     public function item()

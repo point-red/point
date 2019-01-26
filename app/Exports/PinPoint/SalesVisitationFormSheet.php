@@ -65,7 +65,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
     {
         return [
             date('Y-m-d', strtotime($row->form->date)),
-            date( 'H:i', strtotime($row->form->created_at.' + 7 hours') ), //TODO: change this harcoded timezone into project timezone
+            date( 'H:i', strtotime($row->form->date) ),
             $row->form->createdBy->first_name . ' ' . $row->form->createdBy->last_name,
             $row->name,
             $row->group,

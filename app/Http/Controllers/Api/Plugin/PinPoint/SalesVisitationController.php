@@ -74,7 +74,7 @@ class SalesVisitationController extends Controller
         }
 
         $form = new Form;
-        $form->date = date('Y-m-d H:i:s', strtotime($request->get('date')));
+        $form->date = date( 'Y-m-d H:i:s', strtotime($request->get('date')) );
         $form->save();
 
         $salesVisitation = new SalesVisitation;

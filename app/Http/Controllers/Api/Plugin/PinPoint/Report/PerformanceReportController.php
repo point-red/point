@@ -17,13 +17,13 @@ class PerformanceReportController extends Controller
     {
         $dateFrom = date('Y-m-d 00:00:00', strtotime($request->get('date_from')));
         $dateTo = date('Y-m-d 23:59:59', strtotime($request->get('date_to')));
-        $queryTarget = $this->queryTarget($dateFrom);
+        $queryTarget = $this->queryTarget($dateTo);
         $queryCall = $this->queryCall($dateFrom, $dateTo);
         $queryEffectiveCall = $this->queryEffectiveCall($dateFrom, $dateTo);
         $queryValue = $this->queryValue($dateFrom, $dateTo);
         $details = $this->queryDetails($dateFrom, $dateTo);
 
-        $result = User::leftJoinSub($queryTarget, 'queryTarget', function ($join) {
+        $result = User::query()->leftJoinSub($queryTarget, 'queryTarget', function ($join) {
             $join->on('users.id', '=', 'queryTarget.user_id');
         })->leftJoinSub($queryCall, 'queryCall', function ($join) {
             $join->on('users.id', '=', 'queryCall.created_by');
@@ -60,10 +60,10 @@ class PerformanceReportController extends Controller
         return new PerformanceCollection($result);
     }
 
-    public function queryTarget($dateFrom)
+    public function queryTarget($dateTo)
     {
-        $query = SalesVisitationTarget::whereIn('date', function ($query) use ($dateFrom) {
-            $query->selectRaw('max(date)')->from(SalesVisitationTarget::getTableName())->where('date', '<=', $dateFrom)->groupBy('user_id');
+        $query = SalesVisitationTarget::whereIn('date', function ($query) use ($dateTo) {
+            $query->selectRaw('max(date)')->from(SalesVisitationTarget::getTableName())->where('date', '<=', $dateTo)->groupBy('user_id');
         });
 
         $targets = User::leftJoinSub($query, 'query', function ($join) {

@@ -8,5 +8,4 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::apiResource('delivery-notes', 'DeliveryNote\\DeliveryNoteController');
     Route::apiResource('sales-invoices', 'SalesInvoice\\SalesInvoiceController');
     // Route::apiResource('sales-return', 'ReturnController');
-    // Route::apiResource('payment-collection', 'PaymentCollectionController');
 });

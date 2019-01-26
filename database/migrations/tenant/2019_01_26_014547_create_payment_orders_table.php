@@ -15,7 +15,10 @@ class CreatePaymentOrdersTable extends Migration
     {
         Schema::create('payment_orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->timestamps();
+            $table->unsignedInteger('paymentable_id');
+            $table->string('paymentable_type');
+            $table->date('due_date');
+            $table->string('payment_type'); // cash or bank or cheque
         });
     }
 

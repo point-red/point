@@ -2,6 +2,7 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
+use App\Model\Finance\Payment\Payment;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
@@ -52,6 +53,14 @@ class SalesInvoice extends TransactionModel
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    /**
+     * Get the invoice's payment.
+     */
+    public function payments()
+    {
+        return $this->morphMany(Payment::class, 'referenceable');
     }
 
     public function getTotalAttribute()

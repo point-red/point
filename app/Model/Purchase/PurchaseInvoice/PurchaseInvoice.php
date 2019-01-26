@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseInvoice;
 
+use App\Model\Finance\Payment\Payment;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
@@ -51,6 +52,14 @@ class PurchaseInvoice extends TransactionModel
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    /**
+     * Get the invoice's payment.
+     */
+    public function payments()
+    {
+        return $this->morphMany(Payment::class, 'referenceable');
     }
 
     public function getTotalAttribute()

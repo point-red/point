@@ -13,7 +13,7 @@ class CreatePaymentBanksTable extends Migration
      */
     public function up()
     {
-        Schema::create('banks', function (Blueprint $table) {
+        Schema::create('payment_banks', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('paymentable_id');
             $table->string('paymentable_type');
@@ -30,6 +30,6 @@ class CreatePaymentBanksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('banks');
+        Schema::dropIfExists('payment_banks');
     }
 }

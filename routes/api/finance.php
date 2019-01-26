@@ -1,9 +1,9 @@
 <?php
 
 Route::prefix('finance')->namespace('Finance')->group(function () {
-    // Route::apiResource('payment-order', 'PaymentOrderController');
-    // Route::apiResource('cash', 'CashController');
-    // Route::apiResource('bank', 'BankController');
+    Route::apiResource('payment-orders', 'PaymentOrder\\PaymentOrderController');
+    Route::apiResource('cashes', 'Cash\\CashController');
+    Route::apiResource('banks', 'Bank\\BankController');
     // Route::apiResource('cash-advance', 'CashAdvanceController');
     // Route::apiResource('budgeting', 'BudgetingController');
 });

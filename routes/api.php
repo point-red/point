@@ -34,6 +34,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         require base_path('routes/api/master.php');
         require base_path('routes/api/purchase.php');
         require base_path('routes/api/sales.php');
+        require base_path('routes/api/finance.php');
         require base_path('routes/api/accounting.php');
         require base_path('routes/api/human-resource.php');
 

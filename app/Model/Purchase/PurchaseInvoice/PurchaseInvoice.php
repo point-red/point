@@ -93,14 +93,16 @@ class PurchaseInvoice extends TransactionModel
         $items = $data['items'] ?? [];
         if (!empty($items) && is_array($items)) {
             $items = array_column($items, null, 'item_id');
-        } else {
+        }
+        else {
             // TODO throw error if $items is empty or not an array
         }
         // TODO validation services is required if items is null and must be array
         $services = $data['services'] ?? [];
         if (!empty($services) && is_array($services)) {
             $services = array_column($services, null, 'service_id');
-        } else {
+        }
+        else {
             // TODO throw error if $services is empty or not an array
         }
 
@@ -119,8 +121,8 @@ class PurchaseInvoice extends TransactionModel
                     'unit' => $purchaseReceiveItem->unit,
                     'converter' => $purchaseReceiveItem->converter,
                     'price' => $item['price'],
-                    'discount_percent' => $item['discount_percent'],
-                    'discount_value' => $item['discount_value'],
+                    'discount_percent' => $item['discount_percent'] ?? null,
+                    'discount_value' => $item['discount_value'] ?? 0,
                     'taxable' => $item['taxable'],
                 ));
 
@@ -137,8 +139,8 @@ class PurchaseInvoice extends TransactionModel
                     'service_id' => $serviceId,
                     'quantity' => $purchaseReceiveService->quantity,
                     'price' => $service['price'],
-                    'discount_percent' => $service['discount_percent'],
-                    'discount_value' => $service['discount_value'],
+                    'discount_percent' => $service['discount_percent'] ?? null,
+                    'discount_value' => $service['discount_value'] ?? 0,
                     'taxable' => $service['taxable'],
                 ]);
 

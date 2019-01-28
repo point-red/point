@@ -13,11 +13,21 @@ class SalesInvoiceService extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'sales_order_service_id',
+        'service_id',
+        'quantity',
+        'price',
+        'discount_percent',
+        'discount_value',
+        'taxable',
+    ];
+
     protected $casts = [
-        'quantity'  => 'double',
+        'quantity' => 'double',
         'price' => 'double',
         'discount_value' => 'double',
-        'discount_percent' => 'double'
+        'discount_percent' => 'double',
     ];
 
     public function service()

@@ -14,8 +14,6 @@ class PurchaseInvoice extends TransactionModel
 
     public $timestamps = false;
 
-    protected $appends = array('total', 'remaining_amount');
-
     protected $fillable = [
         'due_date',
         'delivery_fee',
@@ -29,7 +27,7 @@ class PurchaseInvoice extends TransactionModel
         'tax' => 'double',
         'delivery_fee' => 'double',
         'discount_percent' => 'double',
-        'discount_value' => 'double'
+        'discount_value' => 'double',
     ];
 
     protected $defaultNumberPrefix = 'PI';
@@ -62,30 +60,9 @@ class PurchaseInvoice extends TransactionModel
         return $this->morphMany(Payment::class, 'referenceable');
     }
 
-    public function getTotalAttribute()
-    {
-        $items = $this->items;
-        $total = $items->reduce(function ($carry, $item) {
-            $subtotal = $item->quantity * ($item->price - $item->discount_value);
-
-            return $carry + $subtotal;
-        }, 0);
-
-        $services = $this->services;
-        $total = $services->reduce(function ($carry, $service) {
-            $subtotal = $service->quantity * ($service->price - $service->discount_value);
-
-            return $carry + $subtotal;
-        }, $total);
-
-        $total += $this->tax - $this->discount_value + $this->delivery_fee;
-
-        return $total;
-    }
-
     public function getRemainingAmountAttribute()
     {
-        return $this->total;
+        return $this->amount;
     }
 
     public static function create($data)
@@ -107,73 +84,83 @@ class PurchaseInvoice extends TransactionModel
             $supplier = Supplier::find($purchaseReceives[0]->supplier_id, ['name']);
             $purchaseInvoice->supplier_name = $supplier->name;
         }
-        else {
-            $purchaseInvoice->supplier_name = $purchaseReceives[0]->supplier_name;
+
+        $amount = 0;
+        $purchaseInvoiceItems = [];
+        $purchaseInvoiceServices = [];
+
+        // TODO validation items is optional and must be array
+        $items = $data['items'] ?? [];
+        if (!empty($items) && is_array($items)) {
+            $items = array_column($items, null, 'item_id');
+        } else {
+            // TODO throw error if $items is empty or not an array
         }
+        // TODO validation services is required if items is null and must be array
+        $services = $data['services'] ?? [];
+        if (!empty($services) && is_array($services)) {
+            $services = array_column($services, null, 'service_id');
+        } else {
+            // TODO throw error if $services is empty or not an array
+        }
+
+        foreach ($purchaseReceives as $purchaseReceive) {
+            $purchaseReceive->form()->update(['done' => true]);
+
+            foreach ($purchaseReceive->items as $purchaseReceiveItem) {
+                $itemId = $purchaseReceiveItem->item_id;
+                $item = $items[$itemId];
+
+                array_push($purchaseInvoiceItems, array(
+                    'purchase_receive_id' => $purchaseReceiveItem->purchase_receive_id,
+                    'purchase_receive_item_id' => $purchaseReceiveItem->id,
+                    'item_id' => $itemId,
+                    'quantity' => $purchaseReceiveItem->quantity,
+                    'unit' => $purchaseReceiveItem->unit,
+                    'converter' => $purchaseReceiveItem->converter,
+                    'price' => $item['price'],
+                    'discount_percent' => $item['discount_percent'],
+                    'discount_value' => $item['discount_value'],
+                    'taxable' => $item['taxable'],
+                ));
+
+                $amount += $purchaseReceiveItem->quantity * ($item['price'] - $item['discount_value'] ?? 0);
+            }
+
+            foreach ($purchaseReceive->services as $purchaseReceiveService) {
+                $serviceId = $purchaseReceiveService->service_id;
+                $service = $services[$serviceId];
+
+                array_push($purchaseInvoiceServices, [
+                    'purchase_receive_id' => $purchaseReceiveService->purchase_receive_id,
+                    'purchase_receive_service_id' => $purchaseReceiveService->id,
+                    'service_id' => $serviceId,
+                    'quantity' => $purchaseReceiveService->quantity,
+                    'price' => $service['price'],
+                    'discount_percent' => $service['discount_percent'],
+                    'discount_value' => $service['discount_value'],
+                    'taxable' => $service['taxable'],
+                ]);
+
+                $amount += $purchaseReceiveService->quantity * ($service['price'] - $service['discount_value'] ?? 0);
+            }
+        }
+
+        $amount -= $data['discount_value'] ?? 0;
+        $amount += $data['delivery_fee'] ?? 0;
+
+        if ($data['type_of_tax'] === 'exclude' && !empty($data['tax'])) {
+            $amount += $data['tax'];
+        }
+
+        $purchaseInvoice->amount = $amount;
         $purchaseInvoice->save();
+
+        $purchaseInvoice->items()->createMany($purchaseInvoiceItems);
+        $purchaseInvoice->services()->createMany($purchaseInvoiceServices);
 
         $form = new Form;
         $form->fillData($data, $purchaseInvoice);
-
-        // TODO validation items is optional and must be array
-        $dataItems = $data['items'] ?? [];
-        if (!empty($dataItems) && is_array($dataItems)) {
-            $items = array_column($dataItems, null, 'item_id');
-
-            $array = [];
-            foreach ($purchaseReceives as $purchaseReceive) {
-                $purchaseReceive->form()->update(['done' => true]);
-
-                foreach ($purchaseReceive->items as $purchaseReceiveItem) {
-                    $itemId = $purchaseReceiveItem->item_id;
-                    $item = $items[$itemId];
-
-                    $purchaseInvoiceItem = new PurchaseInvoiceItem;
-                    $purchaseInvoiceItem->purchase_receive_id = $purchaseReceiveItem->purchase_receive_id;
-                    $purchaseInvoiceItem->purchase_receive_item_id = $purchaseReceiveItem->id;
-                    $purchaseInvoiceItem->item_id = $itemId;
-                    $purchaseInvoiceItem->quantity = $purchaseReceiveItem->quantity;
-                    $purchaseInvoiceItem->unit = $purchaseReceiveItem->unit;
-                    $purchaseInvoiceItem->converter = $purchaseReceiveItem->converter;
-                    $purchaseInvoiceItem->price = $item['price'];
-                    $purchaseInvoiceItem->discount_percent = $item['discount_percent'];
-                    $purchaseInvoiceItem->discount_value = $item['discount_value'];
-                    $purchaseInvoiceItem->taxable = $item['taxable'];
-                    $purchaseInvoiceItem->purchase_invoice_id = $purchaseInvoice->id;
-                    array_push($array, $purchaseInvoiceItem);
-                }
-            }
-            $purchaseInvoice->items()->saveMany($array);
-        }
-
-        // TODO validation services is required if items is null and must be array
-        $dataServices = $data['services'] ?? [];
-        if (!empty($dataServices) && is_array($dataServices)) {
-            $services = array_column($dataServices, null, 'service_id');
-
-            $array = [];
-            foreach ($purchaseReceives as $purchaseReceive) {
-                $purchaseReceive->form()->update(['done' => true]);
-
-                foreach ($purchaseReceive->services as $purchaseReceiveService) {
-                    $serviceId = $purchaseReceiveService->service_id;
-                    $service = $services[$serviceId];
-
-                    $purchaseInvoiceService = new PurchaseInvoiceService;
-                    $purchaseInvoiceService->purchase_receive_service_id = $purchaseReceiveService->id;
-                    $purchaseInvoiceService->service_id = $serviceId;
-                    $purchaseInvoiceService->quantity = $purchaseReceiveService->quantity;
-                    $purchaseInvoiceService->price = $service['price'];
-                    $purchaseInvoiceService->discount_percent = $service['discount_percent'];
-                    $purchaseInvoiceService->discount_value = $service['discount_value'];
-                    $purchaseInvoiceService->taxable = $service['taxable'];
-                    $purchaseInvoiceService->purchase_invoice_id = $purchaseInvoice->id;
-
-                    array_push($array, $purchaseInvoiceService);
-                }
-            }
-            $purchaseInvoice->services()->saveMany($array);
-        }
 
         return $purchaseInvoice;
     }

@@ -121,36 +121,50 @@ class SalesOrder extends TransactionModel
         }
 
         $salesOrder->fill($data);
-        $salesOrder->save();
 
-        $form = new Form;
-        $form->fillData($data, $salesOrder);
+        $amount = 0;
+        $salesOrderItems = [];
+        $salesOrderServices = [];
 
         // TODO validation items is optional and must be array
-        $array = [];
         $items = $data['items'] ?? [];
         if (!empty($items) && is_array($items)) {
             foreach ($items as $item) {
                 $salesOrderItem = new SalesOrderItem;
                 $salesOrderItem->fill($item);
-                $salesOrderItem->sales_order_id = $salesOrder->id;
-                array_push($array, $salesOrderItem);
+                array_push($salesOrderItems, $salesOrderItem);
+
+                $amount = $item['quantity'] * ($item['price'] - $item['discount_value'] ?? 0);
             }
-            $salesOrder->items()->saveMany($array);
         }
 
         // TODO validation services is required if items is null and must be array
-        $array = [];
         $services = $data['services'] ?? [];
         if (!empty($services) && is_array($services)) {
             foreach ($services as $service) {
                 $salesOrderService = new SalesOrderService;
                 $salesOrderService->fill($service);
-                $salesOrderService->sales_order_id = $salesOrder->id;
-                array_push($array, $salesOrderService);
+                array_push($salesOrderServices, $salesOrderService);
+
+                $amount = $service['quantity'] * ($service['price'] - $service['discount_value'] ?? 0);
             }
-            $salesOrder->services()->saveMany($array);
         }
+
+        $amount -= $data['discount_value'] ?? 0;
+        $amount += $data['delivery_fee'] ?? 0;
+
+        if ($data['type_of_tax'] === 'exclude' && !empty($data['tax'])) {
+            $amount += $data['tax'];
+        }
+        
+        $salesOrder->amount = $amount;
+        $salesOrder->save();
+
+        $salesOrder->items()->saveMany($salesOrderItems);
+        $salesOrder->services()->saveMany($salesOrderServices);
+
+        $form = new Form;
+        $form->fillData($data, $salesOrder);
 
         return $salesOrder;
     }

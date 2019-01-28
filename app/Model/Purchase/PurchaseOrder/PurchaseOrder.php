@@ -30,6 +30,12 @@ class PurchaseOrder extends TransactionModel
         'discount_value',
         'type_of_tax',
         'tax',
+        'billing_address',
+        'billing_phone',
+        'billing_email',
+        'shipping_address',
+        'shipping_phone',
+        'shipping_email',
     ];
 
     protected $casts = [
@@ -121,36 +127,55 @@ class PurchaseOrder extends TransactionModel
         }
 
         $purchaseOrder->fill($data);
-        $purchaseOrder->save();
 
-        $form = new Form;
-        $form->fillData($data, $purchaseOrder);
+        $amount = 0;
+        $purchaseOrderItems = [];
+        $purchaseOrderServices = [];
 
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
         if (!empty($items) && is_array($items)) {
-            $array = [];
             foreach ($items as $item) {
                 $purchaseOrderItem = new PurchaseOrderItem;
                 $purchaseOrderItem->fill($item);
-                $purchaseOrderItem->purchase_order_id = $purchaseOrder->id;
-                array_push($array, $purchaseOrderItem);
-            }
-            $purchaseOrder->items()->saveMany($array);
-        }
+                array_push($purchaseOrderItems, $purchaseOrderItem);
 
+                $amount += $item['quantity'] * ($item['price'] - $item['discount_value'] ?? 0);
+            }
+        }
+        else {
+            // TODO throw error if $items is not an array
+        }
         // TODO validation services is required if items is null and must be array
         $services = $data['services'] ?? [];
         if (!empty($services) && is_array($services)) {
-            $array = [];
             foreach ($services as $service) {
                 $purchaseOrderService = new PurchaseOrderService;
                 $purchaseOrderService->fill($service);
-                $purchaseOrderService->purchase_order_id = $purchaseOrder->id;
-                array_push($array, $purchaseOrderService);
+                array_push($purchaseOrderServices, $purchaseOrderService);
+
+                $amount += $service['quantity'] * ($service['price'] - $service['discount_value'] ?? 0);
             }
-            $purchaseOrder->services()->saveMany($array);
         }
+        else {
+            // TODO throw error if $services is not an array
+        }
+
+        $amount -= $data['discount_value'] ?? 0;
+        $amount += $data['delivery_fee'] ?? 0;
+
+        if ($data['type_of_tax'] === 'exclude' && !empty($data['tax'])) {
+            $amount += $data['tax'];
+        }
+
+        $purchaseOrder->amount = $amount;
+        $purchaseOrder->save();
+
+        $purchaseOrder->items()->saveMany($purchaseOrderItems);
+        $purchaseOrder->services()->saveMany($purchaseOrderServices);
+
+        $form = new Form;
+        $form->fillData($data, $purchaseOrder);
 
         return $purchaseOrder;
     }

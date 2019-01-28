@@ -70,36 +70,48 @@ class PurchaseRequest extends TransactionModel
             $data['supplier_name'] = $supplier->name;
         }
         $purchaseRequest->fill($data);
-        $purchaseRequest->save();
 
-        $form = new Form;
-        $form->fillData($data, $purchaseRequest);
+        $amount = 0;
+        $purchaseRequestItems = [];
+        $purchaseRequestServices = [];
 
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
         if (!empty($items) && is_array($items)) {
-            $array = [];
             foreach ($items as $item) {
                 $purchaseRequestItem = new PurchaseRequestItem;
                 $purchaseRequestItem->fill($item);
-                $purchaseRequestItem->purchase_request_id = $purchaseRequest->id;
-                array_push($array, $purchaseRequestItem);
-            }
-            $purchaseRequest->items()->saveMany($array);
-        }
+                array_push($purchaseRequestItems, $purchaseRequestItem);
 
+                $amount += $item['quantity'] * $item['price'];
+            }
+        }
+        else {
+            // TODO throw error if $items is empty or not an array
+        }
         // TODO validation services is required if items is null and must be array
         $services = $data['services'] ?? [];
         if (!empty($services) && is_array($services)) {
-            $array = [];
             foreach ($services as $service) {
                 $purchaseRequestService = new PurchaseRequestService;
                 $purchaseRequestService->fill($service);
-                $purchaseRequestService->purchase_request_id = $purchaseRequest->id;
-                array_push($array, $purchaseRequestService);
+                array_push($purchaseRequestServices, $purchaseRequestService);
+                
+                $amount += $service['quantity'] * $service['price'];
             }
-            $purchaseRequest->services()->saveMany($array);
         }
+        else {
+            // TODO throw error if $services is empty or not an array
+        }
+
+        $purchaseRequest->amount = $amount;
+        $purchaseRequest->save();
+
+        $purchaseRequest->items()->saveMany($array);
+        $purchaseRequest->services()->saveMany($array);
+
+        $form = new Form;
+        $form->fillData($data, $purchaseRequest);
 
         return $purchaseRequest;
     }

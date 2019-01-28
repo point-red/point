@@ -73,18 +73,19 @@ class PurchaseReceive extends TransactionModel
             // if the $purchaseOrder canceled / rejected / archived
             $purchaseReceive->supplier_id = $purchaseOrder->supplier_id;
             $purchaseReceive->supplier_name = $purchaseOrder->supplier_name;
+            $purchaseReceive->billing_address = $purchaseOrder->billing_address;
+            $purchaseReceive->billing_phone = $purchaseOrder->billing_phone;
+            $purchaseReceive->billing_email = $purchaseOrder->billing_email;
+            $purchaseReceive->shipping_address = $purchaseOrder->shipping_address;
+            $purchaseReceive->shipping_phone = $purchaseOrder->shipping_phone;
+            $purchaseReceive->shipping_email = $purchaseOrder->shipping_email;
         }
         // TODO throw error if purchase_order_id and supplier_id both null
         else if (!empty($data['supplier_id'])) {
-            $purchaseReceive->supplier_id = $data['supplier_id'];
-            
             // TODO validation supplier_name is optional non empty string
             if (empty($data['supplier_name'])) {
                 $supplier = Supplier::find($data['supplier_id'], ['name']);
                 $purchaseReceive->supplier_name = $supplier->name;
-            }
-            else {
-                $purchaseReceive->supplier_name = $data['supplier_name'];
             }
         }
 

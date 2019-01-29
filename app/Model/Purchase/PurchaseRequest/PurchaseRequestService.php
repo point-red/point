@@ -17,7 +17,8 @@ class PurchaseRequestService extends TransactionModel
         'service_id',
         'quantity',
         'price',
-        'description',
+        'notes',
+        'allocation_id',
     ];
 
     protected $casts = [

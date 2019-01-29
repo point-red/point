@@ -130,6 +130,7 @@ class SalesInvoice extends TransactionModel
                         'delivery_note_id' => $deliveryNoteItem->delivery_note_id,
                         'delivery_note_item_id' => $deliveryNoteItem->id,
                         'item_id' => $itemId,
+                        'item_name' => $deliveryNoteItem->item_name,
                         'quantity' => $deliveryNoteItem->quantity,
                         'unit' => $deliveryNoteItem->unit,
                         'converter' => $deliveryNoteItem->converter,
@@ -137,6 +138,8 @@ class SalesInvoice extends TransactionModel
                         'discount_percent' => $item['discount_percent'] ?? null,
                         'discount_value' => $item['discount_value'] ?? 0,
                         'taxable' => $item['taxable'],
+                        'notes' => $item['notes'] ?? null,
+                        'allocation_id' => $item['allocation_id'] ?? null,
                     ]);
 
                     $amount += $deliveryNoteItem->quantity * ($item['price'] - $item['discount_value'] ?? 0);
@@ -157,11 +160,14 @@ class SalesInvoice extends TransactionModel
                     array_push($salesInvoiceServices, [
                         'sales_order_service_id' => $salesOrderService->id,
                         'service_id' => $salesOrderService->service_id,
+                        'service_name' => $salesOrderService->service_name,
                         'quantity' => $salesOrderService->quantity,
                         'price' => $service['price'],
                         'discount_percent' => $service['discount_percent'] ?? null,
                         'discount_value' => $service['discount_value'] ?? 0,
                         'taxable' => $service['taxable'],
+                        'notes' => $service['notes'] ?? null,
+                        'allocation_id' => $service['allocation_id'] ?? null,
                     ]);
 
                     $amount += $deliveryNoteItem->quantity * ($service['price'] - $service['discount_value'] ?? 0);

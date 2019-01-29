@@ -18,7 +18,8 @@ class PurchaseRequestItem extends TransactionModel
         'unit',
         'converter',
         'price',
-        'description',
+        'notes',
+        'allocation_id',
     ];
 
     protected $casts = [

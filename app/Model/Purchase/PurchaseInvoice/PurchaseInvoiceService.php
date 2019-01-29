@@ -21,6 +21,8 @@ class PurchaseInvoiceService extends Model
         'discount_percent',
         'discount_value',
         'taxable',
+        'notes',
+        'allocation_id',
     ];
 
     protected $casts = [

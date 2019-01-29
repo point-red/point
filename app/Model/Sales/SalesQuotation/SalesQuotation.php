@@ -66,7 +66,11 @@ class SalesQuotation extends TransactionModel
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
         if (!empty($items) && is_array($items)) {
+            $itemIds = array_column($items, 'item_id');
+            $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
+
             foreach ($items as $item) {
+                $item['item_name'] = $dbItems[$item['item_id']]->name;
                 $salesQuotationItem = new SalesQuotationItem;
                 $salesQuotationItem->fill($item);
                 array_push($salesQuotationItems, $salesQuotationItem);
@@ -81,7 +85,11 @@ class SalesQuotation extends TransactionModel
         // TODO validation services is required if items is null and must be array
         $services = $data['services'] ?? [];
         if (!empty($items) && is_array($items)) {
+            $serviceIds = array_column($services, 'service_id');
+            $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
+
             foreach ($services as $service) {
+                $service['service_name'] = $dbServices[$service['service_id']]->name;
                 $salesQuotationService = new SalesQuotationService;
                 $salesQuotationService->fill($service);
                 array_push($salesQuotationServices, $salesQuotationService);

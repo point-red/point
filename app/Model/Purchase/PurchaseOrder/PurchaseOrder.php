@@ -3,6 +3,8 @@
 namespace App\Model\Purchase\PurchaseOrder;
 
 use App\Model\Form;
+use App\Model\Master\Item;
+use App\Model\Master\Service;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
@@ -135,9 +137,13 @@ class PurchaseOrder extends TransactionModel
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
         if (!empty($items) && is_array($items)) {
+            $itemIds = array_column($items, 'item_id');
+            $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
+
             foreach ($items as $item) {
                 $purchaseOrderItem = new PurchaseOrderItem;
                 $purchaseOrderItem->fill($item);
+                $purchaseOrderItem->item_name = $dbItems[$item['item_id']]->name;
                 array_push($purchaseOrderItems, $purchaseOrderItem);
 
                 $amount += $item['quantity'] * ($item['price'] - $item['discount_value'] ?? 0);
@@ -149,9 +155,13 @@ class PurchaseOrder extends TransactionModel
         // TODO validation services is required if items is null and must be array
         $services = $data['services'] ?? [];
         if (!empty($services) && is_array($services)) {
+            $serviceIds = array_column($services, 'service_id');
+            $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
+
             foreach ($services as $service) {
                 $purchaseOrderService = new PurchaseOrderService;
                 $purchaseOrderService->fill($service);
+                $purchaseOrderService->service_name = $dbServices[$service['service_id']]->name;
                 array_push($purchaseOrderServices, $purchaseOrderService);
 
                 $amount += $service['quantity'] * ($service['price'] - $service['discount_value'] ?? 0);

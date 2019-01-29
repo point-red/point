@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreatePurchaseInvoiceServicesTable extends Migration
 {
@@ -19,12 +19,13 @@ class CreatePurchaseInvoiceServicesTable extends Migration
             $table->unsignedInteger('purchase_receive_id');
             $table->unsignedInteger('purchase_receive_service_id');
             $table->unsignedInteger('service_id');
+            $table->string('service_name');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);
             $table->decimal('discount_percent', 65, 30)->nullable();
             $table->decimal('discount_value', 65, 30)->default(0);
             $table->boolean('taxable')->default(true);
-            $table->text('description');
+            $table->text('notes')->nullable();
             $table->unsignedInteger('allocation_id')->nullable();
 
             $table->foreign('purchase_invoice_id')->references('id')->on('purchase_invoices')->onDelete('cascade');

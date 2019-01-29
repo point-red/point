@@ -2,9 +2,9 @@
 
 namespace App\Model\Sales\SalesOrder;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Model\Master\Allocation;
 use App\Model\Master\Item;
+use Illuminate\Database\Eloquent\Model;
 
 class SalesOrderItem extends Model
 {
@@ -21,8 +21,8 @@ class SalesOrderItem extends Model
         'taxable',
         'unit',
         'converter',
-        'description',
-        'allocation_id'
+        'notes',
+        'allocation_id',
     ];
 
     protected $casts = [
@@ -30,7 +30,7 @@ class SalesOrderItem extends Model
         'price' => 'double',
         'discount_percent' => 'double',
         'discount_value' => 'double',
-        'converter'  => 'double',
+        'converter' => 'double',
     ];
 
     public function item()

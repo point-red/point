@@ -3,6 +3,8 @@
 namespace App\Model\Purchase\PurchaseReceive;
 
 use App\Model\Form;
+use App\Model\Master\Item;
+use App\Model\Master\Service;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
@@ -64,11 +66,9 @@ class PurchaseReceive extends TransactionModel
 
         if (!empty($data['purchase_order_id'])) {
             $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
-            $purchaseOrderItems = $purchaseOrder->items->toArray();
-            $purchaseOrderItems = array_column($purchaseOrderItems, null, 'id');
+            $purchaseOrderItems = $purchaseOrder->items->keyBy('id');
 
-            $purchaseOrderServices = $purchaseOrder->services->toArray();
-            $purchaseOrderServices = array_column($purchaseOrderServices, null, 'id');
+            $purchaseOrderServices = $purchaseOrder->services->keyBy('id');
             // TODO maybe need to add additional check
             // if the $purchaseOrder canceled / rejected / archived
             $purchaseReceive->supplier_id = $purchaseOrder->supplier_id;
@@ -98,17 +98,32 @@ class PurchaseReceive extends TransactionModel
         $items = $data['items'] ?? [];
         if (!empty($items) && is_array($items)) {
             $array = [];
+
+            if (!empty($purchaseOrder)) {
+                $itemIds = array_column($items, 'item_id');
+                $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
+            }
+
             foreach ($items as $item) {
                 $purchaseReceiveItem = new PurchaseReceiveItem;
                 $purchaseReceiveItem->fill($item);
-                $purchaseReceiveItem->purchase_receive_id = $purchaseReceive->id;
 
-                $purchaseOrderItemId = $item['purchase_order_item_id'];
-                if (isset($purchaseOrderItems) && isset($purchaseOrderItems[$purchaseOrderItemId])) {
+                $purchaseOrderItemId = $item['purchase_order_item_id'] ?? null;
+
+                // TODO validation purchaseOrderItemId is optional and must be integer
+                if (!empty($purchaseOrderItemId)) {
                     $purchaseOrderItem = $purchaseOrderItems[$purchaseOrderItemId];
-                    $purchaseReceiveItem->price = $purchaseOrderItem['price'];
-                    $purchaseReceiveItem->discount_percent = $purchaseOrderItem['discount_percent'];
-                    $purchaseReceiveItem->discount_value = $purchaseOrderItem['discount_value'];
+                    $purchaseReceiveItem->item_id = $purchaseOrderItem->item_id;
+                    $purchaseReceiveItem->item_name = $purchaseOrderItem->item_name;
+                    $purchaseReceiveItem->price = $purchaseOrderItem->price;
+                    $purchaseReceiveItem->discount_percent = $purchaseOrderItem->discount_percent;
+                    $purchaseReceiveItem->discount_value = $purchaseOrderItem->discount_value;
+                    $purchaseReceiveItem->allocation_id = $purchaseOrderItem->allocation_id;
+                }
+                // TODO validation item_id is required if no purchase order, and must be integer
+                else {
+                    $purchaseReceiveItem->item_id = $item['item_id'];
+                    $purchaseReceiveItem->item_name = $dbItems[$item['item_id']]->name;
                 }
                 array_push($array, $purchaseReceiveItem);
             }
@@ -119,17 +134,30 @@ class PurchaseReceive extends TransactionModel
         $services = $data['services'] ?? [];
         if (!empty($services) && is_array($services)) {
             $array = [];
+
+            if (!empty($purchaseOrder)) {
+                $serviceIds = array_column($services, 'service_id');
+                $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
+            }
+
             foreach ($services as $service) {
                 $purchaseReceiveService = new PurchaseReceiveService;
                 $purchaseReceiveService->fill($service);
-                $purchaseReceiveService->purchase_receive_id = $purchaseReceive->id;
 
                 $purchaseOrderServiceId = $service['purchase_order_service_id'];
                 if (isset($purchaseOrderServices) && isset($purchaseOrderServices[$purchaseOrderServiceId])) {
                     $purchaseOrderService = $purchaseOrderServices[$purchaseOrderServiceId];
-                    $purchaseReceiveService->price = $purchaseOrderService['price'];
-                    $purchaseReceiveService->discount_percent = $purchaseOrderService['discount_percent'];
-                    $purchaseReceiveService->discount_value = $purchaseOrderService['discount_value'];
+                    $purchaseReceiveService->service_id = $purchaseOrderService->service_id;
+                    $purchaseReceiveService->service_name = $purchaseOrderService->service_name;
+                    $purchaseReceiveService->price = $purchaseOrderService->price;
+                    $purchaseReceiveService->discount_percent = $purchaseOrderService->discount_percent;
+                    $purchaseReceiveService->discount_value = $purchaseOrderService->discount_value;
+                    $purchaseReceiveService->allocation_id = $purchaseOrderService->allocation_id;
+                }
+                // TODO validation service_id is required if purchaseOrderItemId is null, and must be integer
+                else {
+                    $purchaseReceiveService->service_id = $service['service_id'];
+                    $purchaseReceiveService->service_name = $dbServices[$service['service_id']]->name;
                 }
                 array_push($array, $purchaseReceiveService);
             }

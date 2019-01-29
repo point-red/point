@@ -16,11 +16,14 @@ class SalesInvoiceService extends Model
     protected $fillable = [
         'sales_order_service_id',
         'service_id',
+        'service_name',
         'quantity',
         'price',
         'discount_percent',
         'discount_value',
         'taxable',
+        'notes',
+        'allocation_id',
     ];
 
     protected $casts = [

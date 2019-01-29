@@ -19,6 +19,8 @@ class DeliveryNote extends TransactionModel
     protected $fillable = [
         'warehouse_id',
         'delivery_order_id',
+        'driver',
+        'license_plate',
     ];
 
     protected $defaultNumberPrefix = 'DN';
@@ -72,19 +74,19 @@ class DeliveryNote extends TransactionModel
         $array = [];
         $items = $data['items'];
 
-        $deliveryOrderItems = $deliveryOrder->items->toArray();
-        $deliveryOrderItems = array_column($deliveryOrderItems, null, 'id');
+        $deliveryOrderItems = $deliveryOrder->items->keyBy('id');
 
         foreach ($items as $item) {
             $deliveryOrderItem = $deliveryOrderItems[$item['delivery_order_item_id']];
 
             $deliveryNoteItem = new DeliveryNoteItem;
             $deliveryNoteItem->fill($item);
-            $deliveryNoteItem->delivery_note_id = $deliveryNote->id;
-            $deliveryNoteItem->price = $deliveryOrderItem['price'];
-            $deliveryNoteItem->discount_percent = $deliveryOrderItem['discount_percent'];
-            $deliveryNoteItem->discount_value = $deliveryOrderItem['discount_value'];
-            $deliveryNoteItem->taxable = $deliveryOrderItem['taxable'];
+            $deliveryNoteItem->item_name = $deliveryOrderItem->item_name;
+            $deliveryNoteItem->price = $deliveryOrderItem->price;
+            $deliveryNoteItem->discount_percent = $deliveryOrderItem->discount_percent;
+            $deliveryNoteItem->discount_value = $deliveryOrderItem->discount_value;
+            $deliveryNoteItem->taxable = $deliveryOrderItem->taxable;
+            $deliveryNoteItem->allocation_id = $deliveryOrderItem->allocation_id;
             array_push($array, $deliveryNoteItem);
         }
         $deliveryNote->items()->saveMany($array);

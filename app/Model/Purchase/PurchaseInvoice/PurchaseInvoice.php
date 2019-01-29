@@ -117,6 +117,7 @@ class PurchaseInvoice extends TransactionModel
                     'purchase_receive_id' => $purchaseReceiveItem->purchase_receive_id,
                     'purchase_receive_item_id' => $purchaseReceiveItem->id,
                     'item_id' => $itemId,
+                    'item_name' => $purchaseReceiveItem->item_name,
                     'quantity' => $purchaseReceiveItem->quantity,
                     'unit' => $purchaseReceiveItem->unit,
                     'converter' => $purchaseReceiveItem->converter,
@@ -124,6 +125,8 @@ class PurchaseInvoice extends TransactionModel
                     'discount_percent' => $item['discount_percent'] ?? null,
                     'discount_value' => $item['discount_value'] ?? 0,
                     'taxable' => $item['taxable'],
+                    'notes' => $item['notes'] ?? null,
+                    'allocation_id' => $item['allocation_id'] ?? null,
                 ));
 
                 $amount += $purchaseReceiveItem->quantity * ($item['price'] - $item['discount_value'] ?? 0);
@@ -137,11 +140,14 @@ class PurchaseInvoice extends TransactionModel
                     'purchase_receive_id' => $purchaseReceiveService->purchase_receive_id,
                     'purchase_receive_service_id' => $purchaseReceiveService->id,
                     'service_id' => $serviceId,
+                    'service_name' => $purchaseReceiveService->service_name,
                     'quantity' => $purchaseReceiveService->quantity,
                     'price' => $service['price'],
                     'discount_percent' => $service['discount_percent'] ?? null,
                     'discount_value' => $service['discount_value'] ?? 0,
                     'taxable' => $service['taxable'],
+                    'notes' => $service['notes'] ?? null,
+                    'allocation_id' => $service['allocation_id'] ?? null,
                 ]);
 
                 $amount += $purchaseReceiveService->quantity * ($service['price'] - $service['discount_value'] ?? 0);

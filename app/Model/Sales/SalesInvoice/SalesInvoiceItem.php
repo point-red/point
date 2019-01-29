@@ -18,6 +18,7 @@ class SalesInvoiceItem extends Model
         'delivery_note_id',
         'delivery_note_item_id',
         'item_id',
+        'item_name',
         'quantity',
         'unit',
         'converter',
@@ -25,6 +26,8 @@ class SalesInvoiceItem extends Model
         'discount_percent',
         'discount_value',
         'taxable',
+        'notes',
+        'allocation_id',
     ];
 
     protected $casts = [

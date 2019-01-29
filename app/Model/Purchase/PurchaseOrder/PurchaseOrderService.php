@@ -20,7 +20,7 @@ class PurchaseOrderService extends TransactionModel
         'discount_percent',
         'discount_value',
         'taxable',
-        'description',
+        'notes',
         'allocation_id',
     ];
 

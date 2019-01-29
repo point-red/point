@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreatePurchaseOrderItemsTable extends Migration
 {
@@ -26,7 +26,7 @@ class CreatePurchaseOrderItemsTable extends Migration
             $table->boolean('taxable')->default(true);
             $table->string('unit');
             $table->decimal('converter', 65, 30);
-            $table->text('description');
+            $table->text('notes')->nullable();
             $table->unsignedInteger('allocation_id')->nullable();
 
             $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('cascade');

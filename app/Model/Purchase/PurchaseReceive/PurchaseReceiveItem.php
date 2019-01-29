@@ -21,6 +21,8 @@ class PurchaseReceiveItem extends TransactionModel
         'quantity',
         'unit',
         'converter',
+        'notes',
+        'allocation_id',
     ];
 
     protected $casts = [

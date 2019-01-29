@@ -16,6 +16,8 @@ class PurchaseReceiveService extends TransactionModel
         'purchase_order_item_id',
         'service_id',
         'quantity',
+        'notes',
+        'allocation_id',
     ];
 
     protected $casts = [

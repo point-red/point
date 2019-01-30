@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreatePaymentsTable extends Migration
 {
@@ -21,6 +21,11 @@ class CreatePaymentsTable extends Migration
             $table->date('due_date')->nullable();
             $table->boolean('disbursed');
             $table->decimal('amount', 65, 30);
+            // with who we make / receive payment
+            // it can be supplier / customer / employee
+            $table->unsignedInteger('paymentable_id')->nullable();
+            $table->string('paymentable_type')->nullable();
+            $table->string('paymentable_name')->nullable();
         });
     }
 

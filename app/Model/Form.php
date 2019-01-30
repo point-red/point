@@ -80,8 +80,8 @@ class Form extends PointModel
         $this->formable_type = get_class($transaction);
         $this->generateFormNumber(
             $data['number'] ?? $transaction->defaultNumberPrefix . $defaultNumberPostfix,
-            $transaction->customer_id ?? null,
-            $transaction->supplier_id ?? null
+            $transaction->customer_id ?? ($transaction->paymentable_id ?? null),
+            $transaction->supplier_id ?? ($transaction->paymentable_id ?? null)
         );
         $this->save();
     }

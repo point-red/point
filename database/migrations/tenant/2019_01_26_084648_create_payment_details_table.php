@@ -20,10 +20,6 @@ class CreatePaymentDetailsTable extends Migration
             $table->unsignedInteger('allocation_id')->nullable();
             $table->unsignedDecimal('amount', 65, 30);
             $table->text('notes')->nullable();
-            // with who we make / receive payment
-            // it can be supplier / customer / employee
-            $table->unsignedInteger('paymentable_id')->nullable();
-            $table->string('paymentable_type')->nullable();
             // payment reference : invoice / down payment / return
             $table->unsignedInteger('referenceable_id')->nullable();
             $table->string('referenceable_type')->nullable();

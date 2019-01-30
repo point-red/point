@@ -3,6 +3,7 @@
 namespace App\Model\Purchase\PurchaseInvoice;
 
 use App\Model\Finance\Payment\Payment;
+use App\Model\Finance\Payment\PaymentDetail;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
@@ -63,6 +64,27 @@ class PurchaseInvoice extends TransactionModel
     public function getRemainingAmountAttribute()
     {
         return $this->amount;
+    }
+
+    public function updateIfDone()
+    {
+        $paidAmount = Payment::join(Form::getTableName(), Payment::getTableName('id'), '=', Form::getTableName('formable_id'))
+            ->where(function ($query) {
+                $query->where(Form::getTableName('formable_type'), PaymentBankOut::class)
+                    ->orWhere(Form::getTableName('formable_type'), PaymentCashOut::class);
+            })
+            ->join(PaymentDetail::getTableName(), Payment::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
+            ->where('referenceable_id', 1)
+            ->where('referenceable_type', PurchaseInvoice::class)
+            ->select(PaymentDetail::getTableName('amount'))
+            ->active()
+            ->get()
+            ->sum('amount');
+
+        if ($paidAmount >= $this->amount) {
+            $this->form->done = true;
+            $this->form->save();
+        }
     }
 
     public static function create($data)

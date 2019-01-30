@@ -37,7 +37,9 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName() . '.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
             ->select(SalesVisitationDetail::getTableName().'.*')
-            ->addSelect(SalesVisitation::getTableName().'.name as customerName');
+            ->addSelect(SalesVisitation::getTableName().'.name as customerName')
+            ->addSelect(SalesVisitation::getTableName().'.payment_method as paymentMethod')
+            ->addSelect(SalesVisitation::getTableName().'.due_date as dueDate');
     }
 
     /**
@@ -54,6 +56,8 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             'Quantity',
             'Price',
             'Total',
+            'Payment Method',
+            'Due Date',
             'Repeat',
         ];
     }
@@ -73,6 +77,8 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             $row->quantity,
             $row->price,
             $row->quantity * $row->price,
+            $row->paymentMethod,
+            $row->dueDate != '0000-00-00' ? date('Y-m-d', strtotime($row->dueDate)) : '',
             $row->salesVisitation->is_repeat_order == 1 ? 'Repeat' : '',
         ];
     }
@@ -95,7 +101,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
                 $event->writer->setCreator('Point');
             },
             AfterSheet::class => function(AfterSheet $event) {
-                $event->sheet->getDelegate()->getStyle('A1:I1')->getFont()->setBold(true);
+                $event->sheet->getDelegate()->getStyle('A1:K1')->getFont()->setBold(true);
                 $styleArray = [
                     'borders' => [
                         'allBorders' => [
@@ -104,7 +110,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
                         ],
                     ],
                 ];
-                $event->getSheet()->getStyle('A1:I100')->applyFromArray($styleArray);
+                $event->getSheet()->getStyle('A1:K100')->applyFromArray($styleArray);
             },
         ];
     }

@@ -47,10 +47,10 @@ class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnForm
         return $this->date;
     }
 
-    public function queryTarget($dateFrom)
+    public function queryTarget($dateTo)
     {
-        $query = SalesVisitationTarget::whereIn('date', function ($query) use ($dateFrom) {
-            $query->selectRaw('max(date)')->from(SalesVisitationTarget::getTableName())->where('date', '<=', $dateFrom)->groupBy('user_id');
+        $query = SalesVisitationTarget::whereIn('date', function ($query) use ($dateTo) {
+            $query->selectRaw('max(date)')->from(SalesVisitationTarget::getTableName())->where('date', '<=', $dateTo)->groupBy('user_id');
         });
 
         $targets = User::leftJoinSub($query, 'query', function ($join) {
@@ -126,7 +126,7 @@ class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnForm
      */
     public function view(): View
     {
-        $queryTarget = $this->queryTarget($this->dateFrom);
+        $queryTarget = $this->queryTarget($this->dateTo);
         $queryCall = $this->queryCall($this->dateFrom, $this->dateTo);
         $queryEffectiveCall = $this->queryEffectiveCall($this->dateFrom, $this->dateTo);
         $queryValue = $this->queryValue($this->dateFrom, $this->dateTo);

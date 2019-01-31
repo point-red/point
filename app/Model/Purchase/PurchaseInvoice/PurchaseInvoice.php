@@ -58,33 +58,15 @@ class PurchaseInvoice extends TransactionModel
      */
     public function payments()
     {
-        return $this->morphMany(Payment::class, 'referenceable');
+        return $this->morphMany(PaymentDetail::class, 'referenceable')
+            ->join(Payment::getTableName(), Payment::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
+            ->joinForm(Payment::class)
+            ->active();
     }
 
     public function getRemainingAmountAttribute()
     {
         return $this->amount;
-    }
-
-    public function updateIfDone()
-    {
-        $paidAmount = Payment::join(Form::getTableName(), Payment::getTableName('id'), '=', Form::getTableName('formable_id'))
-            ->where(function ($query) {
-                $query->where(Form::getTableName('formable_type'), PaymentBankOut::class)
-                    ->orWhere(Form::getTableName('formable_type'), PaymentCashOut::class);
-            })
-            ->join(PaymentDetail::getTableName(), Payment::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
-            ->where('referenceable_id', 1)
-            ->where('referenceable_type', PurchaseInvoice::class)
-            ->select(PaymentDetail::getTableName('amount'))
-            ->active()
-            ->get()
-            ->sum('amount');
-
-        if ($paidAmount >= $this->amount) {
-            $this->form->done = true;
-            $this->form->save();
-        }
     }
 
     public static function create($data)

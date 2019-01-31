@@ -22,6 +22,7 @@ class PurchaseInvoice extends TransactionModel
         'discount_value',
         'type_of_tax',
         'tax',
+        'supplier_name',
     ];
 
     protected $casts = [

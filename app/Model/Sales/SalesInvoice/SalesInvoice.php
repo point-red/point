@@ -3,8 +3,6 @@
 namespace App\Model\Sales\SalesInvoice;
 
 use App\Model\Finance\Payment\Payment;
-use App\Model\Finance\Payment\PaymentBankIn;
-use App\Model\Finance\Payment\PaymentCashIn;
 use App\Model\Finance\Payment\PaymentDetail;
 use App\Model\Form;
 use App\Model\Master\Customer;
@@ -61,33 +59,15 @@ class SalesInvoice extends TransactionModel
      */
     public function payments()
     {
-        return $this->morphMany(Payment::class, 'referenceable');
+        return $this->morphMany(PaymentDetail::class, 'referenceable')
+            ->join(Payment::getTableName(), Payment::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
+            ->joinForm(Payment::class)
+            ->active();
     }
 
     public function getRemainingAmountAttribute()
     {
         return $this->amount;
-    }
-
-    public function updateIfDone()
-    {
-        $paidAmount = Payment::join(Form::getTableName(), Payment::getTableName('id'), '=', Form::getTableName('formable_id'))
-            ->where(function ($query) {
-                $query->where(Form::getTableName('formable_type'), PaymentBankIn::class)
-                    ->orWhere(Form::getTableName('formable_type'), PaymentCashIn::class);
-            })
-            ->join(PaymentDetail::getTableName(), Payment::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
-            ->where('referenceable_id', 1)
-            ->where('referenceable_type', SalesInvoice::class)
-            ->select(PaymentDetail::getTableName('amount'))
-            ->active()
-            ->get()
-            ->sum('amount');
-
-        if ($paidAmount >= $this->amount) {
-            $this->form->done = true;
-            $this->form->save();
-        }
     }
 
     public static function create($data)

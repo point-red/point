@@ -88,7 +88,7 @@ class Payment extends TransactionModel
                 $paymentDetail = new PaymentDetail;
                 $paymentDetail->fill($detail);
 
-                $reference = get_class($paymentDetail->referenceable_type)::findOrFail($paymentDetail->referenceable_id);
+                $reference = $paymentDetail->referenceable_type::findOrFail($paymentDetail->referenceable_id);
                 
                 $paidAmountInThePast = Payment::where('referenceable_id', $paymentDetail->referenceable_id)
                     ->where('referenceable_type', $paymentDetail->referenceable_type)
@@ -102,13 +102,13 @@ class Payment extends TransactionModel
                     ->select(PaymentDetail::getTableName('amount'))
                     ->get()
                     ->sum('amount');
-                
+
                 // Prevent overpaid
                 if ($reference->amount < $paidAmountInThePast + $detail['amount']) {
                     // TODO throw error because overpaid
                 }
 
-                if ($reference->amount === $paidAmountInThePast + $detail['amount']) {
+                if ($reference->amount == $paidAmountInThePast + $detail['amount']) {
                     $reference->form()->update(['done' => true]);
                 }
 

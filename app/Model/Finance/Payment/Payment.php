@@ -15,19 +15,14 @@ class Payment extends TransactionModel
 
     protected $fillable = [
         'payment_type',
-        'due_date',
         'disbursed',
+        'due_date',
         'paymentable_type',
         'paymentable_id',
     ];
 
-    protected $cast = [
+    protected $casts = [
         'amount' => 'double',
-    ];
-
-    protected $paymentType = [
-        'cash',
-        'bank',
     ];
 
     protected $paymentableType = [
@@ -58,24 +53,15 @@ class Payment extends TransactionModel
         $this->attributes['paymentable_type'] = $this->paymentableType[$value];
     }
 
+    public function setPaymentTypeAttribute($value)
+    {
+        $this->attributes['payment_type'] = strtoupper($value);
+    }
+
     public static function create($data)
     {
-        if ($data['disbursed'] === true) {
-            if ($data['payment_type'] === 'cash') {
-                $payment = new PaymentCashIn;
-            }
-            else if ($data['payment_type'] === 'bank') {
-                $payment = new PaymentBankIn;
-            }
-        }
-        else {
-            if ($data['payment_type'] === 'cash') {
-                $payment = new PaymentCashOut;
-            }
-            else if ($data['payment_type'] === 'bank') {
-                $payment = new PaymentBankOut;
-            }
-        }
+        $data['payment_type'] = strtoupper($data['payment_type']);
+        $payment = new self;
         $payment->fill($data);
 
         $paymentAmount = 0;
@@ -89,14 +75,10 @@ class Payment extends TransactionModel
                 $paymentDetail->fill($detail);
 
                 $reference = $paymentDetail->referenceable_type::findOrFail($paymentDetail->referenceable_id);
-                
+
                 $paidAmountInThePast = Payment::where('referenceable_id', $paymentDetail->referenceable_id)
                     ->where('referenceable_type', $paymentDetail->referenceable_type)
-                    ->join(Form::getTableName(), Payment::getTableName('id'), '=', Form::getTableName('formable_id'))
-                    ->where(function ($query) {
-                        $query->where(Form::getTableName('formable_type'), PaymentBankOut::class)
-                            ->orWhere(Form::getTableName('formable_type'), PaymentCashOut::class);
-                    })
+                    ->joinForm()
                     ->active()
                     ->join(PaymentDetail::getTableName(), Payment::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
                     ->select(PaymentDetail::getTableName('amount'))
@@ -129,7 +111,45 @@ class Payment extends TransactionModel
         $payment->details()->saveMany($paymentDetails);
 
         $form = new Form;
-        $form->fillData($data, $payment);
+        $form->fill($data);
+        $form->formable_id = $payment->id;
+        $form->formable_type = Payment::class;
+
+        $defaultFormat = '{payment_type}-{disbursed}{y}{m}{increment=4}';
+        $formNumber = $data['number'] ?? $defaultFormat;
+
+        // Different method to get increment because payment number is considering payment_type
+        preg_match_all('/{increment=(\d)}/', $formNumber, $regexResult);
+        if (!empty($regexResult)) {
+            $increment = Payment::joinForm()
+                ->notArchived()
+                ->whereMonth(Form::getTableName('date'), date('n', strtotime($data['date'])))
+                ->where(Payment::getTableName('payment_type'), $payment->payment_type)
+                ->where(Payment::getTableName('disbursed'), $payment->disbursed)
+                ->count();
+
+            foreach ($regexResult[0] as $key => $value) {
+                $padUntil = $regexResult[1][$key];
+                $result = str_pad($increment + 1, $padUntil, '0', STR_PAD_LEFT);
+                $formNumber = str_replace($value, $result, $formNumber);
+            }
+        }
+
+        // Additional template for payment_type and disbursed
+        if (strpos($formNumber, '{payment_type}') !== false) {
+            $formNumber = str_replace('{payment_type}', $payment->payment_type, $formNumber);
+        }
+        if (strpos($formNumber, '{disbursed}') !== false) {
+            $replacement = $data['disbursed'] == false ? 'IN' : 'OUT';
+            $formNumber = str_replace('{disbursed}', $replacement, $formNumber);
+        }
+
+        $form->generateFormNumber(
+            $formNumber,
+            $data['paymentable_id'],
+            $data['paymentable_id']
+        );
+        $form->save();
 
         return $payment;
     }

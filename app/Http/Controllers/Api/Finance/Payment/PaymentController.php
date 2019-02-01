@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Finance\Payment;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Finance\Payment\Payment;
 use Illuminate\Http\Request;
@@ -17,15 +18,25 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $salesInvoices = Payment::eloquentFilter($request)
-            ->select(Payment::getTableName('*'))
+        $payment = Payment::eloquentFilter($request)
             ->joinForm()
             ->notArchived()
-            ->with('form');
+            ->select(Payment::getTableName('*'));
 
-        $salesInvoices = pagination($salesInvoices, $request->get('limit'));
+        if ($request->has('type')) {
+            $paymentType = strtoupper($request->get('type'));
+            $payment->where('payment_type', $paymentType);
+        }
+        if ($request->has('disbursed')) {
+            $disbursed = $request->get('disbursed');
+            $payment->where('disbursed', $disbursed);
+        }
 
-        return new ApiCollection($salesInvoices);
+        $payment->with('form');
+
+        $payment = pagination($payment, $request->get('limit'));
+
+        return new ApiCollection($payment);
     }
 
     /**
@@ -62,10 +73,12 @@ class PaymentController extends Controller
     {
         $payment = Payment::eloquentFilter($request)
             ->with('form')
-            ->with('details')
+            ->with('paymentable')
+            ->with('details.referenceable')
+            ->with('details.allocation')
             ->findOrFail($id);
 
-        return ApiResource($payment);
+        return new ApiResource($payment);
     }
 
     /**
@@ -77,7 +90,17 @@ class PaymentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // TODO prevent delete if referenced by delivery order
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+
+            $payment = Payment::findOrFail($id);
+
+            $newPayment = $payment->edit($request->all());
+
+            return new ApiResource($newPayment);
+        });
+
+        return $result;
     }
 
     /**
@@ -88,6 +111,10 @@ class PaymentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $payment = Payment::findOrFail($id);
+
+        $payment->delete();
+
+        return response()->json([], 204);
     }
 }

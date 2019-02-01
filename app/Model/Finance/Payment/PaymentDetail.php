@@ -22,7 +22,7 @@ class PaymentDetail extends TransactionModel
         'referenceable_id',
     ];
 
-    protected $cast = [
+    protected $casts = [
         'amount' => 'double',
     ];
 

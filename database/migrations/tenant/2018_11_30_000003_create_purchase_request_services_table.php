@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreatePurchaseRequestServicesTable extends Migration
 {
@@ -17,9 +17,10 @@ class CreatePurchaseRequestServicesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('purchase_request_id');
             $table->unsignedInteger('service_id');
+            $table->string('service_name');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);
-            $table->text('description');
+            $table->text('notes')->nullable();
             $table->unsignedInteger('allocation_id')->nullable();
 
             $table->foreign('purchase_request_id')->references('id')->on('purchase_requests')->onDelete('cascade');

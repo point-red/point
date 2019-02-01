@@ -22,7 +22,7 @@ class PurchaseOrderItem extends TransactionModel
         'taxable',
         'unit',
         'converter',
-        'description',
+        'notes',
         'allocation_id',
     ];
 

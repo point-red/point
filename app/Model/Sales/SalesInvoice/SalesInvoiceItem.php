@@ -14,12 +14,28 @@ class SalesInvoiceItem extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'delivery_note_id',
+        'delivery_note_item_id',
+        'item_id',
+        'item_name',
+        'quantity',
+        'unit',
+        'converter',
+        'price',
+        'discount_percent',
+        'discount_value',
+        'taxable',
+        'notes',
+        'allocation_id',
+    ];
+
     protected $casts = [
-        'quantity'  => 'double',
+        'quantity' => 'double',
         'converter' => 'double',
         'price' => 'double',
         'discount_percent' => 'double',
-        'discount_value' => 'double'
+        'discount_value' => 'double',
     ];
 
     public function item()

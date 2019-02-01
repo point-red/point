@@ -113,19 +113,20 @@ class DeliveryOrder extends TransactionModel
         $array = [];
         $items = $data['items'];
 
-        $salesOrderItems = $salesOrder->items->toArray();
-        $salesOrderItems = array_column($salesOrderItems, null, 'id');
+        $salesOrderItems = $salesOrder->items->keyBy('id');
 
         foreach ($items as $item) {
             $salesOrderItem = $salesOrderItems[$item['sales_order_item_id']];
 
             $deliveryOrderItem = new DeliveryOrderItem;
             $deliveryOrderItem->fill($item);
-            $deliveryOrderItem->delivery_order_id = $deliveryOrder->id;
-            $deliveryOrderItem->price = $salesOrderItem['price'];
-            $deliveryOrderItem->discount_percent = $salesOrderItem['discount_percent'];
-            $deliveryOrderItem->discount_value = $salesOrderItem['discount_value'];
-            $deliveryOrderItem->taxable = $salesOrderItem['taxable'];
+            $deliveryOrderItem->item_name = $salesOrderItem->item_name;
+            $deliveryOrderItem->price = $salesOrderItem->price;
+            $deliveryOrderItem->discount_percent = $salesOrderItem->discount_percent;
+            $deliveryOrderItem->discount_value = $salesOrderItem->discount_value;
+            $deliveryOrderItem->taxable = $salesOrderItem->taxable;
+            $deliveryOrderItem->allocation_id = $salesOrderItem->allocation_id;
+
             array_push($array, $deliveryOrderItem);
         }
         $deliveryOrder->items()->saveMany($array);

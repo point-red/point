@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateSalesOrderServicesTable extends Migration
 {
@@ -18,12 +18,13 @@ class CreateSalesOrderServicesTable extends Migration
             $table->unsignedInteger('sales_order_id');
             $table->unsignedInteger('sales_quotation_service_id')->nullable();
             $table->unsignedInteger('service_id');
+            $table->string('service_name');
             $table->decimal('quantity', 65, 30);
             $table->decimal('price', 65, 30);
             $table->decimal('discount_percent', 65, 30)->nullable();
             $table->decimal('discount_value', 65, 30)->default(0);
             $table->boolean('taxable')->default(true);
-            $table->text('description');
+            $table->text('notes')->nullable();
             $table->unsignedInteger('allocation_id')->nullable();
 
             $table->foreign('sales_order_id')->references('id')->on('sales_orders')->onDelete('cascade');

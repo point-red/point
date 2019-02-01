@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreatePaymentDetailsTable extends Migration
 {
@@ -17,9 +17,9 @@ class CreatePaymentDetailsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('payment_id');
             $table->unsignedInteger('chart_of_account_id');
-            $table->unsignedInteger('allocation_id');
+            $table->unsignedInteger('allocation_id')->nullable();
             $table->unsignedDecimal('amount', 65, 30);
-            $table->text('notes');
+            $table->text('notes')->nullable();
             // with who we make / receive payment
             // it can be supplier / customer / employee
             $table->unsignedInteger('paymentable_id')->nullable();
@@ -28,12 +28,9 @@ class CreatePaymentDetailsTable extends Migration
             $table->unsignedInteger('referenceable_id')->nullable();
             $table->string('referenceable_type')->nullable();
 
-            $table->foreign('payment_id', 'payment_details_payment_id_f')
-                ->references('id')->on('payments')->onDelete('cascade');
-            $table->foreign('chart_of_account_id', 'payment_details_chart_of_account_id_f')
-                ->references('id')->on('chart_of_accounts')->onDelete('restrict');
-            $table->foreign('allocation_id', 'payment_details_allocation_id_f')
-                ->references('id')->on('allocations')->onDelete('restrict');
+            $table->foreign('payment_id')->references('id')->on('payments')->onDelete('cascade');
+            $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
+            $table->foreign('allocation_id')->references('id')->on('allocations')->onDelete('restrict');
         });
     }
 

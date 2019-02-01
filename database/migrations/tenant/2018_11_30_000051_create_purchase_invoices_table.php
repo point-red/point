@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreatePurchaseInvoicesTable extends Migration
 {
@@ -29,6 +29,7 @@ class CreatePurchaseInvoicesTable extends Migration
             $table->decimal('discount_value', 65, 30)->default(0);
             $table->string('type_of_tax'); // include / exclude / non
             $table->decimal('tax', 65, 30);
+            $table->decimal('amount', 65, 30);
 
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');
         });

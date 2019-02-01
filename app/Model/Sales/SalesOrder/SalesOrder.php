@@ -4,6 +4,8 @@ namespace App\Model\Sales\SalesOrder;
 
 use App\Model\Form;
 use App\Model\Master\Customer;
+use App\Model\Master\Item;
+use App\Model\Master\Service;
 use App\Model\Master\Warehouse;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
@@ -121,36 +123,65 @@ class SalesOrder extends TransactionModel
         }
 
         $salesOrder->fill($data);
-        $salesOrder->save();
 
-        $form = new Form;
-        $form->fillData($data, $salesOrder);
+        $amount = 0;
+        $salesOrderItems = [];
+        $salesOrderServices = [];
 
         // TODO validation items is optional and must be array
-        $array = [];
         $items = $data['items'] ?? [];
         if (!empty($items) && is_array($items)) {
+            $itemIds = array_column($items, 'item_id');
+            $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
+
             foreach ($items as $item) {
+                // $item['item_name'] = $dbItems[$item['item_id']]->name;
                 $salesOrderItem = new SalesOrderItem;
                 $salesOrderItem->fill($item);
-                $salesOrderItem->sales_order_id = $salesOrder->id;
-                array_push($array, $salesOrderItem);
+                $salesOrderItem->item_name = $dbItems[$item['item_id']]->name;
+                array_push($salesOrderItems, $salesOrderItem);
+
+                $amount = $item['quantity'] * ($item['price'] - $item['discount_value'] ?? 0);
             }
-            $salesOrder->items()->saveMany($array);
+        }
+        else {
+            // TODO throw error if $items and $services are empty or not an array
         }
 
         // TODO validation services is required if items is null and must be array
-        $array = [];
         $services = $data['services'] ?? [];
         if (!empty($services) && is_array($services)) {
+            $serviceIds = array_column($services, 'service_id');
+            $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
+
             foreach ($services as $service) {
+                $service['service_name'] = $dbServices[$service['service_id']]->name;
                 $salesOrderService = new SalesOrderService;
                 $salesOrderService->fill($service);
-                $salesOrderService->sales_order_id = $salesOrder->id;
-                array_push($array, $salesOrderService);
+                array_push($salesOrderServices, $salesOrderService);
+
+                $amount = $service['quantity'] * ($service['price'] - $service['discount_value'] ?? 0);
             }
-            $salesOrder->services()->saveMany($array);
         }
+        else {
+            // TODO throw error if $items and $services are empty or not an array
+        }
+
+        $amount -= $data['discount_value'] ?? 0;
+        $amount += $data['delivery_fee'] ?? 0;
+
+        if ($data['type_of_tax'] === 'exclude' && !empty($data['tax'])) {
+            $amount += $data['tax'];
+        }
+
+        $salesOrder->amount = $amount;
+        $salesOrder->save();
+
+        $salesOrder->items()->saveMany($salesOrderItems);
+        $salesOrder->services()->saveMany($salesOrderServices);
+
+        $form = new Form;
+        $form->fillData($data, $salesOrder);
 
         return $salesOrder;
     }

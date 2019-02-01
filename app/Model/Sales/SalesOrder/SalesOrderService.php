@@ -2,9 +2,9 @@
 
 namespace App\Model\Sales\SalesOrder;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Model\Master\Allocation;
 use App\Model\Master\Service;
+use Illuminate\Database\Eloquent\Model;
 
 class SalesOrderService extends Model
 {
@@ -19,8 +19,8 @@ class SalesOrderService extends Model
         'discount_percent',
         'discount_value',
         'taxable',
-        'description',
-        'allocation_id'
+        'notes',
+        'allocation_id',
     ];
 
     protected $casts = [

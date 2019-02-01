@@ -58,30 +58,57 @@ class SalesQuotation extends TransactionModel
         }
 
         $salesQuotation->fill($data);
+
+        $amount = 0;
+        $salesQuotationItems = [];
+        $salesQuotationServices = [];
+
+        // TODO validation items is optional and must be array
+        $items = $data['items'] ?? [];
+        if (!empty($items) && is_array($items)) {
+            $itemIds = array_column($items, 'item_id');
+            $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
+
+            foreach ($items as $item) {
+                $item['item_name'] = $dbItems[$item['item_id']]->name;
+                $salesQuotationItem = new SalesQuotationItem;
+                $salesQuotationItem->fill($item);
+                array_push($salesQuotationItems, $salesQuotationItem);
+
+                $amount += $item['quantity'] * $item['price'];
+            }
+        }
+        else {
+            // TODO throw error if $items is not an array
+        }
+
+        // TODO validation services is required if items is null and must be array
+        $services = $data['services'] ?? [];
+        if (!empty($items) && is_array($items)) {
+            $serviceIds = array_column($services, 'service_id');
+            $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
+
+            foreach ($services as $service) {
+                $service['service_name'] = $dbServices[$service['service_id']]->name;
+                $salesQuotationService = new SalesQuotationService;
+                $salesQuotationService->fill($service);
+                array_push($salesQuotationServices, $salesQuotationService);
+
+                $amount += $service['quantity'] * $service['price'];
+            }
+        }
+        else {
+            // TODO throw error if $services is not an array
+        }
+
+        $salesQuotation->amount = $amount;
         $salesQuotation->save();
+
+        $salesQuotation->items()->saveMany($salesQuotationItems);
+        $salesQuotation->services()->saveMany($salesQuotationServices);
 
         $form = new Form;
         $form->fillData($data, $salesQuotation);
-
-        $array = [];
-        $items = $data['items'] ?? [];
-        foreach ($items as $item) {
-            $salesQuotationItem = new SalesQuotationItem;
-            $salesQuotationItem->fill($item);
-            $salesQuotationItem->sales_quotation_id = $salesQuotation->id;
-            array_push($array, $salesQuotationItem);
-        }
-        $salesQuotation->items()->saveMany($array);
-
-        $array = [];
-        $services = $data['services'] ?? [];
-        foreach ($services as $service) {
-            $salesQuotationService = new SalesQuotationService;
-            $salesQuotationService->fill($service);
-            $salesQuotationService->sales_quotation_id = $salesQuotation->id;
-            array_push($array, $salesQuotationService);
-        }
-        $salesQuotation->services()->saveMany($array);
 
         return $salesQuotation;
     }

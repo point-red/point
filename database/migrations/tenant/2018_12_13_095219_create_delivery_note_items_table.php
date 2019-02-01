@@ -29,7 +29,7 @@ class CreateDeliveryNoteItemsTable extends Migration
             $table->boolean('taxable')->default(true);
             $table->string('unit');
             $table->decimal('converter', 65, 30);
-            $table->text('description')->nullable();
+            $table->text('notes')->nullable();
             $table->unsignedInteger('allocation_id')->nullable();
 
             $table->foreign('delivery_note_id')->references('id')->on('delivery_notes')->onDelete('cascade');

@@ -15,8 +15,6 @@ class SalesInvoice extends TransactionModel
 
     public $timestamps = false;
 
-    protected $appends = array('total', 'remaining_amount');
-
     protected $fillable = [
         'due_date',
         'delivery_fee',
@@ -63,30 +61,9 @@ class SalesInvoice extends TransactionModel
         return $this->morphMany(Payment::class, 'referenceable');
     }
 
-    public function getTotalAttribute()
-    {
-        $items = $this->items;
-        $total = $items->reduce(function ($carry, $item) {
-            $subtotal = $item->quantity * ($item->price - $item->discount_value);
-
-            return $carry + $subtotal;
-        }, 0);
-
-        $services = $this->services;
-        $total = $services->reduce(function ($carry, $service) {
-            $subtotal = $service->quantity * ($service->price - $service->discount_value);
-
-            return $carry + $subtotal;
-        }, $total);
-
-        $total += $this->tax - $this->discount_value + $this->delivery_fee;
-
-        return $total;
-    }
-
     public function getRemainingAmountAttribute()
     {
-        return $this->total;
+        return $this->amount;
     }
 
     public static function create($data)
@@ -133,17 +110,15 @@ class SalesInvoice extends TransactionModel
             $salesInvoice->customer_name = $data['customer_name'];
         }
 
-        $salesInvoice->save();
-
-        $form = new Form;
-        $form->fillData($data, $salesInvoice);
+        $amount = 0;
+        $salesInvoiceItems = [];
+        $salesInvoiceServices = [];
 
         // TODO validation items is optional and must be array
-        $dataItems = $data['items'] ?? [];
-        if (!empty($dataItems) && is_array($dataItems)) {
-            $items = array_column($dataItems, null, 'item_id');
+        $items = $data['items'] ?? [];
+        if (!empty($items) && is_array($items)) {
+            $items = array_column($items, null, 'item_id');
 
-            $array = [];
             foreach ($deliveryNotes as $deliveryNote) {
                 $deliveryNote->form()->update(['done' => true]);
 
@@ -151,49 +126,70 @@ class SalesInvoice extends TransactionModel
                     $itemId = $deliveryNoteItem->item_id;
                     $item = $items[$itemId];
 
-                    $salesInvoiceItem = new SalesInvoiceItem;
-                    $salesInvoiceItem->delivery_note_id = $deliveryNoteItem->delivery_note_id;
-                    $salesInvoiceItem->delivery_note_item_id = $deliveryNoteItem->id;
-                    $salesInvoiceItem->item_id = $itemId;
-                    $salesInvoiceItem->quantity = $deliveryNoteItem->quantity;
-                    $salesInvoiceItem->unit = $deliveryNoteItem->unit;
-                    $salesInvoiceItem->converter = $deliveryNoteItem->converter;
-                    $salesInvoiceItem->price = $item['price'];
-                    $salesInvoiceItem->discount_percent = $item['discount_percent'];
-                    $salesInvoiceItem->discount_value = $item['discount_value'];
-                    $salesInvoiceItem->taxable = $item['taxable'];
-                    $salesInvoiceItem->sales_invoice_id = $salesInvoice->id;
-                    array_push($array, $salesInvoiceItem);
+                    array_push($salesInvoiceItems, [
+                        'delivery_note_id' => $deliveryNoteItem->delivery_note_id,
+                        'delivery_note_item_id' => $deliveryNoteItem->id,
+                        'item_id' => $itemId,
+                        'item_name' => $deliveryNoteItem->item_name,
+                        'quantity' => $deliveryNoteItem->quantity,
+                        'unit' => $deliveryNoteItem->unit,
+                        'converter' => $deliveryNoteItem->converter,
+                        'price' => $item['price'],
+                        'discount_percent' => $item['discount_percent'] ?? null,
+                        'discount_value' => $item['discount_value'] ?? 0,
+                        'taxable' => $item['taxable'],
+                        'notes' => $item['notes'] ?? null,
+                        'allocation_id' => $item['allocation_id'] ?? null,
+                    ]);
+
+                    $amount += $deliveryNoteItem->quantity * ($item['price'] - $item['discount_value'] ?? 0);
                 }
             }
-            $salesInvoice->items()->saveMany($array);
         }
 
         // TODO validation services is required only if items is null and must be array
-        $dataServices = $data['services'] ?? [];
-        if (!empty($dataServices) && is_array($dataServices)) {
-            $services = array_column($dataServices, null, 'service_id');
+        $services = $data['services'] ?? [];
+        if (!empty($services) && is_array($services)) {
+            $services = array_column($services, null, 'service_id');
 
-            $array = [];
             foreach ($salesOrders as $salesOrder) {
                 foreach ($salesOrder->services as $salesOrderService) {
                     $serviceId = $salesOrderService->service_id;
                     $service = $services[$serviceId];
 
-                    $salesInvoiceService = new SalesInvoiceService;
-                    $salesInvoiceService->sales_order_service_id = $salesOrderService->id;
-                    $salesInvoiceService->service_id = $salesOrderService->service_id;
-                    $salesInvoiceService->quantity = $salesOrderService->quantity;
-                    $salesInvoiceService->price = $service['price'];
-                    $salesInvoiceService->discount_percent = $service['discount_percent'];
-                    $salesInvoiceService->discount_value = $service['discount_value'];
-                    $salesInvoiceService->taxable = $service['taxable'];
-                    $salesInvoiceService->sales_invoice_id = $salesInvoice->id;
-                    array_push($array, $salesInvoiceService);
+                    array_push($salesInvoiceServices, [
+                        'sales_order_service_id' => $salesOrderService->id,
+                        'service_id' => $salesOrderService->service_id,
+                        'service_name' => $salesOrderService->service_name,
+                        'quantity' => $salesOrderService->quantity,
+                        'price' => $service['price'],
+                        'discount_percent' => $service['discount_percent'] ?? null,
+                        'discount_value' => $service['discount_value'] ?? 0,
+                        'taxable' => $service['taxable'],
+                        'notes' => $service['notes'] ?? null,
+                        'allocation_id' => $service['allocation_id'] ?? null,
+                    ]);
+
+                    $amount += $deliveryNoteItem->quantity * ($service['price'] - $service['discount_value'] ?? 0);
                 }
             }
-            $salesInvoice->services()->saveMany($array);
         }
+
+        $amount -= $data['discount_value'] ?? 0;
+        $amount += $data['delivery_fee'] ?? 0;
+
+        if ($data['type_of_tax'] === 'exclude' && !empty($data['tax'])) {
+            $amount += $data['tax'];
+        }
+
+        $salesInvoice->amount = $amount;
+        $salesInvoice->save();
+
+        $salesInvoice->items()->createMany($salesInvoiceItems);
+        $salesInvoice->services()->createMany($salesInvoiceServices);
+
+        $form = new Form;
+        $form->fillData($data, $salesInvoice);
 
         return $salesInvoice;
     }

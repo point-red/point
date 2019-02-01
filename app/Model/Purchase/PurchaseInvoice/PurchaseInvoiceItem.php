@@ -4,8 +4,8 @@ namespace App\Model\Purchase\PurchaseInvoice;
 
 use App\Model\Master\Allocation;
 use App\Model\Master\Item;
-use Illuminate\Database\Eloquent\Model;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use Illuminate\Database\Eloquent\Model;
 
 class PurchaseInvoiceItem extends Model
 {
@@ -13,12 +13,27 @@ class PurchaseInvoiceItem extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'purchase_receive_id',
+        'purchase_receive_item_id',
+        'item_id',
+        'quantity',
+        'unit',
+        'converter',
+        'price',
+        'discount_percent',
+        'discount_value',
+        'taxable',
+        'notes',
+        'allocation_id',
+    ];
+
     protected $casts = [
-        'quantity'  => 'double',
+        'quantity' => 'double',
         'converter' => 'double',
         'price' => 'double',
         'discount_percent' => 'double',
-        'discount_value' => 'double'
+        'discount_value' => 'double',
     ];
 
     public function item()

@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Model\Master\Item;
-use Illuminate\Http\Request;
-use App\Model\Master\ItemUnit;
-use App\Model\Master\PricingGroup;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\PriceListItem;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiResource;
 use App\Http\Resources\Master\PriceListCollection;
+use App\Model\Master\Item;
+use App\Model\Master\PriceListItem;
+use Illuminate\Http\Request;
 
 class PriceListItemController extends Controller
 {
@@ -25,20 +23,20 @@ class PriceListItemController extends Controller
 
         $pricingGroupId = $request->get('pricing_group_id');
 
-        $priceListItem = ItemUnit::join('items', Item::getTableName().'.id', '=', ItemUnit::getTableName().'.item_id')
-            ->eloquentFilter($request)
-            ->with(['pricing' => function ($q) use ($pricingGroupId, $date) {
-                $q->rightJoin(PricingGroup::getTableName(), PricingGroup::getTableName().'.id', '=', PriceListItem::getTableName().'.pricing_group_id');
-                if ($pricingGroupId) {
-                    $q->where(PricingGroup::getTableName().'.id', $pricingGroupId);
-                }
-                $q->where('date', '<=', $date)
-                    ->select(PriceListItem::getTableName().'.price')
-                    ->addSelect(PriceListItem::getTableName().'.discount_percent')
-                    ->addSelect(PriceListItem::getTableName().'.discount_value')
-                    ->addSelect('item_unit_id')
-                    ->addSelect('pricing_group_id');
-            }])->with('item')->select(ItemUnit::getTableName().'.*');
+        $priceListItem = Item::eloquentFilter($request)
+        // ->with(['pricing' => function ($q) use ($pricingGroupId, $date) {
+        //     $q->rightJoin(PricingGroup::getTableName(), PricingGroup::getTableName('id'), '=', PriceListItem::getTableName('pricing_group_id'));
+        //     if ($pricingGroupId) {
+        //         $q->where(PricingGroup::getTableName('id'), $pricingGroupId);
+        //     }
+        //     $q->where('date', '<=', $date)
+        //         ->select(PriceListItem::getTableName('price'))
+        //         ->addSelect(PriceListItem::getTableName('discount_percent'))
+        //         ->addSelect(PriceListItem::getTableName('discount_value'))
+        //         ->addSelect('item_unit_id')
+        //         ->addSelect('pricing_group_id');
+        // }])
+            ->with('units');
 
         $priceListItem = pagination($priceListItem, $request->get('limit'));
 

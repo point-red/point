@@ -26,6 +26,7 @@ class PurchaseInvoice extends TransactionModel
     ];
 
     protected $casts = [
+        'amount' => 'double',
         'tax' => 'double',
         'delivery_fee' => 'double',
         'discount_percent' => 'double',

@@ -24,6 +24,10 @@ class PurchaseRequest extends TransactionModel
         'supplier_name',
     ];
 
+    protected $casts = [
+        'amount' => 'double',
+    ];
+
     protected $defaultNumberPrefix = 'PR';
 
     public function form()

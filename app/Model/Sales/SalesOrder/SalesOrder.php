@@ -35,6 +35,7 @@ class SalesOrder extends TransactionModel
     ];
 
     protected $casts = [
+        'amount' => 'double',
         'delivery_fee' => 'double',
         'discount_percent' => 'double',
         'discount_value' => 'double',

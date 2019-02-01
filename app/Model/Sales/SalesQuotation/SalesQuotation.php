@@ -17,6 +17,10 @@ class SalesQuotation extends TransactionModel
         'customer_id',
     ];
 
+    protected $casts = [
+        'amount' => 'double',
+    ];
+
     protected $defaultNumberPrefix = 'SQ';
 
     public function form()

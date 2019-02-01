@@ -13,8 +13,7 @@ class UpdateFormDateSeeder extends Seeder
       $salesVisitations = \App\Model\Plugin\PinPoint\SalesVisitation::all();
       foreach ($salesVisitations as $salesVisitation) {
         $form = $salesVisitation->form()->first();
-        // set false, agar tidak di log updated_by
-        $form->usesUserLogs(false);
+        $form->usesUserLogs(false); // set false, in order to not log updated_by
         $form->update([
            'date' => date( 'Y-m-d H:i:s', strtotime($salesVisitation->created_at.' + 7 hours') )
         ]);

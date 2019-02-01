@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddKecamatanKelurahanInPinPointSalesVisitations extends Migration
+class AddSubdistrictVillageInPinPointSalesVisitations extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,8 @@ class AddKecamatanKelurahanInPinPointSalesVisitations extends Migration
     public function up()
     {
         Schema::table('pin_point_sales_visitations', function (Blueprint $table) {
-            $table->string('kecamatan')->after('address');
-            $table->string('kelurahan')->after('kecamatan');
+            $table->string('sub_district')->after('address')->nullable();
+            $table->string('village')->after('sub_district')->nullable();
         });
     }
 
@@ -27,8 +27,8 @@ class AddKecamatanKelurahanInPinPointSalesVisitations extends Migration
     public function down()
     {
         Schema::table('pin_point_sales_visitations', function (Blueprint $table) {
-            $table->dropColumn('kecamatan');
-            $table->dropColumn('kelurahan');
+            $table->dropColumn('sub_district');
+            $table->dropColumn('village');
         });
     }
 }

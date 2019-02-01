@@ -60,7 +60,6 @@ class Payment extends TransactionModel
 
     public static function create($data)
     {
-        $data['payment_type'] = strtoupper($data['payment_type']);
         $payment = new self;
         $payment->fill($data);
 
@@ -140,7 +139,7 @@ class Payment extends TransactionModel
             $formNumber = str_replace('{payment_type}', $payment->payment_type, $formNumber);
         }
         if (strpos($formNumber, '{disbursed}') !== false) {
-            $replacement = $data['disbursed'] == false ? 'IN' : 'OUT';
+            $replacement = $payment->disbursed === false ? 'IN' : 'OUT';
             $formNumber = str_replace('{disbursed}', $replacement, $formNumber);
         }
 

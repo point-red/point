@@ -112,8 +112,7 @@ class SalesVisitationNotificationCommand extends Command
                     $items = $data->items;
                     $value = number_format(($data->value ?? 0), 3);
 
-                    if ($data->id == $user->id) {
-                    // if (($user->can("notification pin point sales") && $data->id == $user->id) || $user->can("notification pin point team lead")) {
+                    if (($user->can("notification pin point sales") && $data->id == $user->id) || $user->can("notification pin point team lead")) {
                         Mail::to([$user->email])->queue(new SalesVisitationNotificationMail(
                             $project->name,
                             $day_time, 

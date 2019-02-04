@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api\Master;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Http\Resources\Master\PriceListCollection;
 use App\Model\Master\Item;
+use App\Model\Master\ItemUnit;
 use App\Model\Master\PriceListItem;
+use App\Model\Master\PricingGroup;
 use Illuminate\Http\Request;
 
 class PriceListItemController extends Controller
@@ -19,28 +22,38 @@ class PriceListItemController extends Controller
      */
     public function index(Request $request)
     {
-        $date = $request->get('date') ?? now();
+        $items = Item::eloquentFilter($request)->with('units');
 
-        $pricingGroupId = $request->get('pricing_group_id');
+        $items = pagination($items, $request->get('limit'));
 
-        $priceListItem = Item::eloquentFilter($request)
-        // ->with(['pricing' => function ($q) use ($pricingGroupId, $date) {
-        //     $q->rightJoin(PricingGroup::getTableName(), PricingGroup::getTableName('id'), '=', PriceListItem::getTableName('pricing_group_id'));
-        //     if ($pricingGroupId) {
-        //         $q->where(PricingGroup::getTableName('id'), $pricingGroupId);
-        //     }
-        //     $q->where('date', '<=', $date)
-        //         ->select(PriceListItem::getTableName('price'))
-        //         ->addSelect(PriceListItem::getTableName('discount_percent'))
-        //         ->addSelect(PriceListItem::getTableName('discount_value'))
-        //         ->addSelect('item_unit_id')
-        //         ->addSelect('pricing_group_id');
-        // }])
-            ->with('units');
+        $unitIds = $items->pluck('units')->flatten()->pluck('id');
 
-        $priceListItem = pagination($priceListItem, $request->get('limit'));
+        $priceListItems = \DB::connection('tenant')
+            ->table(\DB::raw(PricingGroup::getTableName() . ',' . ItemUnit::getTableName()))
+            ->leftJoin(PriceListItem::getTableName(), PriceListItem::getTableName('item_unit_id'), '=', ItemUnit::getTableName('id'))
+            ->select(
+                PricingGroup::getTableName('id') . ' AS pricing_group_id',
+                PricingGroup::getTableName('label') . ' AS pricing_group_label',
+                ItemUnit::getTableName('id') . ' AS unit_id',
+                \DB::raw('IFNULL(' . PriceListItem::getTableName('price') . ', 0) AS price'),
+                PriceListItem::getTableName('discount_percent'),
+                PriceListItem::getTableName('discount_value'),
+                PriceListItem::getTableName('date')
+            )
+            ->whereIn(ItemUnit::getTableName('id'), $unitIds)
+            ->orderBy(PriceListItem::getTableName('pricing_group_id'), PriceListItem::getTableName('date'))
+            ->get();
 
-        return new PriceListCollection($priceListItem);
+        foreach ($items as $key => $item) {
+            foreach ($item->units as $key => $unit) {
+                $unit_id = $unit->id;
+                $unit['prices'] = $priceListItems->filter(function ($priceListItem, $key) use ($unit_id) {
+                    return $priceListItem->unit_id === $unit_id;
+                })->keyBy('pricing_group_id')->toArray();
+            }
+        }
+
+        return new ApiCollection($items);
     }
 
     /**

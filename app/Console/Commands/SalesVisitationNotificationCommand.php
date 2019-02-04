@@ -47,8 +47,6 @@ class SalesVisitationNotificationCommand extends Command
     {
         $this->line('sending sales visitation notification');
 
-        // Set timeformat to Indonesia and get yesterday's date
-        setlocale(LC_TIME, 'id_ID');
         $yesterday_date = date('Y-m-d', strtotime("-1 days"));
 
         $projects = Project::all();
@@ -88,9 +86,6 @@ class SalesVisitationNotificationCommand extends Command
 
             foreach ($result as $user) {
                 $values = array_values($details->filter(function ($value) use ($user) {
-                    $the_item = Item::select('name')->where('id', $value->item_id)->get()->first();
-                    $value->item_name = $the_item->name;
-
                     return $value->created_by == $user->id;
                 })->all());
 
@@ -110,7 +105,8 @@ class SalesVisitationNotificationCommand extends Command
                     $call = ($data->call ?? 0);
                     $effective_call = ($data->effective_call ?? 0);
                     $items = $data->items;
-                    $value = number_format(($data->value ?? 0), 3);
+                    $value = ($data->value ?? 0);
+                    $value = ($value % 1 == 0 ? number_format($value, 2) : number_format($value, 0));
 
                     if (($user->hasPermissionTo("notification pin point sales") && $data->id == $user->id) || $user->hasPermissionTo("notification pin point supervisor")) {
                         Mail::to([$user->email])->queue(new SalesVisitationNotificationMail(
@@ -174,6 +170,7 @@ class SalesVisitationNotificationCommand extends Command
             ->selectRaw('sum(quantity) as quantity')
             ->addSelect('forms.created_by')
             ->addSelect('items.id as item_id')
+            ->addSelect('items.name as item_name')
             ->where('forms.date', $yesterday_date)
             ->orderBy('item_id')
             ->get();

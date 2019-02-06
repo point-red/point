@@ -30,8 +30,10 @@ class ItemUnit extends MasterModel
     /**
      * Get the price for this unit.
      */
-    public function pricing()
+    public function prices()
     {
-        return PricingGroup::all();
+        return $this
+            ->belongsToMany(PricingGroup::class, PriceListItem::getTableName(), 'item_unit_id', 'pricing_group_id')
+            ->withPivot(['price', 'date']);
     }
 }

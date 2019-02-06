@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Api\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Http\Resources\Master\PriceListCollection;
 use App\Model\Master\Item;
-use App\Model\Master\ItemUnit;
 use App\Model\Master\PriceListItem;
 use App\Model\Master\PricingGroup;
 use Illuminate\Http\Request;
@@ -22,38 +20,55 @@ class PriceListItemController extends Controller
      */
     public function index(Request $request)
     {
-        $items = Item::eloquentFilter($request)->with('units');
+        /* Get all available pricing groups */
+        $availablePricingGroups = PricingGroup::select('id', 'label', 'notes')->get()->toArray();
+        $date = $request->get('date') ?? date('Y-m-d H:i:s');
 
+        $items = Item::with('units.prices');
         $items = pagination($items, $request->get('limit'));
 
-        $unitIds = $items->pluck('units')->flatten()->pluck('id');
+        $items->getCollection()->transform(function ($item) use ($date, $availablePricingGroups) {
+            $units = $item->units->map(function ($unit) use ($date, $availablePricingGroups) {
+                $priceGroups = $unit->prices
+                    ->filter(function ($priceGroup) use ($date) {
+                        /* Filter out price with date greater than $date */
+                        return $priceGroup->pivot->date <= $date;
+                    })
+                    ->sortByDESC(function ($priceGroup) {
+                        /* Sort by date, latest date on top */
+                        return $priceGroup->pivot->date;
+                    })
+                    ->groupBy('id')
+                    ->map(function ($priceGroup) {
+                        /* Latest price group is still on the top */
+                        /* Group them together then select the first price group */
+                        return $priceGroup->first();
+                    })
+                    ->toArray();
 
-        $priceListItems = \DB::connection('tenant')
-            ->table(\DB::raw(PricingGroup::getTableName() . ',' . ItemUnit::getTableName()))
-            ->leftJoin(PriceListItem::getTableName(), PriceListItem::getTableName('item_unit_id'), '=', ItemUnit::getTableName('id'))
-            ->select(
-                PricingGroup::getTableName('id') . ' AS pricing_group_id',
-                PricingGroup::getTableName('label') . ' AS pricing_group_label',
-                ItemUnit::getTableName('id') . ' AS unit_id',
-                \DB::raw('IFNULL(' . PriceListItem::getTableName('price') . ', 0) AS price'),
-                PriceListItem::getTableName('discount_percent'),
-                PriceListItem::getTableName('discount_value'),
-                PriceListItem::getTableName('date')
-            )
-            ->whereIn(ItemUnit::getTableName('id'), $unitIds)
-            ->orderBy(PriceListItem::getTableName('pricing_group_id'), PriceListItem::getTableName('date'))
-            ->get();
+                /* Iterate through $availablePricingGroups and set its price */
+                foreach ($availablePricingGroups as $availablePricingGroup) {
+                    $price = 0;
+                    foreach ($priceGroups as $priceGroup) {
+                        if ($priceGroup['id'] == $availablePricingGroup['id']) {
+                            $price = floatval($priceGroup['pivot']['price']);
+                            break;
+                        }
+                    }
+                    $endResultPriceGroups[] = $availablePricingGroup + ['price' => $price];
+                }
+                $unit = $unit->toArray();
+                $unit['prices'] = $endResultPriceGroups;
 
-        foreach ($items as $key => $item) {
-            foreach ($item->units as $key => $unit) {
-                $unit_id = $unit->id;
-                $unit['prices'] = $priceListItems->filter(function ($priceListItem, $key) use ($unit_id) {
-                    return $priceListItem->unit_id === $unit_id;
-                })->keyBy('pricing_group_id')->toArray();
-            }
-        }
+                return $unit;
+            });
+            $item = $item->toArray();
+            $item['units'] = $units;
 
-        return new ApiCollection($items);
+            return $item;
+        });
+
+        return new PriceListCollection($items);
     }
 
     /**

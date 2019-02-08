@@ -27,4 +27,9 @@ class PriceListItem extends MasterModel
     {
         return $this->belongsTo(ItemUnit::class);
     }
+
+    public function pricingGroups()
+    {
+        return $this->belongsTo(PricingGroup::class);
+    }
 }

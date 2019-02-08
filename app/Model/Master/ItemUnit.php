@@ -24,14 +24,16 @@ class ItemUnit extends MasterModel
      */
     public function item()
     {
-        return $this->belongsTo(get_class(new Item()));
+        return $this->belongsTo(Item::class);
     }
 
     /**
      * Get the price for this unit.
      */
-    public function pricing()
+    public function prices()
     {
-        return $this->hasMany(PriceListItem::class);
+        return $this
+            ->belongsToMany(PricingGroup::class, PriceListItem::getTableName(), 'item_unit_id', 'pricing_group_id')
+            ->withPivot(['price', 'date']);
     }
 }

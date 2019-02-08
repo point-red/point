@@ -80,8 +80,8 @@ class Form extends PointModel
         $this->formable_type = get_class($transaction);
         $this->generateFormNumber(
             $data['number'] ?? $transaction->defaultNumberPrefix . $defaultNumberPostfix,
-            $transaction->customer_id ?? null,
-            $transaction->supplier_id ?? null
+            $transaction->customer_id,
+            $transaction->supplier_id
         );
         $this->save();
     }
@@ -158,9 +158,9 @@ class Form extends PointModel
      */
     private function convertTemplateDate()
     {
-        preg_match_all('/{([a-zA-Z])}/', $this->number, $arr);
-        foreach ($arr[0] as $key => $value) {
-            $code = $arr[1][$key];
+        preg_match_all('/{([a-zA-Z])}/', $this->number, $regexResult);
+        foreach ($regexResult[0] as $key => $value) {
+            $code = $regexResult[1][$key];
             $this->number = str_replace($value, date($code, strtotime($this->date)), $this->number);
         }
     }
@@ -173,23 +173,26 @@ class Form extends PointModel
      */
     private function convertTemplateIncrement()
     {
-        preg_match_all('/{increment=(\d)}/', $this->number, $arr);
-        foreach ($arr[0] as $key => $value) {
-            $padUntil = $arr[1][$key];
+        preg_match_all('/{increment=(\d)}/', $this->number, $regexResult);
+        if (!empty($regexResult)) {
             $increment = self::where('formable_type', $this->formable_type)
                 ->whereNotNull('number')
                 ->whereMonth('date', date('n', strtotime($this->date)))
                 ->count();
-            $result = str_pad($increment + 1, $padUntil, '0', STR_PAD_LEFT);
-            $this->number = str_replace($value, $result, $this->number);
+
+            foreach ($regexResult[0] as $key => $value) {
+                $padUntil = $regexResult[1][$key];
+                $result = str_pad($increment + 1, $padUntil, '0', STR_PAD_LEFT);
+                $this->number = str_replace($value, $result, $this->number);
+            }
         }
     }
 
     private function convertTemplateRoman()
     {
-        preg_match_all('/\[(\d+)\]/', $this->number, $arr);
-        foreach ($arr[0] as $key => $value) {
-            $num = $this->numberToRoman($arr[1][$key]);
+        preg_match_all('/\[(\d+)\]/', $this->number, $regexResult);
+        foreach ($regexResult[0] as $key => $value) {
+            $num = $this->numberToRoman($regexResult[1][$key]);
             $this->number = str_replace($value, $num, $this->number);
         }
     }
@@ -244,9 +247,9 @@ class Form extends PointModel
      */
     private function convertTemplateMasterId($pattern, $masterId)
     {
-        preg_match_all($pattern, $this->number, $arr);
-        foreach ($arr[0] as $key => $value) {
-            $padUntil = $arr[1][$key];
+        preg_match_all($pattern, $this->number, $regexResult);
+        foreach ($regexResult[0] as $key => $value) {
+            $padUntil = $regexResult[1][$key];
             $result = str_pad($masterId, $padUntil, '0', STR_PAD_LEFT);
             $this->number = str_replace($value, $result, $this->number);
         }

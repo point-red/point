@@ -3,6 +3,7 @@
 namespace App\Model\Sales\SalesInvoice;
 
 use App\Model\Finance\Payment\Payment;
+use App\Model\Finance\Payment\PaymentDetail;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
@@ -25,6 +26,7 @@ class SalesInvoice extends TransactionModel
     ];
 
     protected $casts = [
+        'amount' => 'double',
         'delivery_fee' => 'double',
         'discount_percent' => 'double',
         'discount_value' => 'double',
@@ -58,7 +60,10 @@ class SalesInvoice extends TransactionModel
      */
     public function payments()
     {
-        return $this->morphMany(Payment::class, 'referenceable');
+        return $this->morphMany(PaymentDetail::class, 'referenceable')
+            ->join(Payment::getTableName(), Payment::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
+            ->joinForm(Payment::class)
+            ->active();
     }
 
     public function getRemainingAmountAttribute()

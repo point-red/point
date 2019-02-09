@@ -19,7 +19,7 @@ class SalesVisitationNotificationCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'sales:visitation:notification';
+    protected $signature = 'notification:sales-visitation';
 
     /**
      * The console command description.

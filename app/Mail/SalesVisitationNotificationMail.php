@@ -41,7 +41,7 @@ class SalesVisitationNotificationMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('[RED Point] Sales Visitation Notification')
+        return $this->subject('[' . title_case($this->project_name) . '] Sales Visitation ' . title_case($this->sales_name) . ' / ' . $this->day_time)
             ->view(['html' => 'emails.plugin.pinpoint.sales-visitation-notification'])
             ->with(['project_name' => $this->project_name,
                     'day_time' => $this->day_time,

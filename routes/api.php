@@ -22,7 +22,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
     });
 
     // This routes below require authentication
-    Route::middleware('auth:api')->group(function () {
+    // Route::middleware('auth:api')->group(function () {
         Route::post('auth-user', 'AuthUserController@show');
         require base_path('routes/api/account.php');
         require base_path('routes/api/project.php');
@@ -35,5 +35,5 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         // Plugin
         require base_path('routes/api/plugin/scale-weight.php');
         require base_path('routes/api/plugin/pin-point.php');
-    });
+    // });
 });

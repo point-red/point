@@ -91,6 +91,8 @@ class PermissionSeeder extends Seeder
         Permission::createIfNotExists('read pin point sales visitation form report');
         Permission::createIfNotExists('read pin point sales visitation report');
         Permission::createIfNotExists('read pin point attendance report');
+        Permission::createIfNotExists('notification pin point sales');
+        Permission::createIfNotExists('notification pin point supervisor');
 
         foreach ($allPermission as $permission) {
             Permission::createIfNotExists('create '.$permission);

@@ -60,7 +60,7 @@ class SalesVisitationNotificationCommand extends Command
             DB::connection('tenant')->reconnect();
 
             if (SalesVisitation::all()->count() == 0) {
-                break;
+                continue;
             }
 
             $all_user = User::with('roles')->select(['id', 'email'])->get();

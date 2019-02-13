@@ -74,6 +74,7 @@ class TransferKpiScoreCommand extends Command
                                 ->where('kpi_template_indicators.name', $kpiIndicator['name'])
                                 ->where('kpi_template_groups.name', $kpiGroup['name'])
                                 ->where('kpi_templates.name', $kpi['name'])
+                                ->orderBy('kpi_template_scores.score', 'asc')
                                 ->get();
 
                             if (count($kpi_template_scores) == 0) {

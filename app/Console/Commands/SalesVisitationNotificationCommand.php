@@ -11,6 +11,7 @@ use App\Model\Master\Item;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Mail\SalesVisitationNotificationMail;
+use App\Mail\SalesVisitationNotificationSupervisorMail;
 
 class SalesVisitationNotificationCommand extends Command
 {
@@ -66,6 +67,8 @@ class SalesVisitationNotificationCommand extends Command
             $all_user = User::with('roles')->select(['id', 'email'])->get();
             $user_data = array();
 
+            $day_time = strftime("%A, %d-%m-%Y", strtotime($yesterday_date));
+
             $queryCall = $this->queryCall($yesterday_date);
             $queryEffectiveCall = $this->queryEffectiveCall($yesterday_date);
             $queryValue = $this->queryValue($yesterday_date);
@@ -102,18 +105,21 @@ class SalesVisitationNotificationCommand extends Command
                 array_push($user_data, $user);
             }
 
-            $userEmails = [];
+            $salesEmails = [];
+            $supervisorEmails = [];
+            $supervisorDataEmails = [];
 
-            foreach ($user_data as $data) {
+            foreach ($user_data as $index => $data) {
 
                 foreach ($all_user as $user) {
-                    if (($user->hasPermissionTo("notification pin point sales") && $data->id == $user->id)
-                        || $user->hasPermissionTo("notification pin point supervisor")) {
-                        array_push($userEmails, $user->email);
+                    if (($user->hasPermissionTo("notification pin point sales") && $data->id == $user->id)) {
+                        array_push($salesEmails, $user->email);
+                    }
+                    else if ($user->hasPermissionTo("notification pin point supervisor")) {
+                        array_push($supervisorEmails, $user->email);
                     }
                 }
 
-                $day_time = strftime("%A, %d-%m-%Y", strtotime($yesterday_date));
                 $sales_name = $data->first_name . ' ' . $data->last_name;
                 $call = ($data->call ?? 0);
                 $effective_call = ($data->effective_call ?? 0);
@@ -121,8 +127,18 @@ class SalesVisitationNotificationCommand extends Command
                 $value = ($data->value ?? 0);
                 $value = ($value % 1 == 0 ? number_format($value, 2) : number_format($value, 0));
 
-                if (count($userEmails) > 0) {
-                    Mail::to($userEmails)->queue(new SalesVisitationNotificationMail(
+                $email_data = [
+                    'sales_name' => $sales_name,
+                    'call' => $call,
+                    'effective_call' => $effective_call,
+                    'items' => $items,
+                    'value' => $value
+                ];
+
+                array_push($supervisorDataEmails, $email_data);
+
+                if (count($salesEmails) > 0) {
+                    Mail::to($salesEmails)->queue(new SalesVisitationNotificationMail(
                         $project->name,
                         $day_time,
                         $sales_name,
@@ -130,6 +146,13 @@ class SalesVisitationNotificationCommand extends Command
                         $effective_call,
                         $items,
                         $value));
+                }
+
+                if ($index == (count($user_data) - 1)) {
+                    Mail::to($salesEmails)->queue(new SalesVisitationNotificationSupervisorMail(
+                        $project->name,
+                        $day_time,
+                        $supervisorDataEmails));
                 }
             }
         }

@@ -2,9 +2,9 @@
 
 namespace App\Model\HumanResource\Kpi;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class KpiTemplateGroup extends Model
+class KpiTemplateGroup extends MasterModel
 {
     protected $connection = 'tenant';
 

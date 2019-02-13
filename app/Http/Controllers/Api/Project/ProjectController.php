@@ -21,17 +21,15 @@ class ProjectController extends Controller
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     *
-     * @return \App\Http\Controllers\Api\Project\ApiCollection
+     * @return ApiCollection
      */
     public function index(Request $request)
     {
-        $limit = $request->input('limit') ?? 0;
-
         $projects = Project::join('project_user', 'projects.id', '=', 'project_user.project_id')
             ->where('project_user.user_id', auth()->user()->id)
-            ->select('projects.*', 'user_id', 'user_name', 'user_email', 'joined', 'request_join_at', 'project_user.id as user_invitation_id')
-            ->paginate($limit);
+            ->select('projects.*', 'user_id', 'user_name', 'user_email', 'joined', 'request_join_at', 'project_user.id as user_invitation_id');
+
+        $projects = pagination($projects, $request->input('limit'));
 
         return new ApiCollection($projects);
     }
@@ -39,26 +37,24 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     *
+     * @param StoreProjectRequest $request
      * @return \App\Http\Resources\Project\Project\ProjectResource
      */
     public function store(StoreProjectRequest $request)
     {
         // User only allowed to create max 1 project
         $numberOfProject = Project::where('owner_id', auth()->user()->id)->count();
+        // TODO: disable new project creation
         if ($numberOfProject >= 1) {
             return response()->json([
                 'code' => 422,
-                'message' => 'Beta user only allowed to create 1 project',
+                'message' => 'We are updating our server, currently you cannot create new project',
             ], 422);
         }
 
         // Create new database for tenant project
         $dbName = 'point_'.strtolower($request->get('code'));
-        Artisan::call('tenant:create-database', [
-            'db_name' => $dbName,
-        ]);
+        Artisan::call('tenant:database:create', ['db_name' => $dbName]);
 
         // Update tenant database name in configuration
         config()->set('database.connections.tenant.database', $dbName);
@@ -84,11 +80,7 @@ class ProjectController extends Controller
         $projectUser->save();
 
         // Migrate database
-        Artisan::call('migrate', [
-            '--database' => 'tenant',
-            '--path' => 'database/migrations/tenant',
-            '--force' => true,
-        ]);
+        Artisan::call('tenant:migrate', ['db_name' => $dbName]);
 
         // Clone user point into their database
         $user = new User;
@@ -99,7 +91,7 @@ class ProjectController extends Controller
         $user->email = auth()->user()->email;
         $user->save();
 
-        Artisan::call('tenant:setup-database');
+        Artisan::call('tenant:seed:first', ['db_name' => $dbName]);
 
         DB::connection('tenant')->commit();
 
@@ -156,7 +148,7 @@ class ProjectController extends Controller
         $project->delete();
 
         // Delete database tenant
-        Artisan::call('tenant:delete-database', [
+        Artisan::call('tenant:database:delete', [
             'db_name' => 'point_'.strtolower($project->code),
         ]);
 

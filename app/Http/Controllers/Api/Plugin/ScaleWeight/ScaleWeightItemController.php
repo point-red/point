@@ -14,11 +14,15 @@ class ScaleWeightItemController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemCollection
+     * @param Request $request
+     * @return ScaleWeightItemCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        $scaleWeightItem = ScaleWeightItem::all();
+        $date_from = $request->get('date_from');
+        $date_to = $request->get('date_to');
+
+        $scaleWeightItem = ScaleWeightItem::whereBetween('time', [$date_from, $date_to])->paginate(100);
 
         return new ScaleWeightItemCollection($scaleWeightItem);
     }

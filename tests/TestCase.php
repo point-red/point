@@ -20,13 +20,17 @@ abstract class TestCase extends BaseTestCase
 
         Artisan::call('config:clear');
 
+        $this->getConnection(DB::getDefaultConnection())->disconnect();
+
         config()->set('database.connections.tenant.driver', env('DB_TENANT_DRIVER'));
         config()->set('database.connections.tenant.database', env('DB_TENANT_DATABASE'));
 
-        $this->getConnection(DB::getDefaultConnection())->disconnect();
+        DB::connection('tenant')->reconnect();
 
-        $this->artisan('tenant:setup-database', [
-            'tenant_subdomain' => env('DB_TENANT_DATABASE'),
+        Artisan::call('migrate:refresh', [
+            '--database' => 'tenant',
+            '--path' => 'database/migrations/tenant',
+            '--force' => true,
         ]);
 
         $this->headers = [

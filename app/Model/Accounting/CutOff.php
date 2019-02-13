@@ -2,9 +2,9 @@
 
 namespace App\Model\Accounting;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\TransactionModel;
 
-class CutOff extends Model
+class CutOff extends TransactionModel
 {
     protected $connection = 'tenant';
 

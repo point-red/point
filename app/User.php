@@ -19,7 +19,7 @@ class User extends Authenticatable
      */
     public function projects()
     {
-        return $this->belongsToMany(new Project());
+        return $this->belongsToMany(Project::class);
     }
 
     /**

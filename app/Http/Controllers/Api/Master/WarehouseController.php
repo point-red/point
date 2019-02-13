@@ -21,9 +21,11 @@ class WarehouseController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = $request->input('limit') ?? 0;
+        $warehouses = Warehouse::eloquentFilter($request);
 
-        return new WarehouseCollection(Warehouse::paginate($limit));
+        $warehouses = pagination($warehouses, $request->get('limit'));
+
+        return new WarehouseCollection($warehouses);
     }
 
     /**

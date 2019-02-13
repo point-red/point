@@ -2,9 +2,9 @@
 
 namespace App\Model\Accounting;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class ChartOfAccountGroup extends Model
+class ChartOfAccountGroup extends MasterModel
 {
     protected $connection = 'tenant';
 

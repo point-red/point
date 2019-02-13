@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
+use App\Exports\ScaleWeightTruckExport;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;
@@ -14,11 +15,15 @@ class ScaleWeightTruckController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckCollection
+     * @param Request $request
+     * @return ScaleWeightTruckCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        $scaleWeightTruck = ScaleWeightTruck::all();
+        $date_from = $request->get('date_from');
+        $date_to = $request->get('date_to');
+
+        $scaleWeightTruck = ScaleWeightTruck::whereBetween('time_in', [$date_from, $date_to])->paginate(100);
 
         return new ScaleWeightTruckCollection($scaleWeightTruck);
     }

@@ -23,6 +23,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
 
     // This routes below require authentication
     Route::middleware('auth:api')->group(function () {
+        Route::post('send-email', 'EmailServiceController@send');
         Route::post('auth-user', 'AuthUserController@show');
         require base_path('routes/api/account.php');
         require base_path('routes/api/project.php');

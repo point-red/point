@@ -14,6 +14,7 @@ use App\Model\HumanResource\Employee\EmployeeScorer;
 use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeSocialMedia;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
+use App\Model\HumanResource\Employee\EmployeeBaseSalary;
 use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
 
@@ -41,6 +42,9 @@ class EmployeeController extends Controller
             ->with('emails')
             ->with('addresses')
             ->with('phones')
+            ->with('status')
+            ->with('jobLocation')
+            ->with('baseSalaries')
             ->select('employees.*')
             ->filters($request->get('filters'))
             ->fields($request->get('fields'))
@@ -82,8 +86,17 @@ class EmployeeController extends Controller
         $employee->married_with = $request->get('married_with');
         $employee->employee_religion_id = $request->get('employee_religion_id');
         $employee->employee_group_id = $request->get('employee_group_id');
+        $employee->employee_identity = $request->get('employee_identity');
         $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
         $employee->job_title = $request->get('job_title');
+        $employee->employee_status_id = $request->get('employee_status_id');
+        $employee->employee_job_location_id = $request->get('employee_job_location_id');
+        $employee->multiplier_kpi = $request->get('multiplier_kpi');
+        $employee->daily_transport_allowance = $request->get('daily_transport_allowance');
+        $employee->tl_allowance = $request->get('tl_allowance');
+        $employee->communication_allowance = $request->get('communication_allowance');
+        $employee->bpjs_ketenagakerjaan = $request->get('bpjs_ketenagakerjaan');
+        $employee->bpjs_kesehatan = $request->get('bpjs_kesehatan');
         $employee->save();
 
         for ($i = 0; $i < count($request->get('addresses')); $i++) {
@@ -140,6 +153,14 @@ class EmployeeController extends Controller
             $employeeContract->save();
         }
 
+        for ($i = 0; $i < count($request->get('base_salaries')); $i++) {
+            $employeeBaseSalary = new EmployeeBaseSalary;
+            $employeeBaseSalary->employee_id = $employee->id;
+            $employeeBaseSalary->year = date('Y', strtotime($request->get('base_salaries')[$i]['year']));
+            $employeeBaseSalary->salary = $request->get('base_salaries')[$i]['salary'];
+            $employeeBaseSalary->save();
+        }
+
         DB::connection('tenant')->commit();
 
         return new ApiResource($employee);
@@ -169,6 +190,9 @@ class EmployeeController extends Controller
             ->with('emails')
             ->with('addresses')
             ->with('phones')
+            ->with('status')
+            ->with('jobLocation')
+            ->with('baseSalaries')
             ->select('employees.*')
             ->filters($request->get('filters'))
             ->fields($request->get('fields'))
@@ -183,7 +207,7 @@ class EmployeeController extends Controller
      * Update the specified resource in storage.
      *
      * @param \App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest $request
-     * @param  int                                                                     $id
+     * @param  int $id
      *
      * @return \App\Http\Resources\ApiResource
      */
@@ -203,8 +227,17 @@ class EmployeeController extends Controller
         $employee->married_with = $request->get('married_with');
         $employee->employee_religion_id = $request->get('employee_religion_id');
         $employee->employee_group_id = $request->get('employee_group_id');
+        $employee->employee_identity = $request->get('employee_identity');
         $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
         $employee->job_title = $request->get('job_title');
+        $employee->employee_status_id = $request->get('employee_status_id');
+        $employee->employee_job_location_id = $request->get('employee_job_location_id');
+        $employee->multiplier_kpi = $request->get('multiplier_kpi');
+        $employee->daily_transport_allowance = $request->get('daily_transport_allowance');
+        $employee->tl_allowance = $request->get('tl_allowance');
+        $employee->communication_allowance = $request->get('communication_allowance');
+        $employee->bpjs_ketenagakerjaan = $request->get('bpjs_ketenagakerjaan');
+        $employee->bpjs_kesehatan = $request->get('bpjs_kesehatan');
         $employee->save();
 
         $deleteAddresses = array_column($request->get('addresses'), 'id');
@@ -305,6 +338,20 @@ class EmployeeController extends Controller
                 $employee->scorers()->attach($scorer['id']);
             }
         }
+        $deleted = array_column($request->get('base_salaries'), 'id');
+        EmployeeBaseSalary::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
+        for ($i = 0; $i < count($request->get('base_salaries')); $i++) {
+            if (isset($request->get('base_salaries')[$i]['id'])) {
+                $employeeBaseSalary = EmployeeBaseSalary::findOrFail($request->get('base_salaries')[$i]['id']);
+            } else {
+                $employeeBaseSalary = new EmployeeBaseSalary;
+                $employeeBaseSalary->employee_id = $employee->id;
+            }
+            $employeeBaseSalary->year = date('Y-m-d', strtotime($request->get('base_salaries')[$i]['year']));
+            $employeeBaseSalary->salary = $request->get('base_salaries')[$i]['salary'];
+            $employeeBaseSalary->save();
+        }
+
         DB::connection('tenant')->commit();
 
         return new ApiResource($employee);

@@ -13,6 +13,7 @@ class DeliveryNoteItem extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
+        'item_id',
         'delivery_order_item_id',
         'gross_weight',
         'tare_weight',

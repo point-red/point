@@ -2,7 +2,9 @@
 
 namespace App\Model\Purchase\PurchaseReceive;
 
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
+use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
 use App\Model\Master\Service;
 use App\Model\Master\Supplier;
@@ -126,7 +128,20 @@ class PurchaseReceive extends TransactionModel
                     $purchaseReceiveItem->item_name = $dbItems[$item['item_id']]->name;
                 }
                 array_push($array, $purchaseReceiveItem);
+
+                // Insert to inventories table
+                $inventory = [];
+                $inventory['form_id'] = $purchaseReceiveItem->form_id;
+                $inventory['warehouse_id'] = $purchaseReceive->warehouse_id;
+                $inventory['item_id'] = $purchaseReceiveItem->item_id;
+                $inventory['quantity'] = $purchaseReceiveItem->quantity;
+                $inventory['price'] = $purchaseReceiveItem->price;
+                $inventory['cogs'] = $purchaseReceiveItem->cogs;
+                $inventory['total_quantity'] = $purchaseReceiveItem->total_quantity;
+                $inventory['total_value'] = $purchaseReceiveItem->total_value;
+                InventoryHelper::insert($inventory);
             }
+
             $purchaseReceive->items()->saveMany($array);
         }
 

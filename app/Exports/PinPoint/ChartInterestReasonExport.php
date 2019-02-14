@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithCharts;
 use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
 use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
+use PhpOffice\PhpSpreadsheet\Chart\Layout;
 use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
 use PhpOffice\PhpSpreadsheet\Chart\Legend;
 use PhpOffice\PhpSpreadsheet\Chart\Chart;
@@ -73,12 +74,26 @@ class ChartInterestReasonExport implements FromView, WithCharts, WithTitle, Shou
         ]);
     }
 
+    protected function cellColumns ()
+    {
+      $alpha = range('A', 'Z');
+
+      $loop = $alpha;
+      foreach ($loop as $keyF => $first) {
+        foreach ($loop as $keyS => $second) {
+          array_push($alpha, $first.$second);
+        }
+      }
+
+      return $alpha;
+    }
+
     /**
      * @return Chart|Chart[]
      */
     public function charts()
     {
-      $cellColumns = range('A', 'Z');
+      $cellColumns = $this->cellColumns();
       $columnPosition = 0;
       $lastColumn = $cellColumns[$this->interestReasons()->pluck('name')->count()];
       $firstData = 3;
@@ -94,8 +109,12 @@ class ChartInterestReasonExport implements FromView, WithCharts, WithTitle, Shou
         $series = new DataSeries(DataSeries::TYPE_PIECHART, DataSeries::GROUPING_STANDARD,
         range(0, \count($values) - 1), $label, $categories, $values);
 
-        $plot   = new PlotArea(null, [$series]);
-        $legend = new Legend();
+        $layout = new Layout();
+        $layout->setShowVal(true);
+        $layout->setShowPercent(true);
+
+        $plot   = new PlotArea($layout, [$series]);
+        $legend = new Legend(Legend::POSITION_RIGHT, null, false);
         $chart  = new Chart('Chart', new Title('Week'.($i+1)), $legend, $plot);
 
         $chart->setTopLeftPosition($cellColumns[$columnPosition].'9');

@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseReceive;
 
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
@@ -129,16 +130,16 @@ class PurchaseReceive extends TransactionModel
                 array_push($array, $purchaseReceiveItem);
 
                 // Insert to inventories table
-                $inventory = new Inventory;
-                $inventory->form_id = $purchaseReceiveItem->form_id;
-                $inventory->warehouse_id = $purchaseReceive->warehouse_id;
-                $inventory->item_id = $purchaseReceiveItem->item_id;
-                $inventory->quantity = $purchaseReceiveItem->quantity;
-                $inventory->price = $purchaseReceiveItem->price;
-                $inventory->cogs = $purchaseReceiveItem->cogs;
-                $inventory->total_quantity = $purchaseReceiveItem->total_quantity;
-                $inventory->total_value = $purchaseReceiveItem->total_value;
-                $inventory->save();
+                $inventory = [];
+                $inventory['form_id'] = $purchaseReceiveItem->form_id;
+                $inventory['warehouse_id'] = $purchaseReceive->warehouse_id;
+                $inventory['item_id'] = $purchaseReceiveItem->item_id;
+                $inventory['quantity'] = $purchaseReceiveItem->quantity;
+                $inventory['price'] = $purchaseReceiveItem->price;
+                $inventory['cogs'] = $purchaseReceiveItem->cogs;
+                $inventory['total_quantity'] = $purchaseReceiveItem->total_quantity;
+                $inventory['total_value'] = $purchaseReceiveItem->total_value;
+                InventoryHelper::insert($inventory);
             }
 
             $purchaseReceive->items()->saveMany($array);

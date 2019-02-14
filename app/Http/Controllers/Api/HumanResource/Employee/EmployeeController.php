@@ -156,7 +156,7 @@ class EmployeeController extends Controller
         for ($i = 0; $i < count($request->get('base_salaries')); $i++) {
             $employeeBaseSalary = new EmployeeBaseSalary;
             $employeeBaseSalary->employee_id = $employee->id;
-            $employeeBaseSalary->year = date('Y', strtotime($request->get('base_salaries')[$i]['year']));
+            $employeeBaseSalary->year = $request->get('base_salaries')[$i]['year'];
             $employeeBaseSalary->salary = $request->get('base_salaries')[$i]['salary'];
             $employeeBaseSalary->save();
         }
@@ -347,7 +347,7 @@ class EmployeeController extends Controller
                 $employeeBaseSalary = new EmployeeBaseSalary;
                 $employeeBaseSalary->employee_id = $employee->id;
             }
-            $employeeBaseSalary->year = date('Y-m-d', strtotime($request->get('base_salaries')[$i]['year']));
+            $employeeBaseSalary->year = $request->get('base_salaries')[$i]['year'];
             $employeeBaseSalary->salary = $request->get('base_salaries')[$i]['salary'];
             $employeeBaseSalary->save();
         }

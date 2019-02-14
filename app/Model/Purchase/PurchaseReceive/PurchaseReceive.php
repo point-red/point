@@ -101,7 +101,7 @@ class PurchaseReceive extends TransactionModel
         if (!empty($items) && is_array($items)) {
             $array = [];
 
-            if (!empty($purchaseOrder)) {
+            if (empty($purchaseOrder)) {
                 $itemIds = array_column($items, 'item_id');
                 $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
             }
@@ -111,6 +111,8 @@ class PurchaseReceive extends TransactionModel
                 $purchaseReceiveItem->fill($item);
 
                 $purchaseOrderItemId = $item['purchase_order_item_id'] ?? null;
+                $additionalFee = 0;
+                $total = 0;
 
                 // TODO validation purchaseOrderItemId is optional and must be integer
                 if (!empty($purchaseOrderItemId)) {
@@ -121,6 +123,9 @@ class PurchaseReceive extends TransactionModel
                     $purchaseReceiveItem->discount_percent = $purchaseOrderItem->discount_percent;
                     $purchaseReceiveItem->discount_value = $purchaseOrderItem->discount_value;
                     $purchaseReceiveItem->allocation_id = $purchaseOrderItem->allocation_id;
+
+                    $additionalFee = $purchaseOrder->delivery_fee - $purchaseOrder->discount_value;
+                    $total = $purchaseOrder->amount - $additionalFee - $purchaseOrder->tax;
                 }
                 // TODO validation item_id is required if no purchase order, and must be integer
                 else {
@@ -130,16 +135,7 @@ class PurchaseReceive extends TransactionModel
                 array_push($array, $purchaseReceiveItem);
 
                 // Insert to inventories table
-                $inventory = [];
-                $inventory['form_id'] = $purchaseReceiveItem->form_id;
-                $inventory['warehouse_id'] = $purchaseReceive->warehouse_id;
-                $inventory['item_id'] = $purchaseReceiveItem->item_id;
-                $inventory['quantity'] = $purchaseReceiveItem->quantity;
-                $inventory['price'] = $purchaseReceiveItem->price;
-                $inventory['cogs'] = $purchaseReceiveItem->cogs;
-                $inventory['total_quantity'] = $purchaseReceiveItem->total_quantity;
-                $inventory['total_value'] = $purchaseReceiveItem->total_value;
-                InventoryHelper::insert($inventory);
+                InventoryHelper::insert($purchaseReceiveItem, $total, $additionalFee, $form->id, $data['warehouse_id']);
             }
 
             $purchaseReceive->items()->saveMany($array);

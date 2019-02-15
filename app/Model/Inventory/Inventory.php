@@ -5,9 +5,9 @@ namespace App\Model\Inventory;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\PointModel;
 
-class Inventory extends Model
+class Inventory extends PointModel
 {
     protected $connection = 'tenant';
 

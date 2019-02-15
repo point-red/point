@@ -54,8 +54,6 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
             'Latitude',
             'Longitude',
             'Phone',
-            'Payment Method',
-            'Due Date',
         ];
     }
 
@@ -77,8 +75,6 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
             $row->latitude,
             $row->longitude,
             $row->phone,
-            $row->payment_method,
-            $row->due_date != '0000-00-00' ? date('Y-m-d', strtotime($row->due_date)) : '',
         ];
     }
 
@@ -100,7 +96,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
                 $event->writer->setCreator('Point');
             },
             AfterSheet::class => function(AfterSheet $event) {
-                $event->sheet->getDelegate()->getStyle('A1:M1')->getFont()->setBold(true);
+                $event->sheet->getDelegate()->getStyle('A1:K1')->getFont()->setBold(true);
                 $styleArray = [
                     'borders' => [
                         'allBorders' => [
@@ -109,7 +105,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
                         ],
                     ],
                 ];
-                $event->getSheet()->getStyle('A1:M100')->applyFromArray($styleArray);
+                $event->getSheet()->getStyle('A1:K100')->applyFromArray($styleArray);
             },
         ];
     }

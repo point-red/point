@@ -21,6 +21,12 @@ class Item extends MasterModel
         'disabled',
     ];
 
+    protected $casts = [
+        'total_quantity' => 'double',
+        'total_value' => 'double',
+        'cogs' => 'double'
+    ];
+
     /**
      * Get all of the groups for the items.
      */

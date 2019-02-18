@@ -24,7 +24,7 @@ class InventoryController extends Controller
             ->orderBy('forms.date', 'desc');
 
         // Ignore item that doesn't have any stock
-        if ($request->get('ignore_empty') && $request->get('ignore_empty') == true) {
+        if ($request->get('ignore_empty') == true) {
             $inventories = $inventories->where('total_quantity', '>', 0);
         }
 

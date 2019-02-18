@@ -7,6 +7,8 @@ use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\Form;
+use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
 use App\Model\Master\ItemUnit;
 use Illuminate\Http\Request;
@@ -22,12 +24,31 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $items = Item::eloquentFilter($request);
+        $query = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
+            ->whereIn(Form::getTableName('date'), function ($query) {
+                $query->selectRaw('max('.Form::getTableName('date').')')
+                    ->from(Inventory::getTableName())
+                    ->where(Form::getTableName('date'), '<=', now())
+                    ->groupBy('item_id');
+            })->select('inventories.*');
+
+        $items = Item::eloquentFilter($request)->leftJoinSub($query, 'query', function ($join) {
+            $join->on(Item::getTableName('id'), '=', 'query.item_id');
+        })->select('items.*')
+            ->addSelect('query.total_value')
+            ->addSelect('query.total_quantity')
+            ->addSelect('query.cogs')
+            ->groupBy('items.id');
 
         if ($request->get('group_id')) {
             $items = $items->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
                 ->where('groupables.groupable_type', Item::class)
                 ->where('groupables.group_id', '=', 1);
+        }
+
+        // Ignore item that doesn't have any stock
+        if ($request->get('ignore_empty') == true) {
+            $items = $items->where('total_quantity', '>', 0);
         }
 
         $items = pagination($items, $request->get('limit'));

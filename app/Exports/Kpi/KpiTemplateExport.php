@@ -11,6 +11,8 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use App\Exports\Kpi\TemplateExport;
 use App\Exports\Kpi\TemplateGroupExport;
+use App\Exports\Kpi\TemplateIndicatorExport;
+use App\Exports\Kpi\TemplateScoreExport;
 
 class KpiTemplateExport implements WithMultipleSheets
 {

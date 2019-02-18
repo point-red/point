@@ -15,6 +15,9 @@ class KpiTemplateExportController extends Controller
 {
     public function export(Request $request)
     {
+      $request->validate([
+        'id' => 'required|integer'
+      ]);
       // return (new KpiTemplateExport(1))->download('KPI_export.xlsx');
 
       $tenant = strtolower($request->header('Tenant'));

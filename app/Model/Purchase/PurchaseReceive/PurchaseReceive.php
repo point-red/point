@@ -135,7 +135,7 @@ class PurchaseReceive extends TransactionModel
                 array_push($array, $purchaseReceiveItem);
 
                 // Insert to inventories table
-                InventoryHelper::insert($form->id, $data['warehouse_id'], $purchaseReceiveItem, $total, $additionalFee);
+                InventoryHelper::increase($form->id, $data['warehouse_id'], $purchaseReceiveItem, $total, $additionalFee);
             }
 
             $purchaseReceive->items()->saveMany($array);

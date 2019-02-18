@@ -7,10 +7,9 @@ use App\Model\Inventory\Inventory;
 
 class InventoryHelper
 {
-    public static function insert($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee)
+    private static function insert($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee)
     {
         // TODO: Check if quantity is 0 then is not allowed
-
         $lastInventory = self::getLastReference($itemReference->item_id, $warehouseId);
 
         $inventory = new Inventory;
@@ -43,6 +42,18 @@ class InventoryHelper
         $inventory->save();
 
         // TODO: add journal
+    }
+
+    public static function increase($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee)
+    {
+        $itemReference->quantity = abs($itemReference->quantity);
+        self::insert($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee);
+    }
+
+    public static function decrease($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee)
+    {
+        $itemReference->quantity = abs($itemReference->quantity) * -1;
+        self::insert($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee);
     }
 
     /**

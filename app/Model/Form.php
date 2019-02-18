@@ -5,6 +5,7 @@ namespace App\Model;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\Master\User;
+use Carbon\Carbon;
 
 class Form extends PointModel
 {
@@ -18,6 +19,26 @@ class Form extends PointModel
         'done',
         'approved',
     ];
+
+    public function setDateAttribute($value)
+    {
+        $this->attributes['date'] = Carbon::parse($value, request()->header('Timezone'))->timezone('UTC')->toDateTimeString();
+    }
+
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value, request()->header('Timezone'))->timezone('UTC')->toDateTimeString();
+    }
+
+    public function getUpdatedAtAttribute($value)
+    {
+        return Carbon::parse($value, request()->header('Timezone'))->timezone('UTC')->toDateTimeString();
+    }
+
+    public function getDateAttribute($value)
+    {
+        return Carbon::parse($value, request()->header('Timezone'))->timezone('UTC')->toDateTimeString();
+    }
 
     public function save(array $options = [])
     {

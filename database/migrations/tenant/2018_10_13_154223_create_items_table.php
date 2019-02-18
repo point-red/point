@@ -25,6 +25,7 @@ class CreateItemsTable extends Migration
             $table->text('notes')->nullable();
             $table->boolean('taxable')->default(true);
             $table->boolean('disabled')->default(false);
+            $table->unsignedDecimal('stock', '65', 30)->default(0);
             $table->unsignedInteger('stock_reminder')->default(0);
             $table->unsignedInteger('unit_default')->nullable();
             $table->unsignedInteger('unit_default_purchase')->nullable();

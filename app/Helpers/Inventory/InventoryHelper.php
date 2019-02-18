@@ -4,6 +4,7 @@ namespace App\Helpers\Inventory;
 
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
+use App\Model\Master\Item;
 
 class InventoryHelper
 {
@@ -47,12 +48,22 @@ class InventoryHelper
     public static function increase($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee)
     {
         $itemReference->quantity = abs($itemReference->quantity);
+
+        $item = Item::find($itemReference->item_id)->first();
+        $item->stock += $itemReference->quantity;
+        $item->save();
+
         self::insert($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee);
     }
 
     public static function decrease($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee)
     {
         $itemReference->quantity = abs($itemReference->quantity) * -1;
+
+        $item = Item::find($itemReference->item_id)->first();
+        $item->stock += $itemReference->quantity;
+        $item->save();
+
         self::insert($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee);
     }
 

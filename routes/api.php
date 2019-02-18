@@ -38,6 +38,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         require base_path('routes/api/finance.php');
         require base_path('routes/api/accounting.php');
         require base_path('routes/api/human-resource.php');
+        require base_path('routes/api/inventory.php');
 
         // Plugin
         require base_path('routes/api/plugin/scale-weight.php');

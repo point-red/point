@@ -39,7 +39,10 @@ class PurchaseTest extends TestCase
         );
 
         $purchaseRequest = $this->createPurchaseRequest($employee, $supplier, $items);
-        $this->createPurchaseOrder($purchaseRequest);
+        log_object($purchaseRequest);
+        $purchaseOrder = $this->createPurchaseOrder($purchaseRequest);
+        log_object($purchaseOrder);
+        $purchaseReceive = $this->createPurchaseReceive($purchaseOrder);
     }
 
     private function createPurchaseRequest($employee, $supplier, $items)
@@ -49,6 +52,8 @@ class PurchaseTest extends TestCase
             'supplier_id' => $supplier->id,
             'date' => date('Y-m-d'),
             'required_date' => date('Y-m-d'),
+            'type_of_tax' => 'exclude',
+            'number' => 'PR{y}{m}{increment=4}',
             'items' => [
                 [
                     'item_id' => $items[0]->id,
@@ -56,7 +61,7 @@ class PurchaseTest extends TestCase
                     'unit' => 'pcs',
                     'converter' => 1,
                     'price' => 1000,
-                    'description' => 'Test',
+                    'notes' => 'Test',
                 ],
                 [
                     'item_id' => $items[0]->id,
@@ -64,7 +69,7 @@ class PurchaseTest extends TestCase
                     'unit' => 'pcs',
                     'converter' => 1,
                     'price' => 2000,
-                    'description' => 'Test',
+                    'notes' => 'Test',
                 ],
                 [
                     'item_id' => $items[0]->id,
@@ -72,7 +77,7 @@ class PurchaseTest extends TestCase
                     'unit' => 'pcs',
                     'converter' => 1,
                     'price' => 3000,
-                    'description' => 'Test',
+                    'notes' => 'Test',
                 ],
             ],
         ];
@@ -101,6 +106,7 @@ class PurchaseTest extends TestCase
             'supplier_id' => $purchaseRequest['supplier_id'],
             'date' => date('Y-m-d'),
             'required_date' => date('Y-m-d'),
+            'number' => 'PO{y}{m}{increment=4}',
             'items' => [
                 [
                     'purchase_request_item_id' => $purchaseRequest['items'][0]['id'],
@@ -109,7 +115,8 @@ class PurchaseTest extends TestCase
                     'unit' => $purchaseRequest['items'][0]['unit'],
                     'converter' => $purchaseRequest['items'][0]['converter'],
                     'price' => $purchaseRequest['items'][0]['price'],
-                    'description' => $purchaseRequest['items'][0]['description'],
+                    'discount_value' => 0,
+                    'notes' => $purchaseRequest['items'][0]['notes'],
                 ],
                 [
                     'purchase_request_item_id' => $purchaseRequest['items'][1]['id'],
@@ -118,7 +125,8 @@ class PurchaseTest extends TestCase
                     'unit' => $purchaseRequest['items'][1]['unit'],
                     'converter' => $purchaseRequest['items'][1]['converter'],
                     'price' => $purchaseRequest['items'][1]['price'],
-                    'description' => $purchaseRequest['items'][1]['description'],
+                    'discount_value' => 0,
+                    'notes' => $purchaseRequest['items'][1]['notes'],
                 ],
                 [
                     'purchase_request_item_id' => $purchaseRequest['items'][2]['id'],
@@ -127,13 +135,66 @@ class PurchaseTest extends TestCase
                     'unit' => $purchaseRequest['items'][2]['unit'],
                     'converter' => $purchaseRequest['items'][2]['converter'],
                     'price' => $purchaseRequest['items'][2]['price'],
-                    'description' => $purchaseRequest['items'][2]['description'],
+                    'discount_value' => 0,
+                    'notes' => $purchaseRequest['items'][2]['notes'],
                 ],
             ],
         ];
 
         // API Request
         $response = $this->json('POST', 'api/v1/purchase/purchase-orders', $data, [$this->headers]);
+
+        // Check Status Response
+        $response->assertStatus(201);
+
+        // Check Database
+        $this->assertDatabaseHas('forms', $response->json('data')['form'], 'tenant');
+
+        return $response->json('data');
+    }
+
+    private function createPurchaseReceive($purchaseOrder)
+    {
+        $data = [
+            'purchase_order_id' => $purchaseOrder['id'],
+            'supplier_id' => $purchaseOrder['supplier_id'],
+            'warehouse_id' => 1,
+            'date' => date('Y-m-d'),
+            'required_date' => date('Y-m-d'),
+            'number' => 'POR{y}{m}{increment=4}',
+            'items' => [
+                [
+                    'purchase_order_item_id' => $purchaseOrder['items'][0]['id'],
+                    'item_id' => $purchaseOrder['items'][0]['item_id'],
+                    'quantity' => $purchaseOrder['items'][0]['quantity'],
+                    'unit' => $purchaseOrder['items'][0]['unit'],
+                    'converter' => $purchaseOrder['items'][0]['converter'],
+                    'price' => $purchaseOrder['items'][0]['price'],
+                    'notes' => $purchaseOrder['items'][0]['notes'],
+                ],
+                [
+                    'purchase_order_item_id' => $purchaseOrder['items'][1]['id'],
+                    'item_id' => $purchaseOrder['items'][1]['item_id'],
+                    'quantity' => $purchaseOrder['items'][1]['quantity'],
+                    'unit' => $purchaseOrder['items'][1]['unit'],
+                    'converter' => $purchaseOrder['items'][1]['converter'],
+                    'price' => $purchaseOrder['items'][1]['price'],
+                    'notes' => $purchaseOrder['items'][1]['notes'],
+                ],
+                [
+                    'purchase_order_item_id' => $purchaseOrder['items'][2]['id'],
+                    'item_id' => $purchaseOrder['items'][2]['item_id'],
+                    'quantity' => $purchaseOrder['items'][2]['quantity'],
+                    'unit' => $purchaseOrder['items'][2]['unit'],
+                    'converter' => $purchaseOrder['items'][2]['converter'],
+                    'price' => $purchaseOrder['items'][2]['price'],
+                    'notes' => $purchaseOrder['items'][2]['notes'],
+                ],
+            ],
+        ];
+
+        // API Request
+        $response = $this->json('POST', 'api/v1/purchase/purchase-receives', $data, [$this->headers]);
 
         // Check Status Response
         $response->assertStatus(201);

@@ -7,23 +7,23 @@ use App\Model\Inventory\Inventory;
 
 class InventoryHelper
 {
-    public static function insert($item, $totalAmount, $additionalFee, $form_id, $warehouse_id)
+    public static function insert($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee)
     {
         // TODO: Check if quantity is 0 then is not allowed
 
-        $lastInventory = self::getLastReference($item->item_id, $warehouse_id);
+        $lastInventory = self::getLastReference($itemReference->item_id, $warehouseId);
 
         $inventory = new Inventory;
-        $inventory->form_id = $form_id;
-        $inventory->warehouse_id = $warehouse_id;
-        $inventory->item_id = $item->item_id;
-        $inventory->quantity = $item->quantity;
+        $inventory->form_id = $formId;
+        $inventory->warehouse_id = $warehouseId;
+        $inventory->item_id = $itemReference->item_id;
+        $inventory->quantity = $itemReference->quantity;
 
-        $subtotal = ($item->price - $item->discount_value) * $item->quantity;
-        $itemAdditionalFee = $subtotal / $totalAmount * $additionalFee;
-        $inventory->price = $itemAdditionalFee / $item->quantity + $item->price - $item->discount_value;
+        $subtotal = ($itemReference->price - $itemReference->discount_value) * $itemReference->quantity;
+        $itemReferenceAdditionalFee = $subtotal / $totalAmount * $additionalFee;
+        $inventory->price = $itemReferenceAdditionalFee / $itemReference->quantity + $itemReference->price - $itemReference->discount_value;
 
-        $inventory->total_quantity = $item->quantity;
+        $inventory->total_quantity = $itemReference->quantity;
 
         $lastTotalValue = 0;
         if ($lastInventory) {
@@ -31,8 +31,8 @@ class InventoryHelper
             $lastTotalValue = $lastInventory->total_value;
         }
         // increase stock
-        if ($item->quantity > 0) {
-            $inventory->total_value = $item->quantity * $inventory->price + $lastTotalValue;
+        if ($itemReference->quantity > 0) {
+            $inventory->total_value = $itemReference->quantity * $inventory->price + $lastTotalValue;
         }
         // decrease stock
         else {
@@ -49,15 +49,15 @@ class InventoryHelper
      * Get last reference from inventory
      * Usually we will used it for get last stock or value of some item in warehouse
      *
-     * @param $item_id
-     * @param $warehouse_id
+     * @param $itemId
+     * @param $warehouseId
      * @return mixed
      */
-    private static function getLastReference($item_id, $warehouse_id)
+    private static function getLastReference($itemId, $warehouseId)
     {
         return Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
-            ->where('item_id', $item_id)
-            ->where('warehouse_id', $warehouse_id)
+            ->where('item_id', $itemId)
+            ->where('warehouse_id', $warehouseId)
             ->orderBy('date', 'DESC')
             ->first();
     }

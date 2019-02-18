@@ -121,8 +121,8 @@ class PurchaseRequest extends TransactionModel
         $purchaseRequest->amount = $amount;
         $purchaseRequest->save();
 
-        $purchaseRequest->items()->saveMany($array);
-        $purchaseRequest->services()->saveMany($array);
+        $purchaseRequest->items()->saveMany($purchaseRequestItems);
+        $purchaseRequest->services()->saveMany($purchaseRequestServices);
 
         $form = new Form;
         $form->fillData($data, $purchaseRequest);

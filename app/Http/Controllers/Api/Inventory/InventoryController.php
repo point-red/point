@@ -20,7 +20,10 @@ class InventoryController extends Controller
     {
         $inventories = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
             ->where('item_id', $request->get('item_id'))
-            ->whereBetween('forms.date', [$request->get('date_from'), $request->get('date_to')]);
+            ->whereBetween('forms.date', [$request->get('date_from'), $request->get('date_to')])
+            ->select(Inventory::getTableName('*'))
+            ->with('form')
+            ->with('item');
 
         $inventories = $inventories->paginate(100);
 

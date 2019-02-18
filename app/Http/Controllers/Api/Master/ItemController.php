@@ -32,6 +32,10 @@ class ItemController extends Controller
                 ->where('groupables.group_id', '=', 1);
         }
 
+        if ($request->get('below_stock_reminder') == true) {
+            $items = $items->whereRaw('items.stock < items.stock_reminder');
+        }
+
         $items = pagination($items, $request->get('limit'));
 
         return new ApiCollection($items);

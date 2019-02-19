@@ -18,12 +18,12 @@ class KpiTemplateExportController extends Controller
       $request->validate([
         'id' => 'required|integer'
       ]);
-      // return (new KpiTemplateExport(1))->download('KPI_export.xlsx');
+      $kpiTemplate = KpiTemplate::where('id', $request->id)->first();
 
       $tenant = strtolower($request->header('Tenant'));
       $key = str_random(16);
       $fileName = strtoupper($tenant)
-          . ' - KPI Template Export - ';
+          . ' - KPI Template Export - ' . $kpiTemplate->name;
       $fileExt = 'xlsx';
       $path = 'tmp/' . $tenant . '/' . $key . '.' . $fileExt;
       $result = Excel::store(new KpiTemplateExport($request->get('id')), $path, env('STORAGE_DISK'));

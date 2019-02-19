@@ -31,24 +31,32 @@ class KpiTemplateImportController extends Controller
             $response = $this->import($file);
             return $response;
         } else {
-            \Session::put('saveImport', $file);
-            return response()->json('ada', 200);
+            return response()->json([
+              'message' => 'exist',
+              'replace' => $exist->id,
+              'name'    => $exist->name
+            ], 200);
         }
     }
 
     public function import($file = null)
     {
-        if ($file == null) {
-          $file = \Session::get('saveImport');
+      $data = request()->file('file');
+        if (isset($data)) {
+            $file = $data;
+
+            if (isset(request()->replace)) {
+              $kpiTemplate = KpiTemplate::where('id', request()->replace)->first();
+              $kpiTemplate->delete();
+            }
         }
-
-        // dd($file. \Session::get('saveImport'));
-
         $import = new KpiTemplateImport();
         // $import->onlySheets(['Kpi Template', 'Kpi Template Group']);
 
         if (Excel::import($import, $file)) {
-            return response()->json('ok', 200);
+            return response()->json([
+              'message' => 'success'
+            ], 200);
         }
     }
 

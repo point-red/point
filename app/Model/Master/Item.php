@@ -22,9 +22,9 @@ class Item extends MasterModel
     ];
 
     protected $casts = [
-        'total_quantity' => 'double',
-        'total_value' => 'double',
-        'cogs' => 'double'
+        'stock' => 'double',
+        'stock_reminder' => 'double',
+        'cogs' => 'double',
     ];
 
     /**

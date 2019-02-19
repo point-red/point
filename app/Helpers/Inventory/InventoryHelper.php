@@ -8,7 +8,7 @@ use App\Model\Master\Item;
 
 class InventoryHelper
 {
-    private static function insert($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee)
+    private static function insert($formId, $warehouseId, $itemReference, $price = null)
     {
         // TODO: Check if quantity is 0 then is not allowed
         $lastInventory = self::getLastReference($itemReference->item_id, $warehouseId);
@@ -18,11 +18,7 @@ class InventoryHelper
         $inventory->warehouse_id = $warehouseId;
         $inventory->item_id = $itemReference->item_id;
         $inventory->quantity = $itemReference->quantity;
-
-        $subtotal = ($itemReference->price - $itemReference->discount_value) * $itemReference->quantity;
-        $itemReferenceAdditionalFee = $subtotal / $totalAmount * $additionalFee;
-        $inventory->price = $itemReferenceAdditionalFee / $itemReference->quantity + $itemReference->price - $itemReference->discount_value;
-
+        $inventory->price = $price ?? $itemReference->price;
         $inventory->total_quantity = $itemReference->quantity;
 
         $lastTotalValue = 0;
@@ -49,22 +45,22 @@ class InventoryHelper
     {
         $itemReference->quantity = abs($itemReference->quantity);
 
-        $item = Item::find($itemReference->item_id)->first();
-        $item->stock += $itemReference->quantity;
-        $item->save();
+        Item::where('id', $itemReference->item_id)->increment('stock', $itemReference->quantity);
 
-        self::insert($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee);
+        $subtotal = ($itemReference->price - $itemReference->discount_value) * $itemReference->quantity;
+        $itemReferenceAdditionalFee = $subtotal / $totalAmount * $additionalFee;
+        $price = $itemReferenceAdditionalFee / $itemReference->quantity + $itemReference->price - $itemReference->discount_value;
+
+        self::insert($formId, $warehouseId, $itemReference, $price);
     }
 
-    public static function decrease($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee)
+    public static function decrease($formId, $warehouseId, $itemReference)
     {
-        $itemReference->quantity = abs($itemReference->quantity) * -1;
+        $itemReference->quantity = -abs($itemReference->quantity);
 
-        $item = Item::find($itemReference->item_id)->first();
-        $item->stock += $itemReference->quantity;
-        $item->save();
+        Item::where('id', $itemReference->item_id)->increment('stock', $itemReference->quantity);
 
-        self::insert($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee);
+        self::insert($formId, $warehouseId, $itemReference);
     }
 
     /**

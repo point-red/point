@@ -23,8 +23,6 @@ class UpdateEmployeesTable extends Migration
             $table->double('daily_transport_allowance');
             $table->double('tl_allowance');
             $table->double('communication_allowance');
-            $table->double('bpjs_ketenagakerjaan');
-            $table->double('bpjs_kesehatan');
         });
 
         // Rearrange
@@ -35,8 +33,6 @@ class UpdateEmployeesTable extends Migration
         DB::statement('ALTER TABLE employees MODIFY COLUMN daily_transport_allowance DOUBLE AFTER multiplier_kpi');
         DB::statement('ALTER TABLE employees MODIFY COLUMN tl_allowance DOUBLE AFTER daily_transport_allowance');
         DB::statement('ALTER TABLE employees MODIFY COLUMN communication_allowance DOUBLE AFTER tl_allowance');
-        DB::statement('ALTER TABLE employees MODIFY COLUMN bpjs_ketenagakerjaan DOUBLE AFTER communication_allowance');
-        DB::statement('ALTER TABLE employees MODIFY COLUMN bpjs_kesehatan DOUBLE AFTER bpjs_ketenagakerjaan');
 
         Schema::table('employees', function (Blueprint $table) {
             // Relationship
@@ -61,8 +57,6 @@ class UpdateEmployeesTable extends Migration
             $table->dropColumn('daily_transport_allowance');
             $table->dropColumn('tl_allowance');
             $table->dropColumn('communication_allowance');
-            $table->dropColumn('bpjs_ketenagakerjaan');
-            $table->dropColumn('bpjs_kesehatan');
         });
     }
 }

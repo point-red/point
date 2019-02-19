@@ -95,8 +95,6 @@ class EmployeeController extends Controller
         $employee->daily_transport_allowance = $request->get('daily_transport_allowance');
         $employee->tl_allowance = $request->get('tl_allowance');
         $employee->communication_allowance = $request->get('communication_allowance');
-        $employee->bpjs_ketenagakerjaan = $request->get('bpjs_ketenagakerjaan');
-        $employee->bpjs_kesehatan = $request->get('bpjs_kesehatan');
         $employee->save();
 
         for ($i = 0; $i < count($request->get('addresses')); $i++) {
@@ -236,8 +234,6 @@ class EmployeeController extends Controller
         $employee->daily_transport_allowance = $request->get('daily_transport_allowance');
         $employee->tl_allowance = $request->get('tl_allowance');
         $employee->communication_allowance = $request->get('communication_allowance');
-        $employee->bpjs_ketenagakerjaan = $request->get('bpjs_ketenagakerjaan');
-        $employee->bpjs_kesehatan = $request->get('bpjs_kesehatan');
         $employee->save();
 
         $deleteAddresses = array_column($request->get('addresses'), 'id');

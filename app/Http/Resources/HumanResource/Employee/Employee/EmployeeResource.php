@@ -51,8 +51,6 @@ class EmployeeResource extends JsonResource
             'daily_transport_allowance' => $this->daily_transport_allowance,
             'tl_allowance' => $this->tl_allowance,
             'communication_allowance' => $this->communication_allowance,
-            'bpjs_ketenagakerjaan' => $this->bpjs_ketenagakerjaan,
-            'bpjs_kesehatan' => $this->bpjs_kesehatan,
             'base_salaries' => $this->baseSalaries,
         ];
     }

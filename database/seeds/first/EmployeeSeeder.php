@@ -32,5 +32,19 @@ class EmployeeSeeder extends Seeder
                 'name' => $genders[$i]
             ]);
         }
+
+        $statuses = ['OS', 'NON OS'];
+        for ($i = 0; $i < count($statuses); $i++) {
+            DB::connection('tenant')->table('employee_statuses')->insert([
+                'name' => $statuses[$i]
+            ]);
+        }
+
+        $jobLocations = ['Surabaya', 'Sidoarjo', 'Gresik', 'Situbondo', 'Banyuwangi', 'Bojonegoro', 'Jember', 'Malang', 'Mojokerto', 'Gorontalo', 'Lamongan', 'Blitar', 'Kediri'];
+        for ($i = 0; $i < count($jobLocations); $i++) {
+            DB::connection('tenant')->table('employee_job_locations')->insert([
+                'name' => $jobLocations[$i]
+            ]);
+        }
     }
 }

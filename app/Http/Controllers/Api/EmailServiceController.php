@@ -24,10 +24,10 @@ class EmailServiceController extends Controller
             ->first();
 
         // doesn't allow send custom email with default mail ...@point.red
-        if (!$project->preference) {
+        if (!$project || !$project->preference) {
             return response()->json([
                 'message' => 'Cannot send custom email from default email address'
-            ]);
+            ], 422);
         }
 
         Mail::send([], [], function ($message) use ($request) {
@@ -43,6 +43,29 @@ class EmailServiceController extends Controller
             }
             $message->subject($request->get('subject'));
             $message->setBody($request->get('body'), 'text/html');
+
+            $attachments = $request->get('attachments') ?? [];
+            
+            foreach ($attachments as $key => $attachment) {
+                // TODO validation attachment attributes
+                // type = ['pdf', 'xls']
+                // orientation = ['portrait', 'landscape']
+                if ($attachment['type'] === 'pdf') {
+                    $message->attachData($this->attachPDF($attachment), $attachment['filename'] ?? 'untitled.pdf');
+                }
+                // TODO excel attachment
+            }
         });
+    }
+
+    private function attachPDF($config) {
+        // $pdf = PDF::loadHTML($config['html']) don't know why doesn't work 
+        // https://github.com/barryvdh/laravel-dompdf#using
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($config['html'])
+            ->setPaper($config->paper ?? 'a4', $config->orientation ?? 'portrait')
+            ->setWarnings(false);
+
+        return $pdf->output();
     }
 }

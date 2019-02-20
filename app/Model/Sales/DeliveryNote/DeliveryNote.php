@@ -7,6 +7,7 @@ use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\TransactionModel;
+use App\Helpers\Inventory\InventoryHelper;
 
 class DeliveryNote extends TransactionModel
 {
@@ -88,6 +89,8 @@ class DeliveryNote extends TransactionModel
             $deliveryNoteItem->taxable = $deliveryOrderItem->taxable;
             $deliveryNoteItem->allocation_id = $deliveryOrderItem->allocation_id;
             array_push($array, $deliveryNoteItem);
+
+            InventoryHelper::decrease($form->id, $deliveryNote->warehouse_id, $deliveryNoteItem);
         }
         $deliveryNote->items()->saveMany($array);
 

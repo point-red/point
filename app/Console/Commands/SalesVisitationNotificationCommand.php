@@ -106,7 +106,7 @@ class SalesVisitationNotificationCommand extends Command
                 $userEmails = [];
                 foreach ($all_user as $user) {
                     if (($user->hasPermissionTo("notification pin point sales") && $data->id == $user->id)) {
-                        info($user->email);
+                        $this->line($user->email);
                         array_push($userEmails, $user->email);
                     }
                 }

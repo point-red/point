@@ -5,6 +5,7 @@ namespace App\Model\Inventory\InventoryAudit;
 use App\Model\Form;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
+use Illuminate\Http\Request;
 
 class InventoryAudit extends TransactionModel
 {
@@ -27,8 +28,27 @@ class InventoryAudit extends TransactionModel
         return $this->hasMany(InventoryAuditItem::class);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        // TODO: save inventory audit
+        $inventoryAudit = new InventoryAudit;
+        $inventoryAudit->warehouse_id = $request->get('warehouse_id');
+        $inventoryAudit->save();
+
+        $form = new Form;
+        $form->fillData($request, $inventoryAudit);
+
+        $items = $request->get('items');
+        $inventoryAuditItems = [];
+        foreach ($items as $key => $item) {
+            // TODO validation $item
+            $inventoryAuditItem = new InventoryAuditItem;
+            $inventoryAuditItem->fill($item);
+
+            array_push($inventoryAuditItems, $inventoryAuditItem);
+        }
+
+        $inventoryAudit->items()->createMany($inventoryAuditItems);
+
+        return $inventoryAudit->load('form');
     }
 }

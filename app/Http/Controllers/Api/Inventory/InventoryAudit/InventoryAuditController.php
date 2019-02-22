@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\Inventory\InventoryAudit;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Inventory\InventoryAudit\InventoryAudit;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 class InventoryAuditController extends Controller
@@ -16,10 +16,9 @@ class InventoryAuditController extends Controller
      *
      * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
         $inventoryAudits = InventoryAudit::eloquentFilter($request)
-            ->select(InventoryAudit::getTableName('*'))
             ->joinForm()
             ->notArchived()
             ->with('form');

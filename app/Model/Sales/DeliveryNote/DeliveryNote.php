@@ -2,12 +2,13 @@
 
 namespace App\Model\Sales\DeliveryNote;
 
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
 use App\Model\Master\Customer;
+use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\TransactionModel;
-use App\Helpers\Inventory\InventoryHelper;
 
 class DeliveryNote extends TransactionModel
 {
@@ -22,6 +23,14 @@ class DeliveryNote extends TransactionModel
         'delivery_order_id',
         'driver',
         'license_plate',
+        'customer_id',
+        'customer_name',
+        'billing_address',
+        'billing_phone',
+        'billing_email',
+        'shipping_address',
+        'shipping_phone',
+        'shipping_email',
     ];
 
     public $defaultNumberPrefix = 'DN';
@@ -53,19 +62,30 @@ class DeliveryNote extends TransactionModel
 
     public static function create($data)
     {
-        $deliveryOrder = DeliveryOrder::findOrFail($data['delivery_order_id']);
-        // TODO add check if $deliveryOrder is canceled / rejected / archived
-
         $deliveryNote = new self;
         $deliveryNote->fill($data);
-        $deliveryNote->customer_id = $deliveryOrder->customer_id;
-        $deliveryNote->customer_name = $deliveryOrder->customer_name;
-        $deliveryNote->billing_address = $deliveryOrder->billing_address;
-        $deliveryNote->billing_phone = $deliveryOrder->billing_phone;
-        $deliveryNote->billing_email = $deliveryOrder->billing_email;
-        $deliveryNote->shipping_address = $deliveryOrder->shipping_address;
-        $deliveryNote->shipping_phone = $deliveryOrder->shipping_phone;
-        $deliveryNote->shipping_email = $deliveryOrder->shipping_email;
+
+        if (!empty($data['delivery_order_id'])) {
+            $deliveryOrder = DeliveryOrder::findOrFail($data['delivery_order_id']);
+            // TODO add check if $deliveryOrder is canceled / rejected / archived
+
+            $deliveryNote->customer_id = $deliveryOrder->customer_id;
+            $deliveryNote->customer_name = $deliveryOrder->customer_name;
+            $deliveryNote->billing_address = $deliveryOrder->billing_address;
+            $deliveryNote->billing_phone = $deliveryOrder->billing_phone;
+            $deliveryNote->billing_email = $deliveryOrder->billing_email;
+            $deliveryNote->shipping_address = $deliveryOrder->shipping_address;
+            $deliveryNote->shipping_phone = $deliveryOrder->shipping_phone;
+            $deliveryNote->shipping_email = $deliveryOrder->shipping_email;
+
+            $deliveryOrderItems = $deliveryOrder->items->keyBy('id');
+        }
+
+        if (empty($data['customer_name'])) {
+            $customer = Customer::find($data['customer_id']);
+            $deliveryNote->customer_name = $customer->name;
+        }
+
         $deliveryNote->save();
 
         $form = new Form;
@@ -74,27 +94,36 @@ class DeliveryNote extends TransactionModel
         // TODO items is required and must be array
         $array = [];
         $items = $data['items'];
-
-        $deliveryOrderItems = $deliveryOrder->items->keyBy('id');
+        if (empty($data['delivery_order_id'])) {
+            $itemIds = array_column($data['items'], 'item_id');
+            $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
+        }
 
         foreach ($items as $item) {
-            $deliveryOrderItem = $deliveryOrderItems[$item['delivery_order_item_id']];
-
             $deliveryNoteItem = new DeliveryNoteItem;
             $deliveryNoteItem->fill($item);
-            $deliveryNoteItem->item_name = $deliveryOrderItem->item_name;
-            $deliveryNoteItem->price = $deliveryOrderItem->price;
-            $deliveryNoteItem->discount_percent = $deliveryOrderItem->discount_percent;
-            $deliveryNoteItem->discount_value = $deliveryOrderItem->discount_value;
-            $deliveryNoteItem->taxable = $deliveryOrderItem->taxable;
-            $deliveryNoteItem->allocation_id = $deliveryOrderItem->allocation_id;
-            array_push($array, $deliveryNoteItem);
 
+            if (!empty($data['delivery_order_id'])) {
+                $deliveryOrderItem = $deliveryOrderItems[$item['delivery_order_item_id']];
+
+                $deliveryNoteItem->item_name = $deliveryOrderItem->item_name;
+                $deliveryNoteItem->price = $deliveryOrderItem->price;
+                $deliveryNoteItem->discount_percent = $deliveryOrderItem->discount_percent;
+                $deliveryNoteItem->discount_value = $deliveryOrderItem->discount_value;
+                $deliveryNoteItem->taxable = $deliveryOrderItem->taxable;
+                $deliveryNoteItem->allocation_id = $deliveryOrderItem->allocation_id;
+            }
+            else {
+                $deliveryNoteItem->item_name = $dbItems[$item['item_id']]->name;
+            }
+            array_push($array, $deliveryNoteItem);
             InventoryHelper::decrease($form->id, $deliveryNote->warehouse_id, $deliveryNoteItem);
         }
         $deliveryNote->items()->saveMany($array);
 
-        $deliveryOrder->updateIfDone();
+        if (!empty($data['delivery_order_id'])) {
+            $deliveryOrder->updateIfDone();
+        }
 
         return $deliveryNote;
     }

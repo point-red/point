@@ -57,6 +57,7 @@ class PurchaseInvoice extends TransactionModel
 
     /**
      * Get the invoice's payment.
+     * P.S This will run query for each invoice
      */
     public function payments()
     {
@@ -66,6 +67,7 @@ class PurchaseInvoice extends TransactionModel
             ->active();
     }
 
+    // TODO finish this logic
     public function getRemainingAmountAttribute()
     {
         return $this->amount;
@@ -118,6 +120,7 @@ class PurchaseInvoice extends TransactionModel
             foreach ($purchaseReceive->items as $purchaseReceiveItem) {
                 $itemId = $purchaseReceiveItem->item_id;
                 $item = $items[$itemId];
+                $price = $item['price'] ?? $item['purchase_price'];
 
                 array_push($purchaseInvoiceItems, array(
                     'purchase_receive_id' => $purchaseReceiveItem->purchase_receive_id,
@@ -127,15 +130,15 @@ class PurchaseInvoice extends TransactionModel
                     'quantity' => $purchaseReceiveItem->quantity,
                     'unit' => $purchaseReceiveItem->unit,
                     'converter' => $purchaseReceiveItem->converter,
-                    'price' => $item['price'],
+                    'price' => $price,
                     'discount_percent' => $item['discount_percent'] ?? null,
                     'discount_value' => $item['discount_value'] ?? 0,
-                    'taxable' => $item['taxable'],
+                    'taxable' => $item['taxable'] ?? 1,
                     'notes' => $item['notes'] ?? null,
                     'allocation_id' => $item['allocation_id'] ?? null,
                 ));
 
-                $amount += $purchaseReceiveItem->quantity * ($item['price'] - $item['discount_value'] ?? 0);
+                $amount += $purchaseReceiveItem->quantity * ($price - ($item['discount_value'] ?? 0));
             }
 
             foreach ($purchaseReceive->services as $purchaseReceiveService) {

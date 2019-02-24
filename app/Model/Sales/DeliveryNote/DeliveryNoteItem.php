@@ -22,6 +22,12 @@ class DeliveryNoteItem extends TransactionModel
         'unit',
         'converter',
         'notes',
+        'price',
+        'discount_percent',
+        'discount_value',
+        'taxable',
+        'allocation_id',
+        'sell_price',
     ];
 
     protected $casts = [
@@ -43,5 +49,11 @@ class DeliveryNoteItem extends TransactionModel
     public function allocation()
     {
         return $this->belongsTo(Allocation::class);
+    }
+
+    // For TransactionController
+    public function setSellPriceAttribute($value)
+    {
+        $this->attributes['price'] = $value;
     }
 }

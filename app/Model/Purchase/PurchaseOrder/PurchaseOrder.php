@@ -48,7 +48,7 @@ class PurchaseOrder extends TransactionModel
         'tax' => 'double',
     ];
 
-    protected $defaultNumberPrefix = 'PO';
+    public $defaultNumberPrefix = 'PO';
 
     public function form()
     {

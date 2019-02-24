@@ -21,7 +21,7 @@ class SalesQuotation extends TransactionModel
         'amount' => 'double',
     ];
 
-    protected $defaultNumberPrefix = 'SQ';
+    public $defaultNumberPrefix = 'SQ';
 
     public function form()
     {

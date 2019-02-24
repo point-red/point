@@ -33,7 +33,7 @@ class SalesInvoice extends TransactionModel
         'tax' => 'double',
     ];
 
-    protected $defaultNumberPrefix = 'INVOICE';
+    public $defaultNumberPrefix = 'INVOICE';
 
     public function form()
     {

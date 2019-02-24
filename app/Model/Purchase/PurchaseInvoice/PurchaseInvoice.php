@@ -33,7 +33,7 @@ class PurchaseInvoice extends TransactionModel
         'discount_value' => 'double',
     ];
 
-    protected $defaultNumberPrefix = 'PI';
+    public $defaultNumberPrefix = 'PI';
 
     public function form()
     {

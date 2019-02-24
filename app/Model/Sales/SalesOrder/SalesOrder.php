@@ -42,7 +42,7 @@ class SalesOrder extends TransactionModel
         'tax' => 'double',
     ];
 
-    protected $defaultNumberPrefix = 'SO';
+    public $defaultNumberPrefix = 'SO';
 
     public function form()
     {

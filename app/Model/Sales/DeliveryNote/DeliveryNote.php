@@ -24,7 +24,7 @@ class DeliveryNote extends TransactionModel
         'license_plate',
     ];
 
-    protected $defaultNumberPrefix = 'DN';
+    public $defaultNumberPrefix = 'DN';
 
     public function form()
     {

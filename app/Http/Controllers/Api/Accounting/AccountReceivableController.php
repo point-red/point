@@ -23,12 +23,12 @@ class AccountReceivableController extends Controller
         $journalPayments = $this->getJournalPayments($accounts);
 
         $journals = Journal::leftJoinSub($journalPayments, 'journal_payment', function ($join) {
-            $join->on('journals.form_number', '=', 'journal_payment.form_number_reference');
+            $join->on('journals.form_id', '=', 'journal_payment.form_id_reference');
         })->selectRaw('SUM(debit) as debit')
-            ->addSelect('journals.date', 'journals.form_number', 'journal_payment.credit')
+            ->addSelect('journals.date', 'journals.form_id', 'journal_payment.credit')
             ->whereIn('chart_of_account_id', $accounts)
             ->where('debit', '>', 0)
-            ->groupBy('form_number');
+            ->groupBy('form_id');
 
         // Filter Status | null = all / settled / unsettled
         $journals = $this->filterStatus($journals, $request->get('status'));
@@ -72,9 +72,9 @@ class AccountReceivableController extends Controller
     private function getJournalPayments($accounts)
     {
         return Journal::selectRaw('SUM(credit) as credit')
-            ->addSelect('form_number_reference')
+            ->addSelect('form_id_reference')
             ->whereIn('chart_of_account_id', $accounts)
             ->where('credit', '>', 0)
-            ->groupBy('form_number_reference');
+            ->groupBy('form_id_reference');
     }
 }

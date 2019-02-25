@@ -11,6 +11,11 @@ class Journal extends PointModel
 
     protected $table = 'journals';
 
+    protected $casts = [
+        'credit' => 'double',
+        'debit' => 'double',
+    ];
+
     /**
      * The form that belong to the journal.
      */

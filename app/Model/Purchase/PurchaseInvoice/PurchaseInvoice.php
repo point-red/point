@@ -34,6 +34,8 @@ class PurchaseInvoice extends TransactionModel
         'delivery_fee' => 'double',
         'discount_percent' => 'double',
         'discount_value' => 'double',
+        'paid' => 'double',
+        'remaining' => 'double',
     ];
 
     public $defaultNumberPrefix = 'PI';
@@ -56,24 +58,6 @@ class PurchaseInvoice extends TransactionModel
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
-    }
-
-    /**
-     * Get the invoice's payment.
-     * P.S This will run query for each invoice
-     */
-    public function payments()
-    {
-        return $this->morphMany(PaymentDetail::class, 'referenceable')
-            ->join(Payment::getTableName(), Payment::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
-            ->joinForm(Payment::class)
-            ->active();
-    }
-
-    // TODO finish this logic
-    public function getRemainingAmountAttribute()
-    {
-        return $this->amount;
     }
 
     public static function create($data)

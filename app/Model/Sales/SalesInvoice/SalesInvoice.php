@@ -2,8 +2,13 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
+use App\Helpers\Inventory\InventoryHelper;
+use App\Model\Accounting\ChartOfAccountType;
+use App\Model\Accounting\Journal;
 use App\Model\Form;
+use App\Model\Inventory\Inventory;
 use App\Model\Master\Customer;
+use App\Model\Master\Item;
 use App\Model\TransactionModel;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Sales\SalesOrder\SalesOrder;
@@ -196,6 +201,77 @@ class SalesInvoice extends TransactionModel
         $form = new Form;
         $form->fillData($data, $salesInvoice);
 
+        self::updateJournal($salesInvoice);
+
         return $salesInvoice;
+    }
+
+    private static function updateJournal($salesInvoice)
+    {
+        /**
+         * Journal Table
+         * -------------------------------------------
+         * Account                  | Debit | Credit |
+         * -------------------------------------------
+         * 1. Account Receivable    |   v   |        | Master Supplier
+         * 2. Sales Income          |       |   v    |
+         * 3. Inventories           |       |   v    | Master Item
+         * 4. Cogs                  |   v   |        |
+         * 5. Income Tax Payable    |       |   v    |
+         */
+
+        // 1. Account Receivable
+        $journal = new Journal;
+        $journal->form_id = $salesInvoice->form->id;
+        $journal->journalable_type = Customer::class;
+        $journal->journalable_id = $salesInvoice->customer_id;
+        $journal->chart_of_account_id = ChartOfAccountType::where('name', 'account receivable')->first()->accounts->first()->id;
+        $journal->debit = $salesInvoice->amount;
+        $journal->save();
+
+        // 2. Sales Income
+        $journal = new Journal;
+        $journal->form_id = $salesInvoice->form->id;
+        $journal->chart_of_account_id = ChartOfAccountType::where('name', 'sales income')->first()->accounts->first()->id;
+        $journal->credit = $salesInvoice->amount;
+        $journal->save();
+
+        foreach ($salesInvoice->items as $salesItem) {
+
+            $inventory = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
+                ->where('item_id', $salesItem->item_id)
+                ->whereBetween(Form::getTableName('date'), [$salesInvoice->form->date, $salesInvoice->form->date])
+                ->select(Inventory::getTableName('*'))
+                ->orderBy(Form::getTableName('date'), 'desc')
+                ->with('form')
+                ->first();
+
+            $cogs = $inventory->cogs;
+
+            // 3. Inventories
+            $journal = new Journal;
+            $journal->form_id = $salesInvoice->form->id;
+            $journal->journalable_type = Item::class;
+            $journal->journalable_id = $salesItem->item_id;
+            $journal->chart_of_account_id = ChartOfAccountType::where('name','inventory')->first()->accounts->first()->id;;
+            $journal->credit = $cogs;
+            $journal->save();
+
+            // 4. Cogs
+            $journal = new Journal;
+            $journal->form_id = $salesInvoice->form->id;
+            $journal->journalable_type = Item::class;
+            $journal->journalable_id = $salesItem->item_id;
+            $journal->chart_of_account_id = ChartOfAccountType::where('name','inventory')->first()->accounts->first()->id;;
+            $journal->credit = $cogs;
+            $journal->save();
+        }
+
+        // 5. Income Tax Payable
+        $journal = new Journal;
+        $journal->form_id = $salesInvoice->form->id;
+        $journal->chart_of_account_id = ChartOfAccountType::where('name','other current liability')->first()->accounts->first()->id;;
+        $journal->credit = $salesInvoice->tax;
+        $journal->save();
     }
 }

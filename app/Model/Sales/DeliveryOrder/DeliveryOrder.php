@@ -29,7 +29,7 @@ class DeliveryOrder extends TransactionModel
         'shipping_email',
     ];
 
-    protected $defaultNumberPrefix = 'DO';
+    public $defaultNumberPrefix = 'DO';
 
     public function form()
     {

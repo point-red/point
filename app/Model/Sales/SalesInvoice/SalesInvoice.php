@@ -33,7 +33,7 @@ class SalesInvoice extends TransactionModel
         'tax' => 'double',
     ];
 
-    protected $defaultNumberPrefix = 'INVOICE';
+    public $defaultNumberPrefix = 'INVOICE';
 
     public function form()
     {
@@ -131,6 +131,8 @@ class SalesInvoice extends TransactionModel
                     $itemId = $deliveryNoteItem->item_id;
                     $item = $items[$itemId];
 
+                    $price = $item['price'] ?? $item['sell_price'];
+
                     array_push($salesInvoiceItems, [
                         'delivery_note_id' => $deliveryNoteItem->delivery_note_id,
                         'delivery_note_item_id' => $deliveryNoteItem->id,
@@ -139,15 +141,15 @@ class SalesInvoice extends TransactionModel
                         'quantity' => $deliveryNoteItem->quantity,
                         'unit' => $deliveryNoteItem->unit,
                         'converter' => $deliveryNoteItem->converter,
-                        'price' => $item['price'],
+                        'price' => $price,
                         'discount_percent' => $item['discount_percent'] ?? null,
                         'discount_value' => $item['discount_value'] ?? 0,
-                        'taxable' => $item['taxable'],
+                        'taxable' => $item['taxable'] ?? 1,
                         'notes' => $item['notes'] ?? null,
                         'allocation_id' => $item['allocation_id'] ?? null,
                     ]);
 
-                    $amount += $deliveryNoteItem->quantity * ($item['price'] - $item['discount_value'] ?? 0);
+                    $amount += $deliveryNoteItem->quantity * ($price - ($item['discount_value'] ?? 0));
                 }
             }
         }

@@ -28,7 +28,7 @@ class PurchaseRequest extends TransactionModel
         'amount' => 'double',
     ];
 
-    protected $defaultNumberPrefix = 'PR';
+    public $defaultNumberPrefix = 'PR';
 
     public function form()
     {

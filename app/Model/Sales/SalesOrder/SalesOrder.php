@@ -42,7 +42,7 @@ class SalesOrder extends TransactionModel
         'tax' => 'double',
     ];
 
-    protected $defaultNumberPrefix = 'SO';
+    public $defaultNumberPrefix = 'SO';
 
     public function form()
     {
@@ -142,7 +142,7 @@ class SalesOrder extends TransactionModel
                 $salesOrderItem->item_name = $dbItems[$item['item_id']]->name;
                 array_push($salesOrderItems, $salesOrderItem);
 
-                $amount = $item['quantity'] * ($item['price'] - $item['discount_value'] ?? 0);
+                $amount = $item['quantity'] * ($salesOrderItem->price - ($item['discount_value'] ?? 0));
             }
         }
         else {

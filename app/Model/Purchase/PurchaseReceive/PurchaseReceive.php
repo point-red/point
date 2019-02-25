@@ -4,7 +4,6 @@ namespace App\Model\Purchase\PurchaseReceive;
 
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
-use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
 use App\Model\Master\Service;
 use App\Model\Master\Supplier;
@@ -29,7 +28,7 @@ class PurchaseReceive extends TransactionModel
         'license_plate',
     ];
 
-    protected $defaultNumberPrefix = 'P-RECEIVE';
+    public $defaultNumberPrefix = 'P-RECEIVE';
 
     public function form()
     {
@@ -66,6 +65,9 @@ class PurchaseReceive extends TransactionModel
         $purchaseReceive = new self;
         $purchaseReceive->fill($data);
 
+        $total = 0;
+        $additionalFee = 0;
+
         if (!empty($data['purchase_order_id'])) {
             $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
             $purchaseOrderItems = $purchaseOrder->items->keyBy('id');
@@ -81,6 +83,9 @@ class PurchaseReceive extends TransactionModel
             $purchaseReceive->shipping_address = $purchaseOrder->shipping_address;
             $purchaseReceive->shipping_phone = $purchaseOrder->shipping_phone;
             $purchaseReceive->shipping_email = $purchaseOrder->shipping_email;
+
+            $additionalFee = $purchaseOrder->delivery_fee - $purchaseOrder->discount_value;
+            $total = $purchaseOrder->amount - $additionalFee - $purchaseOrder->tax;
         }
         // TODO throw error if purchase_order_id and supplier_id both null
         else if (!empty($data['supplier_id'])) {
@@ -89,6 +94,16 @@ class PurchaseReceive extends TransactionModel
                 $supplier = Supplier::find($data['supplier_id'], ['name']);
                 $purchaseReceive->supplier_name = $supplier->name;
             }
+
+            $additionalFee = ($data['delivery_fee'] ?? 0) - ($data['discount_value'] ?? 0);
+            $totalItemPrice = array_reduce($data['items'], function ($carry, $item) {
+                $price = $item['price'] ?? $item['purchase_price'] ?? 0;
+                if ($price > 0) {
+                    return $carry + $price - ($item['discount_value'] ?? 0);
+                }
+                return 0;
+            }, 0);
+            $total = $totalItemPrice - $additionalFee - $data['tax'];
         }
 
         $purchaseReceive->save();
@@ -111,8 +126,6 @@ class PurchaseReceive extends TransactionModel
                 $purchaseReceiveItem->fill($item);
 
                 $purchaseOrderItemId = $item['purchase_order_item_id'] ?? null;
-                $additionalFee = 0;
-                $total = 0;
 
                 // TODO validation purchaseOrderItemId is optional and must be integer
                 if (!empty($purchaseOrderItemId)) {
@@ -123,9 +136,6 @@ class PurchaseReceive extends TransactionModel
                     $purchaseReceiveItem->discount_percent = $purchaseOrderItem->discount_percent;
                     $purchaseReceiveItem->discount_value = $purchaseOrderItem->discount_value;
                     $purchaseReceiveItem->allocation_id = $purchaseOrderItem->allocation_id;
-
-                    $additionalFee = $purchaseOrder->delivery_fee - $purchaseOrder->discount_value;
-                    $total = $purchaseOrder->amount - $additionalFee - $purchaseOrder->tax;
                 }
                 // TODO validation item_id is required if no purchase order, and must be integer
                 else {

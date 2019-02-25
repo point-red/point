@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateDeliveryNotesTable extends Migration
 {
@@ -24,7 +24,7 @@ class CreateDeliveryNotesTable extends Migration
             $table->string('shipping_phone')->nullable();
             $table->string('shipping_email')->nullable();
             $table->unsignedInteger('warehouse_id');
-            $table->unsignedInteger('delivery_order_id');
+            $table->unsignedInteger('delivery_order_id')->nullable();
             $table->string('driver')->nullable();
             $table->string('license_plate')->nullable();
 

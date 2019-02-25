@@ -34,7 +34,12 @@ class InventoryHelper
         else {
             $inventory->total_value = $inventory->total_quantity * $lastInventory->cogs;
         }
-        $inventory->cogs = $inventory->total_value / $inventory->total_quantity;
+
+        if ($inventory->total_quantity > 0) {
+            $inventory->cogs = $inventory->total_value / $inventory->total_quantity;
+        } else {
+            $inventory->cogs = 0;
+        }
 
         $inventory->save();
 
@@ -44,10 +49,12 @@ class InventoryHelper
     public static function increase($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee)
     {
         Item::where('id', $itemReference->item_id)->increment('stock', $itemReference->quantity);
-
-        $subtotal = ($itemReference->price - $itemReference->discount_value) * $itemReference->quantity;
-        $itemReferenceAdditionalFee = $subtotal / $totalAmount * $additionalFee;
-        $price = $itemReferenceAdditionalFee / $itemReference->quantity + $itemReference->price - $itemReference->discount_value;
+        $price = 0;
+        if ($totalAmount > 0) {
+            $subtotal = ($itemReference->price - $itemReference->discount_value) * $itemReference->quantity;
+            $itemReferenceAdditionalFee = $subtotal / $totalAmount * $additionalFee;
+            $price = $itemReferenceAdditionalFee / $itemReference->quantity + $itemReference->price - $itemReference->discount_value;
+        }
 
         self::insert($formId, $warehouseId, $itemReference->item_id, abs($itemReference->quantity), $price);
     }

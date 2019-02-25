@@ -23,6 +23,8 @@ class PurchaseReceiveItem extends TransactionModel
         'converter',
         'notes',
         'allocation_id',
+        'price',
+        'purchase_price',
     ];
 
     protected $casts = [
@@ -41,5 +43,11 @@ class PurchaseReceiveItem extends TransactionModel
     public function allocation()
     {
         return $this->belongsTo(Allocation::class);
+    }
+
+    // For TransactionController
+    public function setPurchasePriceAttribute($value)
+    {
+        $this->attributes['price'] = $value;
     }
 }

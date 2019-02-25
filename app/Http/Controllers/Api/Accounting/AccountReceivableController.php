@@ -58,7 +58,7 @@ class AccountReceivableController extends Controller
 
     private function filterAging($journals, $age)
     {
-        return $journals->where('date', now()->subDay($age));
+        return $journals->where('forms.date', now()->subDay($age));
     }
 
     private function filterOwner($journals, $ownerId)

@@ -2,10 +2,10 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
-use App\Model\Master\Allocation;
 use App\Model\Master\Service;
-use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\Master\Allocation;
 use Illuminate\Database\Eloquent\Model;
+use App\Model\Sales\SalesOrder\SalesOrder;
 
 class SalesInvoiceService extends Model
 {

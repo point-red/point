@@ -3,10 +3,10 @@
 namespace App\Model\Inventory;
 
 use App\Model\Form;
-use App\Model\Master\Item;
-use App\Model\Master\Warehouse;
 use App\Model\PointModel;
+use App\Model\Master\Item;
 use App\Traits\FormScopes;
+use App\Model\Master\Warehouse;
 
 class Inventory extends PointModel
 {

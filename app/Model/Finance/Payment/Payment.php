@@ -68,18 +68,18 @@ class Payment extends TransactionModel
 
         // TODO validation details is required and must be array
         $details = $data['details'] ?? [];
-        if (!empty($details) && is_array($details)) {
+        if (! empty($details) && is_array($details)) {
             foreach ($details as $detail) {
                 $paymentDetail = new PaymentDetail;
                 $paymentDetail->fill($detail);
 
                 $reference = $paymentDetail->referenceable_type::findOrFail($paymentDetail->referenceable_id);
 
-                $paidAmountInThePast = Payment::where('referenceable_id', $paymentDetail->referenceable_id)
+                $paidAmountInThePast = self::where('referenceable_id', $paymentDetail->referenceable_id)
                     ->where('referenceable_type', $paymentDetail->referenceable_type)
                     ->joinForm()
                     ->active()
-                    ->join(PaymentDetail::getTableName(), Payment::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
+                    ->join(PaymentDetail::getTableName(), self::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
                     ->select(PaymentDetail::getTableName('amount'))
                     ->get()
                     ->sum('amount');
@@ -99,7 +99,7 @@ class Payment extends TransactionModel
             }
         }
 
-        if (!empty($data['done']) && $data['done'] === true) {
+        if (! empty($data['done']) && $data['done'] === true) {
             // TODO increase / decrease cash
         }
 
@@ -112,19 +112,19 @@ class Payment extends TransactionModel
         $form = new Form;
         $form->fill($data);
         $form->formable_id = $payment->id;
-        $form->formable_type = Payment::class;
+        $form->formable_type = self::class;
 
         $defaultFormat = '{payment_type}-{disbursed}{y}{m}{increment=4}';
         $formNumber = $data['number'] ?? $defaultFormat;
 
         // Different method to get increment because payment number is considering payment_type
         preg_match_all('/{increment=(\d)}/', $formNumber, $regexResult);
-        if (!empty($regexResult)) {
-            $increment = Payment::joinForm()
+        if (! empty($regexResult)) {
+            $increment = self::joinForm()
                 ->notArchived()
                 ->whereMonth(Form::getTableName('date'), date('n', strtotime($data['date'])))
-                ->where(Payment::getTableName('payment_type'), $payment->payment_type)
-                ->where(Payment::getTableName('disbursed'), $payment->disbursed)
+                ->where(self::getTableName('payment_type'), $payment->payment_type)
+                ->where(self::getTableName('disbursed'), $payment->disbursed)
                 ->count();
 
             foreach ($regexResult[0] as $key => $value) {

@@ -2,8 +2,8 @@
 
 namespace App\Model\Sales\SalesOrder;
 
-use App\Model\Master\Allocation;
 use App\Model\Master\Service;
+use App\Model\Master\Allocation;
 use Illuminate\Database\Eloquent\Model;
 
 class SalesOrderService extends Model

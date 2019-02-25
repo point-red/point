@@ -2,9 +2,9 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
-use App\Model\Master\Allocation;
 use App\Model\Master\Service;
 use App\Model\TransactionModel;
+use App\Model\Master\Allocation;
 
 class PurchaseRequestService extends TransactionModel
 {

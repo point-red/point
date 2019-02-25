@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiResource;
+use Illuminate\Http\Request;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
 class TransactionController extends Controller
 {
@@ -86,7 +86,7 @@ class TransactionController extends Controller
             $result->purchase_receive = new ApiResource($purchaseReceive);
 
             $purchaseInvoiceRequest = $request->all();
-            $purchaseInvoiceRequest['purchase_receive_ids'] = array($purchaseReceive->id);
+            $purchaseInvoiceRequest['purchase_receive_ids'] = [$purchaseReceive->id];
             $purchaseInvoice = PurchaseInvoice::create($purchaseInvoiceRequest);
             $result->purchase_invoice = new ApiResource($purchaseInvoice);
 
@@ -145,7 +145,7 @@ class TransactionController extends Controller
             $result->delivery_note = new ApiResource($deliveryNote);
 
             $salesInvoiceRequest = $request->all();
-            $salesInvoiceRequest['delivery_note_ids'] = array($deliveryNote->id);
+            $salesInvoiceRequest['delivery_note_ids'] = [$deliveryNote->id];
             $salesInvoice = SalesInvoice::create($salesInvoiceRequest);
             $result->sales_invoice = new ApiResource($salesInvoice);
 

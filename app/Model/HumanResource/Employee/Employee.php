@@ -2,8 +2,8 @@
 
 namespace App\Model\HumanResource\Employee;
 
-use App\Model\Finance\Payment\Payment;
 use App\Model\MasterModel;
+use App\Model\Finance\Payment\Payment;
 use App\Model\HumanResource\Kpi\KpiTemplate;
 use App\Model\HumanResource\Employee\Employee\EmployeePhone;
 use App\Model\HumanResource\Employee\Employee\EmployeeAddress;

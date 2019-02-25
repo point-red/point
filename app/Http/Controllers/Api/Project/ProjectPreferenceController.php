@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiResource;
-use App\Model\ProjectPreference;
 use Illuminate\Http\Request;
+use App\Model\ProjectPreference;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
 
 class ProjectPreferenceController extends Controller
 {
@@ -31,7 +31,7 @@ class ProjectPreferenceController extends Controller
     public function update(Request $request, $project_id)
     {
         $projectPreference = ProjectPreference::where('project_id', $project_id)->first();
-        if (!$projectPreference) {
+        if (! $projectPreference) {
             $projectPreference = new ProjectPreference;
             $projectPreference->project_id = $project_id;
             // TODO validate project_id is exist

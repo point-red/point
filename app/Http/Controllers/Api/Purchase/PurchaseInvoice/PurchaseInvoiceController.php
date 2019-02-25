@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 
+use Illuminate\Http\Request;
+use App\Model\Master\Supplier;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PurchaseInvoiceController extends Controller
 {
@@ -92,7 +92,6 @@ class PurchaseInvoiceController extends Controller
     {
         // TODO prevent delete if referenced by purchase payment
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-
             $purchaseInvoice = PurchaseInvoice::findOrFail($id);
 
             $newPurchaseInvoice = $purchaseInvoice->edit($request->all());

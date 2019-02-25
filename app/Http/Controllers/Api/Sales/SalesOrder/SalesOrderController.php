@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesOrder;
 
+use Illuminate\Http\Request;
+use App\Model\Master\Customer;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\Customer;
+use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
-use App\Model\Sales\SalesOrder\SalesOrder;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class SalesOrderController extends Controller
 {
@@ -106,7 +106,6 @@ class SalesOrderController extends Controller
     {
         // TODO prevent delete if referenced by delivery order
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-
             $salesOrder = SalesOrder::findOrFail($id);
 
             $newSalesOrder = $salesOrder->edit($request->all());

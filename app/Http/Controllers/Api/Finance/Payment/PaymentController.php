@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\Finance\Payment;
 
+use Illuminate\Http\Request;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
 use App\Model\Finance\Payment\Payment;
-use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
@@ -92,7 +92,6 @@ class PaymentController extends Controller
     {
         // TODO prevent delete if referenced by delivery order
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-
             $payment = Payment::findOrFail($id);
 
             $newPayment = $payment->edit($request->all());

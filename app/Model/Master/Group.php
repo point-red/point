@@ -2,8 +2,8 @@
 
 namespace App\Model\Master;
 
-use App\Helpers\Master\GroupClassReference;
 use App\Model\MasterModel;
+use App\Helpers\Master\GroupClassReference;
 
 class Group extends MasterModel
 {

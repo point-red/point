@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api\Master;
 
 use App\Model\Master\Group;
 use Illuminate\Http\Request;
-use App\Helpers\Master\GroupClassReference;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Helpers\Master\GroupClassReference;
 use App\Http\Requests\Master\Group\StoreGroupRequest;
 use App\Http\Requests\Master\Group\UpdateGroupRequest;
 

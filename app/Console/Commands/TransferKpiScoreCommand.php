@@ -4,10 +4,10 @@ namespace App\Console\Commands;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiScore;
 use App\Model\HumanResource\Kpi\KpiTemplateScore;
-use Illuminate\Support\Facades\DB;
 
 class TransferKpiScoreCommand extends Command
 {
@@ -48,7 +48,7 @@ class TransferKpiScoreCommand extends Command
 
         foreach ($projects as $project) {
             $databaseName = 'point_'.strtolower($project->code);
-            $this->line('Transfer KPI : ' . $project->code);
+            $this->line('Transfer KPI : '.$project->code);
 
             // Update tenant database name in configuration
             config()->set('database.connections.tenant.database', strtolower($databaseName));
@@ -61,11 +61,8 @@ class TransferKpiScoreCommand extends Command
                 ->orderBy('kpis.date', 'asc')->get();
 
             foreach ($kpis as $key => $kpi) {
-
                 foreach ($kpi->groups as $kpiGroup) {
-
                     foreach ($kpiGroup->indicators as $kpiIndicator) {
-
                         if (count($kpiIndicator->scores) == 0) {
                             $kpi_template_scores = KpiTemplateScore::join('kpi_template_indicators', 'kpi_template_indicators.id', '=', 'kpi_template_scores.kpi_template_indicator_id')
                                 ->join('kpi_template_groups', 'kpi_template_groups.id', '=', 'kpi_template_indicators.kpi_template_group_id')
@@ -82,8 +79,7 @@ class TransferKpiScoreCommand extends Command
                                 $kpiScore->description = $kpiIndicator['score_description'];
                                 $kpiScore->score = $kpiIndicator['score'];
                                 $kpiScore->save();
-                            }
-                            else {
+                            } else {
                                 foreach ($kpi_template_scores as $kpi_template_score) {
                                     $kpiScore = new KpiScore();
                                     $kpiScore->kpi_indicator_id = $kpiIndicator['id'];

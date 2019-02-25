@@ -3,14 +3,14 @@
 namespace App\Model\Sales\SalesOrder;
 
 use App\Model\Form;
-use App\Model\Master\Customer;
 use App\Model\Master\Item;
 use App\Model\Master\Service;
+use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
-use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\TransactionModel;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\SalesQuotation\SalesQuotation;
+use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
 
 class SalesOrder extends TransactionModel
 {
@@ -131,7 +131,7 @@ class SalesOrder extends TransactionModel
 
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
-        if (!empty($items) && is_array($items)) {
+        if (! empty($items) && is_array($items)) {
             $itemIds = array_column($items, 'item_id');
             $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
 
@@ -144,14 +144,13 @@ class SalesOrder extends TransactionModel
 
                 $amount = $item['quantity'] * ($salesOrderItem->price - ($item['discount_value'] ?? 0));
             }
-        }
-        else {
+        } else {
             // TODO throw error if $items and $services are empty or not an array
         }
 
         // TODO validation services is required if items is null and must be array
         $services = $data['services'] ?? [];
-        if (!empty($services) && is_array($services)) {
+        if (! empty($services) && is_array($services)) {
             $serviceIds = array_column($services, 'service_id');
             $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
 
@@ -163,15 +162,14 @@ class SalesOrder extends TransactionModel
 
                 $amount = $service['quantity'] * ($service['price'] - $service['discount_value'] ?? 0);
             }
-        }
-        else {
+        } else {
             // TODO throw error if $items and $services are empty or not an array
         }
 
         $amount -= $data['discount_value'] ?? 0;
         $amount += $data['delivery_fee'] ?? 0;
 
-        if ($data['type_of_tax'] === 'exclude' && !empty($data['tax'])) {
+        if ($data['type_of_tax'] === 'exclude' && ! empty($data['tax'])) {
             $amount += $data['tax'];
         }
 

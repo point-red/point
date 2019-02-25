@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Model\Project\Project;
 use Illuminate\Http\Request;
+use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 
@@ -24,9 +24,9 @@ class EmailServiceController extends Controller
             ->first();
 
         // doesn't allow send custom email with default mail ...@point.red
-        if (!$project || !$project->preference) {
+        if (! $project || ! $project->preference) {
             return response()->json([
-                'message' => 'Cannot send custom email from default email address'
+                'message' => 'Cannot send custom email from default email address',
             ], 422);
         }
 
@@ -45,7 +45,7 @@ class EmailServiceController extends Controller
             $message->setBody($request->get('body'), 'text/html');
 
             $attachments = $request->get('attachments') ?? [];
-            
+
             foreach ($attachments as $key => $attachment) {
                 // TODO validation attachment attributes
                 // type = ['pdf', 'xls']
@@ -58,8 +58,9 @@ class EmailServiceController extends Controller
         });
     }
 
-    private function attachPDF($config) {
-        // $pdf = PDF::loadHTML($config['html']) don't know why doesn't work 
+    private function attachPDF($config)
+    {
+        // $pdf = PDF::loadHTML($config['html']) don't know why doesn't work
         // https://github.com/barryvdh/laravel-dompdf#using
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($config['html'])

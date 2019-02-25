@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseOrder;
 
+use Illuminate\Http\Request;
+use App\Model\Master\Supplier;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PurchaseOrderController extends Controller
 {
@@ -150,9 +150,8 @@ class PurchaseOrderController extends Controller
     {
         // TODO prevent delete if referenced by purchase receive
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-
             $purchaseOrder = PurchaseOrder::findOrFail($id);
-            
+
             $newPurchaseOrder = $purchaseOrder->edit($request->all());
 
             return new ApiResource($newPurchaseOrder);

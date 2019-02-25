@@ -2,10 +2,10 @@
 
 namespace App\Model\Finance\Payment;
 
-use App\Model\Master\Allocation;
-use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
-use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\TransactionModel;
+use App\Model\Master\Allocation;
+use App\Model\Sales\SalesInvoice\SalesInvoice;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 
 class PaymentDetail extends TransactionModel
 {

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
+use App\Model\Form;
+use Illuminate\Http\Request;
+use App\Model\Master\Supplier;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Form;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PurchaseRequestController extends Controller
 {
@@ -120,7 +120,6 @@ class PurchaseRequestController extends Controller
     {
         // TODO prevent delete if referenced by purchase order
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-
             $purchaseRequest = PurchaseRequest::findOrFail($id);
 
             $newPurchaseRequest = $purchaseRequest->edit($request->all());
@@ -146,7 +145,7 @@ class PurchaseRequestController extends Controller
             $purchaseOrderNumbers = array_column($purchaseOrders->toArray(), 'number');
             $errors = [
                 'code' => 422,
-                'message' => 'Referenced by purchase orders [' . implode('], [', $purchaseOrderNumbers) . '].',
+                'message' => 'Referenced by purchase orders ['.implode('], [', $purchaseOrderNumbers).'].',
             ];
 
             return response()->json($errors, 422);

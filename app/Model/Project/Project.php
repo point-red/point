@@ -2,8 +2,8 @@
 
 namespace App\Model\Project;
 
-use App\Model\ProjectPreference;
 use App\User;
+use App\Model\ProjectPreference;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model

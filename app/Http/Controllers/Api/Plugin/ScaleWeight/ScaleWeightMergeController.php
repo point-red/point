@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
-use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
-use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;
 
 class ScaleWeightMergeController extends Controller
 {
@@ -15,9 +14,9 @@ class ScaleWeightMergeController extends Controller
         $date_from = $request->get('date_from');
         $date_to = $request->get('date_to');
 
-        $from_sub_q = "FROM " . config('database.connections.tenant.database') . ".scale_weight_items 
-                WHERE license_number = t.license_number AND time BETWEEN t.time_in AND t.time_out ) as";
-        $merge = DB::table(config('database.connections.tenant.database') . '.scale_weight_trucks as t')
+        $from_sub_q = 'FROM '.config('database.connections.tenant.database').'.scale_weight_items 
+                WHERE license_number = t.license_number AND time BETWEEN t.time_in AND t.time_out ) as';
+        $merge = DB::table(config('database.connections.tenant.database').'.scale_weight_trucks as t')
             ->whereRaw("time_in >= '$date_from'")
             ->whereRaw("time_in <= '$date_to'")
             ->select('license_number', DB::raw("DATE_FORMAT(time_in, '%d/%m/%Y') as date_in"),
@@ -44,7 +43,7 @@ class ScaleWeightMergeController extends Controller
 
         if ($request->has('cat')) {
             $merge->whereIn('t.item', $request->cat);
-        } else{
+        } else {
             // with assumption there is no item have name "~"
             // so it will show nothing
             $merge->whereIn('t.item', ['~']);
@@ -56,6 +55,7 @@ class ScaleWeightMergeController extends Controller
     public function item()
     {
         $items = ScaleWeightTruck::select('item')->distinct()->get()->pluck('item');
+
         return response()->json(['data' => $items]);
     }
 }

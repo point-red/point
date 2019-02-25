@@ -2,13 +2,13 @@
 
 namespace App\Model\Sales\DeliveryNote;
 
-use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
-use App\Model\Master\Customer;
 use App\Model\Master\Item;
+use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\TransactionModel;
+use App\Helpers\Inventory\InventoryHelper;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 
 class DeliveryNote extends TransactionModel
 {
@@ -65,7 +65,7 @@ class DeliveryNote extends TransactionModel
         $deliveryNote = new self;
         $deliveryNote->fill($data);
 
-        if (!empty($data['delivery_order_id'])) {
+        if (! empty($data['delivery_order_id'])) {
             $deliveryOrder = DeliveryOrder::findOrFail($data['delivery_order_id']);
             // TODO add check if $deliveryOrder is canceled / rejected / archived
 
@@ -103,7 +103,7 @@ class DeliveryNote extends TransactionModel
             $deliveryNoteItem = new DeliveryNoteItem;
             $deliveryNoteItem->fill($item);
 
-            if (!empty($data['delivery_order_id'])) {
+            if (! empty($data['delivery_order_id'])) {
                 $deliveryOrderItem = $deliveryOrderItems[$item['delivery_order_item_id']];
 
                 $deliveryNoteItem->item_name = $deliveryOrderItem->item_name;
@@ -112,8 +112,7 @@ class DeliveryNote extends TransactionModel
                 $deliveryNoteItem->discount_value = $deliveryOrderItem->discount_value;
                 $deliveryNoteItem->taxable = $deliveryOrderItem->taxable;
                 $deliveryNoteItem->allocation_id = $deliveryOrderItem->allocation_id;
-            }
-            else {
+            } else {
                 $deliveryNoteItem->item_name = $dbItems[$item['item_id']]->name;
             }
             array_push($array, $deliveryNoteItem);
@@ -121,7 +120,7 @@ class DeliveryNote extends TransactionModel
         }
         $deliveryNote->items()->saveMany($array);
 
-        if (!empty($data['delivery_order_id'])) {
+        if (! empty($data['delivery_order_id'])) {
             $deliveryOrder->updateIfDone();
         }
 

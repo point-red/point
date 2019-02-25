@@ -3,12 +3,12 @@
 namespace App\Model\Purchase\PurchaseRequest;
 
 use App\Model\Form;
-use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Item;
 use App\Model\Master\Service;
 use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\TransactionModel;
+use App\Model\HumanResource\Employee\Employee;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 
 class PurchaseRequest extends TransactionModel
 {
@@ -83,7 +83,7 @@ class PurchaseRequest extends TransactionModel
 
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
-        if (!empty($items) && is_array($items)) {
+        if (! empty($items) && is_array($items)) {
             $itemIds = array_column($items, 'item_id');
             $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
 
@@ -95,13 +95,12 @@ class PurchaseRequest extends TransactionModel
 
                 $amount += $item['quantity'] * $item['price'];
             }
-        }
-        else {
+        } else {
             // TODO throw error if $items is empty or not an array
         }
         // TODO validation services is required if items is null and must be array
         $services = $data['services'] ?? [];
-        if (!empty($services) && is_array($services)) {
+        if (! empty($services) && is_array($services)) {
             $serviceIds = array_column($services, 'service_id');
             $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
 
@@ -113,8 +112,7 @@ class PurchaseRequest extends TransactionModel
 
                 $amount += $service['quantity'] * $service['price'];
             }
-        }
-        else {
+        } else {
             // TODO throw error if $services is empty or not an array
         }
 

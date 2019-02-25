@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
+use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
 use App\Model\Accounting\Journal;
@@ -22,10 +23,11 @@ class AccountReceivableController extends Controller
 
         $journalPayments = $this->getJournalPayments($accounts);
 
-        $journals = Journal::leftJoinSub($journalPayments, 'journal_payment', function ($join) {
-            $join->on('journals.form_id', '=', 'journal_payment.form_id_reference');
-        })->selectRaw('SUM(debit) as debit')
-            ->addSelect('journals.date', 'journals.form_id', 'journal_payment.credit')
+        $journals = Journal::join(Form::getTableName(), Form::getTableName('id'), '=', Journal::getTableName('form_id'))
+            ->leftJoinSub($journalPayments, 'journal_payment', function ($join) {
+                $join->on('journals.form_id', '=', 'journal_payment.form_id_reference');
+            })->selectRaw('SUM(debit) as debit')
+            ->addSelect('forms.date', 'journals.form_id', 'journal_payment.credit')
             ->whereIn('chart_of_account_id', $accounts)
             ->where('debit', '>', 0)
             ->groupBy('form_id');

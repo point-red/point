@@ -3,9 +3,9 @@
 namespace App\Model\Accounting;
 
 use App\Model\Form;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\PointModel;
 
-class Journal extends Model
+class Journal extends PointModel
 {
     protected $connection = 'tenant';
 

@@ -20,6 +20,14 @@ class Journal extends Model
     }
 
     /**
+     * The form reference that belong to the journal.
+     */
+    public function formReference()
+    {
+        return $this->belongsTo(Form::class, 'form_reference_id');
+    }
+
+    /**
      * The chart of account that belong to the journal.
      */
     public function chartOfAccount()

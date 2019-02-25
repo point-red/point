@@ -2,9 +2,9 @@
 
 namespace App\Model\Sales\DeliveryOrder;
 
-use App\Model\Master\Allocation;
 use App\Model\Master\Item;
 use App\Model\TransactionModel;
+use App\Model\Master\Allocation;
 
 class DeliveryOrderItem extends TransactionModel
 {

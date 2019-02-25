@@ -2,10 +2,10 @@
 
 namespace App\Http\Resources\Inventory;
 
-use App\Model\Form;
-use App\Model\Inventory\Inventory;
-use App\Model\Master\Item;
 use Carbon\Carbon;
+use App\Model\Form;
+use App\Model\Master\Item;
+use App\Model\Inventory\Inventory;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class InventoryCollection extends ResourceCollection

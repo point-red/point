@@ -3,8 +3,8 @@
 namespace App\Helpers\Inventory;
 
 use App\Model\Form;
-use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
+use App\Model\Inventory\Inventory;
 
 class InventoryHelper
 {
@@ -68,7 +68,7 @@ class InventoryHelper
 
     /**
      * Get last reference from inventory
-     * Usually we will used it for get last stock or value of some item in warehouse
+     * Usually we will used it for get last stock or value of some item in warehouse.
      *
      * @param $itemId
      * @param $warehouseId

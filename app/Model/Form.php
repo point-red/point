@@ -2,9 +2,9 @@
 
 namespace App\Model;
 
+use App\Model\Master\User;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
-use App\Model\Master\User;
 
 class Form extends PointModel
 {
@@ -45,7 +45,7 @@ class Form extends PointModel
     {
         $this->updated_by = optional(auth()->user())->id;
 
-        if (!$this->exists) {
+        if (! $this->exists) {
             $this->created_by = optional(auth()->user())->id;
         }
     }
@@ -79,7 +79,7 @@ class Form extends PointModel
         $this->formable_id = $transaction->id;
         $this->formable_type = get_class($transaction);
         $this->generateFormNumber(
-            $data['number'] ?? $transaction->defaultNumberPrefix . $defaultNumberPostfix,
+            $data['number'] ?? $transaction->defaultNumberPrefix.$defaultNumberPostfix,
             $transaction->customer_id,
             $transaction->supplier_id
         );
@@ -174,7 +174,7 @@ class Form extends PointModel
     private function convertTemplateIncrement()
     {
         preg_match_all('/{increment=(\d)}/', $this->number, $regexResult);
-        if (!empty($regexResult)) {
+        if (! empty($regexResult)) {
             $increment = self::where('formable_type', $this->formable_type)
                 ->whereNotNull('number')
                 ->whereMonth('date', date('n', strtotime($this->date)))

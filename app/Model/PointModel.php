@@ -2,9 +2,9 @@
 
 namespace App\Model;
 
+use Illuminate\Support\Carbon;
 use App\Traits\EloquentFilters;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 class PointModel extends Model
 {
@@ -32,7 +32,7 @@ class PointModel extends Model
 
     public static function getTableName($column = null)
     {
-        $tableName = with(new static )->getTable();
+        $tableName = with(new static)->getTable();
 
         if (isset($column)) {
             $tableName = "$tableName.$column";

@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\Sales\DeliveryOrder;
 
+use Illuminate\Http\Request;
+use App\Model\Master\Customer;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\Customer;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
-use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
 
 class DeliveryOrderController extends Controller
 {
@@ -106,7 +106,6 @@ class DeliveryOrderController extends Controller
     {
         // TODO prevent delete if referenced by delivery notes
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-
             $deliveryOrder = DeliveryOrder::findOrFail($id);
 
             $newDeliveryOrder = $deliveryOrder->edit($request->all());

@@ -2,9 +2,9 @@
 
 namespace App\Model\Master;
 
-use App\Model\Finance\Payment\Payment;
 use App\Model\MasterModel;
 use App\Model\Accounting\Journal;
+use App\Model\Finance\Payment\Payment;
 
 class Customer extends MasterModel
 {

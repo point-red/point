@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesInvoice;
 
+use Illuminate\Http\Request;
+use App\Model\Master\Customer;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\Customer;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class SalesInvoiceController extends Controller
 {
@@ -90,7 +90,6 @@ class SalesInvoiceController extends Controller
     {
         // TODO prevent delete if referenced by delivery notes
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-
             $salesInvoice = SalesInvoice::findOrFail($id);
 
             $newSalesInvoice = $salesInvoice->edit($request->all());

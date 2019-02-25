@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseReceive;
 
+use Illuminate\Http\Request;
+use App\Model\Master\Supplier;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PurchaseReceiveController extends Controller
 {
@@ -131,7 +131,6 @@ class PurchaseReceiveController extends Controller
     {
         // TODO prevent delete if referenced by purchase invoice
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-
             $purchaseReceive = PurchaseReceive::findOrFail($id);
 
             $newPurchaseReceive = $purchaseReceive->edit($request->all());

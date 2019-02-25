@@ -2,13 +2,13 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
-use App\Model\Finance\Payment\Payment;
-use App\Model\Finance\Payment\PaymentDetail;
 use App\Model\Form;
 use App\Model\Master\Customer;
-use App\Model\Sales\DeliveryNote\DeliveryNote;
-use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
+use App\Model\Finance\Payment\Payment;
+use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\Finance\Payment\PaymentDetail;
+use App\Model\Sales\DeliveryNote\DeliveryNote;
 
 class SalesInvoice extends TransactionModel
 {
@@ -76,7 +76,7 @@ class SalesInvoice extends TransactionModel
         // TODO throw error if customer_id is not provided
         $customerId = $data['customer_id'] ?? null;
 
-        if (!empty($data['delivery_note_ids']) && is_array($data['delivery_note_ids'])) {
+        if (! empty($data['delivery_note_ids']) && is_array($data['delivery_note_ids'])) {
             $deliveryNotes = DeliveryNote::joinForm()
                 ->active()
                 ->notDone()
@@ -87,8 +87,7 @@ class SalesInvoice extends TransactionModel
             // TODO check if $deliveryNotes contains at least 1 record and return error if 0 records
 
             $customerId = $deliveryNotes[0]->customer_id;
-        }
-        else if (!empty($data['sales_order_ids']) && is_array($data['sales_order_ids'])) {
+        } elseif (! empty($data['sales_order_ids']) && is_array($data['sales_order_ids'])) {
             $salesOrders = SalesOrder::joinForm()
                 ->active()
                 ->notDone()
@@ -110,8 +109,7 @@ class SalesInvoice extends TransactionModel
         if (empty($data['customer_name'])) {
             $customer = Customer::find($customerId, ['name']);
             $salesInvoice->customer_name = $customer->name;
-        }
-        else {
+        } else {
             $salesInvoice->customer_name = $data['customer_name'];
         }
 
@@ -121,7 +119,7 @@ class SalesInvoice extends TransactionModel
 
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
-        if (!empty($items) && is_array($items)) {
+        if (! empty($items) && is_array($items)) {
             $items = array_column($items, null, 'item_id');
 
             foreach ($deliveryNotes as $deliveryNote) {
@@ -156,7 +154,7 @@ class SalesInvoice extends TransactionModel
 
         // TODO validation services is required only if items is null and must be array
         $services = $data['services'] ?? [];
-        if (!empty($services) && is_array($services)) {
+        if (! empty($services) && is_array($services)) {
             $services = array_column($services, null, 'service_id');
 
             foreach ($salesOrders as $salesOrder) {
@@ -185,7 +183,7 @@ class SalesInvoice extends TransactionModel
         $amount -= $data['discount_value'] ?? 0;
         $amount += $data['delivery_fee'] ?? 0;
 
-        if ($data['type_of_tax'] === 'exclude' && !empty($data['tax'])) {
+        if ($data['type_of_tax'] === 'exclude' && ! empty($data['tax'])) {
             $amount += $data['tax'];
         }
 

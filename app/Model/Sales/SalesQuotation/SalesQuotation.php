@@ -4,8 +4,8 @@ namespace App\Model\Sales\SalesQuotation;
 
 use App\Model\Form;
 use App\Model\Master\Customer;
-use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
+use App\Model\Sales\SalesOrder\SalesOrder;
 
 class SalesQuotation extends TransactionModel
 {
@@ -69,7 +69,7 @@ class SalesQuotation extends TransactionModel
 
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
-        if (!empty($items) && is_array($items)) {
+        if (! empty($items) && is_array($items)) {
             $itemIds = array_column($items, 'item_id');
             $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
 
@@ -81,14 +81,13 @@ class SalesQuotation extends TransactionModel
 
                 $amount += $item['quantity'] * $item['price'];
             }
-        }
-        else {
+        } else {
             // TODO throw error if $items is not an array
         }
 
         // TODO validation services is required if items is null and must be array
         $services = $data['services'] ?? [];
-        if (!empty($items) && is_array($items)) {
+        if (! empty($items) && is_array($items)) {
             $serviceIds = array_column($services, 'service_id');
             $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
 
@@ -100,8 +99,7 @@ class SalesQuotation extends TransactionModel
 
                 $amount += $service['quantity'] * $service['price'];
             }
-        }
-        else {
+        } else {
             // TODO throw error if $services is not an array
         }
 

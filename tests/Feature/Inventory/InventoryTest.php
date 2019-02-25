@@ -2,11 +2,9 @@
 
 namespace Tests\Feature\Inventory;
 
-use App\Model\HumanResource\Employee\Employee;
+use Tests\TestCase;
 use App\Model\Master\Item;
 use App\Model\Master\Supplier;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class InventoryTest extends TestCase
@@ -28,7 +26,7 @@ class InventoryTest extends TestCase
 //        $supplier = factory(Supplier::class)->create();
 
         $response = $this->json('GET', 'api/v1/inventory', [
-            'ignore_empty' => true
+            'ignore_empty' => true,
         ], [$this->headers]);
 
         log_object(json_decode($response->getContent()));

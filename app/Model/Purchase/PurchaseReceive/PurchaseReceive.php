@@ -2,14 +2,14 @@
 
 namespace App\Model\Purchase\PurchaseReceive;
 
-use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Service;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\TransactionModel;
+use App\Helpers\Inventory\InventoryHelper;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 
 class PurchaseReceive extends TransactionModel
 {
@@ -68,7 +68,7 @@ class PurchaseReceive extends TransactionModel
         $total = 0;
         $additionalFee = 0;
 
-        if (!empty($data['purchase_order_id'])) {
+        if (! empty($data['purchase_order_id'])) {
             $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
             $purchaseOrderItems = $purchaseOrder->items->keyBy('id');
 
@@ -88,7 +88,7 @@ class PurchaseReceive extends TransactionModel
             $total = $purchaseOrder->amount - $additionalFee - $purchaseOrder->tax;
         }
         // TODO throw error if purchase_order_id and supplier_id both null
-        else if (!empty($data['supplier_id'])) {
+        elseif (! empty($data['supplier_id'])) {
             // TODO validation supplier_name is optional non empty string
             if (empty($data['supplier_name'])) {
                 $supplier = Supplier::find($data['supplier_id'], ['name']);
@@ -101,6 +101,7 @@ class PurchaseReceive extends TransactionModel
                 if ($price > 0) {
                     return $carry + $price - ($item['discount_value'] ?? 0);
                 }
+
                 return 0;
             }, 0);
             $total = $totalItemPrice - $additionalFee - $data['tax'];
@@ -113,7 +114,7 @@ class PurchaseReceive extends TransactionModel
 
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
-        if (!empty($items) && is_array($items)) {
+        if (! empty($items) && is_array($items)) {
             $array = [];
 
             if (empty($purchaseOrder)) {
@@ -128,7 +129,7 @@ class PurchaseReceive extends TransactionModel
                 $purchaseOrderItemId = $item['purchase_order_item_id'] ?? null;
 
                 // TODO validation purchaseOrderItemId is optional and must be integer
-                if (!empty($purchaseOrderItemId)) {
+                if (! empty($purchaseOrderItemId)) {
                     $purchaseOrderItem = $purchaseOrderItems[$purchaseOrderItemId];
                     $purchaseReceiveItem->item_id = $purchaseOrderItem->item_id;
                     $purchaseReceiveItem->item_name = $purchaseOrderItem->item_name;
@@ -153,10 +154,10 @@ class PurchaseReceive extends TransactionModel
 
         // TODO validation services is required if items is null and must be array
         $services = $data['services'] ?? [];
-        if (!empty($services) && is_array($services)) {
+        if (! empty($services) && is_array($services)) {
             $array = [];
 
-            if (!empty($purchaseOrder)) {
+            if (! empty($purchaseOrder)) {
                 $serviceIds = array_column($services, 'service_id');
                 $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
             }

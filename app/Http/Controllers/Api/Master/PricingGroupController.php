@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use Illuminate\Http\Request;
+use App\Model\Master\PricingGroup;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\PricingGroup;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PricingGroupController extends Controller
 {

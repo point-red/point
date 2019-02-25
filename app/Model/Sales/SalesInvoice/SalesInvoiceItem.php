@@ -2,11 +2,11 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
-use App\Model\Master\Allocation;
 use App\Model\Master\Item;
+use App\Model\Master\Allocation;
+use Illuminate\Database\Eloquent\Model;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
-use Illuminate\Database\Eloquent\Model;
 
 class SalesInvoiceItem extends Model
 {

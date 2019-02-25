@@ -15,10 +15,11 @@ class Inventory extends PointModel
     protected $connection = 'tenant';
 
     protected $casts = [
+        'price' => 'double',
         'quantity' => 'double',
         'cogs' => 'double',
         'total_quantity' => 'double',
-        'total_value' => 'double'
+        'total_value' => 'double',
     ];
 
     /**

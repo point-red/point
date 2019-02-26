@@ -108,6 +108,26 @@ class PurchaseRequestController extends Controller
         return new ApiResource($purchaseRequest);
     }
 
+    private function isReferencedByPurchaseOrder($purchaseRequest)
+    {
+        if ($purchaseRequest->purchaseOrders->count()) {
+
+            $purchaseOrders = [];
+
+            foreach ($purchaseRequest->purchaseOrders as $purchaseOrder) {
+                $purchaseOrders[$purchaseOrder->id] = 'purchase order';
+            }
+
+            return response()->json([
+                'code' => 422,
+                'message' => 'Cannot edit form because referenced by purchase order',
+                'referenced_by' => $purchaseOrders
+            ], 422);
+        }
+
+        return [];
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -118,11 +138,25 @@ class PurchaseRequestController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // TODO prevent delete if referenced by purchase order
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-            $purchaseRequest = PurchaseRequest::findOrFail($id);
+            $purchaseRequest = PurchaseRequest::with('form', 'purchaseOrders')->findOrFail($id);
 
-            $newPurchaseRequest = $purchaseRequest->edit($request->all());
+            // Check if purchase request not referenced by purchase order
+            $errorReferenced = $this->isReferencedByPurchaseOrder($purchaseRequest);
+            if (! empty($errorReferenced)) {
+                return $errorReferenced;
+            }
+
+            // Archived old purchase request
+            $purchaseRequest->form->edited_number = $purchaseRequest->form->number;
+            $purchaseRequest->form->number = null;
+            $purchaseRequest->save();
+
+            // Create new purchase request
+            $request['number'] = $purchaseRequest->form->edited_number;
+            $newPurchaseRequest = PurchaseRequest::create($request->all());
+            $newPurchaseRequest->form->edited_form_id = $purchaseRequest->form->id;
+            $newPurchaseRequest->form->save();
 
             return new ApiResource($newPurchaseRequest);
         });
@@ -139,19 +173,13 @@ class PurchaseRequestController extends Controller
     public function destroy($id)
     {
         $purchaseRequest = PurchaseRequest::with('form', 'purchaseOrders')->findOrFail($id);
-        $purchaseOrders = $purchaseRequest->purchaseOrders;
-        if (count($purchaseOrders) > 0) {
-            // can not delete if at least 1 active purchase orders
-            $purchaseOrderNumbers = array_column($purchaseOrders->toArray(), 'number');
-            $errors = [
-                'code' => 422,
-                'message' => 'Referenced by purchase orders ['.implode('], [', $purchaseOrderNumbers).'].',
-            ];
 
-            return response()->json($errors, 422);
+        // Check if purchase request not referenced by purchase order
+        $errorReferenced = $this->isReferencedByPurchaseOrder($purchaseRequest);
+        if (! empty($errorReferenced)) {
+            return $errorReferenced;
         }
 
-        $purchaseRequest->form->number = null;
         $purchaseRequest->form->canceled = true;
         $purchaseRequest->form->save();
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Transaction;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTransactionRequest extends FormRequest
 {
@@ -30,7 +30,7 @@ class StoreTransactionRequest extends FormRequest
             'sales' => 'required_without:purchase',
         ];
 
-        /**
+        /*
          * Purchasing
          */
         if ($request->has('supplier_id')) {
@@ -46,7 +46,7 @@ class StoreTransactionRequest extends FormRequest
                 'purchase.discount_value' => 'bail|numeric|min:0',
                 'purchase.items' => 'required_without:purchase.services',
                 'purchase.services' => 'required_without:purchase.items',
-                
+
             ]);
 
             if ($request->has('purchase.items')) {
@@ -82,7 +82,7 @@ class StoreTransactionRequest extends FormRequest
             }
         }
 
-        /**
+        /*
          * Sales
          */
         if ($request->has('customer_id')) {

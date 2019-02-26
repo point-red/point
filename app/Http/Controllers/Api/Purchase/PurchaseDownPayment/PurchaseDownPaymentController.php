@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseDownPayment;
 
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
 class PurchaseDownPaymentController extends Controller
 {

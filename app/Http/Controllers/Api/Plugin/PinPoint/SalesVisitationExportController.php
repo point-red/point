@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
-use App\Exports\PinPoint\SalesVisitationFormExport;
-use App\Exports\PinPoint\ChartInterestReasonExport;
-use App\Exports\PinPoint\ChartNotInterestReasonExport;
-use App\Exports\PinPoint\ChartSimilarProductExport;
-use App\Model\CloudStorage;
-use App\Model\Project\Project;
 use Carbon\Carbon;
+use App\Model\CloudStorage;
 use Illuminate\Http\Request;
+use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PinPoint\ChartInterestReasonExport;
+use App\Exports\PinPoint\ChartSimilarProductExport;
+use App\Exports\PinPoint\SalesVisitationFormExport;
+use App\Exports\PinPoint\ChartNotInterestReasonExport;
 
 class SalesVisitationExportController extends Controller
 {
@@ -40,15 +40,15 @@ class SalesVisitationExportController extends Controller
 
     public function export(Request $request)
     {
-        $fileExport = !empty($request->get('file_export')) ? $request->get('file_export') : 'SalesVisitationReport';
+        $fileExport = ! empty($request->get('file_export')) ? $request->get('file_export') : 'SalesVisitationReport';
 
         $tenant = strtolower($request->header('Tenant'));
         $key = str_random(16);
         $fileName = strtoupper($tenant)
-            . ' - '.$fileExport.' - '
-            . date('dMY', strtotime($request->get('date_from')))
-            . '-'
-            . date('dMY', strtotime($request->get('date_to')));
+            .' - '.$fileExport.' - '
+            .date('dMY', strtotime($request->get('date_from')))
+            .'-'
+            .date('dMY', strtotime($request->get('date_to')));
         $fileExt = 'xlsx';
         $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
         $result = Excel::store($this->exportFile($fileExport, $request->get('date_from'), $request->get('date_to')), $path, env('STORAGE_DISK'));

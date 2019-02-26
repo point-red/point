@@ -2,15 +2,13 @@
 
 namespace App\Model\Purchase\PurchaseInvoice;
 
-use App\Model\Accounting\ChartOfAccountType;
-use App\Model\Accounting\Journal;
-use App\Model\Finance\Payment\Payment;
-use App\Model\Finance\Payment\PaymentDetail;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\TransactionModel;
+use App\Model\Accounting\Journal;
+use App\Model\Accounting\ChartOfAccountType;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
 class PurchaseInvoice extends TransactionModel
 {
@@ -86,13 +84,13 @@ class PurchaseInvoice extends TransactionModel
 
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
-        if (!empty($items) && is_array($items)) {
+        if (! empty($items) && is_array($items)) {
             $items = array_column($items, null, 'item_id');
         }
 
         // TODO validation services is required if items is null and must be array
         $services = $data['services'] ?? [];
-        if (!empty($services) && is_array($services)) {
+        if (! empty($services) && is_array($services)) {
             $services = array_column($services, null, 'service_id');
         }
 
@@ -104,7 +102,7 @@ class PurchaseInvoice extends TransactionModel
                 $item = $items[$itemId];
                 $price = $item['price'] ?? $item['purchase_price'];
 
-                array_push($purchaseInvoiceItems, array(
+                array_push($purchaseInvoiceItems, [
                     'purchase_receive_id' => $purchaseReceiveItem->purchase_receive_id,
                     'purchase_receive_item_id' => $purchaseReceiveItem->id,
                     'item_id' => $itemId,
@@ -118,7 +116,7 @@ class PurchaseInvoice extends TransactionModel
                     'taxable' => $item['taxable'] ?? 1,
                     'notes' => $item['notes'] ?? null,
                     'allocation_id' => $item['allocation_id'] ?? null,
-                ));
+                ]);
 
                 $amount += $purchaseReceiveItem->quantity * ($price - ($item['discount_value'] ?? 0));
             }
@@ -148,7 +146,7 @@ class PurchaseInvoice extends TransactionModel
         $amount -= $data['discount_value'] ?? 0;
         $amount += $data['delivery_fee'] ?? 0;
 
-        if ($data['type_of_tax'] === 'exclude' && !empty($data['tax'])) {
+        if ($data['type_of_tax'] === 'exclude' && ! empty($data['tax'])) {
             $amount += $data['tax'];
         }
 
@@ -181,7 +179,7 @@ class PurchaseInvoice extends TransactionModel
          * -------------------------------------------
          * 1. Account Payable       |       |   v    | Master Supplier
          * 2. Inventories           |   v   |        | Master Item
-         * 3. Income Tax Receivable |   v   |        |
+         * 3. Income Tax Receivable |   v   |        |.
          */
 
         // 1. Account Payable
@@ -193,12 +191,11 @@ class PurchaseInvoice extends TransactionModel
         $journal->credit = $purchaseInvoice->amount;
         $journal->save();
 
-        $totalItemsAmount = $purchaseInvoice->items->reduce(function($carry, $item) {
+        $totalItemsAmount = $purchaseInvoice->items->reduce(function ($carry, $item) {
             return $carry + $item->quantity * ($item->price - $item->discount_value);
         }, 0);
 
         foreach ($purchaseInvoice->items as $purchaseItem) {
-
             $itemAmount = ($purchaseItem->price - $purchaseItem->discount_value) * $purchaseItem->quantity;
             $itemAmountPercentage = $itemAmount / $totalItemsAmount;
             // Add global discount
@@ -216,7 +213,7 @@ class PurchaseInvoice extends TransactionModel
             $journal->form_id = $purchaseInvoice->form->id;
             $journal->journalable_type = Item::class;
             $journal->journalable_id = $purchaseItem->item_id;
-            $journal->chart_of_account_id = ChartOfAccountType::where('name','inventory')->first()->accounts->first()->id;;
+            $journal->chart_of_account_id = ChartOfAccountType::where('name', 'inventory')->first()->accounts->first()->id;
             $journal->debit = $itemAmount;
             $journal->save();
         }
@@ -224,7 +221,7 @@ class PurchaseInvoice extends TransactionModel
         // 3. Income Tax Receivable
         $journal = new Journal;
         $journal->form_id = $purchaseInvoice->form->id;
-        $journal->chart_of_account_id = ChartOfAccountType::where('name','other account receivable')->first()->accounts->first()->id;;
+        $journal->chart_of_account_id = ChartOfAccountType::where('name', 'other account receivable')->first()->accounts->first()->id;
         $journal->debit = $purchaseInvoice->tax;
         $journal->save();
     }

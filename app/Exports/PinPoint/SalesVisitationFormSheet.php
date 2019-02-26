@@ -96,7 +96,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
                 $event->writer->setCreator('Point');
             },
 
-            AfterSheet::class => function(AfterSheet $event) {
+            AfterSheet::class => function (AfterSheet $event) {
                 $event->sheet->getDelegate()->getStyle('A1:K1')->getFont()->setBold(true);
                 $styleArray = [
                     'borders' => [

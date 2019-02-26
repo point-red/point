@@ -2,8 +2,8 @@
 
 namespace App\Helpers\Journal;
 
-use App\Model\Accounting\Journal;
 use App\Model\Form;
+use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
 
 class BalanceHelper

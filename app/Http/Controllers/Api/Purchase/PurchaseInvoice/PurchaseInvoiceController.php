@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 
+use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
+use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
-use App\Model\Accounting\Journal;
-use App\Model\Form;
 
 class PurchaseInvoiceController extends Controller
 {
@@ -26,17 +26,17 @@ class PurchaseInvoiceController extends Controller
             ->joinForm()
             ->join(Supplier::getTableName(), PurchaseInvoice::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
             ->notArchived()
-            ->when($request->get('remaining_info'), function($query) use ($request) {
+            ->when($request->get('remaining_info'), function ($query) use ($request) {
                 $journalPayment = Journal::selectRaw('SUM(IFNULL(debit, 0)) AS debit')
                     ->addSelect('form_id_reference')
                     ->where(Journal::getTableName('chart_of_account_id'), $request->get('coa_invoice'))
                     ->where('debit', '>', 0);
 
-                $query->leftJoinSub($journalPayment, 'journal_payment', function($join) {
-                        $join->on(Form::getTableName('id'), '=', 'journal_payment.form_id_reference');
-                    })
+                $query->leftJoinSub($journalPayment, 'journal_payment', function ($join) {
+                    $join->on(Form::getTableName('id'), '=', 'journal_payment.form_id_reference');
+                })
                     ->addSelect(\DB::raw('IFNULL(journal_payment.debit, 0) AS paid'))
-                    ->addSelect(\DB::raw(PurchaseInvoice::getTableName('amount') . ' - IFNULL(journal_payment.debit, 0) AS remaining'));
+                    ->addSelect(\DB::raw(PurchaseInvoice::getTableName('amount').' - IFNULL(journal_payment.debit, 0) AS remaining'));
             })
             ->with('form');
 

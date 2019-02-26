@@ -21,7 +21,6 @@ class PurchaseContractItem extends TransactionModel
         'allocation_id',
     ];
 
-
     protected $casts = [
         'price' => 'double',
         'quantity' => 'double',

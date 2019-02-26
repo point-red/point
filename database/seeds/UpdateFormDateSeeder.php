@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Database\Seeder;
 
 class UpdateFormDateSeeder extends Seeder
@@ -10,12 +11,12 @@ class UpdateFormDateSeeder extends Seeder
      */
     public function run()
     {
-      $salesVisitations = \App\Model\Plugin\PinPoint\SalesVisitation::all();
-      foreach ($salesVisitations as $salesVisitation) {
-        $form = $salesVisitation->form()->first();
-        $form->update([
-           'date' => date( 'Y-m-d H:i:s', strtotime($salesVisitation->created_at.' + 7 hours') )
+        $salesVisitations = \App\Model\Plugin\PinPoint\SalesVisitation::all();
+        foreach ($salesVisitations as $salesVisitation) {
+            $form = $salesVisitation->form()->first();
+            $form->update([
+           'date' => date('Y-m-d H:i:s', strtotime($salesVisitation->created_at.' + 7 hours')),
         ]);
-      }
+        }
     }
 }

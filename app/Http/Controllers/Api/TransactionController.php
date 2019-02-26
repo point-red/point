@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Transaction\StoreTransactionRequest;
-use App\Http\Resources\ApiResource;
-use App\Model\Finance\Payment\Payment;
+use Illuminate\Http\Request;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
+use App\Model\Finance\Payment\Payment;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use App\Http\Requests\Transaction\StoreTransactionRequest;
 
 class TransactionController extends Controller
 {
@@ -160,11 +160,9 @@ class TransactionController extends Controller
 
     private function createPurchase()
     {
-
     }
 
     private function createSales()
     {
-
     }
 }

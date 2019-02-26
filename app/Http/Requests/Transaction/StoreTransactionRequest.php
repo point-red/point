@@ -26,11 +26,8 @@ class StoreTransactionRequest extends FormRequest
     public function rules(Request $request)
     {
         $array = [
-            'date' => 'bail|required|date',
-            '*.discount_percent' => 'bail|nullable|numeric|min:0',
-            '*.discount_value' => 'bail|numeric|min:0',
-            'items' => 'required_without:services',
-            'services' => 'required_without:items',
+            'purchase' => 'required_without:sales',
+            'sales' => 'required_without:purchase',
         ];
 
         /**
@@ -38,12 +35,18 @@ class StoreTransactionRequest extends FormRequest
          */
         if ($request->has('supplier_id')) {
             $array = array_merge($array, [
-                'supplier_id' => 'bail|integer|min:1|exists:tenant.suppliers,id',
-                'due_date' => 'bail|required|date',
-                'delivery_fee' => 'bail|numeric|min:0',
-                'discount_value' => 'bail|numeric|min:0',
-                'type_of_tax' => 'bail|required|in:include,exclude,non',
-                'tax' => 'bail|required|numeric|min:0',
+                'purchase.supplier_id' => 'bail|integer|min:1|exists:tenant.suppliers,id',
+                'purchase.date' => 'bail|required|date',
+                'purchase.due_date' => 'bail|required|date',
+                'purchase.delivery_fee' => 'bail|numeric|min:0',
+                'purchase.discount_value' => 'bail|numeric|min:0',
+                'purchase.type_of_tax' => 'bail|required|in:include,exclude,non',
+                'purchase.tax' => 'bail|required|numeric|min:0',
+                'purchase.discount_percent' => 'bail|nullable|numeric|min:0',
+                'purchase.discount_value' => 'bail|numeric|min:0',
+                'purchase.items' => 'required_without:purchase.services',
+                'purchase.services' => 'required_without:purchase.items',
+                
             ]);
 
             if ($request->has('purchase.items')) {
@@ -84,15 +87,19 @@ class StoreTransactionRequest extends FormRequest
          */
         if ($request->has('customer_id')) {
             $array = array_merge($array, [
-                'customer_id' => 'bail|integer|min:1|exists:tenant.customers,id',
-                'eta' => 'bail|required|date',
-                'due_date' => 'bail|required|date',
-                'cash_only' => 'boolean',
-                'need_down_payment' => 'boolean',
-                'delivery_fee' => 'bail|numeric|min:0',
-                'discount_value' => 'bail|numeric|min:0',
-                'type_of_tax' => 'bail|required|in:include,exclude,non',
-                'tax' => 'bail|required|numeric|min:0',
+                'sales.customer_id' => 'bail|integer|min:1|exists:tenant.customers,id',
+                'sales.date' => 'bail|required|date',
+                'sales.eta' => 'bail|required|date',
+                'sales.cash_only' => 'boolean',
+                'sales.need_down_payment' => 'boolean',
+                'sales.delivery_fee' => 'bail|numeric|min:0',
+                'sales.discount_value' => 'bail|numeric|min:0',
+                'sales.type_of_tax' => 'bail|required|in:include,exclude,non',
+                'sales.tax' => 'bail|required|numeric|min:0',
+                'sales.due_date' => 'bail|required|date',
+
+                'sales.items' => 'required_without:sales.services',
+                'sales.services' => 'required_without:sales.items',
             ]);
 
             if ($request->has('sales.items')) {
@@ -115,7 +122,7 @@ class StoreTransactionRequest extends FormRequest
 
             if ($request->has('sales.services')) {
                 $array = array_merge($array, [
-                    'purchase.services.*.service_id' => 'bail|required|integer|min:1|exists:tenant.services,id',
+                    'sales.services.*.service_id' => 'bail|required|integer|min:1|exists:tenant.services,id',
                 ]);
             }
 

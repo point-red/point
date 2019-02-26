@@ -2,9 +2,31 @@
 
 namespace App\Model\Purchase\PurchaseContract;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\TransactionModel;
 
-class PurchaseContractGroupItem extends Model
+class PurchaseContractGroupItem extends TransactionModel
 {
-    //
+    protected $connection = 'tenant';
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'group_id',
+        'group_name',
+        'price',
+        'quantity',
+        'notes',
+        'allocation_id',
+    ];
+
+    protected $casts = [
+        'price' => 'double',
+        'quantity' => 'double',
+        'converter' => 'double',
+    ];
+
+    public function purchaseContract()
+    {
+        return $this->belongsTo(PurchaseContract::class);
+    }
 }

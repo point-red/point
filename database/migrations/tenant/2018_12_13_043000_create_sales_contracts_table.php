@@ -15,10 +15,11 @@ class CreateSalesContractsTable extends Migration
     {
         Schema::create('sales_contracts', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('supplier_id');
+            $table->unsignedInteger('customer_id');
+            $table->string('customer_name');
             $table->decimal('amount', 65, 30);
 
-            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');
+            $table->foreign('customer_id')->references('id')->on('suppliers')->onDelete('restrict');
         });
     }
 

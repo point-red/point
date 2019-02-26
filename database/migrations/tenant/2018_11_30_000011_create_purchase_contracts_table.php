@@ -16,6 +16,7 @@ class CreatePurchaseContractsTable extends Migration
         Schema::create('purchase_contracts', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('supplier_id');
+            $table->string('supplier_name');
             $table->decimal('amount', 65, 30);
 
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');

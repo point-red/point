@@ -12,8 +12,15 @@ class InventoryAuditItem extends TransactionModel
     public $timestamps = false;
 
     protected $casts = [
-        'quantity'  => 'double',
+        'quantity' => 'double',
         'converter' => 'double',
+    ];
+
+    protected $fillable = [
+        'item_id',
+        'quantity',
+        'unit',
+        'notes',
     ];
 
     public function item()

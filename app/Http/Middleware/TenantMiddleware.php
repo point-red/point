@@ -30,7 +30,7 @@ class TenantMiddleware
                 $authUser = auth()->user();
                 $request->merge(compact('authUser'));
 
-                $project = Project::join('project_preferences', 'project_preferences.project_id', '=', 'projects.id')
+                $project = Project::leftJoin('project_preferences', 'project_preferences.project_id', '=', 'projects.id')
                     ->where('code', $request->header('Tenant'))
                     ->select('projects.*')
                     ->with('preference')

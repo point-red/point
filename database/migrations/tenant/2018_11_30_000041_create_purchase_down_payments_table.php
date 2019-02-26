@@ -16,6 +16,7 @@ class CreatePurchaseDownPaymentsTable extends Migration
         Schema::create('purchase_down_payments', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('supplier_id');
+            $table->string('supplier_name');
             $table->unsignedInteger('downpaymentable_id')->nullable()->index();
             $table->string('downpaymentable_type')->nullable()->index();
             $table->decimal('amount', 65, 30);

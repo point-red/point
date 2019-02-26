@@ -71,7 +71,7 @@ class PurchaseContract extends TransactionModel
         } elseif ($data['group_items']) {
             foreach ($data['group_items'] as $groupItem) {
                 $contractGroupItem = new PurchaseContractGroupItem;
-                $contractGroupItem->fill($groupItem]);
+                $contractGroupItem->fill($groupItem);
 
                 $amount += $groupItem->quantity * $groupItem->price;
 

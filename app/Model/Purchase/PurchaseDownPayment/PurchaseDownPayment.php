@@ -4,6 +4,8 @@ namespace App\Model\Purchase\PurchaseDownPayment;
 
 use App\Model\Form;
 use App\Model\Master\Supplier;
+use App\Model\Purchase\PurchaseContract\PurchaseContract;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseDownPayment extends Model
@@ -13,16 +15,15 @@ class PurchaseDownPayment extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'required_date',
-        'supplier_id',
         'supplier_name',
+        'amount',
     ];
 
     protected $casts = [
         'amount' => 'double',
     ];
 
-    public $defaultNumberPrefix = 'DP';
+    public $defaultNumberPrefix = 'PDP';
 
     public function form()
     {
@@ -37,12 +38,44 @@ class PurchaseDownPayment extends Model
         return $this->morphTo();
     }
 
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
     public static function create($data)
     {
         $purchaseDownPayment = new self;
-        if (empty($data['supplier_name'])) {
-            $data['supplier_name'] = Supplier::find($data['supplier_id'], ['name']);
+        // TODO validation purchase_order_id required_without purchase_contract_id
+        if (!empty($data['purchase_order_id'])) {
+            $downpaymentable_id = $data['purchase_order_id'];
+
+            $purchaseDownPayment->downpaymentable_id = $downpaymentable_id;
+            $purchaseDownPayment->downpaymentable_type = PurchaseOrder::class;
+
+            $supplier = PurchaseOrder::select(Supplier::getTableName('id'), Supplier::getTableName('name'))
+                ->where(PurchaseOrder::getTableName('id'), $downpaymentable_id)
+                ->join(Supplier::getTableName(), Supplier::getTableName('id'), '=', PurchaseOrder::getTableName('supplier_id'))
+                ->first();
         }
+        else if (!empty($data['purchase_contract_id'])) {
+            $downpaymentable_id = $data['purchase_contract_id'];
+
+            $purchaseDownPayment->downpaymentable_id = $downpaymentable_id;
+            $purchaseDownPayment->downpaymentable_type = PurchaseContract::class;
+
+            $supplier = PurchaseContract::select(Supplier::getTableName('id'), Supplier::getTableName('name'))
+                ->where(PurchaseContract::getTableName('id'), $downpaymentable_id)
+                ->join(Supplier::getTableName(), Supplier::getTableName('id'), '=', PurchaseContract::getTableName('supplier_id'))
+                ->first();
+        }
+
+        if (empty($supplier)) {
+            // TODO error
+        }
+
+        $purchaseDownPayment->supplier_id = $supplier->id;
+        $purchaseDownPayment->supplier_name = $supplier->name;
         $purchaseDownPayment->fill($data);
         $purchaseDownPayment->save();
 

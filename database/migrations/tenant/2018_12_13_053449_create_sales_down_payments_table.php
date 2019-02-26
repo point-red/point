@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePurchaseDownPaymentsTable extends Migration
+class CreateSalesDownPaymentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,15 @@ class CreatePurchaseDownPaymentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_down_payments', function (Blueprint $table) {
+        Schema::create('sales_down_payments', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('supplier_id');
+            $table->unsignedInteger('customer_id');
             $table->unsignedInteger('downpaymentable_id')->nullable()->index();
             $table->string('downpaymentable_type')->nullable()->index();
             $table->decimal('amount', 65, 30);
             $table->unsignedInteger('paid_by')->nullable();
 
-            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('restrict');
             $table->foreign('paid_by')->references('id')->on('payments')->onDelete('restrict');
         });
     }
@@ -33,6 +33,6 @@ class CreatePurchaseDownPaymentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchase_down_payments');
+        Schema::dropIfExists('sales_down_payments');
     }
 }

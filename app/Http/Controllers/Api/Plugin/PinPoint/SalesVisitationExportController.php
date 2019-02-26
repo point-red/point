@@ -2,29 +2,56 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
-use Carbon\Carbon;
+use App\Exports\PinPoint\SalesVisitationFormExport;
+use App\Exports\PinPoint\ChartInterestReasonExport;
+use App\Exports\PinPoint\ChartNotInterestReasonExport;
+use App\Exports\PinPoint\ChartSimilarProductExport;
 use App\Model\CloudStorage;
-use Illuminate\Http\Request;
 use App\Model\Project\Project;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\PinPoint\SalesVisitationFormExport;
 
 class SalesVisitationExportController extends Controller
 {
+    protected function exportFile($file, $dateFrom, $dateTo)
+    {
+        switch ($file) {
+            case 'SalesVisitationReport':
+                $export = new SalesVisitationFormExport($dateFrom, $dateTo);
+                break;
+            case 'ChartInterestReason':
+                $export = new ChartInterestReasonExport($dateFrom, $dateTo);
+                break;
+            case 'ChartNotInterestReason':
+                $export = new ChartNotInterestReasonExport($dateFrom, $dateTo);
+                break;
+            case 'ChartSimilarProduct':
+                $export = new ChartSimilarProductExport($dateFrom, $dateTo);
+                break;
+            default:
+                $export = new SalesVisitationFormExport($dateFrom, $dateTo);
+                break;
+        }
+
+        return $export;
+    }
+
     public function export(Request $request)
     {
-        info('here'.$request->get('date_from'));
+        $fileExport = !empty($request->get('file_export')) ? $request->get('file_export') : 'SalesVisitationReport';
+
         $tenant = strtolower($request->header('Tenant'));
         $key = str_random(16);
         $fileName = strtoupper($tenant)
-            .' - Sales Visitation Report - '
-            .date('dMY', strtotime($request->get('date_from')))
-            .'-'
-            .date('dMY', strtotime($request->get('date_to')));
+            . ' - '.$fileExport.' - '
+            . date('dMY', strtotime($request->get('date_from')))
+            . '-'
+            . date('dMY', strtotime($request->get('date_to')));
         $fileExt = 'xlsx';
         $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
-        $result = Excel::store(new SalesVisitationFormExport($request->get('date_from'), $request->get('date_to')), $path, env('STORAGE_DISK'));
+        $result = Excel::store($this->exportFile($fileExport, $request->get('date_from'), $request->get('date_to')), $path, env('STORAGE_DISK'));
 
         if (! $result) {
             return response()->json([

@@ -2,6 +2,7 @@
 
 namespace App\Helpers\Ratio;
 
+use App\Model\Form;
 use DateTime;
 use App\Model\Accounting\Journal;
 use App\Model\Accounting\ChartOfAccount;
@@ -86,13 +87,15 @@ class Ratio
         }
 
         if ($chartOfAccount->is_debit) {
-            $total = Journal::whereIn('chart_of_account_id', $ids)
-                ->where('date', '<=', date('Y-m-t 23:59:59', strtotime($date)))
+            $total = Journal::join(Form::getTableName(), Form::getTableName('id'), '=', Journal::getTableName('form_id'))
+                ->whereIn('chart_of_account_id', $ids)
+                ->where('forms.date', '<=', date('Y-m-t 23:59:59', strtotime($date)))
                 ->selectRaw('sum(debit) - sum(credit) as total')
                 ->pluck('total');
         } else {
-            $total = Journal::whereIn('chart_of_account_id', $ids)
-                ->where('date', '<=', date('Y-m-t 23:59:59', strtotime($date)))
+            $total = Journal::join(Form::getTableName(), Form::getTableName('id'), '=', Journal::getTableName('form_id'))
+                ->whereIn('chart_of_account_id', $ids)
+                ->where('forms.date', '<=', date('Y-m-t 23:59:59', strtotime($date)))
                 ->selectRaw('sum(credit) - sum(debit) as total')
                 ->pluck('total');
         }

@@ -2,30 +2,54 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesContract;
 
+use App\Http\Resources\ApiCollection;
+use App\Model\Master\Customer;
+use App\Model\Sales\SalesContract\SalesContract;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class SalesContractController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $salesContracts = SalesContract::eloquentFilter($request)
+            ->join(Customer::getTableName(), SalesContract::getTableName('customer_id'), '=', Customer::getTableName('id'))
+            ->select(SalesContract::getTableName('*'))
+            ->joinForm()
+            ->notArchived()
+            ->with('form');
+
+        $salesContracts = pagination($salesContracts, $request->get('limit'));
+
+        return new ApiCollection($salesContracts);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
+     * @throws \Throwable
      */
     public function store(Request $request)
     {
-        //
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+            $salesContract = SalesContract::create($request->all());
+            $salesContract
+                ->load('form')
+                ->load('customer');
+
+            return new ApiResource($salesContract);
+        });
+
+        return $result;
     }
 
     /**

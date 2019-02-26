@@ -16,13 +16,12 @@ class PurchaseDownPaymentController extends Controller
      *
      * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
         $purchaseDownPayments = PurchaseDownPayment::eloquentFilter($request)
-            ->select(PurchaseDownPayment::getTableName('*'))
             ->joinForm()
             ->notArchived()
-            ->with('form');
+            ->with('form', 'supplier', 'downpaymentable');
 
         $purchaseDownPayments = pagination($purchaseDownPayments, $request->get('limit'));
 
@@ -42,12 +41,7 @@ class PurchaseDownPaymentController extends Controller
             $purchaseDownPayment = PurchaseDownPayment::create($request->all());
             $purchaseDownPayment
                 ->load('form')
-                ->load('employee')
-                ->load('supplier')
-                ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('supplier');
 
             return new ApiResource($purchaseDownPayment);
         });

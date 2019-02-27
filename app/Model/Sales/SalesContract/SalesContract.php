@@ -4,6 +4,8 @@ namespace App\Model\Sales\SalesContract;
 
 use App\Model\Form;
 use App\Model\Master\Customer;
+use App\Model\Master\Group;
+use App\Model\Master\Item;
 use App\Model\TransactionModel;
 
 class SalesContract extends TransactionModel
@@ -15,7 +17,6 @@ class SalesContract extends TransactionModel
     protected $fillable = [
         'customer_id',
         'customer_name',
-        'amount',
     ];
 
     protected $casts = [
@@ -51,45 +52,52 @@ class SalesContract extends TransactionModel
             $data['customer_name'] = Customer::find($data['customer_id'], ['name']);
         }
         $salesContract->fill($data);
-        $salesContract->save();
-
-        $form = new Form;
-        $form->fillData($data, $salesContract);
 
         $items = [];
         $groupItems = [];
         $amount = 0;
 
-        if ($data['items']) {
+        if (!empty($data['items'])) {
+            $itemIds = array_column($data['items'], 'item_id');
+            $dbItems = Item::select('id', 'name')->whereIn('id', $itemIds)->get()->keyBy('id');
+
             foreach ($data['items'] as $item) {
                 $contractItem = new SalesContractItem;
                 $contractItem->fill($item);
+                $contractItem->item_name = $dbItems[$item['item_id']]->name;
 
-                $amount += $item->quantity * $item->price;
+                $amount += $item['quantity'] * $item['price'];
 
                 array_push($items, $contractItem);
             }
-        } elseif ($data['group_items']) {
-            foreach ($data['group_items'] as $groupItem) {
-                $contractGroupItem = new SalesContractGroupItem;
-                $contractGroupItem->fill($groupItem);
+        }
+        else if (!empty($data['groups'])) {
+            $groupIds = array_column($data['groups'], 'group_id');
+            $dbGroups = Group::select('id', 'name')->whereIn('id', $groupIds)->get()->keyBy('id');
 
-                $amount += $groupItem->quantity * $groupItem->price;
+            foreach ($data['groups'] as $groupItem) {
+                $contractGroup = new SalesContractGroupItem;
+                $contractGroup->fill($groupItem);
+                $contractGroup->group_name = $dbGroups[$groupItem['group_id']]->name;
 
-                array_push($groupItems, $contractGroupItem);
+                $amount += $groupItem['quantity'] * $groupItem['price'];
+
+                array_push($groupItems, $contractGroup);
             }
         }
 
         $salesContract->amount = $amount;
         $salesContract->save();
 
-        if (! empty($items)) {
+        if (!empty($items)) {
             $salesContract->items()->saveMany($items);
         }
-
-        if (! empty($groupItems)) {
-            $salesContract->groupItems()->saveMany($items);
+        else if (!empty($groupItems)) {
+            $salesContract->groupItems()->saveMany($groupItems);
         }
+
+        $form = new Form;
+        $form->fillData($data, $salesContract);
 
         return $salesContract;
     }

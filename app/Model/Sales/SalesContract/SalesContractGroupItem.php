@@ -2,6 +2,7 @@
 
 namespace App\Model\Sales\SalesContract;
 
+use App\Model\Master\Group;
 use App\Model\TransactionModel;
 
 class SalesContractGroupItem extends TransactionModel
@@ -22,11 +23,15 @@ class SalesContractGroupItem extends TransactionModel
     protected $casts = [
         'price' => 'double',
         'quantity' => 'double',
-        'converter' => 'double',
     ];
 
     public function salesContract()
     {
         return $this->belongsTo(SalesContract::class);
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
     }
 }

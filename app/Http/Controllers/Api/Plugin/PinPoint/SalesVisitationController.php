@@ -35,6 +35,10 @@ class SalesVisitationController extends Controller
             ->with('details.item')
             ->select('pin_point_sales_visitations.*');
 
+        if ($request->get('customer_id')) {
+            $salesVisitationForm = $salesVisitationForm->where('customer_id', $request->get('customer_id'));
+        }
+
         $dateFrom = date('Y-m-d 00:00:00', strtotime($request->get('date_from')));
         $dateTo = date('Y-m-d 23:59:59', strtotime($request->get('date_to')));
         $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$dateFrom, $dateTo]);

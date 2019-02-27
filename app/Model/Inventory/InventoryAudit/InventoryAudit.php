@@ -27,8 +27,27 @@ class InventoryAudit extends TransactionModel
         return $this->hasMany(InventoryAuditItem::class);
     }
 
-    public function create()
+    public function create($data)
     {
-        // TODO: save inventory audit
+        $inventoryAudit = new InventoryAudit;
+        $inventoryAudit->warehouse_id = $data['warehouse_id'];
+        $inventoryAudit->save();
+
+        $form = new Form;
+        $form->fillData($data, $inventoryAudit);
+
+        $items = $data['items'];
+        $inventoryAuditItems = [];
+        foreach ($items as $key => $item) {
+            // TODO validation $item
+            $inventoryAuditItem = new InventoryAuditItem;
+            $inventoryAuditItem->fill($item);
+
+            array_push($inventoryAuditItems, $inventoryAuditItem);
+        }
+
+        $inventoryAudit->items()->saveMany($inventoryAuditItems);
+
+        return $inventoryAudit;
     }
 }

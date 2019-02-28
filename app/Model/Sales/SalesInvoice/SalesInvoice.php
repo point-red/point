@@ -238,7 +238,7 @@ class SalesInvoice extends TransactionModel
         foreach ($salesInvoice->items as $salesItem) {
             $inventory = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
                 ->where('item_id', $salesItem->item_id)
-                ->whereBetween(Form::getTableName('date'), [$salesInvoice->form->date, $salesInvoice->form->date])
+                ->where(Form::getTableName('date'), '<=', $salesInvoice->form->date)
                 ->select(Inventory::getTableName('*'))
                 ->orderBy(Form::getTableName('date'), 'desc')
                 ->with('form')

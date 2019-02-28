@@ -152,7 +152,8 @@ class EmployeeController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $employee = Employee::where('employees.id', $id)
+        $employee = Employee::eloquentFilter($request)
+            ->where('employees.id', $id)
             ->with('group')
             ->with('gender')
             ->with('religion')
@@ -167,10 +168,6 @@ class EmployeeController extends Controller
             ->with('addresses')
             ->with('phones')
             ->select('employees.*')
-            ->filters($request->get('filters'))
-            ->fields($request->get('fields'))
-            ->sortBy($request->get('sort_by'))
-            ->includes($request->get('includes'))
             ->first();
 
         return new ApiResource($employee);

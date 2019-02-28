@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesContract;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Sales\SalesContract\SalesContract\StoreSalesContractRequest;
 use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
 use App\Model\Master\Customer;
 use App\Model\Sales\SalesContract\SalesContract;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
 class SalesContractController extends Controller
@@ -34,11 +36,11 @@ class SalesContractController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  StoreSalesContractRequest $request
      * @return \Illuminate\Http\Response
      * @throws \Throwable
      */
-    public function store(Request $request)
+    public function store(StoreSalesContractRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $salesContract = SalesContract::create($request->all());

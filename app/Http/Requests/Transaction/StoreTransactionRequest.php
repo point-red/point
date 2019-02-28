@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Transaction;
 
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class StoreTransactionRequest extends FormRequest
 {
@@ -46,7 +46,6 @@ class StoreTransactionRequest extends FormRequest
                 'purchase.discount_value' => 'bail|numeric|min:0',
                 'purchase.items' => 'required_without:purchase.services',
                 'purchase.services' => 'required_without:purchase.items',
-
             ]);
 
             if ($request->has('purchase.items')) {
@@ -55,8 +54,8 @@ class StoreTransactionRequest extends FormRequest
                     'purchase.items.*.gross_weight' => 'bail|nullable|numeric|min:0',
                     'purchase.items.*.tare_weight' => 'bail|nullable|numeric|min:0',
                     'purchase.items.*.net_weight' => 'bail|nullable|numeric|min:0',
-                    'purchase.items.*.quantity' => 'bail|required|numeric|min:0',
-                    'purchase.items.*.price' => 'bail|numeric|min:0',
+                    'purchase.items.*.quantity' => 'bail|required|numeric|min:0|not_in:0',
+                    'purchase.items.*.price' => 'bail|numeric|min:0|not_in:0',
                     'purchase.items.*.discount_percent' => 'bail|nullable|numeric|min:0',
                     'purchase.items.*.discount_value' => 'bail|numeric|min:0',
                     'purchase.items.*.allocation_id' => 'bail|nullable|integer|min:1|exists:tenant.allocations,id',
@@ -108,8 +107,8 @@ class StoreTransactionRequest extends FormRequest
                     'sales.items.*.gross_weight' => 'bail|nullable|numeric|min:0',
                     'sales.items.*.tare_weight' => 'bail|nullable|numeric|min:0',
                     'sales.items.*.net_weight' => 'bail|nullable|numeric|min:0',
-                    'sales.items.*.quantity' => 'bail|required|numeric|min:0',
-                    'sales.items.*.price' => 'bail|numeric|min:0',
+                    'sales.items.*.quantity' => 'bail|required|numeric|min:0|not_in:0',
+                    'sales.items.*.price' => 'bail|numeric|min:0|not_in:0',
                     'sales.items.*.discount_percent' => 'bail|nullable|numeric|min:0',
                     'sales.items.*.discount_value' => 'bail|numeric|min:0',
                     'sales.items.*.allocation_id' => 'bail|nullable|integer|min:1|exists:tenant.allocations,id',

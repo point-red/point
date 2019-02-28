@@ -11,12 +11,13 @@ class UpdateFormDateSeeder extends Seeder
      */
     public function run()
     {
-        $salesVisitations = \App\Model\Plugin\PinPoint\SalesVisitation::all();
+        $salesVisitations = \App\Model\Plugin\PinPoint\SalesVisitation::with('form')->get();
         foreach ($salesVisitations as $salesVisitation) {
-            $form = $salesVisitation->form()->first();
-            $form->update([
-           'date' => date('Y-m-d H:i:s', strtotime($salesVisitation->created_at.' + 7 hours')),
-        ]);
+            if (date('H:i:s', strtotime($salesVisitation->form->date)) == '00:00:00') {
+                $salesVisitation->form->update([
+                    'date' => date('Y-m-d', strtotime($salesVisitation->form->date)) . ' ' . date( 'H:i:s', strtotime($salesVisitation->created_at))
+                ]);
+            }
         }
     }
 }

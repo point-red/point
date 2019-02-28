@@ -4,16 +4,10 @@ namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiResource;
 use App\Http\Resources\ApiCollection;
 use App\Model\HumanResource\Employee\Employee;
-use App\Model\HumanResource\Employee\EmployeeEmail;
-use App\Model\HumanResource\Employee\EmployeeGroup;
-use App\Model\HumanResource\Employee\EmployeeScorer;
-use App\Model\HumanResource\Employee\EmployeeContract;
-use App\Model\HumanResource\Employee\EmployeeSocialMedia;
-use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
 
@@ -28,7 +22,8 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        $employees = Employee::with('group')
+        $employees = Employee::eloquentFilter($request)
+            ->with('group')
             ->with('gender')
             ->with('religion')
             ->with('maritalStatus')
@@ -42,7 +37,6 @@ class EmployeeController extends Controller
             ->with('addresses')
             ->with('phones')
             ->select('employees.*')
-            ->eloquentFilter($request)
             ->paginate($request->get('paginate') ?? 20);
 
         $additional = [];

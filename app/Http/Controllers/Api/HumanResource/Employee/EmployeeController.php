@@ -146,7 +146,8 @@ class EmployeeController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $employee = Employee::where('employees.id', $id)
+        $employee = Employee::eloquentFilter($request)
+            ->where('employees.id', $id)
             ->with('group')
             ->with('gender')
             ->with('religion')

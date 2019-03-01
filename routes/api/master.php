@@ -25,7 +25,7 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::apiResource('suppliers', 'SupplierController');
     // Route::apiResource('employees', 'EmployeeController');
     // Route::apiResource('kpi/templates', 'KpiTemplateController');
-    // Route::apiResource('expeditions', 'ExpeditionController');
+    Route::apiResource('expeditions', 'ExpeditionController');
     Route::apiResource('allocations', 'AllocationController');
 
     Route::apiResource('price-list-items', 'PriceListItemController');

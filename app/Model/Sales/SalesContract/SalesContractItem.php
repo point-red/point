@@ -2,6 +2,7 @@
 
 namespace App\Model\Sales\SalesContract;
 
+use App\Model\Master\Item;
 use App\Model\TransactionModel;
 
 class SalesContractItem extends TransactionModel
@@ -30,5 +31,10 @@ class SalesContractItem extends TransactionModel
     public function salesContract()
     {
         return $this->belongsTo(SalesContract::class);
+    }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
     }
 }

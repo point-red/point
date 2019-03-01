@@ -38,7 +38,7 @@ class InventoryHelper
         if ($inventory->total_quantity > 0) {
             $inventory->cogs = $inventory->total_value / $inventory->total_quantity;
         } else {
-            $inventory->cogs = 0;
+            $inventory->cogs = $lastInventory->cogs;
         }
 
         $inventory->save();

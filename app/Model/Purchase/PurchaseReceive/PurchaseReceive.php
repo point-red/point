@@ -97,7 +97,7 @@ class PurchaseReceive extends TransactionModel
 
             $additionalFee = ($data['delivery_fee'] ?? 0) - ($data['discount_value'] ?? 0);
             $totalItemPrice = array_reduce($data['items'], function ($carry, $item) {
-                $price = $item['price'] ?? $item['purchase_price'] ?? 0;
+                $price = ($item['price'] ?? 0) * $item['quantity'];
                 if ($price > 0) {
                     return $carry + $price - ($item['discount_value'] ?? 0);
                 }

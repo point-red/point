@@ -26,10 +26,10 @@ class GroupController extends Controller
         if (! GroupClassReference::isAvailable($groupClassReference)) {
             return response()->json(GroupClassReference::$isNotAvailableResponse);
         }
+        $groupClassReference = GroupClassReference::getTypeClass($groupClassReference)
 
-        $groups = Group::where('class_reference', GroupClassReference::getTypeClass($groupClassReference))
-            ->eloquentFilter($request)
-            ->paginate($request->get('limit') ?? 20);
+        $groups = Group::where('class_reference', $groupClassReference)->eloquentFilter($request);
+        $groups = pagination($groups, $request->get('limit'));
 
         return new ApiCollection($groups);
     }

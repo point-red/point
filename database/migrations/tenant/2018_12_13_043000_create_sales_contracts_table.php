@@ -19,7 +19,7 @@ class CreateSalesContractsTable extends Migration
             $table->string('customer_name');
             $table->decimal('amount', 65, 30);
 
-            $table->foreign('customer_id')->references('id')->on('suppliers')->onDelete('restrict');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('restrict');
         });
     }
 

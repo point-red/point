@@ -14,6 +14,7 @@ class InventoryAuditController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return ApiCollection
      */
     public function index(Request $request)

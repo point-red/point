@@ -38,7 +38,7 @@ class GroupController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param StoreGroupRequest $request
      * @return ApiResource
      */
     public function store(StoreGroupRequest $request)

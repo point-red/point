@@ -25,17 +25,19 @@ class UpdateFormDateSeeder extends Seeder
         foreach (\App\Model\Master\Customer::all() as $customer) {
             $sv = \App\Model\Plugin\PinPoint\SalesVisitation::where('customer_id', $customer->id)->first();
 
-            $address = new Address;
-            $address->address = $sv->address;
-            $address->addressable_type = \App\Model\Master\Customer::class;
-            $address->addressable_id = $customer->id;
-            $address->save();
+            if ($sv) {
+                $address = new Address;
+                $address->address = $sv->address;
+                $address->addressable_type = \App\Model\Master\Customer::class;
+                $address->addressable_id = $customer->id;
+                $address->save();
 
-            $phone = new Phone();
-            $phone->number = $sv->phone;
-            $phone->phoneable_type = \App\Model\Master\Customer::class;
-            $phone->phoneable_id = $customer->id;
-            $phone->save();
+                $phone = new Phone();
+                $phone->number = $sv->phone;
+                $phone->phoneable_type = \App\Model\Master\Customer::class;
+                $phone->phoneable_id = $customer->id;
+                $phone->save();
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Group;
 use App\Model\Master\Item;
+use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
 
 class SalesContract extends TransactionModel
@@ -45,6 +46,11 @@ class SalesContract extends TransactionModel
         return $this->hasMany(SalesContractItem::class);
     }
 
+    public function salesOrders()
+    {
+        return $this->hasMany(SalesOrder::class);
+    }
+
     public static function create($data)
     {
         $salesContract = new self;
@@ -70,8 +76,7 @@ class SalesContract extends TransactionModel
 
                 array_push($items, $contractItem);
             }
-        }
-        else if (!empty($data['groups'])) {
+        } else if (!empty($data['groups'])) {
             $groupIds = array_column($data['groups'], 'group_id');
             $dbGroups = Group::select('id', 'name')->whereIn('id', $groupIds)->get()->keyBy('id');
 
@@ -91,8 +96,7 @@ class SalesContract extends TransactionModel
 
         if (!empty($items)) {
             $salesContract->items()->saveMany($items);
-        }
-        else if (!empty($groupItems)) {
+        } else if (!empty($groupItems)) {
             $salesContract->groupItems()->saveMany($groupItems);
         }
 

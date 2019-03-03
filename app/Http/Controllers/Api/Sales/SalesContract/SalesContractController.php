@@ -57,12 +57,17 @@ class SalesContractController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param  Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        //
+        $salesContract = SalesContract::joinForm()
+            ->eloquentFilter($request)
+            ->findOrFail($id);
+
+        return new ApiResource($salesContract);
     }
 
     /**

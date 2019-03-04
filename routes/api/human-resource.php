@@ -8,6 +8,9 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::apiResource('template-scores', 'KpiTemplateScoreController');
         Route::get('results/showBy', 'KpiResultController@showBy');
         Route::apiResource('results', 'KpiResultController');
+        Route::post('templates/export', 'KpiTemplateExportController@export');
+        Route::post('templates/import/check', 'KpiTemplateImportController@check');
+        Route::post('templates/import', 'KpiTemplateImportController@import');
     });
 
     Route::prefix('employee')->namespace('Employee')->group(function () {

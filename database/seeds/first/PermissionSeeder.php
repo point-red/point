@@ -28,7 +28,7 @@ class PermissionSeeder extends Seeder
         Permission::createIfNotExists('menu master');
 
         $allPermission = [
-            'user', 'role',
+            'user', 'role', 'customer'
         ];
 
         foreach ($allPermission as $permission) {

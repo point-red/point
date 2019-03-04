@@ -74,7 +74,7 @@ class PermissionSeeder extends Seeder
         Permission::createIfNotExists('menu sales');
 
         $allPermission = [
-            'sales request',
+            'sales quotation',
             'sales contract',
             'sales order',
             'delivery order',

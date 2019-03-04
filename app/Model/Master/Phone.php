@@ -26,6 +26,9 @@ class Phone extends MasterModel
                 ->whereNotIn('id', $ids)->delete();
 
             for ($i = 0; $i < count($phones); $i++) {
+                if ($phones[$i]['number'] == null) {
+                    break;
+                }
                 // If phone has id then update existing phone
                 // If not then create new phone
                 if (isset($phones[$i]['id'])) {

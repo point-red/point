@@ -26,6 +26,9 @@ class Email extends MasterModel
                 ->whereNotIn('id', $ids)->delete();
 
             for ($i = 0; $i < count($emails); $i++) {
+                if ($emails[$i]['email'] == null) {
+                    break;
+                }
                 // If email has id then update existing email
                 // If not then create new email
                 if (isset($emails[$i]['id'])) {

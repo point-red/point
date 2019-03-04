@@ -26,6 +26,9 @@ class Address extends MasterModel
                 ->whereNotIn('id', $ids)->delete();
 
             for ($i = 0; $i < count($addresses); $i++) {
+                if ($addresses[$i]['address'] == null) {
+                    break;
+                }
                 // If address has id then update existing address
                 // If not then create new address
                 if (isset($addresses[$i]['id'])) {

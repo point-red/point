@@ -51,6 +51,37 @@ class SalesQuotation extends TransactionModel
             ->orWhereNull('forms.canceled');
     }
 
+    public function updateIfDone()
+    {
+        $salesQuotationItems = $this->items;
+        $salesQuotationItemIds = $salesQuotationItems->pluck('id');
+
+        $quantityOrderedItems = SalesOrder::joinForm()
+            ->join(SalesOrderItem::getTableName(), SalesOrder::getTableName('id'), '=', SalesOrderItem::getTableName('sales_order_id'))
+            ->groupBy('sales_quantity_item_id')
+            ->select(SalesOrderItem::getTableName('sales_quantity_item_id'))
+            ->addSelect(\DB::raw('SUM(quantity) AS sum_ordered'))
+            ->whereIn('sales_quantity_item_id', $salesQuotationItemIds)
+            ->active()
+            ->get()
+            ->pluck('sum_ordered', 'sales_quantity_item_id');
+
+        // Make form done when all item ordered
+        $done = true;
+        foreach ($salesQuotationItems as $salesQuotationItem) {
+            $quantityOrdered = $quantityOrderedItems[$salesQuotationItem->id] ?? 0;
+            if ($salesQuotationItem->quantity - $quantityOrdered > 0) {
+                $done = false;
+                break;
+            }
+        }
+
+        if ($done == true) {
+            $this->form->done = true;
+            $this->form->save();
+        }
+    }
+
     public static function create($data)
     {
         $salesQuotation = new self;

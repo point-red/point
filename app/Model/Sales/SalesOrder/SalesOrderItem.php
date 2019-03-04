@@ -4,9 +4,9 @@ namespace App\Model\Sales\SalesOrder;
 
 use App\Model\Master\Item;
 use App\Model\Master\Allocation;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\PointModel;
 
-class SalesOrderItem extends Model
+class SalesOrderItem extends PointModel
 {
     protected $connection = 'tenant';
 
@@ -23,6 +23,9 @@ class SalesOrderItem extends Model
         'converter',
         'notes',
         'allocation_id',
+        'sales_quotation_item_id',
+        'sales_contract_item_id',
+        'sales_contract_group_item_id',
     ];
 
     protected $casts = [

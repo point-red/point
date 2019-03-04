@@ -11,6 +11,7 @@ use App\Model\TransactionModel;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
+use App\Model\Sales\SalesContract\SalesContract;
 
 class SalesOrder extends TransactionModel
 {
@@ -115,14 +116,16 @@ class SalesOrder extends TransactionModel
 
     public static function create($data)
     {
-        $salesOrder = new self;
-
+        if (! empty($data['sales_contract_id'])) {
+            $salesContract = SalesContract::findOrFail($data['sales_contract_id']);
+        }
         // TODO validation customer_name is optional type non empty string
         if (empty($data['customer_name'])) {
             $customer = Customer::find($data['customer_id'], ['name']);
             $data['customer_name'] = $customer->name;
         }
 
+        $salesOrder = new self;
         $salesOrder->fill($data);
 
         $amount = 0;
@@ -181,6 +184,11 @@ class SalesOrder extends TransactionModel
 
         $form = new Form;
         $form->fillData($data, $salesOrder);
+
+        // TODO validation if item_id trully belong to group on the contract
+        if (isset($salesContract)) {
+            $salesContract->updateIfDone();
+        }
 
         return $salesOrder;
     }

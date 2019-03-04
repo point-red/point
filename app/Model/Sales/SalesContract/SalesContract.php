@@ -8,6 +8,7 @@ use App\Model\Master\Group;
 use App\Model\Master\Item;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
+use App\Model\Sales\SalesOrder\SalesOrderItem;
 
 class SalesContract extends TransactionModel
 {
@@ -49,6 +50,64 @@ class SalesContract extends TransactionModel
     public function salesOrders()
     {
         return $this->hasMany(SalesOrder::class);
+    }
+
+    public function updateIfDone()
+    {
+        // Make form done when all items / group items ordered
+        $done = true;
+
+        if (! empty($this->items)) {
+            $salesContractItems = $this->items;
+            $salesContractItemIds = $salesContractItems->pluck('id');
+            
+            $quantityOrderedItems = SalesOrder::joinForm()
+                ->join(SalesOrderItem::getTableName(), SalesOrder::getTableName('id'), '=', SalesOrderItem::getTableName('sales_order_id'))
+                ->groupBy('sales_contract_item_id')
+                ->select(SalesOrderItem::getTableName('sales_contract_item_id'))
+                ->addSelect(\DB::raw('SUM(quantity) AS sum_ordered'))
+                ->whereIn('sales_contract_item_id', $salesContractItemIds)
+                ->active()
+                ->get()
+                ->pluck('sum_ordered', 'sales_contract_item_id');
+            
+            foreach ($salesContractItems as $salesContractItem) {
+                $quantityOrdered = $quantityOrderedItems[$salesContractItem->id] ?? 0;
+                if ($salesContractItem->quantity - $quantityOrdered > 0) {
+                    $done = false;
+                    break;
+                }
+            }
+        } else if (! empty($this->groupItems)) {
+            $salesContractGroupItems = $this->groupItems;
+            $salesContractGroupItemIds = $salesContractGroupItems->pluck('id');
+
+            $quantityOrderedGroupItems = SalesOrder::joinForm()
+                ->join(SalesOrderItem::getTableName(), SalesOrder::getTableName('id'), '=', SalesOrderItem::getTableName('sales_order_id'))
+                ->groupBy('sales_contract_group_item_id')
+                ->select(SalesOrderItem::getTableName('sales_contract_group_item_id'))
+                ->addSelect(\DB::raw('SUM(quantity) AS sum_ordered'))
+                ->whereIn('sales_contract_group_item_id', $salesContractGroupItemIds)
+                ->active()
+                ->get()
+                ->pluck('sum_ordered', 'sales_contract_group_item_id');
+            
+            foreach ($salesContractGroupItems as $salesContractGroupItem) {
+                $quantityOrdered = $quantityOrderedGroupItems[$salesContractGroupItem->id] ?? 0;
+                if ($salesContractGroupItem->quantity - $quantityOrdered > 0) {
+                    $done = false;
+                    break;
+                }
+            }
+        } else {
+            // TODO throw error if sales contract doesn't have items and groupItems
+            $done = false;
+        }
+
+        if ($done === true) {
+            $this->form->done = true;
+            $this->form->save();
+        }
     }
 
     public static function create($data)

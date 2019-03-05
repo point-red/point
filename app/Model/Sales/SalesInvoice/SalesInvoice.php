@@ -35,6 +35,8 @@ class SalesInvoice extends TransactionModel
         'discount_percent' => 'double',
         'discount_value' => 'double',
         'tax' => 'double',
+        'paid' => 'double',
+        'remaining' => 'double',
     ];
 
     public $defaultNumberPrefix = 'INVOICE';

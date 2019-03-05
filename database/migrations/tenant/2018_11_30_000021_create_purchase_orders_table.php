@@ -26,7 +26,7 @@ class CreatePurchaseOrdersTable extends Migration
             $table->string('shipping_phone')->nullable();
             $table->string('shipping_email')->nullable();
             $table->unsignedInteger('warehouse_id')->nullable();
-            $table->date('eta'); // estimated time arrival
+            $table->datetime('eta'); // estimated time arrival
             $table->boolean('cash_only')->default(false);
             $table->boolean('need_down_payment')->default(false);
             $table->decimal('delivery_fee', 65, 30)->default(0);

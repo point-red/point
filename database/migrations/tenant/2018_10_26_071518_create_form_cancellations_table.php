@@ -17,7 +17,7 @@ class CreateFormCancellationsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('form_id');
             $table->timestamp('requested_at')->useCurrent();
-            $table->date('expired_at');
+            $table->datetime('expired_at');
             $table->datetime('approval_at');
             $table->string('token');
             $table->string('reason')->nullable();

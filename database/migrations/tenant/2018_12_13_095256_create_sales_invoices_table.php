@@ -23,7 +23,7 @@ class CreateSalesInvoicesTable extends Migration
             $table->string('shipping_address')->nullable();
             $table->string('shipping_phone')->nullable();
             $table->string('shipping_email')->nullable();
-            $table->date('due_date');
+            $table->datetime('due_date');
             $table->decimal('delivery_fee', 65, 30)->default(0);
             $table->decimal('discount_percent', 65, 30)->nullable();
             $table->decimal('discount_value', 65, 30)->default(0);

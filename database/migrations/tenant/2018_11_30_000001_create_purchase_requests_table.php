@@ -15,7 +15,7 @@ class CreatePurchaseRequestsTable extends Migration
     {
         Schema::create('purchase_requests', function (Blueprint $table) {
             $table->increments('id');
-            $table->date('required_date');
+            $table->datetime('required_date');
             $table->unsignedInteger('employee_id');
             $table->string('employee_name');
             $table->unsignedInteger('supplier_id')->nullable();

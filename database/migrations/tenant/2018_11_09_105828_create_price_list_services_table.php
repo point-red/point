@@ -17,7 +17,7 @@ class CreatePriceListServicesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('pricing_group_id')->index();
             $table->unsignedInteger('service_id')->index();
-            $table->date('date');
+            $table->datetime('date');
             $table->decimal('price', 65, 30);
             $table->decimal('discount_percent', 65, 30)->nullable();
             $table->decimal('discount_value', 65, 30)->default(0);

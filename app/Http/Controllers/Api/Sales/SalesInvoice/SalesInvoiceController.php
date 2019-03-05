@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesInvoice;
 
+use App\Model\Form;
 use Illuminate\Http\Request;
-use App\Model\Master\Customer;
+use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
@@ -21,10 +22,20 @@ class SalesInvoiceController extends Controller
     public function index(Request $request)
     {
         $salesInvoices = SalesInvoice::eloquentFilter($request)
-            ->join(Customer::getTableName(), SalesInvoice::getTableName('customer_id'), '=', Customer::getTableName('id'))
-            ->select(SalesInvoice::getTableName('*'))
             ->joinForm()
             ->notArchived()
+            ->when($request->get('remaining_info'), function ($query) use ($request) {
+                $journalPayment = Journal::selectRaw('SUM(IFNULL(credit, 0)) AS credit')
+                    ->addSelect('form_id_reference')
+                    ->where(Journal::getTableName('chart_of_account_id'), $request->get('coa_invoice'))
+                    ->where('credit', '>', 0);
+
+                $query->leftJoinSub($journalPayment, 'journal_payment', function ($join) {
+                    $join->on(Form::getTableName('id'), '=', 'journal_payment.form_id_reference');
+                })
+                    ->addSelect(\DB::raw('IFNULL(journal_payment.credit, 0) AS paid'))
+                    ->addSelect(\DB::raw(SalesInvoice::getTableName('amount') . ' - IFNULL(journal_payment.credit, 0) AS remaining'));
+            })
             ->with('form');
 
         $salesInvoices = pagination($salesInvoices, $request->get('limit'));

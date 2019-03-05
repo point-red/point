@@ -43,7 +43,9 @@ class EmployeeController extends Controller
             ->with('addresses')
             ->with('phones')
             ->select('employees.*')
-            ->paginate($request->get('paginate') ?? 20);
+            ->paginate($request->get('paginate'));
+
+        $employees = pagination($employees);
 
         $additional = [];
         foreach (explode(',', $request->get('additional')) as $addition) {
@@ -52,8 +54,7 @@ class EmployeeController extends Controller
             }
         }
 
-        return (new ApiCollection($employees))
-            ->additional(['additional' => $additional]);
+        return (new ApiCollection($employees))->additional(['additional' => $additional]);
     }
 
     /**

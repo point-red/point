@@ -24,7 +24,7 @@ class PriceListItemController extends Controller
         $availablePricingGroups = PricingGroup::select('id', 'label', 'notes')->get()->toArray();
         $date = $request->get('date') ?? date('Y-m-d H:i:s');
 
-        $items = Item::with('units.prices');
+        $items = Item::eloquentFilter()->with('units.prices');
         $items = pagination($items, $request->get('limit'));
 
         $items->getCollection()->transform(function ($item) use ($date, $availablePricingGroups) {

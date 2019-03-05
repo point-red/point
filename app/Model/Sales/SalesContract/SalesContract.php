@@ -19,10 +19,19 @@ class SalesContract extends TransactionModel
     protected $fillable = [
         'customer_id',
         'customer_name',
+        'cash_only',
+        'need_down_payment',
+        'discount_percent',
+        'discount_value',
+        'type_of_tax',
+        'tax',
     ];
 
     protected $casts = [
         'amount' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double',
+        'tax' => 'double',
     ];
 
     public $defaultNumberPrefix = 'CONTRACT';

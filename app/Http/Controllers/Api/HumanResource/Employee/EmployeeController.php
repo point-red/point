@@ -42,8 +42,7 @@ class EmployeeController extends Controller
             ->with('emails')
             ->with('addresses')
             ->with('phones')
-            ->select('employees.*')
-            ->paginate($request->get('paginate'));
+            ->select('employees.*');
 
         $employees = pagination($employees);
 

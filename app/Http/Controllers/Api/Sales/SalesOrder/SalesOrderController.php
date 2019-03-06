@@ -23,7 +23,6 @@ class SalesOrderController extends Controller
     {
         $salesOrders = SalesOrder::eloquentFilter($request)
             ->join(Customer::getTableName(), SalesOrder::getTableName('customer_id'), '=', Customer::getTableName('id'))
-            ->select(SalesOrder::getTableName('*'))
             ->joinForm()
             ->notArchived()
             ->with('form');

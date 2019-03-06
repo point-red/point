@@ -24,7 +24,6 @@ class PurchaseOrderController extends Controller
     {
         $purchaseOrders = PurchaseOrder::eloquentFilter($request)
             ->join(Supplier::getTableName(), PurchaseOrder::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
-            ->select(PurchaseOrder::getTableName('*'))
             ->joinForm()
             ->notArchived()
             ->with('form');

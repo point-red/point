@@ -27,18 +27,12 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
-        $suppliers = Supplier::eloquentFilter($request)
-            ->with('groups')
-            ->with('addresses')
-            ->with('emails')
-            ->with('banks')
-            ->with('phones')
-            ->with('contactPersons');
+        $suppliers = Supplier::eloquentFilter($request);
 
-        if ($request->get('group_id')) {
+        if ($request->has('group_id')) {
             $suppliers = $suppliers->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
                 ->where('groupables.groupable_type', Supplier::class)
-                ->where('groupables.group_id', '=', 1);
+                ->where('groupables.group_id', '=', $request->get('group_id'));
         }
 
         $suppliers = pagination($suppliers, request()->get('limit'));
@@ -94,14 +88,7 @@ class SupplierController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $suppliers = Supplier::eloquentFilter($request)
-            ->with('groups')
-            ->with('addresses')
-            ->with('emails')
-            ->with('banks')
-            ->with('phones')
-            ->with('contactPersons')
-            ->findOrFail($id);
+        $suppliers = Supplier::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($suppliers);
     }

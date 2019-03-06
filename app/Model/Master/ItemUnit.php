@@ -34,6 +34,6 @@ class ItemUnit extends MasterModel
     {
         return $this
             ->belongsToMany(PricingGroup::class, PriceListItem::getTableName(), 'item_unit_id', 'pricing_group_id')
-            ->withPivot(['price', 'date']);
+            ->withPivot(['price', 'discount_value', 'discount_percent', 'date']);
     }
 }

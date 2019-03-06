@@ -78,7 +78,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             $row->price,
             $row->quantity * $row->price,
             $row->paymentMethod,
-            ! empty($row->dueDate) ? date('Y-m-d', strtotime($row->dueDate)) : '',
+            empty($row->dueDate) || $row->dueDate == '0000-00-00' ? '' : date('Y-m-d', strtotime($row->dueDate)),
             $row->salesVisitation->is_repeat_order == 1 ? 'Repeat' : '',
         ];
     }
@@ -97,7 +97,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
     public function registerEvents(): array
     {
         return [
-            BeforeExport::class  => function(BeforeExport $event) {
+            BeforeExport::class => function(BeforeExport $event) {
                 $event->writer->setCreator('Point');
             },
             AfterSheet::class => function(AfterSheet $event) {

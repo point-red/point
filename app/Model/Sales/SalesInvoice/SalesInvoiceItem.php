@@ -4,11 +4,11 @@ namespace App\Model\Sales\SalesInvoice;
 
 use App\Model\Master\Item;
 use App\Model\Master\Allocation;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\TransactionModel;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
 
-class SalesInvoiceItem extends Model
+class SalesInvoiceItem extends TransactionModel
 {
     protected $connection = 'tenant';
 

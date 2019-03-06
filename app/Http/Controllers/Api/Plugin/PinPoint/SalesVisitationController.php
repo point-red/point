@@ -175,12 +175,12 @@ class SalesVisitationController extends Controller
                     $detail->price = $array_price[$i];
                     $detail->quantity = $array_quantity[$i];
                     $detail->save();
-                }
-            }
 
-            if (count($array_item) > 0 && $isNewCustomer == false) {
-                $salesVisitation->is_repeat_order = true;
-                $salesVisitation->save();
+                    if ($i == 0 && $isNewCustomer == false) {
+                        $salesVisitation->is_repeat_order = true;
+                        $salesVisitation->save();
+                    }
+                }
             }
         }
 

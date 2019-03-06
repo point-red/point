@@ -24,7 +24,7 @@ class PriceListItemController extends Controller
         $availablePricingGroups = PricingGroup::select('id', 'label', 'notes')->get()->toArray();
         $date = $request->get('date') ?? date('Y-m-d H:i:s');
 
-        $items = Item::eloquentFilter()->with('units.prices');
+        $items = Item::eloquentFilter($request)->with('units.prices');
         $items = pagination($items, $request->get('limit'));
 
         $items->getCollection()->transform(function ($item) use ($date, $availablePricingGroups) {
@@ -49,13 +49,24 @@ class PriceListItemController extends Controller
                 /* Iterate through $availablePricingGroups and set its price */
                 foreach ($availablePricingGroups as $availablePricingGroup) {
                     $price = 0;
+                    $discount_value = 0;
+                    $discount_percent = null;
                     foreach ($priceGroups as $priceGroup) {
                         if ($priceGroup['id'] == $availablePricingGroup['id']) {
                             $price = floatval($priceGroup['pivot']['price']);
+                            $discount_value = floatval($priceGroup['pivot']['discount_value']);
+                            $discount_percent = $priceGroup['pivot']['discount_percent'];
+                            if (!is_null($discount_percent)) {
+                                $discount_percent = floatval($discount_percent);
+                            }
                             break;
                         }
                     }
-                    $endResultPriceGroups[] = $availablePricingGroup + ['price' => $price];
+                    $endResultPriceGroups[] = $availablePricingGroup + [
+                        'price' => $price,
+                        'discount_value' => $discount_value,
+                        'discount_percent' => $discount_percent,
+                    ];
                 }
                 $unit = $unit->toArray();
                 $unit['prices'] = $endResultPriceGroups;

@@ -36,9 +36,21 @@ class CustomerController extends Controller
             ->with('contactPersons');
 
         if ($request->get('group_id')) {
-            $customers = $customers->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
+            $customers = $customers->leftJoin('groupables', 'groupables.groupable_id', '=', 'customers.id')
                 ->where('groupables.groupable_type', Customer::class)
                 ->where('groupables.group_id', '=', 1);
+        }
+
+        if ($request->get('priority')) {
+            $group = Group::where('name', 'priority')->first();
+
+            if ($group) {
+                $customers = $customers->join('groupables', 'groupables.groupable_id', '=', 'customers.id')
+                    ->where('groupables.groupable_type', Customer::class)
+                    ->where('groupables.group_id', '=', $group->id);
+            } else {
+                return new ApiCollection(Customer::where('id', 0)->get());
+            }
         }
 
         $customers = pagination($customers, $request->get('limit'));
@@ -62,8 +74,8 @@ class CustomerController extends Controller
         $customer->save();
 
         if ($request->get('group')['name']) {
-
-            $group = Group::find($request->get('group')['id']);
+            $group = Group::where('id', $request->get('group')['id'] ?? 0)
+                ->orWhere('name', $request->get('group')['name'])->first();
 
             if (!$group) {
                 $group = new Group;
@@ -95,7 +107,7 @@ class CustomerController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $customers = Customer::eloquentFilter($request)
+        $customer = Customer::eloquentFilter($request)
             ->with('groups')
             ->with('addresses')
             ->with('emails')
@@ -104,7 +116,7 @@ class CustomerController extends Controller
             ->with('contactPersons')
             ->findOrFail($id);
 
-        return new ApiResource($customers);
+        return new ApiResource($customer);
     }
 
     /**
@@ -124,8 +136,8 @@ class CustomerController extends Controller
         $customer->save();
 
         if ($request->get('group')['name']) {
-
-            $group = Group::find($request->get('group')['id']);
+            $group = Group::where('id', $request->get('group')['id'] ?? 0)
+                ->orWhere('name', $request->get('group')['name'])->first();
 
             if (!$group) {
                 $group = new Group;
@@ -135,6 +147,9 @@ class CustomerController extends Controller
             }
 
             $group->customers()->attach($customer);
+        } else {
+            // TODO: remove this in relase v1.1
+            $customer->groups()->detach();
         }
 
         Address::saveFromRelation($customer, $request->get('addresses'));

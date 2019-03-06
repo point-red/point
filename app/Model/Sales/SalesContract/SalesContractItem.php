@@ -12,10 +12,11 @@ class SalesContractItem extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'item_unit_id',
-        'item_name',
+        'item_id',
         'price',
         'quantity',
+        'discount_percent',
+        'discount_value',
         'unit',
         'converter',
         'notes',
@@ -26,6 +27,8 @@ class SalesContractItem extends TransactionModel
         'price' => 'double',
         'quantity' => 'double',
         'converter' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double',
     ];
 
     public function salesContract()

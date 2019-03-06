@@ -13,9 +13,10 @@ class SalesContractGroupItem extends TransactionModel
 
     protected $fillable = [
         'group_id',
-        'group_name',
         'price',
         'quantity',
+        'discount_percent',
+        'discount_value',
         'notes',
         'allocation_id',
     ];
@@ -23,6 +24,8 @@ class SalesContractGroupItem extends TransactionModel
     protected $casts = [
         'price' => 'double',
         'quantity' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double',
     ];
 
     public function salesContract()

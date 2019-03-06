@@ -20,7 +20,9 @@ class CreateSalesContractGroupItemsTable extends Migration
             $table->string('group_name');
             $table->decimal('price', 65, 30);
             $table->decimal('quantity', 65, 30);
-            $table->text('notes');
+            $table->decimal('discount_percent', 65, 30)->nullable();
+            $table->decimal('discount_value', 65, 30)->default(0);
+            $table->text('notes')->nullable();
             $table->unsignedInteger('allocation_id')->nullable();
 
             $table->foreign('sales_contract_id')->references('id')->on('sales_contracts')->onDelete('cascade');

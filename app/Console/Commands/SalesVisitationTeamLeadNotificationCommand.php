@@ -57,6 +57,7 @@ class SalesVisitationNotificationCommand extends Command
             // Update tenant database name in configuration
             config()->set('database.connections.tenant.database', strtolower($databaseName));
             DB::connection('tenant')->reconnect();
+            config()->set('mail.from.name', capitalize($project->name));
 
             $salesVisitationForm = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
                 ->with('form')

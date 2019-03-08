@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 
-class SalesVisitationNotificationCommand extends Command
+class SalesVisitationNotificationTeamLeadCommand extends Command
 {
     /**
      * The name and signature of the console command.

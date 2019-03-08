@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 
-class SalesVisitationNotificationTeamLeadCommand extends Command
+class SalesVisitationTeamLeadNotificationCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -58,13 +58,13 @@ class SalesVisitationNotificationTeamLeadCommand extends Command
             config()->set('database.connections.tenant.database', strtolower($databaseName));
             DB::connection('tenant')->reconnect();
             config()->set('mail.from.name', capitalize($project->name));
-
+            
             $salesVisitationForm = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
                 ->with('form')
                 ->select('pin_point_sales_visitations.*');
 
-            $dateFrom = date('Y-m-d 00:00:00', strtotime($yesterdayDate));
-            $dateTo = date('Y-m-d 23:59:59', strtotime($yesterdayDate));
+            $dateFrom = date('2019-03-01 00:00:00', strtotime($yesterdayDate));
+            $dateTo = date('2019-03-01 23:59:59', strtotime($yesterdayDate));
             $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$dateFrom, $dateTo])->get();
 
             $this->line($salesVisitationForm->count());

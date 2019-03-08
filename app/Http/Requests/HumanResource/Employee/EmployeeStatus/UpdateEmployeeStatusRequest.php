@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\HumanResource\Employee\EmployeeBaseSalary;
+namespace App\Http\Requests\HumanResource\Employee\EmployeeStatus;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreEmployeeBaseSalaryRequest extends FormRequest
+class UpdateEmployeeStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class StoreEmployeeBaseSalaryRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,7 @@ class StoreEmployeeBaseSalaryRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|unique:tenant.employee_statuses,name,'.$this->id,
         ];
     }
 }

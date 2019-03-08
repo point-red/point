@@ -131,12 +131,4 @@ class Employee extends MasterModel
     {
         return $this->belongsToMany('App\Model\Master\User', 'employee_scorer', 'employee_id', 'user_id');
     }
-
-    /**
-     * Get the base salaries for the employee.
-     */
-    public function baseSalaries()
-    {
-        return $this->hasMany(get_class(new EmployeeBaseSalary()));
-    }
 }

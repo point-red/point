@@ -16,6 +16,8 @@ class CreateEmployeeJobLocationsTable extends Migration
         Schema::create('employee_job_locations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->double('base_salary');
+            $table->double('multiplier_kpi');
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();

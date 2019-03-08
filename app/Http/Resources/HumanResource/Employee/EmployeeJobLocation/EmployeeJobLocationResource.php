@@ -14,6 +14,11 @@ class EmployeeJobLocationResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'base_salary' => $this->base_salary,
+            'multiplier_kpi' => $this->multiplier_kpi,
+        ];
     }
 }

@@ -25,6 +25,8 @@ class StoreEmployeeJobLocationRequest extends FormRequest
     {
         return [
             'name' => 'required|unique:tenant.employee_job_locations',
+            'base_salary' => 'required',
+            'multiplier_kpi' => 'required',
         ];
     }
 }

@@ -50,6 +50,7 @@ class EmployeeResource extends JsonResource
             'daily_transport_allowance' => $this->daily_transport_allowance,
             'team_leader_allowance' => $this->team_leader_allowance,
             'communication_allowance' => $this->communication_allowance,
+            'user_employee' => $this->userEmployee
         ];
     }
 }

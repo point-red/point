@@ -14,6 +14,7 @@ use App\Model\HumanResource\Employee\EmployeeScorer;
 use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeSocialMedia;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
+use App\Model\HumanResource\Employee\UserEmployee;
 use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
 
@@ -43,6 +44,7 @@ class EmployeeController extends Controller
             ->with('phones')
             ->with('status')
             ->with('jobLocation')
+            ->with('userEmployee')
             ->select('employees.*')
             ->filters($request->get('filters'))
             ->fields($request->get('fields'))
@@ -179,6 +181,7 @@ class EmployeeController extends Controller
             ->with('phones')
             ->with('status')
             ->with('jobLocation')
+            ->with('userEmployee')
             ->select('employees.*')
             ->filters($request->get('filters'))
             ->fields($request->get('fields'))
@@ -320,6 +323,17 @@ class EmployeeController extends Controller
             if (! $employee->scorers->contains($scorer['id'])) {
                 $employee->scorers()->attach($scorer['id']);
             }
+        }
+
+        $user_employee = $request->get('user_employee');
+        $deleted = array_column($request->get('user_employee'), 'id');
+        UserEmployee::where('employee_id', $employee->id)->whereNotIn('user_id', $deleted)->delete();
+        foreach ($user_employee as $data) {
+            $userEmployee = new UserEmployee;
+            $userEmployee->employee_id = $employee->id;
+            $userEmployee->user_id = $data['id'];
+            $userEmployee->save();
+            break;
         }
 
         DB::connection('tenant')->commit();

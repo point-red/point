@@ -18,6 +18,7 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::apiResource('statuses', 'EmployeeStatusController');
         Route::apiResource('job-locations', 'EmployeeJobLocationController');
         Route::apiResource('employees', 'EmployeeController');
+        Route::apiResource('user-employee', 'UserEmployeeController');
         Route::post('employees/{employee_id}/assign-assessment', 'AssignAssessmentController@store');
         Route::apiResource('employees/{employee_id}/assessment', 'EmployeeAssessmentController');
     });

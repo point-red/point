@@ -25,6 +25,8 @@ class UpdateEmployeeJobLocationRequest extends FormRequest
     {
         return [
             'name' => 'required|unique:tenant.employee_job_locations,name,'.$this->id,
+            'base_salary' => 'required',
+            'multiplier_kpi' => 'required',
         ];
     }
 }

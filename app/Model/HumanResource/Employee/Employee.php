@@ -131,4 +131,12 @@ class Employee extends MasterModel
     {
         return $this->belongsToMany('App\Model\Master\User', 'employee_scorer', 'employee_id', 'user_id');
     }
+
+    /**
+     * The user that is connected to the employee.
+     */
+    public function userEmployee()
+    {
+        return $this->belongsToMany('App\Model\Master\User', 'user_employee', 'employee_id', 'user_id');
+    }
 }

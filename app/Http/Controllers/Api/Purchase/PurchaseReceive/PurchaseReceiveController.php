@@ -22,7 +22,6 @@ class PurchaseReceiveController extends Controller
     {
         $purchaseReceives = PurchaseReceive::eloquentFilter($request)
             ->join(Supplier::getTableName(), PurchaseReceive::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
-            ->select(PurchaseReceive::getTableName('*'))
             ->joinForm()
             ->notArchived()
             ->with('form');

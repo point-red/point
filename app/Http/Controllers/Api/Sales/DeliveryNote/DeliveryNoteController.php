@@ -21,7 +21,6 @@ class DeliveryNoteController extends Controller
     {
         $deliveryNote = DeliveryNote::eloquentFilter($request)
             ->join(Customer::getTableName(), DeliveryNote::getTableName('customer_id'), '=', Customer::getTableName('id'))
-            ->select(DeliveryNote::getTableName('*'))
             ->joinForm()
             ->notArchived()
             ->with('form');

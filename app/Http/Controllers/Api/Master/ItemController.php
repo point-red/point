@@ -24,10 +24,10 @@ class ItemController extends Controller
     {
         $items = Item::eloquentFilter($request);
 
-        if ($request->get('group_id')) {
+        if ($request->has('group_id')) {
             $items = $items->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
                 ->where('groupables.groupable_type', Item::class)
-                ->where('groupables.group_id', '=', 1);
+                ->where('groupables.group_id', '=', $request->get('group_id'));
         }
 
         if ($request->get('below_stock_reminder') == true) {

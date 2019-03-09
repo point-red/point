@@ -23,7 +23,6 @@ class PurchaseRequestController extends Controller
     {
         $purchaseRequests = PurchaseRequest::eloquentFilter($request)
             ->join(Supplier::getTableName(), PurchaseRequest::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
-            ->select(PurchaseRequest::getTableName('*'))
             ->joinForm()
             ->notArchived()
             ->with('form');

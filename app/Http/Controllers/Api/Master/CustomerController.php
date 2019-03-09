@@ -27,18 +27,12 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::eloquentFilter($request)
-            ->with('groups')
-            ->with('addresses')
-            ->with('emails')
-            ->with('banks')
-            ->with('phones')
-            ->with('contactPersons');
+        $customers = Customer::eloquentFilter($request);
 
-        if ($request->get('group_id')) {
+        if ($request->has('group_id')) {
             $customers = $customers->leftJoin('groupables', 'groupables.groupable_id', '=', 'customers.id')
                 ->where('groupables.groupable_type', Customer::class)
-                ->where('groupables.group_id', '=', 1);
+                ->where('groupables.group_id', '=', $request->get('group_id'));
         }
 
         if ($request->get('priority')) {
@@ -108,14 +102,7 @@ class CustomerController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $customer = Customer::eloquentFilter($request)
-            ->with('groups')
-            ->with('addresses')
-            ->with('emails')
-            ->with('banks')
-            ->with('phones')
-            ->with('contactPersons')
-            ->findOrFail($id);
+        $customer = Customer::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($customer);
     }

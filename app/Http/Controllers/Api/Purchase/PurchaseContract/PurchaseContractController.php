@@ -17,12 +17,11 @@ class PurchaseContractController extends Controller
      *
      * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
         $purchaseContracts = PurchaseContract::eloquentFilter($request)
-            ->join(Supplier::getTableName(), PurchaseContract::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
-            ->select(PurchaseContract::getTableName('*'))
             ->joinForm()
+            ->join(Supplier::getTableName(), PurchaseContract::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
             ->notArchived()
             ->with('form');
 
@@ -61,7 +60,11 @@ class PurchaseContractController extends Controller
      */
     public function show(Request $request, $id)
     {
-        //
+        $purchaseContract = PurchaseContract::eloquentFilter($request)
+            ->with('form')
+            ->findOrFail($id);
+
+        return new ApiResource($purchaseContract);
     }
 
     /**

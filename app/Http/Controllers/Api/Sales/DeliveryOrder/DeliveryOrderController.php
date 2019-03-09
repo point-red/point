@@ -24,7 +24,6 @@ class DeliveryOrderController extends Controller
     {
         $deliverOrders = DeliveryOrder::eloquentFilter($request)
             ->join(Customer::getTableName(), DeliveryOrder::getTableName('customer_id'), '=', Customer::getTableName('id'))
-            ->select(DeliveryOrder::getTableName('*'))
             ->joinForm()
             ->notArchived()
             ->with('form');

@@ -102,9 +102,17 @@ trait EloquentFilters
     {
         $values = $this->convertJavascriptObjectToArray($values);
 
-        foreach ($values as $key => $value) {
-            $query->where($key, $value);
-        }
+        $query->where(function ($query) use ($values) {
+            foreach ($values as $key => $value) {
+                if (is_array($value)) {
+                    foreach ($values as $valueArray) {
+                        $query->orWhere($key, $valueArray);
+                    }
+                } else {
+                    $query->where($key, $value);
+                }
+            }
+        });
     }
 
     /**
@@ -134,13 +142,17 @@ trait EloquentFilters
     {
         $values = $this->convertJavascriptObjectToArray($values);
 
-        foreach ($values as $key => $value) {
-            // search each word that separate by space
-            $words = explode(' ', $value);
-            foreach ($words as $word) {
-                $query->where($key, 'like', '%'.$word.'%');
+        $query->where(function ($query) use ($values) {
+            foreach ($values as $key => $value) {
+                // search each word that separate by space
+                $query->orWhere(function ($query) use ($value, $key) {
+                    $words = explode(' ', $value);
+                    foreach ($words as $word) {
+                        $query->where($key, 'like', '%'.$word.'%');
+                    }
+                });
             }
-        }
+        });
     }
 
     /**
@@ -220,11 +232,17 @@ trait EloquentFilters
      */
     public function scopeOrFilterEqual($query, $values)
     {
-        $values = $this->convertJavascriptObjectToArray($values);
-
-        foreach ($values as $key => $value) {
-            $query->orWhere($key, $value);
-        }
+        $query->orWhere(function ($query) use ($values) {
+            foreach ($values as $key => $value) {
+                if (is_array($value)) {
+                    foreach ($values as $valueArray) {
+                        $query->orWhere($key, $valueArray);
+                    }
+                } else {
+                    $query->where($key, $value);
+                }
+            }
+        });
     }
 
     /**
@@ -253,14 +271,17 @@ trait EloquentFilters
     public function scopeOrFilterLike($query, $values)
     {
         $values = $this->convertJavascriptObjectToArray($values);
-
-        foreach ($values as $key => $value) {
-            // search each word that separate by space
-            $words = explode(' ', $value);
-            foreach ($words as $word) {
-                $query->orWhere($key, 'like', '%'.$word.'%');
+        $query->orWhere(function ($query) use ($values) {
+            foreach ($values as $key => $value) {
+                // search each word that separate by space
+                $query->orWhere(function ($query) use ($value, $key) {
+                    $words = explode(' ', $value);
+                    foreach ($words as $word) {
+                        $query->where($key, 'like', '%'.$word.'%');
+                    }
+                });
             }
-        }
+        });
     }
 
     /**

@@ -105,7 +105,7 @@ trait EloquentFilters
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
                 if (is_array($value)) {
-                    foreach ($values as $valueArray) {
+                    foreach ($value as $valueArray) {
                         $query->orWhere($key, $valueArray);
                     }
                 } else {
@@ -235,7 +235,7 @@ trait EloquentFilters
         $query->orWhere(function ($query) use ($values) {
             foreach ($values as $key => $value) {
                 if (is_array($value)) {
-                    foreach ($values as $valueArray) {
+                    foreach ($value as $valueArray) {
                         $query->orWhere($key, $valueArray);
                     }
                 } else {

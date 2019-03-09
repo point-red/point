@@ -24,7 +24,7 @@ class UpdateEmployeesTable extends Migration
             $table->double('communication_allowance');
         });
 
-        // // Rearrange
+        // Rearrange
         DB::statement('ALTER TABLE employees MODIFY COLUMN employee_code TEXT AFTER employee_group_id');
         DB::statement('ALTER TABLE employees MODIFY COLUMN employee_status_id INT UNSIGNED AFTER job_title');
         DB::statement('ALTER TABLE employees MODIFY COLUMN employee_job_location_id INT UNSIGNED AFTER employee_status_id');

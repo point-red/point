@@ -232,6 +232,8 @@ trait EloquentFilters
      */
     public function scopeOrFilterEqual($query, $values)
     {
+        $values = $this->convertJavascriptObjectToArray($values);
+
         $query->orWhere(function ($query) use ($values) {
             foreach ($values as $key => $value) {
                 if (is_array($value)) {

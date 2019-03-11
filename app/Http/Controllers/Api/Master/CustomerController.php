@@ -27,11 +27,13 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::join(Address::getTableName(), Address::getTableName('addressable_id'), '=', Customer::getTableName('id'))
-            ->join(Phone::getTableName(), Phone::getTableName('phoneable_id'), '=', Customer::getTableName('id'))
-            ->where(Address::getTableName('addressable_type'), Customer::class)
-            ->where(Phone::getTableName('phoneable_type'), Customer::class)
-            ->select(Customer::getTableName('*'))
+        $customers = Customer::leftjoin(Address::getTableName(), function ($q) {
+            $q->on(Address::getTableName('addressable_id'), '=', Customer::getTableName('id'))
+                ->where(Address::getTableName('addressable_type'), Customer::class);
+        })->leftjoin(Phone::getTableName(), function ($q) {
+            $q->on(Phone::getTableName('phoneable_id'), '=', Customer::getTableName('id'))
+                ->where(Phone::getTableName('phoneable_type'), Customer::class);
+        })->select(Customer::getTableName('*'))
             ->eloquentFilter($request);
 
         if ($request->get('group_id')) {
@@ -106,14 +108,7 @@ class CustomerController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $customer = Customer::eloquentFilter($request)
-            ->with('groups')
-            ->with('addresses')
-            ->with('emails')
-            ->with('banks')
-            ->with('phones')
-            ->with('contactPersons')
-            ->findOrFail($id);
+        $customer = Customer::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($customer);
     }

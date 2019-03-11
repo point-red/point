@@ -11,6 +11,11 @@ class SalesVisitation extends PointModel
 
     protected $table = 'pin_point_sales_visitations';
 
+    protected $casts = [
+        'total' => 'double',
+        'value' => 'double'
+    ];
+
     public function form() {
         return $this->belongsTo(Form::class);
     }

@@ -8,6 +8,7 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::apiResource('template-scores', 'KpiTemplateScoreController');
         Route::get('results/showBy', 'KpiResultController@showBy');
         Route::apiResource('results', 'KpiResultController');
+        Route::apiResource('automated', 'KpiAutomatedController');
     });
 
     Route::prefix('employee')->namespace('Employee')->group(function () {

@@ -12,7 +12,6 @@ use App\Http\Resources\HumanResource\Employee\EmployeeStatus\EmployeeStatusResou
 use App\Http\Resources\HumanResource\Employee\EmployeeStatus\EmployeeStatusCollection;
 use App\Http\Requests\HumanResource\Employee\EmployeeStatus\StoreEmployeeStatusRequest;
 use App\Http\Requests\HumanResource\Employee\EmployeeStatus\UpdateEmployeeStatusRequest;
-use Illuminate\Support\Facades\Log;
 
 class EmployeeStatusController extends Controller
 {

@@ -141,7 +141,7 @@ class CustomerController extends Controller
             if (!$group) {
                 $group = new Group;
                 $group->name = $request->get('group')['name'];
-                $group->type = Customer::class;
+                $group->type = 'Customer';
                 $group->save();
             }
 

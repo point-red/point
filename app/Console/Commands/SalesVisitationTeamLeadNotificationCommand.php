@@ -62,8 +62,8 @@ class SalesVisitationTeamLeadNotificationCommand extends Command
                 ->with('form')
                 ->select('pin_point_sales_visitations.*');
 
-            $dateFrom = date('2019-03-01 00:00:00', strtotime($yesterdayDate));
-            $dateTo = date('2019-03-01 23:59:59', strtotime($yesterdayDate));
+            $dateFrom = date('Y-m-d 00:00:00', strtotime($yesterdayDate));
+            $dateTo = date('Y-m-d 23:59:59', strtotime($yesterdayDate));
             $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$dateFrom, $dateTo])->get();
 
             $this->line($salesVisitationForm->count());

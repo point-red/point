@@ -37,21 +37,11 @@ class CustomerController extends Controller
             ->eloquentFilter($request);
 
         if ($request->get('group_id')) {
-            $customers = $customers->leftJoin('groupables', 'groupables.groupable_id', '=', 'customers.id')
-                ->where('groupables.groupable_type', Customer::class)
-                ->where('groupables.group_id', '=', 1);
-        }
-
-        if ($request->get('priority')) {
-            $group = Group::where('name', 'priority')->first();
-
-            if ($group) {
-                $customers = $customers->join('groupables', 'groupables.groupable_id', '=', 'customers.id')
+            $customers = $customers->join('groupables', function ($q) use ($request) {
+                $q->on('groupables.groupable_id', '=', 'customers.id')
                     ->where('groupables.groupable_type', Customer::class)
-                    ->where('groupables.group_id', '=', $group->id);
-            } else {
-                return new ApiCollection(Customer::where('id', 0)->get());
-            }
+                    ->where('groupables.group_id', '=', $request->get('group_id'));
+            });
         }
 
         $customers = pagination($customers, $request->get('limit'));

@@ -17,7 +17,7 @@ class CreateGroupablesTable extends Migration
         // https://laravel.com/docs/5.7/eloquent-relationships#many-to-many-polymorphic-relations
         Schema::create('groupables', function (Blueprint $table) {
             $table->unsignedInteger('group_id');
-            $table->unsignedInteger('groupable_id');
+            $table->unsignedInteger('groupable_id')->index();
             $table->string('groupable_type');
             $table->timestamps();
         });

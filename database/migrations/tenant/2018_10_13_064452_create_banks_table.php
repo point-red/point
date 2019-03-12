@@ -22,7 +22,7 @@ class CreateBanksTable extends Migration
             $table->text('notes')->nullable();
 
             // Polymorphic Relations
-            $table->unsignedInteger('bankable_id');
+            $table->unsignedInteger('bankable_id')->index();
             $table->string('bankable_type');
 
             $table->unsignedInteger('created_by')->index()->nullable();

@@ -15,7 +15,7 @@ class CreateMasterHistoriesTable extends Migration
     {
         Schema::create('master_histories', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('historyable_id');
+            $table->unsignedInteger('historyable_id')->index();
             $table->string('historyable_type');
             $table->string('column_name');
             $table->text('old')->nullable();

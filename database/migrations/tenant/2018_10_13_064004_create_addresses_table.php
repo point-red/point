@@ -26,7 +26,7 @@ class CreateAddressesTable extends Migration
             $table->boolean('is_main')->default(false);
 
             // Polymorphic Relations
-            $table->unsignedInteger('addressable_id');
+            $table->unsignedInteger('addressable_id')->index();
             $table->string('addressable_type');
 
             $table->unsignedInteger('created_by')->index()->nullable();

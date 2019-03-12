@@ -27,21 +27,24 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
-        $suppliers = Supplier::eloquentFilter($request)
-            ->with('groups')
-            ->with('addresses')
-            ->with('emails')
-            ->with('banks')
-            ->with('phones')
-            ->with('contactPersons');
+        $suppliers = Supplier::leftjoin(Address::getTableName(), function ($q) {
+            $q->on(Address::getTableName('addressable_id'), '=', Supplier::getTableName('id'))
+                ->where(Address::getTableName('addressable_type'), Supplier::class);
+        })->leftjoin(Phone::getTableName(), function ($q) {
+            $q->on(Phone::getTableName('phoneable_id'), '=', Supplier::getTableName('id'))
+                ->where(Phone::getTableName('phoneable_type'), Supplier::class);
+        })->select(Supplier::getTableName('*'))
+            ->eloquentFilter($request);
 
         if ($request->get('group_id')) {
-            $suppliers = $suppliers->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
-                ->where('groupables.groupable_type', Supplier::class)
-                ->where('groupables.group_id', '=', 1);
+            $suppliers = $suppliers->join('groupables', function ($q) use ($request) {
+                $q->on('groupables.groupable_id', '=', 'suppliers.id')
+                    ->where('groupables.groupable_type', Supplier::class)
+                    ->where('groupables.group_id', '=', $request->get('group_id'));
+            });
         }
 
-        $suppliers = pagination($suppliers, request()->get('limit'));
+        $suppliers = pagination($suppliers, $request->get('limit'));
 
         return new ApiCollection($suppliers);
     }

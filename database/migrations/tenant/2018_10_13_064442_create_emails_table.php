@@ -20,7 +20,7 @@ class CreateEmailsTable extends Migration
             $table->boolean('is_main')->default(false);
 
             // Polymorphic Relations
-            $table->unsignedInteger('emailable_id');
+            $table->unsignedInteger('emailable_id')->index();
             $table->string('emailable_type');
 
             $table->unsignedInteger('created_by')->index()->nullable();

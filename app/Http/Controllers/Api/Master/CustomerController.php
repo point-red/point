@@ -27,24 +27,21 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::eloquentFilter($request);
+        $customers = Customer::leftjoin(Address::getTableName(), function ($q) {
+            $q->on(Address::getTableName('addressable_id'), '=', Customer::getTableName('id'))
+                ->where(Address::getTableName('addressable_type'), Customer::class);
+        })->leftjoin(Phone::getTableName(), function ($q) {
+            $q->on(Phone::getTableName('phoneable_id'), '=', Customer::getTableName('id'))
+                ->where(Phone::getTableName('phoneable_type'), Customer::class);
+        })->select(Customer::getTableName('*'))
+            ->eloquentFilter($request);
 
-        if ($request->has('group_id')) {
-            $customers = $customers->leftJoin('groupables', 'groupables.groupable_id', '=', 'customers.id')
-                ->where('groupables.groupable_type', Customer::class)
-                ->where('groupables.group_id', '=', $request->get('group_id'));
-        }
-
-        if ($request->get('priority')) {
-            $group = Group::where('name', 'priority')->first();
-
-            if ($group) {
-                $customers = $customers->join('groupables', 'groupables.groupable_id', '=', 'customers.id')
+        if ($request->get('group_id')) {
+            $customers = $customers->join('groupables', function ($q) use ($request) {
+                $q->on('groupables.groupable_id', '=', 'customers.id')
                     ->where('groupables.groupable_type', Customer::class)
-                    ->where('groupables.group_id', '=', $group->id);
-            } else {
-                return new ApiCollection(Customer::where('id', 0)->get());
-            }
+                    ->where('groupables.group_id', '=', $request->get('group_id'));
+            });
         }
 
         $customers = pagination($customers, $request->get('limit'));
@@ -160,6 +157,7 @@ class CustomerController extends Controller
     public function destroy($id)
     {
         $customer = Customer::findOrFail($id);
+
         $customer->delete();
 
         return response()->json([], 204);

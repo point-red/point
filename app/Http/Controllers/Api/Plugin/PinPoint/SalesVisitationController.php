@@ -33,6 +33,7 @@ class SalesVisitationController extends Controller
             ->with('notInterestReasons')
             ->with('similarProducts')
             ->with('details.item')
+            ->eloquentFilter($request)
             ->select('pin_point_sales_visitations.*');
 
         if ($request->get('customer_id')) {

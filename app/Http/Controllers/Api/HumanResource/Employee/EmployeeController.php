@@ -44,7 +44,7 @@ class EmployeeController extends Controller
             ->with('phones')
             ->select('employees.*');
 
-        $employees = pagination($employees);
+        $employees = pagination($employees, $request->get('limit'));
 
         $additional = [];
         foreach (explode(',', $request->get('additional')) as $addition) {

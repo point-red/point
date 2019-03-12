@@ -17,6 +17,7 @@ class PurchaseInvoiceItem extends Model
         'purchase_receive_id',
         'purchase_receive_item_id',
         'item_id',
+        'item_name',
         'quantity',
         'unit',
         'converter',

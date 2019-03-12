@@ -54,7 +54,7 @@ class InventoryAuditController extends Controller
      * @param  int  $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $inventoryAudits = InventoryAudit::eloquentFilter($request)
             ->with('form')

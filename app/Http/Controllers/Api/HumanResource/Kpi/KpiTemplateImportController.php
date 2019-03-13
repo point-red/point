@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\HumanResource\Kpi;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Contracts\Filesystem\Factory;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\Kpi\KpiTemplateImport;
 use App\Imports\Kpi\TemplateCheckImport;
@@ -15,6 +16,12 @@ use Carbon\Carbon;
 
 class KpiTemplateImportController extends Controller
 {
+    protected $filesystem;
+
+    public function __construct(Factory $filesystem) {
+        $this->filesystem   = $filesystem;
+    }
+
     public function check(Request $request)
     {
         $request->validate([
@@ -68,7 +75,9 @@ class KpiTemplateImportController extends Controller
         $fileExt = 'xlsx';
         $path = 'tmp/' . $tenant . '/import';
 
-        $save = Storage::disk(env('STORAGE_DISK'))->put($path, $file);
+        // $save = Storage::disk(env('STORAGE_DISK'))->put($path, $file);
+        // $save = Excel::store($file, $path, env('STORAGE_DISK'));
+        $save = $this->filesystem->disk(env('STORAGE_DISK'))->put($path, $file);
 
         $cloudStorage = new CloudStorage();
         $cloudStorage->file_name = $fileName;

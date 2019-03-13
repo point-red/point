@@ -33,7 +33,12 @@ class SalesVisitationController extends Controller
             ->with('notInterestReasons')
             ->with('similarProducts')
             ->with('details.item')
+            ->eloquentFilter($request)
             ->select('pin_point_sales_visitations.*');
+
+        if ($request->get('customer_id')) {
+            $salesVisitationForm = $salesVisitationForm->where('customer_id', $request->get('customer_id'));
+        }
 
         $dateFrom = date('Y-m-d 00:00:00', strtotime($request->get('date_from')));
         $dateTo = date('Y-m-d 23:59:59', strtotime($request->get('date_to')));
@@ -83,6 +88,8 @@ class SalesVisitationController extends Controller
         $salesVisitation->name = $request->get('customer');
         $salesVisitation->phone = $request->get('phone');
         $salesVisitation->address = $request->get('address');
+        $salesVisitation->sub_district = $request->get('sub_district');
+        $salesVisitation->district = $request->get('district');
         $salesVisitation->latitude = $request->get('latitude');
         $salesVisitation->longitude = $request->get('longitude');
         $salesVisitation->group = $request->get('group');
@@ -169,12 +176,12 @@ class SalesVisitationController extends Controller
                     $detail->price = $array_price[$i];
                     $detail->quantity = $array_quantity[$i];
                     $detail->save();
-                }
-            }
 
-            if (count($array_item) > 0 && $isNewCustomer == false) {
-                $salesVisitation->is_repeat_order = true;
-                $salesVisitation->save();
+                    if ($i == 0 && $isNewCustomer == false) {
+                        $salesVisitation->is_repeat_order = true;
+                        $salesVisitation->save();
+                    }
+                }
             }
         }
 

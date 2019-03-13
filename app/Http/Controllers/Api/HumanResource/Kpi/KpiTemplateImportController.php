@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\Kpi\KpiTemplateImport;
 use App\Imports\Kpi\TemplateCheckImport;
@@ -11,7 +12,6 @@ use App\Model\HumanResource\Kpi\KpiTemplate;
 use App\Model\CloudStorage;
 use App\Model\Project\Project;
 use Carbon\Carbon;
-use Storage;
 
 class KpiTemplateImportController extends Controller
 {
@@ -51,7 +51,6 @@ class KpiTemplateImportController extends Controller
             }
         }
         $import = new KpiTemplateImport();
-        // $import->onlySheets(['Kpi Template', 'Kpi Template Group']);
 
         if (Excel::import($import, $file)) {
             return response()->json([

@@ -39,37 +39,4 @@ class KpiTemplateExport implements WithMultipleSheets
 
         return $sheets;
     }
-
-    // public function collection()
-    // {
-    //     return KpiTemplate::all();
-    // }
-
-    // public function __construct(string $id)
-    // {
-    //     $this->id = $id;
-    // }
-    //
-    // public function query()
-    // {
-    //     return KpiTemplate::query()->where('id', $this->id)->first();
-    // }
-    //
-    // public function headings(): array
-    // {
-    //     return [
-    //         'Name',
-    //         'Created By',
-    //         'Updated By',
-    //     ];
-    // }
-    //
-    // public function map($row): array
-    // {
-    //     return [
-    //         $row->name,
-    //         $row->created_by,
-    //         $row->updated_by,
-    //     ];
-    // }
 }

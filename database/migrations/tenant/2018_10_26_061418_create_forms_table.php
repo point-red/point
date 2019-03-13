@@ -24,7 +24,7 @@ class CreateFormsTable extends Migration
             $table->unsignedInteger('updated_by')->index();
             $table->boolean('done')->default(false);
 
-            $table->unsignedInteger('formable_id');
+            $table->unsignedInteger('formable_id')->index();
             $table->string('formable_type');
 
             // Status approval

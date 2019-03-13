@@ -37,8 +37,8 @@
             $actualCall += $user->actual_call;
             $actualEffectiveCall += $user->actual_effective_call;
             $actualValue += $user->actual_value;
-            $actualCallPercentage += $user->target_call > 0 ? $user->actual_call / $user->target_call : 0;
-            $actualEffectiveCallPercentage += $user->target_effective_call > 0 ? $user->actual_effective_call / $user->target_effective_call : 0;
+            $actualCallPercentage += $user->target_call > 0 ? $user->actual_call / $user->target_call < 1 ? $user->actual_call / $user->target_call : 1 : 0;
+            $actualEffectiveCallPercentage += $user->target_effective_call > 0 ? $user->actual_effective_call / $user->target_effective_call < 1 ? $user->actual_effective_call / $user->target_effective_call : 1 : 0;
             $actualValuePercentage += $user->target_value > 0 ? $user->actual_value / $user->target_value : 0;
         ?>
         <tr>
@@ -50,8 +50,8 @@
             <td>{{ $user->actual_call ?? 0 }}</td>
             <td>{{ $user->actual_effective_call ?? 0 }}</td>
             <td>{{ $user->actual_value ?? 0 }}</td>
-            <td>{{ $user->target_call > 0 ? $user->actual_call / $user->target_call : 0 }}</td>
-            <td>{{ $user->target_effective_call > 0 ? $user->actual_effective_call / $user->target_effective_call : 0 }}</td>
+            <td>{{ $user->target_call > 0 ? $user->actual_call / $user->target_call < 1 ? $user->actual_call / $user->target_call : 1 : 0 }}</td>
+            <td>{{ $user->target_effective_call > 0 ? $user->actual_effective_call / $user->target_effective_call < 1 ? $user->actual_effective_call / $user->target_effective_call : 1 : 0 }}</td>
             <td>{{ $user->target_value > 0 ? $user->actual_value / $user->target_value : 0 }}</td>
 
             @foreach ($items as $item)

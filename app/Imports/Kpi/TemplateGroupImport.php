@@ -12,6 +12,8 @@ class TemplateGroupImport implements ToCollection
     public function collection(Collection $rows)
     {
         $i = 1;
+        $templateGroupId = [];
+
         foreach ($rows as $row) {
             if ($i > 1) {
                 $kpiTemplateGroup = new KpiTemplateGroup();
@@ -19,9 +21,9 @@ class TemplateGroupImport implements ToCollection
                 $kpiTemplateGroup->name = $row[2];
                 $kpiTemplateGroup->save();
 
-                $templateGroupId[] = [
-                  $row[0] => $kpiTemplateGroup->id
-                ];
+                array_push($templateGroupId, [
+                    $row[0] => $kpiTemplateGroup->id
+                ]);
             }
             $i = $i + 1;
         }

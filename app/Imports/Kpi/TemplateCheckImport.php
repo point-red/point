@@ -15,8 +15,6 @@ class TemplateCheckImport implements ToModel
 
     public function model(array $row)
     {
-        // $kpiTemplate = KpiTemplate::where('name', $row['id'])->get();
-
-        return $kpiTemplate;
+        return $row;
     }
 }

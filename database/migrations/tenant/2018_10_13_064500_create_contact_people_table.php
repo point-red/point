@@ -23,7 +23,7 @@ class CreateContactPeopleTable extends Migration
             $table->string('email')->nullable();
 
             // Polymorphic Relations
-            $table->unsignedInteger('contactable_id');
+            $table->unsignedInteger('contactable_id')->index();
             $table->string('contactable_type');
 
             $table->unsignedInteger('created_by')->index()->nullable();

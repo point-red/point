@@ -31,27 +31,32 @@
     <tbody>
     @foreach($users as $user)
         <?php
+            $weeklyTargetCall = $user->target_call * $totalDay;
+            $weeklyTargetEffectiveCall = $user->target_effective_call * $totalDay;
+            $weeklyTargetCallPercentage = $weeklyTargetCall > 0 ? $user->actual_call / $weeklyTargetCall : 0;
+            $weeklyTargetEffectiveCallPercentage = $weeklyTargetEffectiveCall > 0 ? $user->actual_effective_call / $weeklyTargetEffectiveCall : 0;
+
             $targetCall += $user->target_call * $totalDay;
             $targetEffectiveCall += $user->target_effective_call * $totalDay;
             $targetValue += $user->target_value * $totalDay;
             $actualCall += $user->actual_call;
             $actualEffectiveCall += $user->actual_effective_call;
             $actualValue += $user->actual_value;
-            $actualCallPercentage += $user->target_call > 0 ? $user->actual_call / $user->target_call : 0;
-            $actualEffectiveCallPercentage += $user->target_effective_call > 0 ? $user->actual_effective_call / $user->target_effective_call : 0;
+            $actualCallPercentage += $weeklyTargetCallPercentage < 1 ? $weeklyTargetCallPercentage : 1;
+            $actualEffectiveCallPercentage += $weeklyTargetEffectiveCallPercentage < 1 ? $weeklyTargetEffectiveCallPercentage : 1;
             $actualValuePercentage += $user->target_value > 0 ? $user->actual_value / $user->target_value : 0;
         ?>
         <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $user->name  }}</td>
-            <td>{{ $user->target_call * $totalDay }}</td>
-            <td>{{ $user->target_effective_call * $totalDay }}</td>
+            <td>{{ $weeklyTargetCall }}</td>
+            <td>{{ $weeklyTargetEffectiveCall }}</td>
             <td>{{ $user->target_value * $totalDay }}</td>
             <td>{{ $user->actual_call ?? 0 }}</td>
             <td>{{ $user->actual_effective_call ?? 0 }}</td>
             <td>{{ $user->actual_value ?? 0 }}</td>
-            <td>{{ $user->target_call > 0 ? $user->actual_call / $user->target_call : 0 }}</td>
-            <td>{{ $user->target_effective_call > 0 ? $user->actual_effective_call / $user->target_effective_call : 0 }}</td>
+            <td>{{ $weeklyTargetCallPercentage < 1 ? $weeklyTargetCallPercentage : 1 }}</td>
+            <td>{{ $weeklyTargetEffectiveCallPercentage < 1 ? $weeklyTargetEffectiveCallPercentage : 1 }}</td>
             <td>{{ $user->target_value > 0 ? $user->actual_value / $user->target_value : 0 }}</td>
 
             @foreach ($items as $item)

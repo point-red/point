@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Model\HumanResource\Employee\EmployeeGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\HumanResource\Employee\Employee;
-use App\Model\HumanResource\Employee\EmployeeEmail;
 use App\Model\HumanResource\Employee\EmployeeScorer;
+use App\Model\HumanResource\Employee\EmployeeGroup;
 use App\Model\HumanResource\Employee\EmployeeContract;
-use App\Model\HumanResource\Employee\EmployeeSocialMedia;
+use App\Model\HumanResource\Employee\EmployeeEmail;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
+use App\Model\HumanResource\Employee\EmployeeSocialMedia;
 use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
 
@@ -28,7 +28,8 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        $employees = Employee::with('group')
+        $employees = Employee::eloquentFilter($request)
+            ->with('group')
             ->with('gender')
             ->with('religion')
             ->with('maritalStatus')
@@ -41,12 +42,9 @@ class EmployeeController extends Controller
             ->with('emails')
             ->with('addresses')
             ->with('phones')
-            ->select('employees.*')
-            ->filters($request->get('filters'))
-            ->fields($request->get('fields'))
-            ->sortBy($request->get('sort_by'))
-            ->includes($request->get('includes'))
-            ->paginate($request->get('paginate') ?? 20);
+            ->select('employees.*');
+
+        $employees = pagination($employees, $request->get('limit'));
 
         $additional = [];
         foreach (explode(',', $request->get('additional')) as $addition) {
@@ -155,7 +153,8 @@ class EmployeeController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $employee = Employee::where('employees.id', $id)
+        $employee = Employee::eloquentFilter($request)
+            ->where('employees.id', $id)
             ->with('group')
             ->with('gender')
             ->with('religion')
@@ -170,10 +169,6 @@ class EmployeeController extends Controller
             ->with('addresses')
             ->with('phones')
             ->select('employees.*')
-            ->filters($request->get('filters'))
-            ->fields($request->get('fields'))
-            ->sortBy($request->get('sort_by'))
-            ->includes($request->get('includes'))
             ->first();
 
         return new ApiResource($employee);

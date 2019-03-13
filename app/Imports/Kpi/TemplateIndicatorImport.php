@@ -14,6 +14,7 @@ class TemplateIndicatorImport implements ToCollection
     {
         $kpiTemplateGroupId = \Session::get('kpiTemplateGroupId');
         $i = 1;
+        $templateIndicatorId = [];
 
         foreach ($rows as $row) {
             if ($i > 1) {
@@ -22,7 +23,6 @@ class TemplateIndicatorImport implements ToCollection
                     foreach ($datas as $old => $new) {
                         if ($old == $row[1]) {
                             $kpiTemplateIndicator->kpi_template_group_id = $new;
-                            $test = $old;
                         }
                     }
                 }
@@ -39,9 +39,9 @@ class TemplateIndicatorImport implements ToCollection
                 }
                 $kpiTemplateIndicator->save();
 
-                $templateIndicatorId[] = [
-                  $row[0] => $kpiTemplateIndicator->id
-                ];
+                array_push($templateIndicatorId, [
+                    $row[0] => $kpiTemplateIndicator->id
+                ]);
             }
             $i = $i + 1;
         }

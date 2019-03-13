@@ -21,8 +21,9 @@ class TemplateScoreExport implements FromCollection, WithTitle, WithHeadings
     public function collection()
     {
         $kpiTemplate = KpiTemplate::where('id', $this->id)->with('Indicators')->first();
+        $indicatorsId = [];
         foreach ($kpiTemplate->indicators as $key => $value) {
-          $indicatorsId[] = $value->id;
+            array_push($indicatorsId, $value->id);
         }
 
         $templateScore = KpiTemplateScore::whereIn('kpi_template_indicator_id', $indicatorsId)->get();

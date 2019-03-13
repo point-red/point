@@ -49,6 +49,8 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
             'Customer',
             'Group',
             'Address',
+            'Sub District',
+            'District',
             'Latitude',
             'Longitude',
             'Phone',
@@ -68,6 +70,8 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
             $row->name,
             $row->group,
             $row->address,
+            $row->sub_district,
+            $row->district,
             $row->latitude,
             $row->longitude,
             $row->phone,
@@ -92,7 +96,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
                 $event->writer->setCreator('Point');
             },
             AfterSheet::class => function(AfterSheet $event) {
-                $event->sheet->getDelegate()->getStyle('A1:I1')->getFont()->setBold(true);
+                $event->sheet->getDelegate()->getStyle('A1:K1')->getFont()->setBold(true);
                 $styleArray = [
                     'borders' => [
                         'allBorders' => [
@@ -101,7 +105,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
                         ],
                     ],
                 ];
-                $event->getSheet()->getStyle('A1:I100')->applyFromArray($styleArray);
+                $event->getSheet()->getStyle('A1:K100')->applyFromArray($styleArray);
             },
         ];
     }

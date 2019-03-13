@@ -75,8 +75,6 @@ class KpiTemplateImportController extends Controller
         $fileExt = 'xlsx';
         $path = 'tmp/' . $tenant . '/import';
 
-        // $save = Storage::disk(env('STORAGE_DISK'))->put($path, $file);
-        // $save = Excel::store($file, $path, env('STORAGE_DISK'));
         $save = $this->filesystem->disk(env('STORAGE_DISK'))->put($path, $file);
 
         $cloudStorage = new CloudStorage();

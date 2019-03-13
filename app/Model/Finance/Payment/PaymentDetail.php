@@ -2,6 +2,7 @@
 
 namespace App\Model\Finance\Payment;
 
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\TransactionModel;
 use App\Model\Master\Allocation;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
@@ -42,6 +43,11 @@ class PaymentDetail extends TransactionModel
     public function allocation()
     {
         return $this->belongsTo(Allocation::class);
+    }
+
+    public function chartOfAccount()
+    {
+        return $this->belongsTo(ChartOfAccount::class);
     }
 
     public function setReferenceableTypeAttribute($value)

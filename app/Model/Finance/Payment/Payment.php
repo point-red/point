@@ -150,6 +150,37 @@ class Payment extends TransactionModel
         );
         $form->save();
 
+        self::updateJournal($payment);
+
         return $payment;
+    }
+
+    private static function updateJournal($payment)
+    {
+        $journal = new Journal;
+        $journal->form_id = $payment->form->id;
+        $journal->journalable_type = $payment->paymentable_type;
+        $journal->journalable_id = $payment->paymentable_id;
+        $journal->chart_of_account_id = $payment->payment_account_id;
+        if ($payment->disbursed) {
+            $journal->debit = $payment->amount;
+        } else {
+            $journal->credit = $payment->amount;
+        }
+        $journal->save();
+
+        foreach ($payment->details as $paymentDetail) {
+            $journal = new Journal;
+            $journal->form_id = $payment->form->id;
+            $journal->journalable_type = $paymentDetail->referenceable_type;
+            $journal->journalable_id = $paymentDetail->referenceable_id;
+            $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
+            if ($paymentDetail->chartOfAccount->type->is_debit) {
+                $journal->debit = $paymentDetail->amount;
+            } else {
+                $journal->credit = $paymentDetail->amount;
+            }
+            $journal->save();
+        }
     }
 }

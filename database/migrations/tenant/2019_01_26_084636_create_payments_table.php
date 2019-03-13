@@ -19,6 +19,8 @@ class CreatePaymentsTable extends Migration
             $table->string('payment_type');
             // if this payment type is payment-order or payment-collection then we can set due date
             $table->datetime('due_date')->nullable();
+            // chart of account of cash, bank, or cheque
+            $table->unsignedInteger('payment_account_id');
             $table->boolean('disbursed');
             $table->decimal('amount', 65, 30);
             // with who we make / receive payment

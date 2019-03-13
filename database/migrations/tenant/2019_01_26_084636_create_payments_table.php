@@ -28,6 +28,8 @@ class CreatePaymentsTable extends Migration
             $table->unsignedInteger('paymentable_id')->nullable();
             $table->string('paymentable_type')->nullable();
             $table->string('paymentable_name')->nullable();
+
+            $table->foreign('payment_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
         });
     }
 

@@ -12,9 +12,6 @@ class PointModel extends Model
 
     public function setDateAttribute($value)
     {
-        if (request()->header('Timezone')) {
-            info('Timezone: ' . request()->header('Timezone'));
-        }
         $this->attributes['date'] = Carbon::parse($value, request()->header('Timezone'))->timezone('UTC')->toDateTimeString();
     }
 
@@ -25,9 +22,6 @@ class PointModel extends Model
 
     public function getCreatedAtAttribute($value)
     {
-        if (request()->header('Timezone')) {
-            info('Timezone: ' . request()->header('Timezone'));
-        }
         return Carbon::parse($value, 'UTC')->timezone(request()->header('Timezone'))->toDateTimeString();
     }
 

@@ -3,6 +3,7 @@
 namespace App\Model\Inventory\InventoryAudit;
 
 use App\Model\Form;
+use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 
@@ -27,7 +28,7 @@ class InventoryAudit extends TransactionModel
         return $this->hasMany(InventoryAuditItem::class);
     }
 
-    public function create($data)
+    public static function create($data)
     {
         $inventoryAudit = new InventoryAudit;
         $inventoryAudit->warehouse_id = $data['warehouse_id'];
@@ -48,6 +49,19 @@ class InventoryAudit extends TransactionModel
 
         $inventoryAudit->items()->saveMany($inventoryAuditItems);
 
+        self::updateStock($data);
+
         return $inventoryAudit;
+    }
+
+    private static function updateStock($data)
+    {
+        $itemIds = array_column($data['items'], 'item_id');
+        $items = Item::whereIn('id', $itemIds)->get();
+
+        foreach ($items as $key => $item) {
+            $item->stock = $data['items'][$key]['quantity'];
+            $item->save();
+        }
     }
 }

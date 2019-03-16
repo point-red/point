@@ -12,22 +12,22 @@ class PointModel extends Model
 
     public function setDateAttribute($value)
     {
-        $this->attributes['date'] = Carbon::parse($value, request()->header('Timezone'))->timezone('UTC')->toDateTimeString();
+        $this->attributes['date'] = Carbon::parse($value, 'Asia/Jakarta')->timezone('UTC')->toDateTimeString();
     }
 
     public function getDateAttribute($value)
     {
-        return Carbon::parse($value, 'UTC')->timezone(request()->header('Timezone'))->toDateTimeString();
+        return Carbon::parse($value, 'UTC')->timezone('Asia/Jakarta')->toDateTimeString();
     }
 
     public function getCreatedAtAttribute($value)
     {
-        return Carbon::parse($value, 'UTC')->timezone(request()->header('Timezone'))->toDateTimeString();
+        return Carbon::parse($value, 'UTC')->timezone('Asia/Jakarta')->toDateTimeString();
     }
 
     public function getUpdatedAtAttribute($value)
     {
-        return Carbon::parse($value, 'UTC')->timezone(request()->header('Timezone'))->toDateTimeString();
+        return Carbon::parse($value, 'UTC')->timezone('Asia/Jakarta')->toDateTimeString();
     }
 
     public static function getTableName($column = null)

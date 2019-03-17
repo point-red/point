@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
 use App\Model\Form;
+use App\Model\HumanResource\Employee\Employee;
+use App\Model\Master\Item;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
 use Illuminate\Support\Facades\DB;
@@ -22,9 +25,13 @@ class PurchaseRequestController extends Controller
     public function index(Request $request)
     {
         $purchaseRequests = PurchaseRequest::eloquentFilter($request)
-            ->join(Supplier::getTableName(), PurchaseRequest::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
             ->joinForm()
+            ->leftJoin(Supplier::getTableName(), PurchaseRequest::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
+            ->leftJoin(Employee::getTableName(), PurchaseRequest::getTableName('employee_id'), '=', Employee::getTableName('id'))
+            ->leftJoin(PurchaseRequestItem::getTableName(), PurchaseRequestItem::getTableName('purchase_request_id'), '=', PurchaseRequest::getTableName('id'))
+            ->leftJoin(Item::getTableName(), Item::getTableName('id'), '=', PurchaseRequestItem::getTableName('item_id'))
             ->notArchived()
+            ->groupBy('forms.id')
             ->with('form');
 
         $purchaseRequests = pagination($purchaseRequests, $request->get('limit'));

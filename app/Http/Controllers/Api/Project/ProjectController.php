@@ -65,6 +65,7 @@ class ProjectController extends Controller
         $project->owner_id = auth()->user()->id;
         $project->code = $request->get('code');
         $project->name = $request->get('name');
+        $project->timezone = $request->get('timezone');
         $project->address = $request->get('address');
         $project->phone = $request->get('phone');
         $project->vat_id_number = $request->get('vat_id_number');

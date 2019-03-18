@@ -40,6 +40,8 @@ class TenantMiddleware
                     return $next($request);
                 }
 
+                config()->set('project.timezone', $project->timezone);
+
                 // Update mail configuration on the fly
                 $this->updatePreference('mail.driver', $project->preference, 'mail_driver');
                 $this->updatePreference('mail.host', $project->preference, 'mail_host');

@@ -28,6 +28,8 @@ class SalesVisitationController extends Controller
     public function index(Request $request)
     {
         $salesVisitationForm = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
+            ->join('customers', 'customers.id', '=', 'pin_point_sales_visitations.customer_id')
+            ->join('users', 'users.id', '=', 'forms.created_by')
             ->with('form.createdBy')
             ->with('interestReasons')
             ->with('notInterestReasons')
@@ -48,7 +50,7 @@ class SalesVisitationController extends Controller
             $salesVisitationForm = $salesVisitationForm->where('forms.created_by', auth()->user()->id);
         }
 
-        $salesVisitationForm = $salesVisitationForm->get();
+        $salesVisitationForm = pagination($salesVisitationForm, $request->get('limit'));
 
         return new SalesVisitationCollection($salesVisitationForm);
     }

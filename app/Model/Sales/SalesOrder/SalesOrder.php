@@ -12,6 +12,7 @@ use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
 use App\Model\Sales\SalesContract\SalesContract;
+use Carbon\Carbon;
 
 class SalesOrder extends TransactionModel
 {
@@ -42,6 +43,16 @@ class SalesOrder extends TransactionModel
         'discount_value' => 'double',
         'tax' => 'double',
     ];
+
+    public function getEtaAttribute($value)
+    {
+        return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
+    }
+
+    public function setEtaAttribute($value)
+    {
+        $this->attributes['eta'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+    }
 
     public $defaultNumberPrefix = 'SO';
 

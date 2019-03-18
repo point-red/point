@@ -9,6 +9,7 @@ use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use Carbon\Carbon;
 
 class PurchaseInvoice extends TransactionModel
 {
@@ -35,6 +36,16 @@ class PurchaseInvoice extends TransactionModel
         'paid' => 'double',
         'remaining' => 'double',
     ];
+
+    public function getDueDateAttribute($value)
+    {
+        return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
+    }
+
+    public function setDueDateAttribute($value)
+    {
+        $this->attributes['due_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+    }
 
     public $defaultNumberPrefix = 'PI';
 

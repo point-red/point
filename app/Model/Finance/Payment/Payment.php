@@ -6,6 +6,7 @@ use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
+use Carbon\Carbon;
 
 class Payment extends TransactionModel
 {
@@ -24,6 +25,17 @@ class Payment extends TransactionModel
     protected $casts = [
         'amount' => 'double',
     ];
+
+
+    public function getDueDateAttribute($value)
+    {
+        return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
+    }
+
+    public function setDueDateAttribute($value)
+    {
+        $this->attributes['due_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+    }
 
     protected $paymentableType = [
         'customer' => Customer::class,

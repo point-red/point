@@ -13,6 +13,7 @@ use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Finance\Payment\PaymentDetail;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
+use Carbon\Carbon;
 
 class SalesInvoice extends TransactionModel
 {
@@ -38,6 +39,16 @@ class SalesInvoice extends TransactionModel
         'paid' => 'double',
         'remaining' => 'double',
     ];
+
+    public function getDueDateAttribute($value)
+    {
+        return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
+    }
+
+    public function setDueDateAttribute($value)
+    {
+        $this->attributes['due_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+    }
 
     public $defaultNumberPrefix = 'INVOICE';
 

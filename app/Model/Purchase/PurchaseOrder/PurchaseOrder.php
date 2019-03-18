@@ -11,6 +11,7 @@ use App\Model\TransactionModel;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
+use Carbon\Carbon;
 
 class PurchaseOrder extends TransactionModel
 {
@@ -47,6 +48,16 @@ class PurchaseOrder extends TransactionModel
         'discount_value' => 'double',
         'tax' => 'double',
     ];
+
+    public function getEtaAttribute($value)
+    {
+        return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
+    }
+
+    public function setEtaAttribute($value)
+    {
+        $this->attributes['eta'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+    }
 
     public $defaultNumberPrefix = 'PO';
 

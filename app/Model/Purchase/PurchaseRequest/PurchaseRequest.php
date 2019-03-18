@@ -9,6 +9,7 @@ use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use Carbon\Carbon;
 
 class PurchaseRequest extends TransactionModel
 {
@@ -27,6 +28,16 @@ class PurchaseRequest extends TransactionModel
     protected $casts = [
         'amount' => 'double',
     ];
+
+    public function getRequiredDateAttribute($value)
+    {
+        return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
+    }
+
+    public function setRequiredDateAttribute($value)
+    {
+        $this->attributes['required_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+    }
 
     public $defaultNumberPrefix = 'PR';
 

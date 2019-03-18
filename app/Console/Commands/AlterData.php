@@ -44,24 +44,19 @@ class AlterData extends Command
     {
         $projects = Project::all();
         foreach ($projects as $project) {
-//            $this->line('Clone ' . $project->code);
-//            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+            $this->line('Clone ' . $project->code);
+            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
             $this->line('Alter ' . $project->code);
             config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
-            $salesVisitations = SalesVisitation::join(SalesVisitationDetail::getTableName(),
-                SalesVisitationDetail::getTableName().'.sales_visitation_id', '=', SalesVisitation::getTableName().'.id')
-                ->select(SalesVisitation::getTableName().'.*')
-                ->get();
+            $salesVisitations = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')->with('form')->get();
 
             $this->line('Sales Visitations ' . $salesVisitations->count());
 
             foreach ($salesVisitations as $salesVisitation) {
-                if (SalesVisitation::where('customer_id', $salesVisitation->customer_id)->where('id', '<', $salesVisitation->id)->first()) {
-                    $salesVisitation->is_repeat_order = true;
-                    $salesVisitation->save();
-                }
+                $salesVisitation->form->date = $salesVisitation->form->created_at;
+                $salesVisitation->form->save();
             }
 
             // TODO: ADD TAXABLE COLUMN IN ITEMS AND SERVICES

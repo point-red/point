@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
+use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
+use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -50,14 +52,8 @@ class AlterData extends Command
             config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
-            $salesVisitations = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')->with('form')->get();
-
-            $this->line('Sales Visitations ' . $salesVisitations->count());
-
-            foreach ($salesVisitations as $salesVisitation) {
-                $salesVisitation->form->date = $salesVisitation->form->created_at;
-                $salesVisitation->form->save();
-            }
+            SalesVisitationInterestReason::where('name', '=', '')->delete();
+            SalesVisitationNotInterestReason::where('name', '=', '')->delete();
 
             // TODO: ADD TAXABLE COLUMN IN ITEMS AND SERVICES
             // TODO: ADD NOTES IN FORM

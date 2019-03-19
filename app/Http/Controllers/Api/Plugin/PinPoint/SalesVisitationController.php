@@ -97,6 +97,7 @@ class SalesVisitationController extends Controller
         $salesVisitation->latitude = $request->get('latitude');
         $salesVisitation->longitude = $request->get('longitude');
         $salesVisitation->group = $request->get('group');
+        $salesVisitation->notes = $request->get('notes');
         $salesVisitation->payment_method = $request->get('payment_method');
         $salesVisitation->payment_received = $request->get('payment_received');
         $salesVisitation->due_date = $request->get('due_date');

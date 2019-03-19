@@ -24,6 +24,7 @@ class SalesVisitationController extends Controller
      *
      * @param Request $request
      * @return SalesVisitationCollection
+     * @throws \Exception
      */
     public function index(Request $request)
     {
@@ -105,10 +106,12 @@ class SalesVisitationController extends Controller
 
         if ($arrayInterestReason) {
             for ($i = 0; $i < count($arrayInterestReason); $i++) {
-                $interestReason = new SalesVisitationInterestReason;
-                $interestReason->sales_visitation_id = $salesVisitation->id;
-                $interestReason->name = $arrayInterestReason[$i];
-                $interestReason->save();
+                if ($arrayInterestReason[$i]) {
+                    $interestReason = new SalesVisitationInterestReason;
+                    $interestReason->sales_visitation_id = $salesVisitation->id;
+                    $interestReason->name = $arrayInterestReason[$i];
+                    $interestReason->save();
+                }
             }
         }
 
@@ -124,10 +127,12 @@ class SalesVisitationController extends Controller
 
         if ($arrayNotInterestReason) {
             for ($i = 0; $i < count($arrayNotInterestReason); $i++) {
-                $notInterestReason = new SalesVisitationNotInterestReason;
-                $notInterestReason->sales_visitation_id = $salesVisitation->id;
-                $notInterestReason->name = $arrayNotInterestReason[$i];
-                $notInterestReason->save();
+                if ($arrayNotInterestReason[$i]) {
+                    $notInterestReason = new SalesVisitationNotInterestReason;
+                    $notInterestReason->sales_visitation_id = $salesVisitation->id;
+                    $notInterestReason->name = $arrayNotInterestReason[$i];
+                    $notInterestReason->save();
+                }
             }
         }
 
@@ -144,10 +149,12 @@ class SalesVisitationController extends Controller
 
         if ($arraySimilarProduct) {
             for ($i = 0; $i < count($arraySimilarProduct); $i++) {
-                $similarProduct = new SalesVisitationSimilarProduct;
-                $similarProduct->sales_visitation_id = $salesVisitation->id;
-                $similarProduct->name = $arraySimilarProduct[$i];
-                $similarProduct->save();
+                if ($arraySimilarProduct[$i]) {
+                    $similarProduct = new SalesVisitationSimilarProduct;
+                    $similarProduct->sales_visitation_id = $salesVisitation->id;
+                    $similarProduct->name = $arraySimilarProduct[$i];
+                    $similarProduct->save();
+                }
             }
         }
 

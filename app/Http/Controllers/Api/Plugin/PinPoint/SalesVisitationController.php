@@ -43,8 +43,9 @@ class SalesVisitationController extends Controller
             $salesVisitationForm = $salesVisitationForm->where('customer_id', $request->get('customer_id'));
         }
 
-        $dateFrom = date('Y-m-d 00:00:00', strtotime($request->get('date_from')));
-        $dateTo = date('Y-m-d 23:59:59', strtotime($request->get('date_to')));
+        $dateFrom = date_from($request->get('date_from'), false, true);
+        $dateTo = date_to($request->get('date_to'), false, true);
+
         $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$dateFrom, $dateTo]);
 
         if (!tenant()->hasPermissionTo('read pin point sales visitation form')) {

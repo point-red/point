@@ -75,14 +75,21 @@ class SupplierController extends Controller
         $supplier->fill($request->all());
         $supplier->save();
 
-        if ($request->get('group')['name']) {
-            $group = Group::find($request->get('group')['id']);
+        if ($request->has('group')) {
+            $group = null;
+            if ($request->has('group')['id']) {
+                $group = Group::findOrFail($request->get('group')['id']);
+            } else if ($request->has('group')['name']) {
+                $group = Group::where('name', $request->get('group')['name'])
+                    ->where('class_reference', Supplier::class)
+                    ->first();
 
-            if (! $group) {
-                $group = new Group;
-                $group->name = $request->get('group')['name'];
-                $group->class_reference = Supplier::class;
-                $group->save();
+                if (! $group) {
+                    $group = new Group;
+                    $group->name = $request->get('group')['name'];
+                    $group->class_reference = Supplier::class;
+                    $group->save();
+                }
             }
 
             $group->suppliers()->attach($supplier);

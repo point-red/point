@@ -75,16 +75,21 @@ class CustomerController extends Controller
         $customer->fill($request->all());
         $customer->save();
 
-        if ($request->get('group')['name']) {
+        if ($request->has('group')) {
+            $group = null;
+            if ($request->has('group')['id']) {
+                $group = Group::findOrFail($request->get('group')['id']);
+            } else if ($request->has('group')['name']) {
+                $group = Group::where('name', $request->get('group')['name'])
+                    ->where('class_reference', Customer::class)
+                    ->first();
 
-            $group = Group::where('id', $request->get('group')['id'] ?? 0)
-                ->orWhere('name', $request->get('group')['name'])->first();
-
-            if (! $group) {
-                $group = new Group;
-                $group->name = $request->get('group')['name'];
-                $group->class_reference = Customer::class;
-                $group->save();
+                if (! $group) {
+                    $group = new Group;
+                    $group->name = $request->get('group')['name'];
+                    $group->class_reference = Customer::class;
+                    $group->save();
+                }
             }
 
             $group->customers()->attach($customer);

@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 if (! function_exists('log_array')) {
     /**
      * Log an object / array.
@@ -170,6 +172,52 @@ if (! function_exists('get_invitation_code')) {
             $date = new DateTime($datetime, new DateTimeZone($fromTz));
             $date->setTimezone(new DateTimeZone($toTz));
             return $date->format('Y-m-d H:i:s');
+        }
+    }
+
+    if (! function_exists('convert_to_local_timezone')) {
+        /**
+         * Convert datetime to local timezone
+         *
+         * @param $value
+         * @param null $fromTz
+         * @param null $toTz
+         * @return string
+         */
+        function convert_to_local_timezone($value, $fromTz = null, $toTz = null)
+        {
+            if ($fromTz == null) {
+                $fromTz = config()->get('app.timezone');
+            }
+
+            if ($toTz == null) {
+                $toTz = config()->get('project.timezone');
+            }
+
+            return Carbon::parse($value, $fromTz)->timezone($toTz)->toDateTimeString();
+        }
+    }
+
+    if (! function_exists('convert_to_server_timezone')) {
+        /**
+         * Convert datetime to server timezone
+         *
+         * @param $value
+         * @param null $fromTz
+         * @param null $toTz
+         * @return string
+         */
+        function convert_to_server_timezone($value, $fromTz = null, $toTz = null)
+        {
+            if ($fromTz == null) {
+                $fromTz = config()->get('project.timezone');
+            }
+
+            if ($toTz == null) {
+                $toTz = config()->get('app.timezone');
+            }
+
+            return Carbon::parse($value, $fromTz)->timezone($toTz)->toDateTimeString();
         }
     }
 }

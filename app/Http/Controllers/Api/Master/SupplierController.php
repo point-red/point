@@ -41,8 +41,8 @@ class SupplierController extends Controller
 
             if (in_array('address', $fields)) {
                 $suppliers = $suppliers->leftjoin(Phone::getTableName(), function ($q) {
-                    $q->on(Phone::getTableName('phoneable_id'), '=', Supplier::getTableName('id'));
-                    ->where(Phone::getTableName('phoneable_type'), Supplier::class);
+                    $q->on(Phone::getTableName('phoneable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Phone::getTableName('phoneable_type'), Supplier::class);
                 });
             }
         }

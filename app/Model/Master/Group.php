@@ -16,7 +16,7 @@ class Group extends MasterModel
      */
     public function suppliers()
     {
-        return $this->morphedByMany(get_class(new Supplier()), 'groupable');
+        return $this->morphedByMany(Supplier::class, 'groupable');
     }
 
     /**
@@ -24,7 +24,7 @@ class Group extends MasterModel
      */
     public function customers()
     {
-        return $this->morphedByMany(get_class(new Customer()), 'groupable');
+        return $this->morphedByMany(Customer::class, 'groupable');
     }
 
     /**
@@ -32,7 +32,7 @@ class Group extends MasterModel
      */
     public function items()
     {
-        return $this->morphedByMany(get_class(new Item()), 'groupable');
+        return $this->morphedByMany(Item::class, 'groupable');
     }
 
     /**
@@ -40,7 +40,7 @@ class Group extends MasterModel
      */
     public function services()
     {
-        return $this->morphedByMany(get_class(new Service()), 'groupable');
+        return $this->morphedByMany(Service::class, 'groupable');
     }
 
     /**
@@ -48,7 +48,7 @@ class Group extends MasterModel
      */
     public function allocations()
     {
-        return $this->morphedByMany(get_class(new Allocation()), 'groupable');
+        return $this->morphedByMany(Allocation::class, 'groupable');
     }
 
     /**

@@ -77,9 +77,9 @@ class SupplierController extends Controller
 
         if ($request->has('group')) {
             $group = null;
-            if ($request->has('group')['id']) {
+            if (!empty($request->get('group')['id'])) {
                 $group = Group::findOrFail($request->get('group')['id']);
-            } else if ($request->has('group')['name']) {
+            } else if (!empty($request->get('group')['name'])) {
                 $group = Group::where('name', $request->get('group')['name'])
                     ->where('class_reference', Supplier::class)
                     ->first();
@@ -87,7 +87,7 @@ class SupplierController extends Controller
                 if (! $group) {
                     $group = new Group;
                     $group->name = $request->get('group')['name'];
-                    $group->class_reference = Supplier::class;
+                    $group->class_reference = 'supplier';
                     $group->save();
                 }
             }
@@ -136,14 +136,21 @@ class SupplierController extends Controller
         $supplier->fill($request->all());
         $supplier->save();
 
-        if ($request->get('group')['name']) {
-            $group = Group::find($request->get('group')['id']);
+        if ($request->has('group')) {
+            $group = null;
+            if (!empty($request->get('group')['id'])) {
+                $group = Group::findOrFail($request->get('group')['id']);
+            } else if (!empty($request->get('group')['name'])) {
+                $group = Group::where('name', $request->get('group')['name'])
+                    ->where('class_reference', Supplier::class)
+                    ->first();
 
-            if (! $group) {
-                $group = new Group;
-                $group->name = $request->get('group')['name'];
-                $group->class_reference = Supplier::class;
-                $group->save();
+                if (! $group) {
+                    $group = new Group;
+                    $group->name = $request->get('group')['name'];
+                    $group->class_reference = 'supplier';
+                    $group->save();
+                }
             }
 
             $group->suppliers()->attach($supplier);

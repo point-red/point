@@ -32,14 +32,14 @@ class CustomerController extends Controller
         if ($request->get('join')) {
             $fields = explode(',', $request->get('join'));
 
-            if (in_array('address', $fields)) {
+            if (in_array('addresses', $fields)) {
                 $customers = $customers->leftjoin(Address::getTableName(), function ($q) {
                     $q->on(Address::getTableName('addressable_id'), '=', Customer::getTableName('id'))
                         ->where(Address::getTableName('addressable_type'), Customer::class);
                 });
             }
 
-            if (in_array('address', $fields)) {
+            if (in_array('phones', $fields)) {
                 $customers = $customers->leftjoin(Phone::getTableName(), function ($q) {
                     $q->on(Phone::getTableName('phoneable_id'), '=', Customer::getTableName('id'))
                         ->where(Phone::getTableName('phoneable_type'), Customer::class);
@@ -48,7 +48,7 @@ class CustomerController extends Controller
         }
 
         if ($request->get('group_id')) {
-            $customers = $customers->join('groupables', function ($q) use ($request) {
+            $customers = $customers->leftJoin('groupables', function ($q) use ($request) {
                 $q->on('groupables.groupable_id', '=', 'customers.id')
                     ->where('groupables.groupable_type', Customer::class)
                     ->where('groupables.group_id', '=', $request->get('group_id'));
@@ -77,9 +77,9 @@ class CustomerController extends Controller
 
         if ($request->has('group')) {
             $group = null;
-            if ($request->has('group')['id']) {
+            if (!empty($request->get('group')['id'])) {
                 $group = Group::findOrFail($request->get('group')['id']);
-            } else if ($request->has('group')['name']) {
+            } else if (!empty($request->get('group')['name'])) {
                 $group = Group::where('name', $request->get('group')['name'])
                     ->where('class_reference', Customer::class)
                     ->first();
@@ -87,7 +87,7 @@ class CustomerController extends Controller
                 if (! $group) {
                     $group = new Group;
                     $group->name = $request->get('group')['name'];
-                    $group->class_reference = Customer::class;
+                    $group->class_reference = 'customer';
                     $group->save();
                 }
             }
@@ -136,21 +136,26 @@ class CustomerController extends Controller
         $customer->fill($request->all());
         $customer->save();
 
-        if ($request->get('group')['name']) {
-            $group = Group::where('id', $request->get('group')['id'] ?? 0)
-                ->orWhere('name', $request->get('group')['name'])->first();
+        if ($request->has('group')) {
+            $group = null;
+            if (!empty($request->get('group')['id'])) {
+                $group = Group::findOrFail($request->get('group')['id']);
+            } else if (!empty($request->get('group')['name'])) {
+                $group = Group::where('name', $request->get('group')['name'])
+                    ->where('class_reference', Customer::class)
+                    ->first();
 
-            if (! $group) {
-                $group = new Group;
-                $group->name = $request->get('group')['name'];
-                $group->class_reference = Customer::class;
-                $group->save();
+                if (! $group) {
+                    $group = new Group;
+                    $group->name = $request->get('group')['name'];
+                    $group->class_reference = 'customer';
+                    $group->save();
+                }
             }
 
-            $group->customers()->attach($customer);
-        } else {
-            // TODO: remove this in relase v1.1
-            $customer->groups()->detach();
+            if ($group) {
+                $group->customers()->attach($customer);
+            }
         }
 
         Address::saveFromRelation($customer, $request->get('addresses'));

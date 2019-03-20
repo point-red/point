@@ -4,7 +4,6 @@ namespace App\Model\Plugin\PinPoint;
 
 use App\Model\Form;
 use App\Model\PointModel;
-use Carbon\Carbon;
 
 class SalesVisitation extends PointModel
 {
@@ -14,12 +13,12 @@ class SalesVisitation extends PointModel
 
     public function setDueDateAttribute($value)
     {
-        $this->attributes['due_date'] = Carbon::parse($value, 'Asia/Jakarta')->timezone('UTC')->toDateTimeString();
+        $this->attributes['due_date'] = convert_to_server_timezone($value);
     }
 
     public function getDueDateAttribute($value)
     {
-        return Carbon::parse($value, 'UTC')->timezone('Asia/Jakarta')->toDateTimeString();
+        return convert_to_local_timezone($value);
     }
 
     public function form() {

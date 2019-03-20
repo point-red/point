@@ -2,7 +2,6 @@
 
 namespace App\Model;
 
-use Illuminate\Support\Carbon;
 use App\Traits\EloquentFilters;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,22 +11,22 @@ class PointModel extends Model
 
     public function setDateAttribute($value)
     {
-        $this->attributes['date'] = Carbon::parse($value, 'Asia/Jakarta')->timezone('UTC')->toDateTimeString();
+        $this->attributes['date'] = convert_to_server_timezone($value);
     }
 
     public function getDateAttribute($value)
     {
-        return Carbon::parse($value, 'UTC')->timezone('Asia/Jakarta')->toDateTimeString();
+        return convert_to_local_timezone($value);
     }
 
     public function getCreatedAtAttribute($value)
     {
-        return Carbon::parse($value, 'UTC')->timezone('Asia/Jakarta')->toDateTimeString();
+        return convert_to_local_timezone($value);
     }
 
     public function getUpdatedAtAttribute($value)
     {
-        return Carbon::parse($value, 'UTC')->timezone('Asia/Jakarta')->toDateTimeString();
+        return convert_to_local_timezone($value);
     }
 
     public static function getTableName($column = null)

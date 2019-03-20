@@ -19,21 +19,21 @@ class EmployeeContract extends MasterModel
 
     public function getContractBeginAttribute($value)
     {
-        return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
+        return convert_to_local_timezone($value);
     }
 
     public function setContractBeginAttribute($value)
     {
-        $this->attributes['contract_begin'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+        $this->attributes['contract_begin'] = convert_to_server_timezone($value);
     }
 
     public function getContractEndAttribute($value)
     {
-        return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
+        return convert_to_local_timezone($value);
     }
 
     public function setContractEndAttribute($value)
     {
-        $this->attributes['contract_end'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+        $this->attributes['contract_end'] = convert_to_server_timezone($value);
     }
 }

@@ -92,7 +92,9 @@ class CustomerController extends Controller
                 }
             }
 
-            $group->customers()->attach($customer);
+            if ($group) {
+                $group->customers()->attach($customer);
+            }
         }
 
         Address::saveFromRelation($customer, $request->get('addresses'));

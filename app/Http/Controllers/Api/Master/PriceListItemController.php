@@ -46,6 +46,8 @@ class PriceListItemController extends Controller
                     })
                     ->toArray();
 
+                $endResultPriceGroups = [];
+
                 /* Iterate through $availablePricingGroups and set its price */
                 foreach ($availablePricingGroups as $availablePricingGroup) {
                     $price = 0;

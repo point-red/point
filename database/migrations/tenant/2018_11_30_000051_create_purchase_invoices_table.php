@@ -17,6 +17,7 @@ class CreatePurchaseInvoicesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('supplier_id');
             $table->string('supplier_name');
+            $table->string('invoice_number')->nullable();
             $table->string('billing_address')->nullable();
             $table->string('billing_phone')->nullable();
             $table->string('billing_email')->nullable();

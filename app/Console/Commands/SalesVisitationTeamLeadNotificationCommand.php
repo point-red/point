@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Mail\SalesVisitationTeamLeadNotificationMail;
 use App\Model\Master\User;
@@ -51,11 +52,16 @@ class SalesVisitationTeamLeadNotificationCommand extends Command
         $projects = Project::all();
 
         foreach ($projects as $project) {
-            $this->line($project->code);
-            $databaseName = 'point_'.strtolower($project->code);
-            $this->line('Notification : '.$project->code);
+            // Send notification at 05:00 local time
+            // This command run hourly from cron
+            $hour = now()->setTimezone($project->timezone)->format('H');
+            if ($hour != '05') {
+                break;
+            }
 
             // Update tenant database name in configuration
+            $this->line('Notification : '.$project->code);
+            $databaseName = 'point_'.strtolower($project->code);
             config()->set('database.connections.tenant.database', strtolower($databaseName));
             DB::connection('tenant')->reconnect();
 

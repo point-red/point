@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Mail\SalesVisitationTeamLeadNotificationMail;
 use App\Model\Master\User;
@@ -45,16 +46,22 @@ class SalesVisitationTeamLeadNotificationCommand extends Command
     {
         $this->line('sending sales visitation supervisor notification');
 
-        $yesterdayDate = date('Y-m-d 00:00:00', strtotime('-1 days'));
+        $yesterdayDateStart = date('Y-m-d 00:00:00', strtotime('-1 days'));
+        $yesterdayDateEnd = date('Y-m-d 23:59:59', strtotime('-1 days'));
 
         $projects = Project::all();
 
         foreach ($projects as $project) {
-            $this->line($project->code);
-            $databaseName = 'point_'.strtolower($project->code);
-            $this->line('Notification : '.$project->code);
+            // Send notification at 05:00 local time
+            // This command run hourly from cron
+            $hour = now()->setTimezone($project->timezone)->format('H');
+            if ($hour != '05') {
+                break;
+            }
 
             // Update tenant database name in configuration
+            $this->line('Notification : '.$project->code);
+            $databaseName = 'point_'.strtolower($project->code);
             config()->set('database.connections.tenant.database', strtolower($databaseName));
             DB::connection('tenant')->reconnect();
 
@@ -62,9 +69,7 @@ class SalesVisitationTeamLeadNotificationCommand extends Command
                 ->with('form')
                 ->select('pin_point_sales_visitations.*');
 
-            $dateFrom = date('Y-m-d 00:00:00', strtotime($yesterdayDate));
-            $dateTo = date('Y-m-d 23:59:59', strtotime($yesterdayDate));
-            $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$dateFrom, $dateTo])->get();
+            $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$yesterdayDateStart, $yesterdayDateEnd])->get();
 
             $this->line($salesVisitationForm->count());
             if ($salesVisitationForm->count() == 0) {
@@ -82,7 +87,7 @@ class SalesVisitationTeamLeadNotificationCommand extends Command
 
             if (count($userEmails) > 0) {
                 $this->line(count($userEmails));
-                Mail::to($userEmails)->queue(new SalesVisitationTeamLeadNotificationMail($project->code, $project->name, $yesterdayDate, $salesVisitationForm->count()));
+                Mail::to($userEmails)->queue(new SalesVisitationTeamLeadNotificationMail($project->code, $project->name, $yesterdayDateStart, $salesVisitationForm->count()));
             }
         }
     }

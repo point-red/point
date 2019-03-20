@@ -24,10 +24,13 @@ class SalesVisitationController extends Controller
      *
      * @param Request $request
      * @return SalesVisitationCollection
+     * @throws \Exception
      */
     public function index(Request $request)
     {
         $salesVisitationForm = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
+            ->join('customers', 'customers.id', '=', 'pin_point_sales_visitations.customer_id')
+            ->join('users', 'users.id', '=', 'forms.created_by')
             ->with('form.createdBy')
             ->with('interestReasons')
             ->with('notInterestReasons')
@@ -40,15 +43,16 @@ class SalesVisitationController extends Controller
             $salesVisitationForm = $salesVisitationForm->where('customer_id', $request->get('customer_id'));
         }
 
-        $dateFrom = date('Y-m-d 00:00:00', strtotime($request->get('date_from')));
-        $dateTo = date('Y-m-d 23:59:59', strtotime($request->get('date_to')));
+        $dateFrom = date_from($request->get('date_from'), false, true);
+        $dateTo = date_to($request->get('date_to'), false, true);
+
         $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$dateFrom, $dateTo]);
 
         if (! tenant()->hasPermissionTo('read pin point sales visitation form')) {
             $salesVisitationForm = $salesVisitationForm->where('forms.created_by', auth()->user()->id);
         }
 
-        $salesVisitationForm = $salesVisitationForm->get();
+        $salesVisitationForm = pagination($salesVisitationForm, $request->get('limit'));
 
         return new SalesVisitationCollection($salesVisitationForm);
     }
@@ -93,6 +97,7 @@ class SalesVisitationController extends Controller
         $salesVisitation->latitude = $request->get('latitude');
         $salesVisitation->longitude = $request->get('longitude');
         $salesVisitation->group = $request->get('group');
+        $salesVisitation->notes = $request->get('notes');
         $salesVisitation->payment_method = $request->get('payment_method');
         $salesVisitation->payment_received = $request->get('payment_received');
         $salesVisitation->due_date = $request->get('due_date');
@@ -103,10 +108,12 @@ class SalesVisitationController extends Controller
 
         if ($arrayInterestReason) {
             for ($i = 0; $i < count($arrayInterestReason); $i++) {
-                $interestReason = new SalesVisitationInterestReason;
-                $interestReason->sales_visitation_id = $salesVisitation->id;
-                $interestReason->name = $arrayInterestReason[$i];
-                $interestReason->save();
+                if ($arrayInterestReason[$i]) {
+                    $interestReason = new SalesVisitationInterestReason;
+                    $interestReason->sales_visitation_id = $salesVisitation->id;
+                    $interestReason->name = $arrayInterestReason[$i];
+                    $interestReason->save();
+                }
             }
         }
 
@@ -122,10 +129,12 @@ class SalesVisitationController extends Controller
 
         if ($arrayNotInterestReason) {
             for ($i = 0; $i < count($arrayNotInterestReason); $i++) {
-                $notInterestReason = new SalesVisitationNotInterestReason;
-                $notInterestReason->sales_visitation_id = $salesVisitation->id;
-                $notInterestReason->name = $arrayNotInterestReason[$i];
-                $notInterestReason->save();
+                if ($arrayNotInterestReason[$i]) {
+                    $notInterestReason = new SalesVisitationNotInterestReason;
+                    $notInterestReason->sales_visitation_id = $salesVisitation->id;
+                    $notInterestReason->name = $arrayNotInterestReason[$i];
+                    $notInterestReason->save();
+                }
             }
         }
 
@@ -141,10 +150,12 @@ class SalesVisitationController extends Controller
 
         if ($arraySimilarProduct) {
             for ($i = 0; $i < count($arraySimilarProduct); $i++) {
-                $similarProduct = new SalesVisitationSimilarProduct;
-                $similarProduct->sales_visitation_id = $salesVisitation->id;
-                $similarProduct->name = $arraySimilarProduct[$i];
-                $similarProduct->save();
+                if ($arraySimilarProduct[$i]) {
+                    $similarProduct = new SalesVisitationSimilarProduct;
+                    $similarProduct->sales_visitation_id = $salesVisitation->id;
+                    $similarProduct->name = $arraySimilarProduct[$i];
+                    $similarProduct->save();
+                }
             }
         }
 

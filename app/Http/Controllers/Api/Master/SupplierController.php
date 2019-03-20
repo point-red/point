@@ -27,14 +27,25 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
-        $suppliers = Supplier::leftjoin(Address::getTableName(), function ($q) {
-            $q->on(Address::getTableName('addressable_id'), '=', Supplier::getTableName('id'))
-                ->where(Address::getTableName('addressable_type'), Supplier::class);
-        })->leftjoin(Phone::getTableName(), function ($q) {
-            $q->on(Phone::getTableName('phoneable_id'), '=', Supplier::getTableName('id'))
-                ->where(Phone::getTableName('phoneable_type'), Supplier::class);
-        })->select(Supplier::getTableName('*'))
-            ->eloquentFilter($request);
+        $suppliers = Supplier::eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('address', $fields)) {
+                $suppliers = $suppliers->leftjoin(Address::getTableName(), function ($q) {
+                    $q->on(Address::getTableName('addressable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Address::getTableName('addressable_type'), Supplier::class);
+                });
+            }
+
+            if (in_array('address', $fields)) {
+                $suppliers = $suppliers->leftjoin(Phone::getTableName(), function ($q) {
+                    $q->on(Phone::getTableName('phoneable_id'), '=', Supplier::getTableName('id'));
+                    ->where(Phone::getTableName('phoneable_type'), Supplier::class);
+                });
+            }
+        }
 
         if ($request->get('group_id')) {
             $suppliers = $suppliers->join('groupables', function ($q) use ($request) {

@@ -27,14 +27,25 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::leftjoin(Address::getTableName(), function ($q) {
-            $q->on(Address::getTableName('addressable_id'), '=', Customer::getTableName('id'))
-                ->where(Address::getTableName('addressable_type'), Customer::class);
-        })->leftjoin(Phone::getTableName(), function ($q) {
-            $q->on(Phone::getTableName('phoneable_id'), '=', Customer::getTableName('id'))
-                ->where(Phone::getTableName('phoneable_type'), Customer::class);
-        })->select(Customer::getTableName('*'))
-            ->eloquentFilter($request);
+        $customers = Customer::eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('address', $fields)) {
+                $customers = $customers->leftjoin(Address::getTableName(), function ($q) {
+                    $q->on(Address::getTableName('addressable_id'), '=', Customer::getTableName('id'))
+                        ->where(Address::getTableName('addressable_type'), Customer::class);
+                });
+            }
+
+            if (in_array('address', $fields)) {
+                $customers = $customers->leftjoin(Phone::getTableName(), function ($q) {
+                    $q->on(Phone::getTableName('phoneable_id'), '=', Customer::getTableName('id'))
+                        ->where(Phone::getTableName('phoneable_type'), Customer::class);
+                });
+            }
+        }
 
         if ($request->get('group_id')) {
             $customers = $customers->join('groupables', function ($q) use ($request) {

@@ -45,14 +45,8 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `employees` MODIFY COLUMN `join_date` datetime');
-            DB::connection('tenant')->statement('ALTER TABLE `employee_promotion_histories` MODIFY COLUMN `date` datetime');
-            DB::connection('tenant')->statement('ALTER TABLE `employee_salary_histories` MODIFY COLUMN `date` datetime');
-            DB::connection('tenant')->statement('ALTER TABLE `employee_training_histories` MODIFY COLUMN `date` datetime');
-            DB::connection('tenant')->statement('ALTER TABLE `employee_contracts` MODIFY COLUMN `contract_begin` datetime');
-            DB::connection('tenant')->statement('ALTER TABLE `employee_contracts` MODIFY COLUMN `contract_end` datetime');
-            DB::connection('tenant')->statement('ALTER TABLE `kpis` MODIFY COLUMN `date` datetime');
-            DB::connection('tenant')->statement('ALTER TABLE `pin_point_sales_visitations` MODIFY COLUMN `due_date` datetime');
+            DB::statement('ALTER TABLE `projects` ADD COLUMN `group` VARCHAR(255) after `name`');
+            // DB::connection('tenant')->statement('ALTER TABLE `TABLE_NAME` MODIFY COLUMN `date` datetime');
         }
     }
 }

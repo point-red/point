@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Model\Accounting\Journal;
+use App\Model\Finance\Payment\Payment;
 use App\Model\Master\Bank;
 use App\Model\Master\Email;
 use App\Model\Master\Group;
@@ -39,10 +41,45 @@ class SupplierController extends Controller
                 });
             }
 
-            if (in_array('address', $fields)) {
+            if (in_array('phones', $fields)) {
                 $suppliers = $suppliers->leftjoin(Phone::getTableName(), function ($q) {
                     $q->on(Phone::getTableName('phoneable_id'), '=', Supplier::getTableName('id'))
                         ->where(Phone::getTableName('phoneable_type'), Supplier::class);
+                });
+            }
+
+            if (in_array('emails', $fields)) {
+                $suppliers = $suppliers->leftjoin(Email::getTableName(), function ($q) {
+                    $q->on(Email::getTableName('emailable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Email::getTableName('emailable_type'), Supplier::class);
+                });
+            }
+
+            if (in_array('contact_persons', $fields)) {
+                $suppliers = $suppliers->leftjoin(ContactPerson::getTableName(), function ($q) {
+                    $q->on(ContactPerson::getTableName('contactable_id'), '=', Supplier::getTableName('id'))
+                        ->where(ContactPerson::getTableName('contactable_type'), Supplier::class);
+                });
+            }
+
+            if (in_array('banks', $fields)) {
+                $suppliers = $suppliers->leftjoin(Bank::getTableName(), function ($q) {
+                    $q->on(Bank::getTableName('bankable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Bank::getTableName('bankable_type'), Supplier::class);
+                });
+            }
+
+            if (in_array('journals', $fields)) {
+                $suppliers = $suppliers->leftjoin(Journal::getTableName(), function ($q) {
+                    $q->on(Journal::getTableName('journalable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Journal::getTableName('journalable_type'), Supplier::class);
+                });
+            }
+
+            if (in_array('payments', $fields)) {
+                $suppliers = $suppliers->leftjoin(Payment::getTableName(), function ($q) {
+                    $q->on(Payment::getTableName('paymentable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Payment::getTableName('paymentable_type'), Supplier::class);
                 });
             }
         }

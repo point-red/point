@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Model\Accounting\Journal;
+use App\Model\Finance\Payment\Payment;
 use App\Model\Master\Bank;
 use App\Model\Master\Email;
 use App\Model\Master\Group;
@@ -43,6 +45,41 @@ class CustomerController extends Controller
                 $customers = $customers->leftjoin(Phone::getTableName(), function ($q) {
                     $q->on(Phone::getTableName('phoneable_id'), '=', Customer::getTableName('id'))
                         ->where(Phone::getTableName('phoneable_type'), Customer::class);
+                });
+            }
+
+            if (in_array('emails', $fields)) {
+                $customers = $customers->leftjoin(Email::getTableName(), function ($q) {
+                    $q->on(Email::getTableName('emailable_id'), '=', Customer::getTableName('id'))
+                        ->where(Email::getTableName('emailable_type'), Customer::class);
+                });
+            }
+
+            if (in_array('contact_persons', $fields)) {
+                $customers = $customers->leftjoin(ContactPerson::getTableName(), function ($q) {
+                    $q->on(ContactPerson::getTableName('contactable_id'), '=', Customer::getTableName('id'))
+                        ->where(ContactPerson::getTableName('contactable_type'), Customer::class);
+                });
+            }
+
+            if (in_array('banks', $fields)) {
+                $customers = $customers->leftjoin(Bank::getTableName(), function ($q) {
+                    $q->on(Bank::getTableName('bankable_id'), '=', Customer::getTableName('id'))
+                        ->where(Bank::getTableName('bankable_type'), Customer::class);
+                });
+            }
+
+            if (in_array('journals', $fields)) {
+                $customers = $customers->leftjoin(Journal::getTableName(), function ($q) {
+                    $q->on(Journal::getTableName('journalable_id'), '=', Customer::getTableName('id'))
+                        ->where(Journal::getTableName('journalable_type'), Customer::class);
+                });
+            }
+
+            if (in_array('payments', $fields)) {
+                $customers = $customers->leftjoin(Payment::getTableName(), function ($q) {
+                    $q->on(Payment::getTableName('paymentable_id'), '=', Customer::getTableName('id'))
+                        ->where(Payment::getTableName('paymentable_type'), Customer::class);
                 });
             }
         }

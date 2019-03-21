@@ -327,7 +327,7 @@ class EmployeeController extends Controller
 
         $user_employee = $request->get('user_employee');
         $deleted = array_column($request->get('user_employee'), 'id');
-        UserEmployee::where('employee_id', $employee->id)->whereNotIn('user_id', $deleted)->delete();
+        UserEmployee::where('employee_id', $employee->id)->delete();
         foreach ($user_employee as $data) {
             $userEmployee = new UserEmployee;
             $userEmployee->employee_id = $employee->id;

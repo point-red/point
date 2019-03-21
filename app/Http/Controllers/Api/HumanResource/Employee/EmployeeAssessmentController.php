@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\HumanResource\Kpi\KpiAutomatedController;
-
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
 use App\Model\HumanResource\Kpi\KpiIndicator;
@@ -50,17 +49,14 @@ class EmployeeAssessmentController extends Controller
         $kpi_automated_controller = new KpiAutomatedController();
 
         foreach ($kpis as $key => $kpi) {
-            array_push($dates, date('dMY', strtotime($kpi->date)));
-            array_push($scores, number_format($kpi->indicators->sum('score_percentage'), 2));
-
             foreach ($kpi->groups as $key => $group) {
                 foreach ($group->indicators as $key => $indicator) {
                     if ($indicator->automated_id) {
-                        $data = $kpi_automated_controller->getAutomatedData($indicator->automated_id, $kpi->date);
+                        $data = $kpi_automated_controller->getAutomatedData($indicator->automated_id, $kpi->date, $employeeId);
 
                         $indicator->target = $data['target'];
                         $indicator->score = $data['score'];
-                        $indicator->score_percentage = $indicator->score / $indicator->target * $indicator->weight;
+                        $indicator->score_percentage = $indicator->target ? $indicator->score / $indicator->target * $indicator->weight : 0;
 
                         $group->target += $indicator->target;
                         $group->score += $indicator->score;
@@ -72,6 +68,9 @@ class EmployeeAssessmentController extends Controller
                     }
                 }
             }
+
+            array_push($dates, date('dMY', strtotime($kpi->date)));
+            array_push($scores, number_format($kpi->score_percentage, 2));
         }
 
         return (new KpiCollection($kpis))

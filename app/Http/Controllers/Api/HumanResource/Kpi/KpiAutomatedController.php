@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\Master\User;
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationTarget;
@@ -25,7 +27,7 @@ class KpiAutomatedController extends Controller
         {
             foreach ($request->automated_ids as $automated_id)
             {
-                $returnable[$automated_id] = $this->getAutomatedData($automated_id, $request->date);
+                $returnable[$automated_id] = $this->getAutomatedData($automated_id, $request->date, $request->employeeId);
             }
         }
 
@@ -98,28 +100,32 @@ class KpiAutomatedController extends Controller
         //
     }
 
-    public function getAutomatedData($automated_id, $date)
+    public function getAutomatedData($automated_id, $date, $employeeId)
     {
+        $employee = Employee::findOrFail($employeeId);
+        $userId = $employee->userEmployee->first()->id ?? 0;
+        $user = User::findOrFail($userId);
+
         $target = 0;
         $score = 0;
 
         if ($automated_id === 'C') {
             $target = (double)$this->queryCallTarget($date);
-            $score = $target ? $this->getCall($date) : 0;
+            $score = $target ? $this->getCall($date, $userId) : 0;
         }
         else if ($automated_id === 'EC') {
             $target = (double)$this->queryEffectiveCallTarget($date);
-            $score = $target ? $this->getEffectiveCall($date) : 0;
+            $score = $target ? $this->getEffectiveCall($date, $userId) : 0;
         }
         else if ($automated_id === 'V') {
             $target = (double)$this->queryValueTarget($date);
-            $score = $target ? $this->getValue($date) : 0;
+            $score = $target ? $this->getValue($date, $userId) : 0;
         }
 
         return ['score' => $score, 'target' => $target];
     }
 
-    private function getCall($date)
+    private function getCall($date, $userId)
     {
         $query = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
             ->select(DB::raw('count(forms.id) as total'))
@@ -127,12 +133,14 @@ class KpiAutomatedController extends Controller
                 date('Y-m-d 00:00:00', strtotime($date)),
                 date('Y-m-d 23:59:59', strtotime($date))
             ])
+            ->where('forms.created_by', $userId)
+            ->groupBy('forms.created_by')
             ->first();
 
         return $query ? $query->total : 0;
     }
 
-    private function getEffectiveCall($date)
+    private function getEffectiveCall($date, $userId)
     {
         $querySalesVisitationHasDetail = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
             ->join('pin_point_sales_visitation_details', 'pin_point_sales_visitation_details.sales_visitation_id', '=', 'pin_point_sales_visitations.id')
@@ -153,13 +161,14 @@ class KpiAutomatedController extends Controller
                 date('Y-m-d 00:00:00', strtotime($date)),
                 date('Y-m-d 23:59:59', strtotime($date))
             ])
+            ->where('forms.created_by', $userId)
             ->groupBy('forms.created_by')
             ->first();
 
         return $query ? $query->total : 0;
     }
 
-    private function getValue($date)
+    private function getValue($date, $userId)
     {
         $query = SalesVisitation::join('forms', 'forms.id','=',SalesVisitation::getTableName().'.form_id')
             ->join(SalesVisitationDetail::getTableName(), SalesVisitationDetail::getTableName().'.sales_visitation_id', '=', SalesVisitation::getTableName().'.id')
@@ -169,6 +178,7 @@ class KpiAutomatedController extends Controller
                 date('Y-m-d 00:00:00', strtotime($date)),
                 date('Y-m-d 23:59:59', strtotime($date))
             ])
+            ->where('forms.created_by', $userId)
             ->first();
 
         return $query ? $query->value : 0;

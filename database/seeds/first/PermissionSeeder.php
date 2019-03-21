@@ -44,7 +44,7 @@ class PermissionSeeder extends Seeder
         Permission::createIfNotExists('menu human resource');
 
         $allPermission = [
-            'employee', 'employee kpi', 'employee assessment', 'employee job location', 'employee status',
+            'employee', 'employee kpi', 'employee assessment', 'employee job location', 'employee status', 'employee salary'
         ];
 
         foreach ($allPermission as $permission) {
@@ -53,6 +53,8 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
         }
+
+        Permission::createIfNotExists('print employee salary');
     }
 
     private function setPluginPermission()

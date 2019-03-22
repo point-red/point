@@ -14,18 +14,19 @@ class PurchaseDownPaymentController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return ApiCollection
      */
     public function index(Request $request)
     {
-        $purchaseDownPayments = PurchaseDownPayment::eloquentFilter($request)
+        $downPayments = PurchaseDownPayment::eloquentFilter($request)
             ->joinForm()
             ->notArchived()
             ->with('form', 'supplier', 'downpaymentable');
 
-        $purchaseDownPayments = pagination($purchaseDownPayments, $request->get('limit'));
+        $downPayments = pagination($downPayments, $request->get('limit'));
 
-        return new ApiCollection($purchaseDownPayments);
+        return new ApiCollection($downPayments);
     }
 
     /**
@@ -38,12 +39,10 @@ class PurchaseDownPaymentController extends Controller
     public function store(Request $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $purchaseDownPayment = PurchaseDownPayment::create($request->all());
-            $purchaseDownPayment
-                ->load('form')
-                ->load('supplier');
+            $downPayment = PurchaseDownPayment::create($request->all());
+            $downPayment->load('form', 'supplier');
 
-            return new ApiResource($purchaseDownPayment);
+            return new ApiResource($downPayment);
         });
 
         return $result;
@@ -58,11 +57,11 @@ class PurchaseDownPaymentController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseDownPayment = PurchaseDownPayment::eloquentFilter($request)
+        $downPayment = PurchaseDownPayment::eloquentFilter($request)
             ->with('form')
             ->findOrFail($id);
 
-        return new ApiResource($purchaseDownPayment);
+        return new ApiResource($downPayment);
     }
 
     /**

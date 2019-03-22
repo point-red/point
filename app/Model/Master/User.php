@@ -11,6 +11,8 @@ class User extends MasterModel
 
     protected $guard_name = 'api';
 
+    protected $user_logs = false;
+
     use HasRoles;
 
     public function getPermissions()

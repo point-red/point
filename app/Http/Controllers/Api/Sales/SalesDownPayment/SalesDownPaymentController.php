@@ -3,18 +3,29 @@
 namespace App\Http\Controllers\Api\Sales\SalesDownPayment;
 
 use Illuminate\Http\Request;
+use App\Http\Resources\ApiResource;
+use App\Http\Resources\ApiCollection;
 use App\Http\Controllers\Controller;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesDownPaymentController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $downPayment = SalesDownPayment::eloquentFilter($request)
+            ->joinForm()
+            ->notArchived()
+            ->with('form', 'customer', 'downpaymentable');
+
+        $downPayment = pagination($downPayment, $request->get('limit'));
+
+        return new ApiCollection($downPayment);
     }
 
     /**
@@ -25,18 +36,30 @@ class SalesDownPaymentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+            $downPayment = SalesDownPayment::create($request->all());
+            $downPayment->load('form', 'customer');
+
+            return new ApiResource($downPayment);
+        });
+
+        return $result;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param  int $id
+     * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        //
+        $downPayment = SalesDownPayment::eloquentFilter($request)
+            ->with('form')
+            ->findOrFail($id);
+
+        return new ApiResource($downPayment);
     }
 
     /**

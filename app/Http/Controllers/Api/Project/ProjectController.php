@@ -65,6 +65,7 @@ class ProjectController extends Controller
         $project->owner_id = auth()->user()->id;
         $project->code = $request->get('code');
         $project->name = $request->get('name');
+        $project->group = $request->get('group');
         $project->timezone = $request->get('timezone');
         $project->address = $request->get('address');
         $project->phone = $request->get('phone');
@@ -124,6 +125,7 @@ class ProjectController extends Controller
         // Update tenant database name in configuration
         $project = Project::findOrFail($id);
         $project->name = $request->get('name');
+        $project->group = $request->get('group');
         $project->address = $request->get('address');
         $project->phone = $request->get('phone');
         $project->vat_id_number = $request->get('vat_id_number');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Project;
 
+use App\Http\Resources\ApiResource;
 use App\Model\Master\User;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
@@ -104,12 +105,17 @@ class ProjectController extends Controller
      * Display the specified resource.
      *
      * @param  int $id
-     *
-     * @return \App\Http\Resources\Project\Project\ProjectResource
+     * @return ApiResource
      */
     public function show($id)
     {
-        return new ProjectResource(Project::findOrFail($id));
+        $project = Project::findOrFail($id)->load('users');
+
+        $dbName = 'point_'.strtolower($project->code);
+
+        $project->db_size = dbm_get_size($dbName, 'tenant');
+
+        return new ApiResource($project);
     }
 
     /**

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\HumanResource\Kpi\KpiAutomatedController;
+use App\Model\Project\Project;
 use App\Model\Master\User;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\HumanResource\Employee\EmployeeSalary;
@@ -487,6 +488,19 @@ class EmployeeSalaryController extends Controller
      */
     public function achievement(Request $request, $employeeId)
     {
+        // Project
+        $project_code = $request->header('Tenant');
+        $current_project = Project::where('code', $project_code)->first();
+
+        if (! $project_code || !$current_project) {
+            return response()->json([
+                'code' => 422,
+                'message' => 'Project not found',
+            ], 422);
+        }
+
+        $group_of_projects = Project::where('group', $current_project->group)->get();
+
         $employee = Employee::findOrFail($employeeId);
         $userId = $employee->userEmployee->first()->id ?? 0;
         $user = User::findOrFail($userId);
@@ -495,12 +509,6 @@ class EmployeeSalaryController extends Controller
 
         $dateFrom = date('Y-m-01 00:00:00', strtotime($date));
         $dateTo = date('Y-m-t 23:59:59', strtotime($date));
-
-        $queryTarget = $this->queryTarget($dateFrom, $dateTo);
-        $queryCall = $this->queryCall($dateFrom, $dateTo);
-        $queryEffectiveCall = $this->queryEffectiveCall($dateFrom, $dateTo);
-        $queryValueAll = $this->queryValueAll($dateFrom, $dateTo);
-        $queryValueCashCredit = $this->queryValueCashCredit($dateFrom, $dateTo);
 
         $employee_achievements = [
             'automated' => [
@@ -543,6 +551,15 @@ class EmployeeSalaryController extends Controller
             ]
         ];
 
+        $counter = [
+            'achievement_national_call' => [],
+            'achievement_national_effective_call' => [], 
+            'achievement_national_value' => [],
+            'achievement_area_call' => [],
+            'achievement_area_effective_call' => [], 
+            'achievement_area_value' => []
+        ];
+
         foreach ($employee_achievements['automated'] as &$achievement) {
             $achievement['week1'] = 0;
             $achievement['week2'] = 0;
@@ -550,6 +567,144 @@ class EmployeeSalaryController extends Controller
             $achievement['week4'] = 0;
             $achievement['week5'] = 0;
         }
+
+        foreach ($counter as &$count) {
+            $count['week1'] = 0;
+            $count['week2'] = 0;
+            $count['week3'] = 0;
+            $count['week4'] = 0;
+            $count['week5'] = 0;
+        }
+
+
+        // National Call, Effective Call & Value
+        foreach ($group_of_projects as $project) {
+            config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
+            DB::connection('tenant')->reconnect();
+
+            $queryTarget = $this->queryTarget($dateFrom, $dateTo);
+            $queryCall = $this->queryCall($dateFrom, $dateTo);
+            $queryEffectiveCall = $this->queryEffectiveCall($dateFrom, $dateTo);
+            $queryValueAll = $this->queryValueAll($dateFrom, $dateTo);
+            $queryValueCashCredit = $this->queryValueCashCredit($dateFrom, $dateTo);
+
+            // Project Call
+            foreach ($queryCall as $call) {
+                if ((double)$call['total'] != 0) {
+                    $target_value = 0;
+
+                    foreach ($queryTarget as $target) {
+                        if ($target['week_of_month'] === $call['week_of_month']) {
+                            $target_value = $target['call'];
+                        }
+                    }
+
+                    if ($target_value != 0) {
+                        $achievement_value = (double)$call['total'] / (double)$target_value * 100;
+
+                        if ($achievement_value > 100) {
+                            $achievement_value = 100;
+                        }
+
+                        $employee_achievements['automated']['achievement_national_call'][$call['week_of_month']] += $achievement_value;
+
+                        if ($project->code === $project_code) {
+                            $employee_achievements['automated']['achievement_area_call'][$call['week_of_month']] += $achievement_value;
+                        }
+                    }
+
+                    $counter['achievement_national_call'][$call['week_of_month']]++;
+
+                    if ($project->code === $project_code) {
+                        $counter['achievement_area_call'][$call['week_of_month']]++;
+                    }
+                }
+            }
+
+            // Project Effective Call
+            foreach ($queryEffectiveCall as $effective_call) {
+                if ((double)$effective_call['total'] != 0) {
+                    $target_value = 0;
+
+                    foreach ($queryTarget as $target) {
+                        if ($target['week_of_month'] === $effective_call['week_of_month']) {
+                            $target_value = $target['effective_call'];
+                        }
+                    }
+
+                    if ($target_value != 0) {
+                        $achievement_value = (double)$effective_call['total'] / (double)$target_value * 100;
+
+                        if ($achievement_value > 100) {
+                            $achievement_value = 100;
+                        }
+
+                        $employee_achievements['automated']['achievement_national_effective_call'][$effective_call['week_of_month']] += $achievement_value;
+
+                        if ($project->code === $project_code) {
+                            $employee_achievements['automated']['achievement_area_effective_call'][$effective_call['week_of_month']] += $achievement_value;
+                        }
+                    }
+
+                    $counter['achievement_national_effective_call'][$effective_call['week_of_month']]++;
+
+                    if ($project->code === $project_code) {
+                        $counter['achievement_area_effective_call'][$effective_call['week_of_month']]++;
+                    }
+                }
+            }
+
+            // Project Value
+            foreach ($queryValueAll as $value) {
+                if ((double)$value['value'] != 0) {
+                    $target_value = 0;
+
+                    foreach ($queryTarget as $target) {
+                        if ($target['week_of_month'] === $value['week_of_month']) {
+                            $target_value = $target['value'];
+                        }
+                    }
+
+                    if ($target_value != 0) {
+                        $achievement_value = (double)$value['value'] / (double)$target_value * 100;
+
+                        if ($achievement_value > 100) {
+                            $achievement_value = 100;
+                        }
+
+                        $employee_achievements['automated']['achievement_national_value'][$value['week_of_month']] += $achievement_value;
+
+                        if ($project->code === $project_code) {
+                            $employee_achievements['automated']['achievement_area_value'][$value['week_of_month']] += $achievement_value;
+                        }
+                    }
+
+                    $counter['achievement_national_value'][$value['week_of_month']]++;
+
+                    if ($project->code === $project_code) {
+                        $counter['achievement_area_value'][$value['week_of_month']]++;
+                    }
+                }
+            }
+
+            if ($project->code === $project_code) {
+                $employee_achievements['automated']['achievement_area_call'][$value['week_of_month']] /= $counter['achievement_area_call'][$value['week_of_month']];
+                $employee_achievements['automated']['achievement_area_effective_call'][$value['week_of_month']] /= $counter['achievement_area_effective_call'][$value['week_of_month']];
+                $employee_achievements['automated']['achievement_area_value'][$value['week_of_month']] /= $counter['achievement_area_value'][$value['week_of_month']];
+            }
+        }
+
+        $employee_achievements['automated']['achievement_national_call'][$value['week_of_month']] /= $counter['achievement_national_call'][$value['week_of_month']];
+        $employee_achievements['automated']['achievement_national_effective_call'][$value['week_of_month']] /= $counter['achievement_national_effective_call'][$value['week_of_month']];
+        $employee_achievements['automated']['achievement_national_value'][$value['week_of_month']] /= $counter['achievement_national_value'][$value['week_of_month']];
+
+
+        config()->set('database.connections.tenant.database', 'point_' . strtolower($project_code));
+        DB::connection('tenant')->reconnect();        
+
+        $queryValueAll = $this->queryValueAll($dateFrom, $dateTo);
+        $queryValueCashCredit = $this->queryValueCashCredit($dateFrom, $dateTo);
+
 
         // Balance
         foreach ($queryValueAll as $value) {
@@ -561,83 +716,6 @@ class EmployeeSalaryController extends Controller
             }
         }
 
-        // National Call (Waiting for Group)
-        foreach ($employee_achievements['automated']['achievement_national_call'] as &$achievement) {
-            $achievement = 100;
-        }
-
-        // National Effective Call (Waiting for Group)
-        foreach ($employee_achievements['automated']['achievement_national_effective_call'] as &$achievement) {
-            $achievement = 100;
-        }
-
-        // National Value (Waiting for Group)
-        foreach ($employee_achievements['automated']['achievement_national_value'] as &$achievement) {
-            $achievement = 100;
-        }
-
-        // Area Call
-        foreach ($queryCall as $call) {
-            if ((double)$call['total'] != 0) {
-                $target_value = 0;
-
-                foreach ($queryTarget as $target) {
-                    if ($target['week_of_month'] === $call['week_of_month']) {
-                        $target_value = $target['call'];
-                    }
-                }
-
-                if ($target_value != 0) {
-                    $employee_achievements['automated']['achievement_area_call'][$call['week_of_month']] = (double)$call['total'] / (double)$target_value * 100;
-
-                    if ($employee_achievements['automated']['achievement_area_call'][$call['week_of_month']] > 100) {
-                        $employee_achievements['automated']['achievement_area_call'][$call['week_of_month']] = 100;
-                    }
-                }
-            }
-        }
-
-        // Area Effective Call
-        foreach ($queryEffectiveCall as $effective_call) {
-            if ((double)$effective_call['total'] != 0) {
-                $target_value = 0;
-
-                foreach ($queryTarget as $target) {
-                    if ($target['week_of_month'] === $effective_call['week_of_month']) {
-                        $target_value = $target['effective_call'];
-                    }
-                }
-
-                if ($target_value != 0) {
-                    $employee_achievements['automated']['achievement_area_effective_call'][$effective_call['week_of_month']] = (double)$effective_call['total'] / (double)$target_value * 100;
-
-                    if ($employee_achievements['automated']['achievement_area_effective_call'][$effective_call['week_of_month']] > 100) {
-                        $employee_achievements['automated']['achievement_area_effective_call'][$effective_call['week_of_month']] = 100;
-                    }
-                }
-            }
-        }
-
-        // Area Value
-        foreach ($queryValueAll as $value) {
-            if ((double)$value['value'] != 0) {
-                $target_value = 0;
-
-                foreach ($queryTarget as $target) {
-                    if ($target['week_of_month'] === $value['week_of_month']) {
-                        $target_value = $target['value'];
-                    }
-                }
-
-                if ($target_value != 0) {
-                    $employee_achievements['automated']['achievement_area_value'][$value['week_of_month']] = (double)$value['value'] / (double)$target_value * 100;
-
-                    if ($employee_achievements['automated']['achievement_area_value'][$value['week_of_month']] > 100) {
-                        $employee_achievements['automated']['achievement_area_value'][$value['week_of_month']] = 100;
-                    }
-                }
-            }
-        }
 
         // Cash Payment
         foreach ($queryValueCashCredit as $value) {

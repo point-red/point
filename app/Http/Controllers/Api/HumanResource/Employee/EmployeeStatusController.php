@@ -24,12 +24,10 @@ class EmployeeStatusController extends Controller
      */
     public function index(Request $request)
     {
-        $statuses = EmployeeStatus::select('employee_statuses.*')
-            ->filters($request->get('filters'))
-            ->fields($request->get('fields'))
-            ->sortBy($request->get('sort_by'))
-            ->includes($request->get('includes'))
-            ->paginate($request->get('paginate') ?? 20);
+        $statuses = EmployeeStatus::eloquentFilter($request)
+            ->select('employee_statuses.*');
+
+        $statuses = pagination($statuses, $request->get('limit'));
 
         return new ApiCollection($statuses);
     }

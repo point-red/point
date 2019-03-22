@@ -24,13 +24,11 @@ class EmployeeJobLocationController extends Controller
      */
     public function index(Request $request)
     {
-        $job_locations = EmployeeJobLocation::select('employee_job_locations.*')
-            ->filters($request->get('filters'))
-            ->fields($request->get('fields'))
-            ->sortBy($request->get('sort_by'))
-            ->includes($request->get('includes'))
-            ->paginate($request->get('paginate') ?? 20);
+        $job_locations = EmployeeJobLocation::eloquentFilter($request)
+            ->select('employee_job_locations.*');
             
+        $job_locations = pagination($job_locations, $request->get('limit'));
+        
         return new ApiCollection($job_locations);
     }
 

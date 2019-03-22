@@ -16,6 +16,11 @@ class PermissionSeeder extends Seeder
         $role = Role::createIfNotExists('super admin');
 
         $this->setMasterPermission();
+        $this->setPurchasePermission();
+        $this->setSalesPermission();
+        $this->setInventoryPermission();
+        $this->setAccountingPermission();
+        $this->setFinancePermission();
         $this->setHumanResourcePermission();
         $this->setPluginPermission();
 
@@ -29,7 +34,122 @@ class PermissionSeeder extends Seeder
 
         $allPermission = [
             'user', 'role',
+            'customer', 'supplier', 'expedition',
+            'item', 'service',
+            'allocation', 'warehouse',
         ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
+    private function setPurchasePermission()
+    {
+        Permission::createIfNotExists('menu purchase');
+
+        $allPermission = [
+            'purchase request',
+            'purchase contract',
+            'purchase order',
+            'purchase receive',
+            'purchase invoice',
+            'purchase down payment',
+            'purchase return',
+        ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
+    private function setSalesPermission()
+    {
+        Permission::createIfNotExists('menu sales');
+
+        $allPermission = [
+            'sales quotation',
+            'sales contract',
+            'sales order',
+            'delivery order',
+            'delivery notes',
+            'sales invoice',
+            'sales down payment',
+            'sales return',
+        ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
+    private function setInventoryPermission()
+    {
+        Permission::createIfNotExists('menu inventory');
+
+        $allPermission = [
+            'inventory report',
+            'inventory audit',
+            'stock correction',
+            'transfer item',
+            'inventory usage',
+        ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
+    private function setAccountingPermission()
+    {
+        Permission::createIfNotExists('menu accounting');
+
+        $allPermission = [
+            'chart of account',
+            'cut off',
+            'memo journal',
+        ];
+
+        Permission::createIfNotExists('read balance sheet');
+        Permission::createIfNotExists('read general ledger');
+        Permission::createIfNotExists('read sub ledger');
+        Permission::createIfNotExists('read trial balance');
+        Permission::createIfNotExists('read profit and loss');
+        Permission::createIfNotExists('read ratio report');
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
+    private function setFinancePermission()
+    {
+        Permission::createIfNotExists('menu payment');
+
+        $allPermission = [
+            'payment order',
+            'cash advance',
+            'cash',
+            'bank',
+        ];
+
+        Permission::createIfNotExists('read debt aging report');
+        Permission::createIfNotExists('read allocation report');
 
         foreach ($allPermission as $permission) {
             Permission::createIfNotExists('create '.$permission);

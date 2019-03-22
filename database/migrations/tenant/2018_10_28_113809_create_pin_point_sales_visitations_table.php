@@ -25,7 +25,7 @@ class CreatePinPointSalesVisitationsTable extends Migration
             $table->string('longitude')->nullable();
             $table->text('notes')->nullable();
             $table->string('payment_method'); // cash or credit
-            $table->date('due_date')->nullable();
+            $table->datetime('due_date')->nullable();
             $table->decimal('payment_received', 65, 30)->nullable();
             $table->boolean('is_repeat_order')->default(false);
             $table->timestamps();

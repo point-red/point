@@ -15,7 +15,7 @@ class CreatePinPointSalesVisitationTargetsTable extends Migration
     {
         Schema::create('pin_point_sales_visitation_targets', function (Blueprint $table) {
             $table->increments('id');
-            $table->date('date');
+            $table->datetime('date');
             $table->unsignedInteger('user_id')->index();
             $table->unsignedInteger('call');
             $table->unsignedInteger('effective_call');

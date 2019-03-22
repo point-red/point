@@ -28,7 +28,7 @@ class CreateEmployeesTable extends Migration
             $table->unsignedInteger('employee_religion_id')->nullable();
             // Data related to job
             $table->unsignedInteger('employee_group_id')->nullable()->index();
-            $table->date('join_date')->nullable();
+            $table->datetime('join_date')->nullable();
             $table->string('job_title')->nullable();
             $table->unsignedInteger('kpi_template_id')->nullable()->index();
             $table->text('notes')->nullable();

@@ -47,7 +47,7 @@ class MasterModel extends PointModel
                     $row = [];
                     $row['historyable_type'] = $class;
                     $row['historyable_id'] = $oldData->id;
-                    $row['updated_by'] = auth()->user()->id;
+                    $row['updated_by'] = optional(auth()->user())->id;
                     $row['column_name'] = $attr;
                     $row['old'] = $oldData->$attr;
                     $row['new'] = $this->$attr;

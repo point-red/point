@@ -17,6 +17,8 @@ class CreateProjectsTable extends Migration
             $table->increments('id');
             $table->string('code')->unique();
             $table->string('name');
+            $table->string('group')->nullable();
+            $table->string('timezone')->default('UTC');
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
             $table->string('vat_id_number')->nullable();

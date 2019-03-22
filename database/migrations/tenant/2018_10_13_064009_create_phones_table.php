@@ -21,7 +21,7 @@ class CreatePhonesTable extends Migration
             $table->boolean('is_main')->default(false);
 
             // Polymorphic Relations
-            $table->unsignedInteger('phoneable_id');
+            $table->unsignedInteger('phoneable_id')->index();
             $table->string('phoneable_type');
 
             $table->unsignedInteger('created_by')->index()->nullable();

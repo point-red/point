@@ -2,9 +2,7 @@
 
 namespace App\Model;
 
-use Illuminate\Database\Eloquent\Model;
-
-class TransactionModel extends Model
+class TransactionModel extends PointModel
 {
     //
 }

@@ -20,7 +20,7 @@ class CreateJournalsTable extends Migration
             $table->unsignedInteger('chart_of_account_id')->index();
             $table->decimal('debit', 65, 30)->default(0);
             $table->decimal('credit', 65, 30)->default(0);
-            $table->integer('journalable_id')->nullable();
+            $table->integer('journalable_id')->index()->nullable();
             $table->string('journalable_type')->nullable();
             $table->timestamps();
 

@@ -27,18 +27,21 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::eloquentFilter($request)
-            ->with('groups')
-            ->with('addresses')
-            ->with('emails')
-            ->with('banks')
-            ->with('phones')
-            ->with('contactPersons');
+        $customers = Customer::leftjoin(Address::getTableName(), function ($q) {
+            $q->on(Address::getTableName('addressable_id'), '=', Customer::getTableName('id'))
+                ->where(Address::getTableName('addressable_type'), Customer::class);
+        })->leftjoin(Phone::getTableName(), function ($q) {
+            $q->on(Phone::getTableName('phoneable_id'), '=', Customer::getTableName('id'))
+                ->where(Phone::getTableName('phoneable_type'), Customer::class);
+        })->select(Customer::getTableName('*'))
+            ->eloquentFilter($request);
 
         if ($request->get('group_id')) {
-            $customers = $customers->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
-                ->where('groupables.groupable_type', Customer::class)
-                ->where('groupables.group_id', '=', 1);
+            $customers = $customers->join('groupables', function ($q) use ($request) {
+                $q->on('groupables.groupable_id', '=', 'customers.id')
+                    ->where('groupables.groupable_type', Customer::class)
+                    ->where('groupables.group_id', '=', $request->get('group_id'));
+            });
         }
 
         $customers = pagination($customers, $request->get('limit'));
@@ -62,13 +65,13 @@ class CustomerController extends Controller
         $customer->save();
 
         if ($request->get('group')['name']) {
-
-            $group = Group::find($request->get('group')['id']);
+            $group = Group::where('id', $request->get('group')['id'] ?? 0)
+                ->orWhere('name', $request->get('group')['name'])->first();
 
             if (!$group) {
                 $group = new Group;
                 $group->name = $request->get('group')['name'];
-                $group->type = Customer::class;
+                $group->type = 'Customer';
                 $group->save();
             }
 
@@ -95,16 +98,9 @@ class CustomerController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $customers = Customer::eloquentFilter($request)
-            ->with('groups')
-            ->with('addresses')
-            ->with('emails')
-            ->with('banks')
-            ->with('phones')
-            ->with('contactPersons')
-            ->findOrFail($id);
+        $customer = Customer::eloquentFilter($request)->findOrFail($id);
 
-        return new ApiResource($customers);
+        return new ApiResource($customer);
     }
 
     /**
@@ -124,17 +120,20 @@ class CustomerController extends Controller
         $customer->save();
 
         if ($request->get('group')['name']) {
-
-            $group = Group::find($request->get('group')['id']);
+            $group = Group::where('id', $request->get('group')['id'] ?? 0)
+                ->orWhere('name', $request->get('group')['name'])->first();
 
             if (!$group) {
                 $group = new Group;
                 $group->name = $request->get('group')['name'];
-                $group->type = Customer::class;
+                $group->type = 'Customer';
                 $group->save();
             }
 
             $group->customers()->attach($customer);
+        } else {
+            // TODO: remove this in relase v1.1
+            $customer->groups()->detach();
         }
 
         Address::saveFromRelation($customer, $request->get('addresses'));

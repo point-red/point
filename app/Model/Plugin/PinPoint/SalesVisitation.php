@@ -16,6 +16,16 @@ class SalesVisitation extends PointModel
         'value' => 'double'
     ];
 
+    public function setDueDateAttribute($value)
+    {
+        $this->attributes['due_date'] = convert_to_server_timezone($value);
+    }
+
+    public function getDueDateAttribute($value)
+    {
+        return convert_to_local_timezone($value);
+    }
+
     public function form() {
         return $this->belongsTo(Form::class);
     }

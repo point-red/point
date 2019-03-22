@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
+use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
+use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -44,25 +46,14 @@ class AlterData extends Command
     {
         $projects = Project::all();
         foreach ($projects as $project) {
-//            $this->line('Clone ' . $project->code);
-//            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+            $this->line('Clone ' . $project->code);
+            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
             $this->line('Alter ' . $project->code);
             config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
-            $salesVisitations = SalesVisitation::join(SalesVisitationDetail::getTableName(),
-                SalesVisitationDetail::getTableName().'.sales_visitation_id', '=', SalesVisitation::getTableName().'.id')
-                ->select(SalesVisitation::getTableName().'.*')
-                ->get();
-
-            $this->line('Sales Visitations ' . $salesVisitations->count());
-
-            foreach ($salesVisitations as $salesVisitation) {
-                if (SalesVisitation::where('customer_id', $salesVisitation->customer_id)->where('id', '<', $salesVisitation->id)->first()) {
-                    $salesVisitation->is_repeat_order = true;
-                    $salesVisitation->save();
-                }
-            }
+            SalesVisitationInterestReason::where('name', '=', '')->delete();
+            SalesVisitationNotInterestReason::where('name', '=', '')->delete();
 
             // TODO: ADD TAXABLE COLUMN IN ITEMS AND SERVICES
             // TODO: ADD NOTES IN FORM

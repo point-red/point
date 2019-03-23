@@ -5,6 +5,7 @@ namespace App\Model\Sales\SalesInvoice;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Customer;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
@@ -72,6 +73,11 @@ class SalesInvoice extends TransactionModel
         return $this->belongsTo(Customer::class);
     }
 
+    public function downPayments()
+    {
+        return $this->belongsToMany(SalesDownPayment::class, 'down_payment_invoice', 'down_payment_id', 'invoice_id');
+    }
+
     /**
      * Get the invoice's payment.
      */
@@ -133,6 +139,7 @@ class SalesInvoice extends TransactionModel
         $amount = 0;
         $salesInvoiceItems = [];
         $salesInvoiceServices = [];
+        $salesInvoiceDownPayments = [];
 
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];
@@ -194,6 +201,18 @@ class SalesInvoice extends TransactionModel
 
                     $amount += $deliveryNoteItem->quantity * ($service['price'] - $service['discount_value'] ?? 0);
                 }
+            }
+        }
+
+        $downPayments = $data['down_payments'] ?? [];
+        if (! empty($downPayments) && is_array($downPayments)) {
+            foreach ($downPayments as $downPayment) {
+                // TODO: check amount
+                $downPayment->form()->update(['done' => true]);
+                $salesInvoice->downPayments()->attach($downPayment->id, [
+                    'amount' => $downPayment->amount
+                ]);
+                $amount -= $downPayment->amount;
             }
         }
 

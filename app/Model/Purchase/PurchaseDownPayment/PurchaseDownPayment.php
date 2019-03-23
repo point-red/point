@@ -5,6 +5,7 @@ namespace App\Model\Purchase\PurchaseDownPayment;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseContract\PurchaseContract;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -41,6 +42,11 @@ class PurchaseDownPayment extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function invoices()
+    {
+        return $this->belongsToMany(PurchaseInvoice::class, 'down_payment_invoice', 'invoice_id', 'down_payment_id');
     }
 
     public static function create($data)

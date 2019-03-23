@@ -5,6 +5,7 @@ namespace App\Model\Purchase\PurchaseInvoice;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Supplier;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
 use App\Model\Accounting\ChartOfAccountType;
@@ -68,6 +69,11 @@ class PurchaseInvoice extends TransactionModel
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+
+    public function downPayments()
+    {
+        return $this->belongsToMany(PurchaseDownPayment::class, 'down_payment_invoice', 'down_payment_id', 'invoice_id');
     }
 
     public static function create($data)

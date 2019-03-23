@@ -6,6 +6,7 @@ use App\Model\Finance\Payment\Payment;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Sales\SalesContract\SalesContract;
+use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
 use Illuminate\Http\Request;
@@ -44,6 +45,11 @@ class SalesDownPayment extends TransactionModel
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function invoices()
+    {
+        return $this->belongsToMany(SalesInvoice::class, 'down_payment_invoice', 'invoice_id', 'down_payment_id');
     }
 
     public static function create($data)
@@ -96,7 +102,7 @@ class SalesDownPayment extends TransactionModel
             0 => [
                 'chart_of_account_id' => 1,
                 'allocation_id' => null,
-                'amount' => $data->,
+                'amount' => $downPayment->amount,
                 'notes' => '',
                 'referenceable_type' => get_class($downPayment),
                 'referenceable_id' => $downPayment->id,

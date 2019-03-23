@@ -36,7 +36,7 @@ class SalesDownPaymentController extends Controller
      */
     public function store(Request $request)
     {
-        $result = DB::connection('tenant')->transaction(function () use ($request) {
+        $result = \DB::connection('tenant')->transaction(function () use ($request) {
             $downPayment = SalesDownPayment::create($request->all());
             $downPayment->load('form', 'customer');
 

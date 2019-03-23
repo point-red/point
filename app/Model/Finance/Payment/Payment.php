@@ -7,6 +7,7 @@ use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
 use Carbon\Carbon;
+use App\Model\Accounting\Journal;
 
 class Payment extends TransactionModel
 {
@@ -20,6 +21,7 @@ class Payment extends TransactionModel
         'due_date',
         'paymentable_type',
         'paymentable_id',
+        'payment_account_id',
     ];
 
     protected $casts = [

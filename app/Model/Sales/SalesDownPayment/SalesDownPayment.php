@@ -92,7 +92,7 @@ class SalesDownPayment extends TransactionModel
         $payment['paymentable_name'] = $downPayment->customer->name;
         $payment['paid'] = $data['paid'];
 
-        $payment['details'] => [
+        $payment['details'] = [
             0 => [
                 'chart_of_account_id' => 1,
                 'allocation_id' => null,

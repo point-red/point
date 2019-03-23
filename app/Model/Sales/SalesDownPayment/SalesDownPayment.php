@@ -61,9 +61,10 @@ class SalesDownPayment extends TransactionModel
             $reference = SalesContract::findOrFail($data['sales_contract_id']);
         }
 
-
-        $downPayment->customer_id = $reference->customer_id;
-        $downPayment->customer_name = $reference->customer_name;
+        $data['customer_id'] = $reference->customer_id;
+        $data['customer_name'] = $reference->customer_name;
+        $data['number'] = "DP/{code_customer}/{y}{m}{increment=4}";
+        
         $downPayment->fill($data);
         $downPayment->save();
 

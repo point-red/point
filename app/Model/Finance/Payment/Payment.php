@@ -28,6 +28,10 @@ class Payment extends TransactionModel
         'amount' => 'double',
     ];
 
+    protected $paymentableType = [
+        'customer' => Customer::class,
+        'supplier' => Supplier::class,
+    ];
 
     public function getDueDateAttribute($value)
     {
@@ -38,11 +42,6 @@ class Payment extends TransactionModel
     {
         $this->attributes['due_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
-
-    protected $paymentableType = [
-        'customer' => Customer::class,
-        'supplier' => Supplier::class,
-    ];
 
     public function details()
     {

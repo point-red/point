@@ -90,7 +90,7 @@ class StoreTransactionRequest extends FormRequest
                 'sales.date' => 'bail|required|date',
                 'sales.eta' => 'bail|required|date',
                 'sales.cash_only' => 'boolean',
-                'sales.need_down_payment' => 'boolean',
+                'sales.need_down_payment' => 'bail|numeric|min:0',
                 'sales.delivery_fee' => 'bail|numeric|min:0',
                 'sales.discount_value' => 'bail|numeric|min:0',
                 'sales.type_of_tax' => 'bail|required|in:include,exclude,non',

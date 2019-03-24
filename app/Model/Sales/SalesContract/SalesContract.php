@@ -9,6 +9,7 @@ use App\Model\Master\Item;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
 use App\Model\Sales\SalesOrder\SalesOrderItem;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesContract extends TransactionModel
 {
@@ -32,6 +33,7 @@ class SalesContract extends TransactionModel
         'discount_percent' => 'double',
         'discount_value' => 'double',
         'tax' => 'double',
+        'need_down_payment' => 'double',
     ];
 
     public $defaultNumberPrefix = 'CONTRACT';
@@ -59,6 +61,12 @@ class SalesContract extends TransactionModel
     public function salesOrders()
     {
         return $this->hasMany(SalesOrder::class);
+    }
+
+    public function downPayments() {
+        return $this->morphMany(SalesDownPayment::class, 'downpaymentable')
+            ->joinForm(SalesDownPayment::class)
+            ->active();
     }
 
     public function updateIfDone()

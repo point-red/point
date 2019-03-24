@@ -9,7 +9,6 @@ use App\Model\Sales\SalesContract\SalesContract;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
-use Illuminate\Http\Request;
 
 class SalesDownPayment extends TransactionModel
 {
@@ -72,7 +71,9 @@ class SalesDownPayment extends TransactionModel
 
         $data['customer_id'] = $reference->customer_id;
         $data['customer_name'] = $reference->customer_name;
-        $data['number'] = "DP/{code_customer}/{y}{m}{increment=4}";
+        if (empty($data['number'])) {
+            $data['number'] = "DP/{code_customer}/{y}{m}{increment=4}";
+        }
         
         $downPayment->fill($data);
         $downPayment->save();
@@ -89,26 +90,33 @@ class SalesDownPayment extends TransactionModel
     private static function addPaymentCollection($data, $downPayment) {
         $payment = [];
         // payment type should be cash / bank when paid = true
-        $payment['payment_type'] = $data['payment_type'] || 'payment collection';
-        $payment['due_date'] = $data['due_date'];
-        $payment['disbursed'] = true;
+        $payment['payment_type'] = $data['payment_type'] ?? 'payment collection';
+        $payment['payment_account_id'] = $data['payment_account_id'];
+        $payment['due_date'] = $data['due_date'] ?? null;
+        $payment['date'] = $downPayment->form->date;
+        $payment['number'] = $data['payment_number'] ?? null;
+        $payment['done'] = $data['payment_done'] ?? false;
+        $payment['approved'] = $data['payment_approved'] ?? false;
+        $payment['disbursed'] = false;
         $payment['amount'] = $downPayment->amount;
         $payment['paymentable_id'] = $downPayment->customer_id;
-        $payment['paymentable_type'] = Customer::class;
+        $payment['paymentable_type'] = 'customer';
         $payment['paymentable_name'] = $downPayment->customer->name;
-        $payment['paid'] = $data['paid'];
 
         $payment['details'] = [
             0 => [
                 'chart_of_account_id' => 1,
                 'allocation_id' => null,
                 'amount' => $downPayment->amount,
-                'notes' => '',
-                'referenceable_type' => get_class($downPayment),
+                'notes' => $downPayment->form->notes,
+                'referenceable_type' => 'sales_down_payment',
                 'referenceable_id' => $downPayment->id,
             ]
         ];
 
-        Payment::create($payment);
+        $salePayment = Payment::create($payment);
+        
+        $downPayment->paid_by = $salePayment->id;
+        $downPayment->save();
     }
 }

@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Api\Inventory;
 use App\Model\Master\User;
 use Illuminate\Http\Request;
 use App\Model\Form;
+use App\Model\Inventory\Transfer\Transfer;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use Illuminate\Support\Facades\Artisan;
-use App\Http\Resources\Project\Project\ProjectResource;
-use App\Http\Requests\Project\Project\StoreProjectRequest;
+use App\Http\Resources\ApiResource;
+use App\Http\Requests\Inventory\Transfer\TransferItemRequest;
 use App\Http\Requests\Project\Project\DeleteProjectRequest;
 use App\Http\Requests\Project\Project\UpdateProjectRequest;
 
@@ -36,66 +37,22 @@ class TransferItemController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreProjectRequest $request
-     * @return \App\Http\Resources\Project\Project\ProjectResource
+     * @param TransferItemRequest $request
+     * @return \App\Http\Resources\ApiResource
      */
-    public function store(StoreProjectRequest $request)
+    public function store(Request $request)
     {
-        // User only allowed to create max 1 project
-        $numberOfProject = Project::where('owner_id', auth()->user()->id)->count();
-        // TODO: disable new project creation
-        if ($numberOfProject >= 1) {
-            return response()->json([
-                'code' => 422,
-                'message' => 'We are updating our server, currently you cannot create new project',
-            ], 422);
-        }
+        // dd($request->all());
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+            $transfer = Transfer::create($request->all());
+            $transfer
+                ->load('form')
+                ->load('items.item');
 
-        // Create new database for tenant project
-        $dbName = 'point_'.strtolower($request->get('code'));
-        Artisan::call('tenant:database:create', ['db_name' => $dbName]);
+            return new ApiResource($transfer);
+        });
 
-        // Update tenant database name in configuration
-        config()->set('database.connections.tenant.database', $dbName);
-        DB::connection('tenant')->reconnect();
-        DB::connection('tenant')->beginTransaction();
-
-        $project = new Project;
-        $project->owner_id = auth()->user()->id;
-        $project->code = $request->get('code');
-        $project->name = $request->get('name');
-        $project->timezone = $request->header('timezone');
-        $project->address = $request->get('address');
-        $project->phone = $request->get('phone');
-        $project->vat_id_number = $request->get('vat_id_number');
-        $project->invitation_code = get_invitation_code();
-        $project->save();
-
-        $projectUser = new ProjectUser;
-        $projectUser->project_id = $project->id;
-        $projectUser->user_id = $project->owner_id;
-        $projectUser->user_name = $project->owner->name;
-        $projectUser->user_email = $project->owner->email;
-        $projectUser->joined = true;
-        $projectUser->save();
-
-        // Migrate database
-        Artisan::call('tenant:migrate', ['db_name' => $dbName]);
-
-        // Clone user point into their database
-        $user = new User;
-        $user->id = auth()->user()->id;
-        $user->name = auth()->user()->name;
-        $user->first_name = auth()->user()->first_name;
-        $user->last_name = auth()->user()->last_name;
-        $user->email = auth()->user()->email;
-        $user->save();
-
-        Artisan::call('tenant:seed:first', ['db_name' => $dbName]);
-
-        DB::connection('tenant')->commit();
-
-        return new ProjectResource($project);
+        return $result;
     }
 
     /**

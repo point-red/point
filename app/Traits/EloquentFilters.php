@@ -20,6 +20,7 @@ trait EloquentFilters
             ->filterMax($request->get('filter_max'))
             ->filterNull($request->get('filter_null'))
             ->filterNotNull($request->get('filter_not_null'))
+            ->filterHas($request->get('filter_has'))
             ->orFilterEqual($request->get('or_filter_equal'))
             ->orFilterNotEqual($request->get('or_filter_not_equal'))
             ->orFilterLike($request->get('or_filter_like'))
@@ -338,6 +339,21 @@ trait EloquentFilters
 
             foreach ($columns as $key => $column) {
                 $query->orWhereNotNull($column);
+            }
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $values
+     */
+    public function scopeFilterHas($query, $values)
+    {
+        if (! is_null($values)) {
+            $relations = explode(',', $values);
+
+            foreach ($relations as $relation) {
+                $query->has($relation);
             }
         }
     }

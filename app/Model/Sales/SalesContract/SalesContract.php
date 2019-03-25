@@ -60,7 +60,9 @@ class SalesContract extends TransactionModel
 
     public function salesOrders()
     {
-        return $this->hasMany(SalesOrder::class);
+        return $this->hasMany(SalesOrder::class)
+            ->joinForm(SalesOrder::class)
+            ->active();
     }
 
     public function downPayments() {
@@ -148,7 +150,7 @@ class SalesContract extends TransactionModel
                 $contractItem->fill($item);
                 $contractItem->item_name = $dbItems[$item['item_id']]->name;
 
-                $amount += $item['quantity'] * $item['price'];
+                $amount += $item['quantity'] * ($item['price'] - $item['discount_value']);
 
                 array_push($items, $contractItem);
             }
@@ -161,13 +163,13 @@ class SalesContract extends TransactionModel
                 $contractGroup->fill($groupItem);
                 $contractGroup->group_name = $dbGroups[$groupItem['group_id']]->name;
 
-                $amount += $groupItem['quantity'] * $groupItem['price'];
+                $amount += $groupItem['quantity'] * ($groupItem['price'] - $groupItem['discount_value']);
 
                 array_push($groupItems, $contractGroup);
             }
         }
 
-        $salesContract->amount = $amount;
+        $salesContract->amount = $amount - $salesContract->discount_value + $salesContract->tax;
         $salesContract->save();
 
         if (!empty($items)) {

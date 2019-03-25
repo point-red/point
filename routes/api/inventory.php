@@ -7,4 +7,5 @@ Route::prefix('inventory')->namespace('Inventory')->group(function () {
     // Route::apiResource('inventory-corrections', 'InventoryCorrectionController');
     Route::apiResource('transfer-items', 'TransferItemController');
     Route::apiResource('receive-items', 'ReceiveItemController');
+    Route::get('/stock', 'InventoryController@getStock');
 });

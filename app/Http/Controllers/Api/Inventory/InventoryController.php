@@ -46,11 +46,14 @@ class InventoryController extends Controller
             'warehouse' => 'required|integer',
         ]);
 
-        $query = Inventory::select(Item::getTableName().'.name')
-            ->selectRaw("SUM(quantity) as quantity, warehouse_id as warehouse, item_id as item_id")
-            ->where('warehouse_id', $request->get('warehouse'))
-            ->join(Item::getTableName(), Item::getTableName().'.id', Inventory::getTableName().'.item_id')
-            ->groupBy('item_id');
+        // $query = Inventory::select(Item::getTableName().'.name')
+        //     ->selectRaw("SUM(quantity) as quantity, warehouse_id as warehouse, item_id as item_id")
+        //     ->where('warehouse_id', $request->get('warehouse'))
+        //     ->join(Item::getTableName(), Item::getTableName().'.id', Inventory::getTableName().'.item_id')
+        //     ->groupBy('item_id');
+
+        $query = Item::select('name', 'stock')
+            ->selectRaw("id as item_id");
 
         return new ItemCollection($query->paginate(100));
     }

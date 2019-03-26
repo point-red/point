@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterTransferNullable extends Migration
+class AlterTransferItemNullable extends Migration
 {
     /**
      * Run the migrations.
@@ -29,6 +29,7 @@ class AlterTransferNullable extends Migration
         Schema::table('transfer_items', function (Blueprint $table) {
             $table->string('unit')->nullable(0)->change();
             $table->decimal('converter', 65, 30)->default(NULL)->change();
+            $table->timestamps();
         });
     }
 }

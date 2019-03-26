@@ -12,8 +12,6 @@ use App\Http\Resources\ApiCollection;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Resources\ApiResource;
 use App\Http\Requests\Inventory\Transfer\TransferItemRequest;
-use App\Http\Requests\Project\Project\DeleteProjectRequest;
-use App\Http\Requests\Project\Project\UpdateProjectRequest;
 
 class TransferItemController extends Controller
 {
@@ -26,7 +24,8 @@ class TransferItemController extends Controller
     public function index(Request $request)
     {
         $transfers = Form::select('forms.id', 'forms.date', 'forms.number', 'forms.approved', 'forms.canceled', 'forms.done')
-            ->where('formable_type', 'transfer');
+            ->addSelect('formable_id as transfer_id')
+            ->where('formable_type', Transfer::class);
         // dd($transfers->toSql());
 
         $transfers = pagination($transfers, $request->input('limit'));
@@ -62,53 +61,18 @@ class TransferItemController extends Controller
      *
      * @return \App\Http\Resources\Project\Project\ProjectResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return new ProjectResource(Project::findOrFail($id));
+        $transferItem = Transfer::eloquentFilter($request)
+            ->with('form')
+            ->with('warehouse_from')
+            ->with('warehouse_to')
+            ->with('items.item')
+            ->findOrFail($id);
+        
+        // $transferItemIds = $transferItem->items->pluck('id');
+
+        return new ApiResource($transferItem);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \App\Http\Requests\Project\Project\UpdateProjectRequest $request
-     * @param  int                                                    $id
-     *
-     * @return \App\Http\Resources\Project\Project\ProjectResource
-     */
-    public function update(UpdateProjectRequest $request, $id)
-    {
-        // Update tenant database name in configuration
-        $project = Project::findOrFail($id);
-        $project->name = $request->get('name');
-        $project->address = $request->get('address');
-        $project->phone = $request->get('phone');
-        $project->vat_id_number = $request->get('vat_id_number');
-        $project->invitation_code = $request->get('invitation_code');
-        $project->invitation_code_enabled = $request->get('invitation_code_enabled');
-        $project->save();
-
-        return new ProjectResource($project);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Http\Requests\Project\Project\DeleteProjectRequest $request
-     * @param  int                                                    $id
-     *
-     * @return \App\Http\Resources\Project\Project\ProjectResource
-     */
-    public function destroy(DeleteProjectRequest $request, $id)
-    {
-        $project = Project::findOrFail($id);
-
-        $project->delete();
-
-        // Delete database tenant
-        Artisan::call('tenant:database:delete', [
-            'db_name' => 'point_'.strtolower($project->code),
-        ]);
-
-        return new ProjectResource($project);
-    }
 }

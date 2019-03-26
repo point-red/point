@@ -34,7 +34,7 @@ class SupplierController extends Controller
         if ($request->get('join')) {
             $fields = explode(',', $request->get('join'));
 
-            if (in_array('address', $fields)) {
+            if (in_array('addresses', $fields)) {
                 $suppliers = $suppliers->leftjoin(Address::getTableName(), function ($q) {
                     $q->on(Address::getTableName('addressable_id'), '=', Supplier::getTableName('id'))
                         ->where(Address::getTableName('addressable_type'), Supplier::class);

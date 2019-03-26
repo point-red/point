@@ -21,6 +21,7 @@ trait EloquentFilters
             ->filterNull($request->get('filter_null'))
             ->filterNotNull($request->get('filter_not_null'))
             ->filterHas($request->get('filter_has'))
+            ->filterDoesntHave($request->get('filter_doesnt_have'))
             ->orFilterEqual($request->get('or_filter_equal'))
             ->orFilterNotEqual($request->get('or_filter_not_equal'))
             ->orFilterLike($request->get('or_filter_like'))
@@ -354,6 +355,21 @@ trait EloquentFilters
 
             foreach ($relations as $relation) {
                 $query->has($relation);
+            }
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $values
+     */
+    public function scopeFilterDoesntHave($query, $values)
+    {
+        if (! is_null($values)) {
+            $relations = explode(',', $values);
+
+            foreach ($relations as $relation) {
+                $query->doesntHave($relation);
             }
         }
     }

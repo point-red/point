@@ -89,11 +89,6 @@ class SalesInvoice extends TransactionModel
             ->active();
     }
 
-    public function getRemainingAmountAttribute()
-    {
-        return $this->amount;
-    }
-
     public static function create($data)
     {
         // TODO throw error if customer_id is not provided

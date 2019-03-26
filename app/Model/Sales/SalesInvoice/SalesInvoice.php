@@ -206,13 +206,20 @@ class SalesInvoice extends TransactionModel
 
         $downPayments = $data['down_payments'] ?? [];
         if (! empty($downPayments) && is_array($downPayments)) {
+            // $downPaymentIds = array_column($downPayments, 'id');
+            // $dbDownpayments = SalesDownPayment::whereIn('id', $downPaymentIds)
+            // ->select('id', 'amount')
+            // ->get()
+            // ->pluck('amount', 'id');
+            // TODO delete from pivot when canceling invoice
             foreach ($downPayments as $downPayment) {
-                // TODO: check amount
-                $downPayment->form()->update(['done' => true]);
-                $salesInvoice->downPayments()->attach($downPayment->id, [
-                    'amount' => $downPayment->amount
+                $salesInvoice->downPayments()->attach($downPayment['id'], [
+                    'amount' => $downPayment['amount']
                 ]);
-                $amount -= $downPayment->amount;
+                // $salesInvoice->downPayments->sum('pivot.amount');
+                // $totalDownpayment = $salesInvoice->downPayments()->sum('amount')
+                // if ($dbDownpayments[$downPayment['id']] ) 
+                // $downPayment->form()->update(['done' => true]);
             }
         }
 

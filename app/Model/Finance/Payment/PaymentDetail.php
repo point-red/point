@@ -7,6 +7,8 @@ use App\Model\TransactionModel;
 use App\Model\Master\Allocation;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
 class PaymentDetail extends TransactionModel
 {
@@ -28,8 +30,10 @@ class PaymentDetail extends TransactionModel
     ];
 
     protected $referenceableType = [
-        'sale_invoice' => SalesInvoice::class,
+        'sales_invoice' => SalesInvoice::class,
         'purchase_invoice' => PurchaseInvoice::class,
+        'sales_down_payment' => SalesDownPayment::class,
+        'purchase_down_payment' => PurchaseDownPayment::class,
     ];
 
     /**

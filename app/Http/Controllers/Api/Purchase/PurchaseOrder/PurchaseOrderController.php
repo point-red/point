@@ -46,7 +46,7 @@ class PurchaseOrderController extends Controller
      *  - warehouse_id (Int, Optional)
      *  - eta (Date)
      *  - cash_only (Boolean, Optional)
-     *  - need_down_payment (Boolean, Optional)
+     *  - need_down_payment (Decimal, Optional, Default 0)
      *  - delivery_fee (Decimal, Optional)
      *  - discount_percent (Decimal, Optional)
      *  - discount_value (Decimal, Optional)

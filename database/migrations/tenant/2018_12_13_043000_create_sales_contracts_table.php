@@ -18,7 +18,7 @@ class CreateSalesContractsTable extends Migration
             $table->unsignedInteger('customer_id');
             $table->string('customer_name');
             $table->boolean('cash_only')->default(false);
-            $table->boolean('need_down_payment')->default(false);
+            $table->decimal('need_down_payment', 65, 30)->default(0);
             $table->decimal('discount_percent', 65, 30)->nullable();
             $table->decimal('discount_value', 65, 30)->default(0);
             $table->string('type_of_tax'); // include / exclude / non

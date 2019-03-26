@@ -13,6 +13,7 @@ use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
 use App\Model\Sales\SalesContract\SalesContract;
 use Carbon\Carbon;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesOrder extends TransactionModel
 {
@@ -42,6 +43,7 @@ class SalesOrder extends TransactionModel
         'discount_percent' => 'double',
         'discount_value' => 'double',
         'tax' => 'double',
+        'need_down_payment' => 'double',
     ];
 
     public function getEtaAttribute($value)
@@ -91,6 +93,12 @@ class SalesOrder extends TransactionModel
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function downPayments() {
+        return $this->morphMany(SalesDownPayment::class, 'downpaymentable')
+            ->joinForm(SalesDownPayment::class)
+            ->active();
     }
 
     public function updateIfDone()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
+use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Accounting\CutOff;
 use App\Model\Accounting\Journal;
@@ -39,13 +40,13 @@ class CutOffController extends Controller
         $date = date('Y-m-d 23:59:59', strtotime($request->get('date')));
         $increment = CutOff::where('date', '>=', $fromDate)->where('date', '<=', $untilDate)->count();
 
-        $lastBalance = Journal::groupBy('date')->orderBy('date', 'desc')->get()->toArray();
-        log_object($lastBalance);
-
         $cutOff = new CutOff;
         $cutOff->date = $date;
         $cutOff->number = 'CUTOFF/'.date('ym', strtotime($request->get('date'))).'/'.sprintf('%04d', ++$increment);
         $cutOff->save();
+
+        $form = new Form;
+        $form->fillData($request->all(), $cutOff);
 
         $details = $request->get('details');
         for ($i = 0; $i < count($details); $i++) {
@@ -57,9 +58,7 @@ class CutOffController extends Controller
             $cutOffDetail->save();
 
             $journal = new Journal;
-            $journal->journalable_type = get_class(new CutOff());
-            $journal->journalable_id = $cutOff->id;
-            $journal->date = $cutOff->date;
+            $journal->form_id = $form->id;
             $journal->chart_of_account_id = $cutOffDetail->chart_of_account_id;
             $journal->debit = $cutOffDetail->debit;
             $journal->credit = $cutOffDetail->credit;

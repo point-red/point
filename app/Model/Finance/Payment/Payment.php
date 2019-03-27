@@ -185,13 +185,14 @@ class Payment extends TransactionModel
         foreach ($payment->details as $paymentDetail) {
             $journal = new Journal;
             $journal->form_id = $payment->form->id;
+            $journal->form_id_reference = $paymentDetail->referenceable->form->id;
             $journal->journalable_type = $paymentDetail->referenceable_type;
             $journal->journalable_id = $paymentDetail->referenceable_id;
             $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
-            if ($paymentDetail->chartOfAccount->type->is_debit) {
-                $journal->debit = $paymentDetail->amount;
-            } else {
+            if ($payment->disbursed) {
                 $journal->credit = $paymentDetail->amount;
+            } else {
+                $journal->debit = $paymentDetail->amount;
             }
             $journal->save();
         }

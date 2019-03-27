@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Model\Inventory\Transfer;
+namespace App\Model\Inventory\Receive;
 
 use App\Model\Form;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
-use App\Model\Inventory\Transfer\TransferItem;
+use App\Model\Inventory\Receive\ReceiveItem;
 use App\Model\Inventory\Inventory;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\Journal;
 
-class Transfer extends TransactionModel
+class Receive extends TransactionModel
 {
     protected $connection = 'tenant';
 
@@ -22,7 +22,7 @@ class Transfer extends TransactionModel
         'note',
     ];
 
-    public $defaultNumberPrefix = 'TR';
+    public $defaultNumberPrefix = 'RC';
 
     public function form()
     {
@@ -31,7 +31,7 @@ class Transfer extends TransactionModel
 
     public function items()
     {
-        return $this->hasMany(TransferItem::class);
+        return $this->hasMany(ReceiveItem::class);
     }
 
     public function warehouseFrom()
@@ -47,12 +47,12 @@ class Transfer extends TransactionModel
     public static function create($data)
     {
         
-        $transfer = new self;
-        $transfer->fill($data['form']);
-        $transfer->save();
+        $receive = new self;
+        $receive->fill($data['form']);
+        $receive->save();
 
         $form = new Form;
-        $form->fillData($data['form'], $transfer);
+        $form->fillData($data['form'], $receive);
         
         $array = [];
         $array_inv = [];
@@ -65,38 +65,38 @@ class Transfer extends TransactionModel
 
         foreach ($items as $item) {
 
-            $transferItem = new TransferItem;
-            $transferItem->fill( ['quantity'=>$item['quantity'], 'item_id'=>$item['item']] );
-            array_push($array, $transferItem);
+            $receiveItem = new ReceiveItem;
+            $receiveItem->fill( ['quantity'=>$item['quantity'], 'item_id'=>$item['item']] );
+            array_push($array, $receiveItem);
 
             $array_inv[] = [
                 'quantity'=>$item['quantity'], 
                 'item_id'=>$item['item'],
-                'warehouse_id'=>$data['form']['warehouse_from'],
+                'warehouse_id'=>$data['form']['warehouse_to'],
                 'form_id'=>$form->id,
             ];
 
             $array_journal_sediaan[] = [
                 'form_id' => $form->id,
                 'chart_of_account_id' => $chart_sediaan->id,
-                'journalable_type' => get_class($transfer),
-                'journalable_id' => $transfer->id,
-                'credit' => $item['quantity'],
+                'journalable_type' => get_class($receive),
+                'journalable_id' => $receive->id,
+                'debit' => $item['quantity'],
             ];
             $array_journal_perjalanan[] = [
                 'form_id' => $form->id,
                 'chart_of_account_id' => $chart_perjalanan->id,
-                'journalable_type' => get_class($transfer),
-                'journalable_id' => $transfer->id,
-                'debit' => $item['quantity'],
+                'journalable_type' => get_class($receive),
+                'journalable_id' => $receive->id,
+                'credit' => $item['quantity'],
             ];
         }
         
-        $transfer->items()->saveMany($array);
+        $receive->items()->saveMany($array);
         Inventory::insert($array_inv);
         Journal::insert($array_journal_sediaan);
         Journal::insert($array_journal_perjalanan);
 
-        return $transfer;
+        return $receive;
     }
 }

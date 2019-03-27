@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Api\Inventory;
 use App\Model\Master\User;
 use Illuminate\Http\Request;
 use App\Model\Form;
-use App\Model\Inventory\Transfer\Transfer;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Resources\ApiResource;
+use App\Model\Inventory\Transfer\Transfer;
 use App\Http\Requests\Inventory\Transfer\TransferItemRequest;
 
 class TransferItemController extends Controller
@@ -36,7 +36,7 @@ class TransferItemController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param TransferItemRequest $request
+     * @param Illuminate\Http\Request $request
      * @return \App\Http\Resources\ApiResource
      */
     public function store(Request $request)
@@ -65,8 +65,8 @@ class TransferItemController extends Controller
     {
         $transferItem = Transfer::eloquentFilter($request)
             ->with('form')
-            ->with('warehouse_from')
-            ->with('warehouse_to')
+            ->with('warehouseFrom')
+            ->with('warehouseTo')
             ->with('items.item')
             ->findOrFail($id);
         

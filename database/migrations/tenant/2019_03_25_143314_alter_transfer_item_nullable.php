@@ -28,7 +28,7 @@ class AlterTransferItemNullable extends Migration
     {
         Schema::table('transfer_items', function (Blueprint $table) {
             $table->string('unit')->nullable(0)->change();
-            $table->decimal('converter', 65, 30)->default(NULL)->change();
+            $table->decimal('converter', 65, 30)->default(null)->change();
             $table->timestamps();
         });
     }

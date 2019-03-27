@@ -5,10 +5,9 @@ namespace App\Model\Inventory\Receive;
 use App\Model\Form;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
-use App\Model\Inventory\Receive\ReceiveItem;
+use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
 use App\Model\Accounting\ChartOfAccount;
-use App\Model\Accounting\Journal;
 
 class Receive extends TransactionModel
 {
@@ -46,14 +45,14 @@ class Receive extends TransactionModel
 
     public static function create($data)
     {
-        
+
         $receive = new self;
         $receive->fill($data['form']);
         $receive->save();
 
         $form = new Form;
         $form->fillData($data['form'], $receive);
-        
+
         $array = [];
         $array_inv = [];
         $array_journal_sediaan = [];
@@ -64,13 +63,12 @@ class Receive extends TransactionModel
         $chart_perjalanan = ChartOfAccount::where('name', 'sediaan dalam perjalanan')->select('id')->firstOrFail();
 
         foreach ($items as $item) {
-
             $receiveItem = new ReceiveItem;
-            $receiveItem->fill( ['quantity'=>$item['quantity'], 'item_id'=>$item['item']] );
+            $receiveItem->fill(['quantity'=>$item['quantity'], 'item_id'=>$item['item']]);
             array_push($array, $receiveItem);
 
             $array_inv[] = [
-                'quantity'=>$item['quantity'], 
+                'quantity'=>$item['quantity'],
                 'item_id'=>$item['item'],
                 'warehouse_id'=>$data['form']['warehouse_to'],
                 'form_id'=>$form->id,
@@ -91,7 +89,7 @@ class Receive extends TransactionModel
                 'credit' => $item['quantity'],
             ];
         }
-        
+
         $receive->items()->saveMany($array);
         Inventory::insert($array_inv);
         Journal::insert($array_journal_sediaan);

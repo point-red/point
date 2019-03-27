@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Api\Inventory;
 
 use Carbon\Carbon;
 use App\Model\Form;
+use App\Model\Master\Item;
 use Illuminate\Http\Request;
 use App\Model\Inventory\Inventory;
 use App\Http\Controllers\Controller;
-use App\Model\Master\Item;
-use App\Http\Resources\Inventory\InventoryCollection;
 use App\Http\Resources\Master\Item\ItemCollection;
+use App\Http\Resources\Inventory\InventoryCollection;
 
 class InventoryController extends Controller
 {
@@ -53,7 +53,7 @@ class InventoryController extends Controller
         //     ->groupBy('item_id');
 
         $query = Item::select('name', 'stock')
-            ->selectRaw("id as item_id");
+            ->selectRaw('id as item_id');
 
         return new ItemCollection($query->paginate(100));
     }

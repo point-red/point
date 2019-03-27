@@ -28,5 +28,4 @@ class ReceiveItem extends TransactionModel
     {
         return $this->belongsTo(Item::class);
     }
-
 }

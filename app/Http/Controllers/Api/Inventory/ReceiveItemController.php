@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers\Api\Inventory;
 
-use App\Model\Master\User;
-use Illuminate\Http\Request;
 use App\Model\Form;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use Illuminate\Support\Facades\Artisan;
-use App\Http\Resources\ApiResource;
 use App\Model\Inventory\Receive\Receive;
-use App\Http\Requests\Inventory\Receive\ReceiveItemRequest;
 
 class ReceiveItemController extends Controller
 {
@@ -69,7 +66,7 @@ class ReceiveItemController extends Controller
             ->with('warehouseTo')
             ->with('items.item')
             ->findOrFail($id);
-        
+
         // $receiveItemIds = $receiveItem->items->pluck('id');
 
         return new ApiResource($receiveItem);

@@ -17,8 +17,8 @@ class CreateReceive extends Migration
             $table->increments('id');
             $table->unsignedInteger('warehouse_from');
             $table->unsignedInteger('warehouse_to');
-            $table->string("note")->nullable();
-            
+            $table->string('note')->nullable();
+
             $table->foreign('warehouse_from')->references('id')->on('warehouses')->onDelete('restrict');
             $table->foreign('warehouse_to')->references('id')->on('warehouses')->onDelete('restrict');
         });

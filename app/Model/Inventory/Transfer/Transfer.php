@@ -5,10 +5,9 @@ namespace App\Model\Inventory\Transfer;
 use App\Model\Form;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
-use App\Model\Inventory\Transfer\TransferItem;
+use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
 use App\Model\Accounting\ChartOfAccount;
-use App\Model\Accounting\Journal;
 
 class Transfer extends TransactionModel
 {
@@ -46,7 +45,7 @@ class Transfer extends TransactionModel
 
     public static function create($data)
     {
-        
+
         $transfer = new self;
         $transfer->fill($data['form']);
         $transfer->save();
@@ -66,11 +65,11 @@ class Transfer extends TransactionModel
         foreach ($items as $item) {
 
             $transferItem = new TransferItem;
-            $transferItem->fill( ['quantity'=>$item['quantity'], 'item_id'=>$item['item']] );
+            $transferItem->fill(['quantity'=>$item['quantity'], 'item_id'=>$item['item']]);
             array_push($array, $transferItem);
 
             $array_inv[] = [
-                'quantity'=>$item['quantity'], 
+                'quantity'=>$item['quantity'],
                 'item_id'=>$item['item'],
                 'warehouse_id'=>$data['form']['warehouse_from'],
                 'form_id'=>$form->id,
@@ -91,7 +90,7 @@ class Transfer extends TransactionModel
                 'debit' => $item['quantity'],
             ];
         }
-        
+
         $transfer->items()->saveMany($array);
         Inventory::insert($array_inv);
         Journal::insert($array_journal_sediaan);

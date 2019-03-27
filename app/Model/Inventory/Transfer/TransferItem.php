@@ -28,5 +28,4 @@ class TransferItem extends TransactionModel
     {
         return $this->belongsTo(Item::class);
     }
-
 }

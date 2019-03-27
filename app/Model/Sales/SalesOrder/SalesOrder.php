@@ -101,6 +101,11 @@ class SalesOrder extends TransactionModel
             ->active();
     }
 
+    public function salesContract() {
+        return $this->belongsTo(SalesContract::class)
+            ->joinForm(SalesContract::class);
+    }
+
     public function updateIfDone()
     {
         $salesOrderItems = $this->items;

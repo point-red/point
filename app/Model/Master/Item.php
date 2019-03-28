@@ -44,9 +44,9 @@ class Item extends MasterModel
         return $this->hasMany(ItemUnit::class);
     }
 
-    public function chartOfAccount()
+    public function account()
     {
-        return $this->belongsTo(ChartOfAccount::class);
+        return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
     }
 
     public static function create($data) {

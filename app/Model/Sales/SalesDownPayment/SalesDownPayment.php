@@ -48,7 +48,18 @@ class SalesDownPayment extends TransactionModel
 
     public function invoices()
     {
-        return $this->belongsToMany(SalesInvoice::class, 'down_payment_invoice', 'invoice_id', 'down_payment_id');
+        return $this->belongsToMany(SalesInvoice::class, 'down_payment_invoice', 'invoice_id', 'down_payment_id')
+            ->withPivot('amount');
+    }
+
+    public function updateIfDone()
+    {
+        $used = $this->invoices->sum(function($invoice) {
+            return $invoice->pivot->amount;
+        });
+        if ($this->amount - $used <= 0) {
+            $this->form()->update(['done' => true]);
+        }
     }
 
     public static function create($data)

@@ -76,47 +76,9 @@ class Payment extends TransactionModel
         $payment = new self;
         $payment->fill($data);
 
-        $paymentAmount = 0;
-        $paymentDetails = [];
+        $paymentDetails = self::getPaymentDetails($data['details'] ?? []);
 
-        // TODO validation details is required and must be array
-        $details = $data['details'] ?? [];
-        if (! empty($details) && is_array($details)) {
-            foreach ($details as $detail) {
-                $paymentDetail = new PaymentDetail;
-                $paymentDetail->fill($detail);
-
-                $reference = $paymentDetail->referenceable_type::findOrFail($paymentDetail->referenceable_id);
-
-                $paidAmountInThePast = self::where('referenceable_id', $paymentDetail->referenceable_id)
-                    ->where('referenceable_type', $paymentDetail->referenceable_type)
-                    ->joinForm()
-                    ->active()
-                    ->join(PaymentDetail::getTableName(), self::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
-                    ->select(PaymentDetail::getTableName('amount'))
-                    ->get()
-                    ->sum('amount');
-
-                // Prevent overpaid
-                if ($reference->amount < $paidAmountInThePast + $detail['amount']) {
-                    // TODO throw error because overpaid
-                }
-
-                if ($reference->amount == $paidAmountInThePast + $detail['amount']) {
-                    $reference->form()->update(['done' => true]);
-                }
-
-                $paymentAmount += $detail['amount'];
-
-                array_push($paymentDetails, $paymentDetail);
-            }
-        }
-
-        if (! empty($data['done']) && $data['done'] === true) {
-            // TODO increase / decrease cash
-        }
-
-        $payment->amount = $paymentAmount;
+        $payment->amount = self::getAmounts($paymentDetails);
         $payment->paymentable_name = $payment->paymentable->name;
         $payment->save();
 
@@ -124,11 +86,48 @@ class Payment extends TransactionModel
 
         $form = new Form;
         $form->fill($data);
+        
         $form->formable_id = $payment->id;
         $form->formable_type = self::class;
 
+        $form->generateFormNumber(
+            self::getPaymentFormNumber($payment, $data['number']),
+            $data['paymentable_id'],
+            $data['paymentable_id']
+        );
+        $form->save();
+
+        self::updateReferenceDone($paymentDetails);
+        self::updateJournal($payment);
+
+        return $payment;
+    }
+
+    private static function getPaymentDetails($details)
+    {
+        $paymentDetails = [];
+
+        foreach ($details as $detail) {
+            $paymentDetail = new PaymentDetail;
+            $paymentDetail->fill($detail);
+
+            array_push($paymentDetails, $paymentDetail);
+        }
+
+        return $paymentDetails;
+    }
+
+    private static function getAmounts($paymentDetails)
+    {
+        return array_reduce($paymentDetails, function($carry, $detail) {
+            return $carry + $detail['amount'];
+        }, 0);
+    }
+
+    private static function getPaymentFormNumber($payment, $number)
+    {
         $defaultFormat = '{payment_type}-{disbursed}{y}{m}{increment=4}';
-        $formNumber = $data['number'] ?? $defaultFormat;
+        $formNumber = $number ?? $defaultFormat;
 
         // Different method to get increment because payment number is considering payment_type
         preg_match_all('/{increment=(\d)}/', $formNumber, $regexResult);
@@ -156,16 +155,17 @@ class Payment extends TransactionModel
             $formNumber = str_replace('{disbursed}', $replacement, $formNumber);
         }
 
-        $form->generateFormNumber(
-            $formNumber,
-            $data['paymentable_id'],
-            $data['paymentable_id']
-        );
-        $form->save();
+        return $formNumber;
+    }
 
-        self::updateJournal($payment);
-
-        return $payment;
+    private static function updateReferenceDone($paymentDetails)
+    {
+        foreach ($paymentDetails as $paymentDetail) {
+            $reference = $paymentDetail->referenceable;
+            $reference->remaining -= $paymentDetail->amount;
+            $reference->updateIfDone();
+            $reference->save();
+        }
     }
 
     private static function updateJournal($payment)

@@ -90,10 +90,9 @@ class PaymentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // TODO prevent delete if referenced by delivery order
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
             $payment = Payment::findOrFail($id);
-
+            // TODO update payment detail remaining
             $newPayment = $payment->edit($request->all());
 
             return new ApiResource($newPayment);
@@ -111,7 +110,7 @@ class PaymentController extends Controller
     public function destroy($id)
     {
         $payment = Payment::findOrFail($id);
-
+        // TODO update payment detail remaining
         $payment->delete();
 
         return response()->json([], 204);

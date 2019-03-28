@@ -20,6 +20,7 @@ class CreatePurchaseDownPaymentsTable extends Migration
             $table->unsignedInteger('downpaymentable_id')->nullable()->index();
             $table->string('downpaymentable_type')->nullable()->index();
             $table->decimal('amount', 65, 30);
+            $table->decimal('remaining', 65, 30);
             $table->unsignedInteger('paid_by')->nullable();
 
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');

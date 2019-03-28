@@ -22,6 +22,7 @@ trait EloquentFilters
             ->filterNotNull($request->get('filter_not_null'))
             ->filterHas($request->get('filter_has'))
             ->filterDoesntHave($request->get('filter_doesnt_have'))
+            ->filterWhereHas($request->get('filter_where_has'))
             ->orFilterEqual($request->get('or_filter_equal'))
             ->orFilterNotEqual($request->get('or_filter_not_equal'))
             ->orFilterLike($request->get('or_filter_like'))
@@ -355,6 +356,42 @@ trait EloquentFilters
 
             foreach ($relations as $relation) {
                 $query->has($relation);
+
+            }
+        }
+    }
+
+    /**
+     * Filter attribute from relation
+     *
+     * [
+     *   {
+     *      relation: {
+     *        attribute: value
+     *      }
+     *   },
+     *   {
+     *      relation: {
+     *        attribute: value
+     *      }
+     *   }
+     * ]
+     *
+     * @param $query
+     * @param $values
+     */
+    public function scopeFilterWhereHas($query, $values)
+    {
+        if (! is_null($values)) {
+            foreach ($values as $relations) {
+                $relations = $this->convertJavascriptObjectToArray($relations);
+                foreach ($relations as $relation => $filter) {
+                    foreach ($filter as $attribute => $value) {
+                        $query->whereHas($relation, function($query) use ($attribute, $value) {
+                            $query->where($attribute, $value);
+                        });
+                    }
+                }
             }
         }
     }
@@ -373,6 +410,18 @@ trait EloquentFilters
             }
         }
     }
+
+    public function scopeFilterRelation($query, $values)
+    {
+        if (! is_null($values)) {
+            $relations = explode(',', $values);
+
+            foreach ($relations as $relation) {
+                $query->has($relation);
+            }
+        }
+    }
+
 
     /**
      * If values is javascript object then convert it to array.

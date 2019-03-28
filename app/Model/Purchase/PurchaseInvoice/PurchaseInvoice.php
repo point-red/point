@@ -223,8 +223,7 @@ class PurchaseInvoice extends TransactionModel
         $amount += $purchaseInvoice->delivery_fee;
         $amount += $purchaseInvoice->type_of_tax === 'exclude' ? $purchaseInvoice->tax : 0;
 
-        $purchaseInvoice->amount = $amount;
-        $purchaseInvoice->remaining = $amount;
+        return $amount;
     }
 
     private static function setPurchaseReceiveDone($purchaseReceiveIds)

@@ -24,7 +24,7 @@ class StoreEmployeeSalaryRequest extends FormRequest
     public function rules()
     {
         return [
-            'date' => 'date_format:Y-m|required|unique:tenant.employee_salaries|unique:tenant.employee_salaries,employee_id',
+            'date' => 'required|unique:tenant.employee_salaries|unique:tenant.employee_salaries,employee_id',
             'job_location' => 'required',
             'base_salary' => 'required',
             'multiplier_kpi' => 'required',

@@ -56,7 +56,7 @@ class EmployeeAssessmentController extends Controller
 
                         $indicator->target = $data['target'];
                         $indicator->score = $data['score'];
-                        $indicator->score_percentage = $indicator->target ? $indicator->score / $indicator->target * $indicator->weight : 0;
+                        $indicator->score_percentage = $indicator->target > 0 ? $indicator->score / $indicator->target * $indicator->weight : 0;
 
                         $group->target += $indicator->target;
                         $group->score += $indicator->score;

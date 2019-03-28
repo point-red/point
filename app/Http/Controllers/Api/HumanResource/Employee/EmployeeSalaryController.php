@@ -54,7 +54,7 @@ class EmployeeSalaryController extends Controller
             $salary_final_score_week4 = ((double)$additionalData['total_assessments']['week4'] + (double)$additionalData['total_achievements']['week4']) / 2;
             $salary_final_score_week5 = ((double)$additionalData['total_assessments']['week5'] + (double)$additionalData['total_achievements']['week5']) / 2;
 
-            $baseSalaryPerWeek = $employee_salary->active_days_in_month ? $employee_salary->base_salary / $employee_salary->active_days_in_month : 0;
+            $baseSalaryPerWeek = $employee_salary->active_days_in_month > 0 ? $employee_salary->base_salary / $employee_salary->active_days_in_month : 0;
 
             $base_salary_week_1 = $baseSalaryPerWeek * $employee_salary->active_days_week1;
             $base_salary_week_2 = $baseSalaryPerWeek * $employee_salary->active_days_week2;
@@ -74,11 +74,11 @@ class EmployeeSalaryController extends Controller
             $minimum_component_amount_week_4 = (double)$additionalData['total_assessments']['week4'] * $base_salary_week_4 / 100;
             $minimum_component_amount_week_5 = (double)$additionalData['total_assessments']['week5'] * $base_salary_week_5 / 100;
 
-            $multiplier_kpi_week_1 = $employee_salary->active_days_in_month ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week1 / $employee_salary->active_days_in_month : 0;
-            $multiplier_kpi_week_2 = $employee_salary->active_days_in_month ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week2 / $employee_salary->active_days_in_month : 0;
-            $multiplier_kpi_week_3 = $employee_salary->active_days_in_month ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week3 / $employee_salary->active_days_in_month : 0;
-            $multiplier_kpi_week_4 = $employee_salary->active_days_in_month ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week4 / $employee_salary->active_days_in_month : 0;
-            $multiplier_kpi_week_5 = $employee_salary->active_days_in_month ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week5 / $employee_salary->active_days_in_month : 0;
+            $multiplier_kpi_week_1 = $employee_salary->active_days_in_month > 0 ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week1 / $employee_salary->active_days_in_month : 0;
+            $multiplier_kpi_week_2 = $employee_salary->active_days_in_month > 0 ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week2 / $employee_salary->active_days_in_month : 0;
+            $multiplier_kpi_week_3 = $employee_salary->active_days_in_month > 0 ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week3 / $employee_salary->active_days_in_month : 0;
+            $multiplier_kpi_week_4 = $employee_salary->active_days_in_month > 0 ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week4 / $employee_salary->active_days_in_month : 0;
+            $multiplier_kpi_week_5 = $employee_salary->active_days_in_month > 0 ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week5 / $employee_salary->active_days_in_month : 0;
 
             $additional_component_point_week_1 = (double)$additionalData['total_achievements']['week1'] * $multiplier_kpi_week_1 / 100;
             $additional_component_point_week_2 = (double)$additionalData['total_achievements']['week2'] * $multiplier_kpi_week_2 / 100;
@@ -143,7 +143,7 @@ class EmployeeSalaryController extends Controller
         $employee_salary = new EmployeeSalary;
         $employee_salary->employee_id = $employeeId;
         $employee_salary->job_location = $request->get('job_location');
-        $employee_salary->date = $request->get('date');
+        $employee_salary->date = date('Y-m', strotime($request->get('date')));
         $employee_salary->base_salary = $request->get('base_salary');
         $employee_salary->multiplier_kpi = $request->get('multiplier_kpi');
         $employee_salary->daily_transport_allowance = $request->get('daily_transport_allowance');
@@ -356,7 +356,7 @@ class EmployeeSalaryController extends Controller
      */
     public function assessment(Request $request, $employeeId)
     {
-        $date = $request->get('date');
+        $date = date('Y-m', strotime($request->get('date')));
 
         $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
             ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
@@ -402,7 +402,7 @@ class EmployeeSalaryController extends Controller
 
                         $indicator_data['target'][$kpi->week_of_month] = $indicator->target;
                         $indicator_data['score'][$kpi->week_of_month] = $indicator->score;
-                        $indicator_data['score_percentage'][$kpi->week_of_month] = $indicator->target ? $indicator->score / $indicator->target * 100 : 0;
+                        $indicator_data['score_percentage'][$kpi->week_of_month] = $indicator->target > 0 ? $indicator->score / $indicator->target * 100 : 0;
 
                         if ($indicator_data['score_percentage'][$kpi->week_of_month] > 100) {
                             $indicator_data['score_percentage'][$kpi->week_of_month] = 100;
@@ -434,7 +434,7 @@ class EmployeeSalaryController extends Controller
                             $indicator_data['score'][$kpi->week_of_month] += $indicator->score;
                         }
 
-                        $indicator_data['score_percentage'][$kpi->week_of_month] = $indicator->target ? $indicator->score / $indicator->target * 100 : 0;
+                        $indicator_data['score_percentage'][$kpi->week_of_month] = $indicator->target > 0 ? $indicator->score / $indicator->target * 100 : 0;
 
                         if ($indicator_data['score_percentage'][$kpi->week_of_month] > 100) {
                             $indicator_data['score_percentage'][$kpi->week_of_month] = 100;
@@ -829,7 +829,7 @@ class EmployeeSalaryController extends Controller
 
                 foreach ($indicator->scores as $score) {
                     if ($week_of_month === $score['week_of_month']) {
-                        $score_percentages_assessments[$indicator->name][$week_of_month] = $target['target'] ? $score['score'] / $target['target'] * 100 : 0;
+                        $score_percentages_assessments[$indicator->name][$week_of_month] = $target['target'] > 0 ? $score['score'] / $target['target'] * 100 : 0;
 
                         if ($score_percentages_assessments[$indicator->name][$week_of_month] > 100) {
                             $score_percentages_assessments[$indicator->name][$week_of_month] = 100;

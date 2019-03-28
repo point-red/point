@@ -44,79 +44,51 @@ class ItemController extends Controller
      *
      * @param StoreItemRequest $request
      * @return \App\Http\Resources\ApiResource
+     * @throws \Throwable
      */
     public function store(StoreItemRequest $request)
     {
-        DB::connection('tenant')->beginTransaction();
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+            $item = Item::create($request->all());
+            $item->load('units', 'groups');
 
-        $item = new Item;
-        $item->fill($request->all());
-        $item->save();
+            return new ApiResource($item);
+        });
 
-        // TODO units is required and must be array
-        $units = $request->get('units');
-        $unitsToBeInserted = [];
-        foreach ($units as $unit) {
-            $itemUnit = new ItemUnit();
-            $itemUnit->fill($unit);
-            array_push($unitsToBeInserted, $itemUnit);
-        }
-        $item->units()->saveMany($unitsToBeInserted);
-
-        // TODO groups is optional and must be array
-        $groups = $request->get('groups');
-        if (isset($groups)) {
-            $item->groups()->attach($groups);
-        }
-
-        DB::connection('tenant')->commit();
-
-        return new ApiResource($item);
+        return $result;
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreItemRequest $request
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
      */
-    public function storeMany(StoreItemRequest $request)
+    public function storeMany(Request $request)
     {
-        DB::connection('tenant')->beginTransaction();
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+            $items = $request->get('items');
+            $collection = [];
 
-        $items = $request->get('items');
+            foreach ($items as $item) {
+                $item = Item::create($item);
+                $item->load('units', 'groups');
 
-        foreach ($items as $item) {
-            $newItem = new Item;
-            $newItem->fill($item);
-            $newItem->save();
-
-            // TODO units is required and must be array
-            $units = $item['units'];
-            $unitsToBeInserted = [];
-            foreach ($units as $unit) {
-                $itemUnit = new ItemUnit();
-                $itemUnit->fill($unit);
-                array_push($unitsToBeInserted, $itemUnit);
+                $collection = array_merge($collection, $item);
             }
-            $newItem->units()->saveMany($unitsToBeInserted);
 
-            // TODO groups is optional and must be array
-            $groups = $item['groups'];
-            if (isset($groups)) {
-                $newItem->groups()->attach($groups);
-            }
-        }
+            return new ApiCollection($collection);
+        });
 
-        DB::connection('tenant')->commit();
-
-        return response()->json([], 201);
+        return $result;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return ApiResource
      */
     public function show(Request $request, $id)
@@ -144,7 +116,6 @@ class ItemController extends Controller
         $item->fill($request->all());
         $item->save();
 
-        // TODO units is required and must be array
         $units = $request->get('units');
         $unitsToBeInserted = [];
         ItemUnit::where('item_id', $id)->whereNotIn('id', array_column($units, 'id'))->delete();
@@ -159,7 +130,6 @@ class ItemController extends Controller
         }
         $item->units()->saveMany($unitsToBeInserted);
 
-        // TODO groups is optional and must be array
         $groups = $request->get('groups');
         if (isset($groups)) {
             $item->groups()->sync($groups);

@@ -4,13 +4,12 @@ namespace App\Http\Requests\Master\Item;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreItemRequest extends FormRequest
+class StoreManyItemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
-     * @throws \Exception
      */
     public function authorize()
     {
@@ -29,9 +28,9 @@ class StoreItemRequest extends FormRequest
     public function rules()
     {
         return [
-            'chart_of_account_id' => 'required',
-            'units' => 'required|array',
-            'groups' => 'array'
+            'items.*.chart_of_account_id' => 'required',
+            'items.*.units' => 'required|array',
+            'items.*.groups' => 'array'
         ];
     }
 }

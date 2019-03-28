@@ -42,4 +42,25 @@ class Item extends MasterModel
     {
         return $this->hasMany(ItemUnit::class);
     }
+
+    public static function create($data) {
+        $item = new Item;
+        $item->fill($data);
+        $item->save();
+
+        $units = $data['units'];
+        $unitsToBeInserted = [];
+        foreach ($units as $unit) {
+            $itemUnit = new ItemUnit();
+            $itemUnit->fill($unit);
+            array_push($unitsToBeInserted, $itemUnit);
+        }
+        $item->units()->saveMany($unitsToBeInserted);
+
+        if (isset($data['groups'])) {
+            $item->groups()->attach($data['groups']);
+        }
+
+        return $item;
+    }
 }

@@ -24,7 +24,9 @@ class UpdateItemRequest extends FormRequest
     public function rules()
     {
         return [
-            // TODO: specify rule
+            'chart_of_account_id' => 'required',
+            'units' => 'required|array',
+            'groups' => 'array'
         ];
     }
 }

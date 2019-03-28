@@ -10,6 +10,7 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesInvoiceController extends Controller
 {
@@ -24,18 +25,6 @@ class SalesInvoiceController extends Controller
         $salesInvoices = SalesInvoice::eloquentFilter($request)
             ->joinForm()
             ->notArchived()
-            ->when($request->get('remaining_info'), function ($query) use ($request) {
-                $journalPayment = Journal::selectRaw('SUM(IFNULL(credit, 0)) AS credit')
-                    ->addSelect('form_id_reference')
-                    ->where(Journal::getTableName('chart_of_account_id'), $request->get('coa_invoice'))
-                    ->where('credit', '>', 0);
-
-                $query->leftJoinSub($journalPayment, 'journal_payment', function ($join) {
-                    $join->on(Form::getTableName('id'), '=', 'journal_payment.form_id_reference');
-                })
-                    ->addSelect(\DB::raw('IFNULL(journal_payment.credit, 0) AS paid'))
-                    ->addSelect(\DB::raw(SalesInvoice::getTableName('amount') . ' - IFNULL(journal_payment.credit, 0) AS remaining'));
-            })
             ->with('form');
 
         $salesInvoices = pagination($salesInvoices, $request->get('limit'));
@@ -78,13 +67,7 @@ class SalesInvoiceController extends Controller
     public function show(Request $request, $id)
     {
         $salesInvoice = SalesInvoice::eloquentFilter($request)
-            ->with('form')
-            ->with('customer')
-            ->with('items.item')
-            ->with('items.allocation')
-            ->with('items.deliveryNote.form')
-            ->with('services.service')
-            ->with('services.allocation')
+            ->with('form', 'items')
             ->findOrFail($id);
 
         return new ApiResource($salesInvoice);
@@ -99,11 +82,13 @@ class SalesInvoiceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // TODO prevent delete if referenced by delivery notes
+        // TODO prevent delete if referenced by payment
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
             $salesInvoice = SalesInvoice::findOrFail($id);
 
             $newSalesInvoice = $salesInvoice->edit($request->all());
+
+            $salesInvoice->detachDownPayments();
 
             return new ApiResource($newSalesInvoice);
         });
@@ -121,6 +106,8 @@ class SalesInvoiceController extends Controller
     {
         $salesInvoice = SalesInvoice::findOrFail($id);
 
+        $salesInvoice->detachDownPayments();
+        
         $salesInvoice->delete();
 
         return response()->json([], 204);

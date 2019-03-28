@@ -31,6 +31,7 @@ class CreatePurchaseInvoicesTable extends Migration
             $table->string('type_of_tax'); // include / exclude / non
             $table->decimal('tax', 65, 30);
             $table->decimal('amount', 65, 30);
+            $table->decimal('remaining', 65, 30);
 
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');
         });

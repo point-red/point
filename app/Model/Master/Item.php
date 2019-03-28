@@ -2,6 +2,7 @@
 
 namespace App\Model\Master;
 
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\MasterModel;
 
 class Item extends MasterModel
@@ -41,6 +42,11 @@ class Item extends MasterModel
     public function units()
     {
         return $this->hasMany(ItemUnit::class);
+    }
+
+    public function chartOfAccount()
+    {
+        return $this->belongsTo(ChartOfAccount::class);
     }
 
     public static function create($data) {

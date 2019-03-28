@@ -13,11 +13,16 @@ class ChartOfAccountController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new ChartOfAccountCollection(ChartOfAccount::orderBy('type_id')->orderBy('number')->orderBy('alias')->get());
+        $accounts = ChartOfAccount::eloquentFilter($request);
+
+        $accounts = pagination($accounts, $request->get('limit'));
+
+        return new ChartOfAccountCollection($accounts);
     }
 
     /**

@@ -48,12 +48,6 @@ class EmployeeSalaryController extends Controller
         foreach ($employee_salaries as $key => $employee_salary) {
             $additionalData = $this->getAdditionalSalaryData($employee_salary)['additional'];
 
-            $salary_final_score_week1 = ((double)$additionalData['total_assessments']['week1'] + (double)$additionalData['total_achievements']['week1']) / 2;
-            $salary_final_score_week2 = ((double)$additionalData['total_assessments']['week2'] + (double)$additionalData['total_achievements']['week2']) / 2;
-            $salary_final_score_week3 = ((double)$additionalData['total_assessments']['week3'] + (double)$additionalData['total_achievements']['week3']) / 2;
-            $salary_final_score_week4 = ((double)$additionalData['total_assessments']['week4'] + (double)$additionalData['total_achievements']['week4']) / 2;
-            $salary_final_score_week5 = ((double)$additionalData['total_assessments']['week5'] + (double)$additionalData['total_achievements']['week5']) / 2;
-
             $baseSalaryPerWeek = $employee_salary->active_days_in_month > 0 ? $employee_salary->base_salary / $employee_salary->active_days_in_month : 0;
 
             $base_salary_week_1 = $baseSalaryPerWeek * $employee_salary->active_days_week1;
@@ -104,13 +98,13 @@ class EmployeeSalaryController extends Controller
             $total_amount_week_4 = $total_component_amount_week_4 + $real_transport_allowance_week_4;
             $total_amount_week_5 = $total_component_amount_week_5 + $real_transport_allowance_week_5;
 
-            $total_amount_received_week_1 = $total_amount_week_1 - $employee_salary->receiveable_cut_60_days_week1;
+            $total_amount_received_week_1 = $total_amount_week_1 - $employee_salary->receiveable_cut_60_days_week1  + $employee_salary->communication_allowance + $employee_salary->team_leader_allowance;
             $total_amount_received_week_2 = $total_amount_week_2 - $employee_salary->receiveable_cut_60_days_week2;
             $total_amount_received_week_3 = $total_amount_week_3 - $employee_salary->receiveable_cut_60_days_week3;
             $total_amount_received_week_4 = $total_amount_week_4 - $employee_salary->receiveable_cut_60_days_week4;
             $total_amount_received_week_5 = $total_amount_week_5 - $employee_salary->receiveable_cut_60_days_week5;
 
-            $total_amount_received = $total_amount_received_week_1 + $total_amount_received_week_2 + $total_amount_received_week_3 + $total_amount_received_week_4 + $total_amount_received_week_5 + $employee_salary->communication_allowance + $employee_salary->team_leader_allowance;
+            $total_amount_received = $total_amount_received_week_1 + $total_amount_received_week_2 + $total_amount_received_week_3 + $total_amount_received_week_4 + $total_amount_received_week_5;
 
             array_push($dates, date('MY', strtotime($employee_salary->date)));
             array_push($scores, $total_amount_received);
@@ -143,7 +137,7 @@ class EmployeeSalaryController extends Controller
         $employee_salary = new EmployeeSalary;
         $employee_salary->employee_id = $employeeId;
         $employee_salary->job_location = $request->get('job_location');
-        $employee_salary->date = date('Y-m', strotime($request->get('date')));
+        $employee_salary->date = date('Y-m', strtotime($request->get('date')));
         $employee_salary->base_salary = $request->get('base_salary');
         $employee_salary->multiplier_kpi = $request->get('multiplier_kpi');
         $employee_salary->daily_transport_allowance = $request->get('daily_transport_allowance');
@@ -356,7 +350,7 @@ class EmployeeSalaryController extends Controller
      */
     public function assessment(Request $request, $employeeId)
     {
-        $date = date('Y-m', strotime($request->get('date')));
+        $date = date('Y-m', strtotime($request->get('date')));
 
         $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
             ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
@@ -794,7 +788,7 @@ class EmployeeSalaryController extends Controller
         return $this->queryValue($dateFrom, $dateTo)->groupBy('pin_point_sales_visitations.payment_method')->get();
     }
 
-    private function getAdditionalSalaryData($employee_salary)
+    public function getAdditionalSalaryData($employee_salary)
     {
         $score_percentages_assessments = [];
 
@@ -816,16 +810,16 @@ class EmployeeSalaryController extends Controller
         ];
 
         foreach ($employee_salary->assessments as $indicator) {
+            $score_percentages_assessments[$indicator->name] = [
+                'week1' => 0,
+                'week2' => 0,
+                'week3' => 0,
+                'week4' => 0,
+                'week5' => 0
+            ];
+
             foreach ($indicator->targets as $target) {
                 $week_of_month = $target['week_of_month'];
-
-                $score_percentages_assessments[$indicator->name] = [
-                    'week1' => 0,
-                    'week2' => 0,
-                    'week3' => 0,
-                    'week4' => 0,
-                    'week5' => 0
-                ];
 
                 foreach ($indicator->scores as $score) {
                     if ($week_of_month === $score['week_of_month']) {

@@ -24,7 +24,7 @@ class EmployeeSalaryAssessment extends Model
      */
     public function scores()
     {
-        return $this->hasMany(get_class(new EmployeeSalaryAssessmentScore()), 'id');
+        return $this->hasMany(get_class(new EmployeeSalaryAssessmentScore()), 'assessment_id');
     }
 
     /**
@@ -32,6 +32,6 @@ class EmployeeSalaryAssessment extends Model
      */
     public function targets()
     {
-        return $this->hasMany(get_class(new EmployeeSalaryAssessmentTarget()), 'id');
+        return $this->hasMany(get_class(new EmployeeSalaryAssessmentTarget()), 'assessment_id');
     }
 }

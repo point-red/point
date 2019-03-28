@@ -100,6 +100,13 @@ class SalesInvoice extends TransactionModel
             ->update(['done' => false]);
     }
 
+    public function updateIfDone()
+    {
+        if ($this->remaining <= 0) {
+            $this->form()->update(['done' => true]);
+        }
+    }
+
     public static function create($data)
     {
         $salesInvoice = new self;

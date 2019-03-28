@@ -76,6 +76,13 @@ class PurchaseInvoice extends TransactionModel
         return $this->belongsToMany(PurchaseDownPayment::class, 'down_payment_invoice', 'down_payment_id', 'invoice_id');
     }
 
+    public function updateIfDone()
+    {
+        if ($this->remaining <= 0) {
+            $this->form()->update(['done' => true]);
+        }
+    }
+
     public static function create($data)
     {
         $purchaseReceives = self::getPurchaseReceives($data['purchase_receive_ids']);

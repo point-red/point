@@ -26,18 +26,6 @@ class PurchaseInvoiceController extends Controller
             ->joinForm()
             ->join(Supplier::getTableName(), PurchaseInvoice::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
             ->notArchived()
-            // ->when($request->get('remaining_info'), function ($query) use ($request) {
-            //     $journalPayment = Journal::selectRaw('SUM(debit)) AS debit')
-            //         ->addSelect('form_id_reference')
-            //         ->where(Journal::getTableName('chart_of_account_id'), $request->get('coa_invoice'))
-            //         ->where('debit', '>', 0);
-
-            //     $query->leftJoinSub($journalPayment, 'journal_payment', function ($join) {
-            //         $join->on(Form::getTableName('id'), '=', 'journal_payment.form_id_reference');
-            //     })
-            //         ->addSelect(\DB::raw('IFNULL(journal_payment.debit, 0) AS paid'))
-            //         ->addSelect(\DB::raw(PurchaseInvoice::getTableName('amount').' - IFNULL(journal_payment.debit, 0) AS remaining'));
-            // })
             ->with('form');
 
         $purchaseInvoices = pagination($purchaseInvoices, $request->get('limit'));

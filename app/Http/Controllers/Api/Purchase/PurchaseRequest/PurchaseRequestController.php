@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
+use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
 use App\Model\Form;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Item;
@@ -68,13 +69,8 @@ class PurchaseRequestController extends Controller
      * @throws \Throwable
      * @return ApiResource
      */
-    public function store(Request $request)
+    public function store(StorePurchaseRequestRequest $request)
     {
-        $request->validate([
-            'employee_id' => 'required',
-            'date' => 'required',
-        ]);
-
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseRequest = PurchaseRequest::create($request->all());
             $purchaseRequest

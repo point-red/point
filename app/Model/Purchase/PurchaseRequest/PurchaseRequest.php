@@ -76,23 +76,24 @@ class PurchaseRequest extends TransactionModel
     public static function create($data)
     {
         $purchaseRequest = new self;
-        // TODO validation employee_name is optional type non empty string
+
         if (empty($data['employee_name'])) {
             $employee = Employee::find($data['employee_id'], ['name']);
-            $data['supplier_name'] = $employee->name;
+            $data['employee_name'] = $employee->name;
         }
-        // TODO validation supplier_name is optional type non empty string
+
         if (empty($data['supplier_name'])) {
             $supplier = Supplier::find($data['supplier_id'], ['name']);
             $data['supplier_name'] = $supplier->name;
         }
+
         $purchaseRequest->fill($data);
 
         $amount = 0;
         $purchaseRequestItems = [];
         $purchaseRequestServices = [];
 
-        // TODO validation items is optional and must be array
+        // Add Purchase Request Items
         $items = $data['items'] ?? [];
         if (! empty($items) && is_array($items)) {
             $itemIds = array_column($items, 'item_id');
@@ -106,10 +107,8 @@ class PurchaseRequest extends TransactionModel
 
                 $amount += $item['quantity'] * $item['price'];
             }
-        } else {
-            // TODO throw error if $items is empty or not an array
         }
-        // TODO validation services is required if items is null and must be array
+
         $services = $data['services'] ?? [];
         if (! empty($services) && is_array($services)) {
             $serviceIds = array_column($services, 'service_id');
@@ -123,8 +122,6 @@ class PurchaseRequest extends TransactionModel
 
                 $amount += $service['quantity'] * $service['price'];
             }
-        } else {
-            // TODO throw error if $services is empty or not an array
         }
 
         $purchaseRequest->amount = $amount;

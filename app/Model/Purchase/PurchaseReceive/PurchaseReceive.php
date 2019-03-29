@@ -137,16 +137,18 @@ class PurchaseReceive extends TransactionModel
                     $purchaseReceiveItem->discount_percent = $purchaseOrderItem->discount_percent;
                     $purchaseReceiveItem->discount_value = $purchaseOrderItem->discount_value;
                     $purchaseReceiveItem->allocation_id = $purchaseOrderItem->allocation_id;
-                }
-                // TODO validation item_id is required if no purchase order, and must be integer
-                else {
+                } else {
                     $purchaseReceiveItem->item_id = $item['item_id'];
                     $purchaseReceiveItem->item_name = $dbItems[$item['item_id']]->name;
                 }
+
                 array_push($array, $purchaseReceiveItem);
 
                 // Insert to inventories table
-                InventoryHelper::increase($form->id, $data['warehouse_id'], $purchaseReceiveItem, $total, $additionalFee);
+                $totalPerItem = ($purchaseReceiveItem->price - $purchaseReceiveItem->discount_value) * $purchaseReceiveItem->quantity;
+                $feePerItem = $totalPerItem / $total * $additionalFee;
+                $price = ($totalPerItem + $feePerItem) / $purchaseReceiveItem->quantity;
+                InventoryHelper::increase($form->id, $data['warehouse_id'], $purchaseReceiveItem->item_id, $purchaseReceiveItem->quantity, $price);
             }
 
             $purchaseReceive->items()->saveMany($array);

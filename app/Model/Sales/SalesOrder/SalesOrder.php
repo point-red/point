@@ -21,6 +21,8 @@ class SalesOrder extends TransactionModel
 
     public $timestamps = false;
 
+    public $defaultNumberPrefix = 'SO';
+
     protected $fillable = [
         'sales_quotation_id',
         'sales_contract_id',
@@ -55,8 +57,6 @@ class SalesOrder extends TransactionModel
     {
         $this->attributes['eta'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
-
-    public $defaultNumberPrefix = 'SO';
 
     public function form()
     {

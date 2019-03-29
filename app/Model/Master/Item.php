@@ -2,8 +2,13 @@
 
 namespace App\Model\Master;
 
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\Form;
+use App\Model\Inventory\OpeningStock\OpeningStock;
+use App\Model\Inventory\OpeningStock\OpeningStockWarehouse;
 use App\Model\MasterModel;
+use stdClass;
 
 class Item extends MasterModel
 {
@@ -62,6 +67,29 @@ class Item extends MasterModel
             array_push($unitsToBeInserted, $itemUnit);
         }
         $item->units()->saveMany($unitsToBeInserted);
+
+        if (isset($data['opening_stocks'])) {
+            $openingStock = new OpeningStock;
+            $openingStock->item_id = $item->id;
+            $openingStock->save();
+
+            $form = new Form;
+            $form->fillData([
+                'date' => now()
+            ], $openingStock);
+            $form->save();
+
+            foreach ($data['opening_stocks'] as $osWarehouse) {
+                $openingStockWarehouse = new OpeningStockWarehouse;
+                $openingStockWarehouse->opening_stock_id = $openingStock->id;
+                $openingStockWarehouse->warehouse_id = $osWarehouse['warehouse_id'];
+                $openingStockWarehouse->quantity = $osWarehouse['quantity'];
+                $openingStockWarehouse->price = $osWarehouse['price'];
+                $openingStockWarehouse->save();
+
+                InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price']);
+            }
+        }
 
         if (isset($data['groups'])) {
             $item->groups()->attach($data['groups']);

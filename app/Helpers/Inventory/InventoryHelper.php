@@ -46,24 +46,18 @@ class InventoryHelper
         // TODO: add journal
     }
 
-    public static function increase($formId, $warehouseId, $itemReference, $totalAmount, $additionalFee)
+    public static function increase($formId, $warehouseId, $itemId, $quantity, $price)
     {
-        Item::where('id', $itemReference->item_id)->increment('stock', $itemReference->quantity);
-        $price = 0;
-        if ($totalAmount > 0) {
-            $subtotal = ($itemReference->price - $itemReference->discount_value) * $itemReference->quantity;
-            $itemReferenceAdditionalFee = $subtotal / $totalAmount * $additionalFee;
-            $price = $itemReferenceAdditionalFee / $itemReference->quantity + $itemReference->price - $itemReference->discount_value;
-        }
+        Item::where('id', $itemId)->increment('stock', $quantity);
 
-        self::insert($formId, $warehouseId, $itemReference->item_id, abs($itemReference->quantity), $price);
+        self::insert($formId, $warehouseId, $itemId, abs($quantity), $price);
     }
 
-    public static function decrease($formId, $warehouseId, $itemReference)
+    public static function decrease($formId, $warehouseId, $itemId, $quantity)
     {
-        Item::where('id', $itemReference->item_id)->decrement('stock', $itemReference->quantity);
+        Item::where('id', $itemId)->decrement('stock', $quantity);
 
-        self::insert($formId, $warehouseId, $itemReference->item_id, -abs($itemReference->quantity), $itemReference->price);
+        self::insert($formId, $warehouseId, $itemId, -abs($quantity), 0);
     }
 
     /**

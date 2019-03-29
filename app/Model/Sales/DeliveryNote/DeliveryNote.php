@@ -114,7 +114,7 @@ class DeliveryNote extends TransactionModel
                 $deliveryNoteItem->item_name = $dbItems[$item['item_id']]->name;
             }
             array_push($array, $deliveryNoteItem);
-            InventoryHelper::decrease($form->id, $deliveryNote->warehouse_id, $deliveryNoteItem);
+            InventoryHelper::decrease($form->id, $deliveryNote->warehouse_id, $deliveryNoteItem->item_id, $deliveryNoteItem->quantity);
         }
         $deliveryNote->items()->saveMany($array);
 

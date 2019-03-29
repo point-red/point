@@ -48,7 +48,7 @@ class SalesDownPayment extends TransactionModel
 
     public function invoices()
     {
-        return $this->belongsToMany(SalesInvoice::class, 'down_payment_invoice', 'invoice_id', 'down_payment_id')
+        return $this->belongsToMany(SalesInvoice::class, 'sales_down_payment_invoice', 'invoice_id', 'down_payment_id')
             ->withPivot('amount');
     }
 

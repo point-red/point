@@ -91,7 +91,7 @@ class Payment extends TransactionModel
         $form->formable_type = self::class;
 
         $form->generateFormNumber(
-            self::getPaymentFormNumber($payment, $data['number']),
+            self::getPaymentFormNumber($payment, $data['number'], $data['date']),
             $data['paymentable_id'],
             $data['paymentable_id']
         );
@@ -124,7 +124,7 @@ class Payment extends TransactionModel
         }, 0);
     }
 
-    private static function getPaymentFormNumber($payment, $number)
+    private static function getPaymentFormNumber($payment, $number, $date)
     {
         $defaultFormat = '{payment_type}-{disbursed}{y}{m}{increment=4}';
         $formNumber = $number ?? $defaultFormat;
@@ -134,7 +134,7 @@ class Payment extends TransactionModel
         if (! empty($regexResult)) {
             $increment = self::joinForm()
                 ->notArchived()
-                ->whereMonth(Form::getTableName('date'), date('n', strtotime($data['date'])))
+                ->whereMonth(Form::getTableName('date'), date('n', strtotime($date)))
                 ->where(self::getTableName('payment_type'), $payment->payment_type)
                 ->where(self::getTableName('disbursed'), $payment->disbursed)
                 ->count();

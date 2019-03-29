@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Model\Inventory\Receive;
+namespace App\Model\Inventory\TransferSendItem;
 
 use App\Model\Master\Item;
 use App\Model\TransactionModel;
 
-class ReceiveItem extends TransactionModel
+class TransferSendItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
     public $timestamps = false;
 
     protected $fillable = [
-        'receive_id',
+        'transfer_id',
         'item_id',
+        'item_name',
         'quantity',
         'unit',
         'converter',

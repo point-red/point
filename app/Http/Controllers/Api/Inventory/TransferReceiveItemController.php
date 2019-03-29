@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Model\Inventory\Receive\Receive;
+use App\Model\Inventory\TransferReceiveItem\TransferReceive;
 
-class ReceiveItemController extends Controller
+class TransferReceiveItemController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,7 +22,8 @@ class ReceiveItemController extends Controller
     {
         $receives = Form::select('forms.id', 'forms.date', 'forms.number', 'forms.approved', 'forms.canceled', 'forms.done')
             ->addSelect('formable_id as receive_id')
-            ->where('formable_type', Receive::class);
+            ->where('formable_type', TransferReceive::class)
+            ->orderBy('forms.date', 'desc');
         // dd($receives->toSql());
 
         $receives = pagination($receives, $request->input('limit'));
@@ -40,7 +41,7 @@ class ReceiveItemController extends Controller
     {
         // dd($request->all());
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $receive = Receive::create($request->all());
+            $receive = TransferReceive::create($request->all());
             $receive
                 ->load('form')
                 ->load('items.item');
@@ -60,16 +61,16 @@ class ReceiveItemController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $receiveItem = Receive::eloquentFilter($request)
+
+        $receiveItem = TransferReceive::eloquentFilter($request)
+            ->with('transferSend.form')
             ->with('form')
             ->with('warehouseFrom')
             ->with('warehouseTo')
             ->with('items.item')
             ->findOrFail($id);
-
         // $receiveItemIds = $receiveItem->items->pluck('id');
 
         return new ApiResource($receiveItem);
     }
-
 }

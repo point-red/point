@@ -41,7 +41,6 @@ class InventoryController extends Controller
 
     public function getStock(Request $request)
     {
-
         $request->validate([
             'warehouse' => 'required|integer',
         ]);
@@ -55,6 +54,7 @@ class InventoryController extends Controller
         $query = Item::select('name', 'stock')
             ->selectRaw('id as item_id');
 
-        return new ItemCollection($query->paginate(100));
+        // return new ItemCollection($query->paginate(100));
+        return new ItemCollection($query->get());
     }
 }

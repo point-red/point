@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Model\Inventory\Transfer\Transfer;
+use App\Model\Inventory\TransferSendItem\TransferSend;
 
-class TransferItemController extends Controller
+class TransferSendItemController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,7 +22,8 @@ class TransferItemController extends Controller
     {
         $transfers = Form::select('forms.id', 'forms.date', 'forms.number', 'forms.approved', 'forms.canceled', 'forms.done')
             ->addSelect('formable_id as transfer_id')
-            ->where('formable_type', Transfer::class);
+            ->where('formable_type', TransferSend::class)
+            ->orderBy('forms.date', 'desc');
         // dd($transfers->toSql());
 
         $transfers = pagination($transfers, $request->input('limit'));
@@ -40,7 +41,7 @@ class TransferItemController extends Controller
     {
         // dd($request->all());
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $transfer = Transfer::create($request->all());
+            $transfer = TransferSend::create($request->all());
             $transfer
                 ->load('form')
                 ->load('items.item');
@@ -60,7 +61,7 @@ class TransferItemController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $transferItem = Transfer::eloquentFilter($request)
+        $transferItem = TransferSend::eloquentFilter($request)
             ->with('form')
             ->with('warehouseFrom')
             ->with('warehouseTo')
@@ -71,5 +72,4 @@ class TransferItemController extends Controller
 
         return new ApiResource($transferItem);
     }
-
 }

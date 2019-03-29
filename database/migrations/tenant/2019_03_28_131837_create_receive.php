@@ -13,8 +13,9 @@ class CreateReceive extends Migration
      */
     public function up()
     {
-        Schema::create('receives', function (Blueprint $table) {
+        Schema::create('transfer_receives', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('transfer_id');
             $table->unsignedInteger('warehouse_from');
             $table->unsignedInteger('warehouse_to');
             $table->string('note')->nullable();

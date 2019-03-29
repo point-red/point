@@ -13,7 +13,7 @@ class CreateTransfer extends Migration
      */
     public function up()
     {
-        Schema::create('transfers', function (Blueprint $table) {
+        Schema::create('transfer_sends', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('warehouse_from');
             $table->unsignedInteger('warehouse_to');

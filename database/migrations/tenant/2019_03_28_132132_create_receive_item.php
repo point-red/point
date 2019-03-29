@@ -13,7 +13,7 @@ class CreateReceiveItem extends Migration
      */
     public function up()
     {
-        Schema::create('receive_items', function (Blueprint $table) {
+        Schema::create('transfer_receive_items', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('receive_id');
             $table->unsignedInteger('item_id');
@@ -22,7 +22,7 @@ class CreateReceiveItem extends Migration
             $table->string('unit')->nullable();
             $table->decimal('converter', 65, 30)->default(0);
 
-            $table->foreign('receive_id')->references('id')->on('receives')->onDelete('cascade');
+            $table->foreign('receive_id')->references('id')->on('transfer_receives')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');
         });
     }

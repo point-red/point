@@ -75,10 +75,10 @@ class ItemController extends Controller
                 $item = Item::create($item);
                 $item->load('units', 'groups');
 
-                $collection = array_merge($collection, $item);
+                array_push($collection, $item);
             }
 
-            return new ApiCollection($collection);
+            return new ApiCollection(collect($collection));
         });
 
         return $result;

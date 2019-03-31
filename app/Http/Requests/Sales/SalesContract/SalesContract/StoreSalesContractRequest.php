@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Sales\SalesContract\SalesContract;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreSalesContractRequest extends FormRequest
 {
@@ -36,8 +36,7 @@ class StoreSalesContractRequest extends FormRequest
                 'items.*.quantity' => 'bail|required|numeric|min:0|not_in:0',
                 'items.*.allocation_id' => 'bail|integer|min:1|exists:tenant.allocations,id',
             ]);
-        }
-        else {
+        } else {
             \Log::info('has groups');
             $array = array_merge($array, [
                 'groups.*.group_id' => 'bail|required|integer|min:1|exists:tenant.groups,id',

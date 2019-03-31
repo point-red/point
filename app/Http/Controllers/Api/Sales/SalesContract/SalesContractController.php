@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesContract;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Sales\SalesContract\SalesContract\StoreSalesContractRequest;
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\Customer;
-use App\Model\Sales\SalesContract\SalesContract;
 use Illuminate\Http\Request;
+use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Model\Sales\SalesContract\SalesContract;
+use App\Http\Requests\Sales\SalesContract\SalesContract\StoreSalesContractRequest;
 
 class SalesContractController extends Controller
 {

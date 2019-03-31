@@ -14,7 +14,7 @@ class StoreItemRequest extends FormRequest
      */
     public function authorize()
     {
-        if (!tenant(auth()->user()->id)->hasPermissionTo('create item')) {
+        if (! tenant(auth()->user()->id)->hasPermissionTo('create item')) {
             return false;
         }
 
@@ -31,7 +31,7 @@ class StoreItemRequest extends FormRequest
         return [
             'chart_of_account_id' => 'required',
             'units' => 'required|array',
-            'groups' => 'array'
+            'groups' => 'array',
         ];
     }
 }

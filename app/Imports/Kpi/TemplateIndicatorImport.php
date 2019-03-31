@@ -2,11 +2,9 @@
 
 namespace App\Imports\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Illuminate\Support\Facades\DB;
+use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 
 class TemplateIndicatorImport implements ToCollection
 {
@@ -40,7 +38,7 @@ class TemplateIndicatorImport implements ToCollection
                 $kpiTemplateIndicator->save();
 
                 array_push($templateIndicatorId, [
-                    $row[0] => $kpiTemplateIndicator->id
+                    $row[0] => $kpiTemplateIndicator->id,
                 ]);
             }
             $i = $i + 1;

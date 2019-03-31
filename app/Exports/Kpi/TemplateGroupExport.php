@@ -2,24 +2,24 @@
 
 namespace App\Exports\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiTemplate;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use App\Model\HumanResource\Kpi\KpiTemplate;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\FromCollection;
 
 class TemplateGroupExport implements FromCollection, WithTitle, WithHeadings
 {
-
     private $id;
 
     public function __construct(int $id)
     {
-        $this->id  = $id;
+        $this->id = $id;
     }
 
     public function collection()
     {
         $kpiTemplate = KpiTemplate::where('id', $this->id)->with('Groups')->first();
+
         return $kpiTemplate->groups;
     }
 
@@ -34,7 +34,7 @@ class TemplateGroupExport implements FromCollection, WithTitle, WithHeadings
             'created_at',
             'updated_at',
             'total_target',
-            'total_weight'
+            'total_weight',
         ];
     }
 
@@ -42,5 +42,4 @@ class TemplateGroupExport implements FromCollection, WithTitle, WithHeadings
     {
         return 'Kpi Template Group';
     }
-
 }

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Model\Accounting\Journal;
-use App\Model\Finance\Payment\Payment;
 use App\Model\Master\Bank;
 use App\Model\Master\Email;
 use App\Model\Master\Group;
@@ -11,11 +9,13 @@ use App\Model\Master\Phone;
 use Illuminate\Http\Request;
 use App\Model\Master\Address;
 use App\Model\Master\Supplier;
+use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Model\Master\ContactPerson;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\Finance\Payment\Payment;
 use App\Http\Requests\Master\Supplier\StoreSupplierRequest;
 use App\Http\Requests\Master\Supplier\UpdateSupplierRequest;
 
@@ -114,9 +114,9 @@ class SupplierController extends Controller
 
         if ($request->has('group')) {
             $group = null;
-            if (!empty($request->get('group')['id'])) {
+            if (! empty($request->get('group')['id'])) {
                 $group = Group::findOrFail($request->get('group')['id']);
-            } else if (!empty($request->get('group')['name'])) {
+            } elseif (! empty($request->get('group')['name'])) {
                 $group = Group::where('name', $request->get('group')['name'])
                     ->where('class_reference', Supplier::class)
                     ->first();
@@ -175,9 +175,9 @@ class SupplierController extends Controller
 
         if ($request->has('group')) {
             $group = null;
-            if (!empty($request->get('group')['id'])) {
+            if (! empty($request->get('group')['id'])) {
                 $group = Group::findOrFail($request->get('group')['id']);
-            } else if (!empty($request->get('group')['name'])) {
+            } elseif (! empty($request->get('group')['name'])) {
                 $group = Group::where('name', $request->get('group')['name'])
                     ->where('class_reference', Supplier::class)
                     ->first();

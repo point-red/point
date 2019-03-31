@@ -4,10 +4,10 @@ namespace App\Model\Purchase\PurchaseDownPayment;
 
 use App\Model\Form;
 use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseContract\PurchaseContract;
-use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use Illuminate\Database\Eloquent\Model;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Purchase\PurchaseContract\PurchaseContract;
 
 class PurchaseDownPayment extends Model
 {
@@ -54,12 +54,12 @@ class PurchaseDownPayment extends Model
         $downPayment = new self;
         $reference = null;
 
-        if (!empty($data['purchase_order_id'])) {
+        if (! empty($data['purchase_order_id'])) {
             $downPayment->downpaymentable_id = $data['purchase_order_id'];
             $downPayment->downpaymentable_type = PurchaseOrder::class;
 
             $reference = PurchaseOrder::findOrFail($data['purchase_order_id']);
-        } else if (!empty($data['purchase_contract_id'])) {
+        } elseif (! empty($data['purchase_contract_id'])) {
             $downPayment->downpaymentable_id = $data['purchase_contract_id'];
             $downPayment->downpaymentable_type = PurchaseContract::class;
 

@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Model\Master\Item;
+use Illuminate\Console\Command;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
 use App\Model\Inventory\InventoryAudit\InventoryAudit;
-use App\Model\Master\Item;
-use Illuminate\Console\Command;
 
 class Recalculate extends Command
 {

@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
+use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Service;
@@ -9,7 +10,6 @@ use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use Carbon\Carbon;
 
 class PurchaseRequest extends TransactionModel
 {

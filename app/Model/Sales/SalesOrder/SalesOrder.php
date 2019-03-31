@@ -2,6 +2,7 @@
 
 namespace App\Model\Sales\SalesOrder;
 
+use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Service;
@@ -9,10 +10,9 @@ use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\SalesContract\SalesContract;
 use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
-use App\Model\Sales\SalesContract\SalesContract;
-use Carbon\Carbon;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesOrder extends TransactionModel
@@ -95,13 +95,15 @@ class SalesOrder extends TransactionModel
         return $this->belongsTo(Warehouse::class);
     }
 
-    public function downPayments() {
+    public function downPayments()
+    {
         return $this->morphMany(SalesDownPayment::class, 'downpaymentable')
             ->joinForm(SalesDownPayment::class)
             ->active();
     }
 
-    public function salesContract() {
+    public function salesContract()
+    {
         return $this->belongsTo(SalesContract::class)
             ->joinForm(SalesContract::class);
     }

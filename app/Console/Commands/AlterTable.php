@@ -41,8 +41,8 @@ class AlterTable extends Command
     {
         $projects = Project::all();
         foreach ($projects as $project) {
-            $this->line('Alter ' . $project->code);
-            config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
+            $this->line('Alter '.$project->code);
+            config()->set('database.connections.tenant.database', 'point_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
             DB::statement('ALTER TABLE `projects` ADD COLUMN `group` VARCHAR(255) after `name`');

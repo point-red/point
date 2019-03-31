@@ -26,7 +26,7 @@ class UpdateItemRequest extends FormRequest
         return [
             'chart_of_account_id' => 'required',
             'units' => 'required|array',
-            'groups' => 'array'
+            'groups' => 'array',
         ];
     }
 }

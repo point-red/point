@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesInvoice;
 
-use App\Http\Resources\ApiResource;
 use App\Model\Form;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\Sales\SalesInvoice\SalesInvoiceItem;
-use App\Http\Controllers\Controller;
 
 class SalesInvoicePricingController extends Controller
 {

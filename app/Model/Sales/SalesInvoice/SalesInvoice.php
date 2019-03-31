@@ -2,10 +2,10 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
+use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Customer;
-use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
@@ -14,7 +14,7 @@ use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Finance\Payment\PaymentDetail;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
-use Carbon\Carbon;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesInvoice extends TransactionModel
 {
@@ -129,14 +129,14 @@ class SalesInvoice extends TransactionModel
 
         $salesInvoiceItems = self::getItems($data['items'] ?? [], $deliveryNotes ?? []);
         $salesInvoiceServices = self::getServices($data['services'] ?? [], $salesOrders ?? []);
-        
+
         $salesInvoice->amount = self::getAmounts($salesInvoice, $salesInvoiceItems, $salesInvoiceServices);
 
         $totalDownPayments = self::getTotalDownPayments($data['down_payments'] ?? []);
         $salesInvoice->remaining = $salesInvoice->amount - $totalDownPayments;
 
         $salesInvoice->save();
-        
+
         $salesInvoice->items()->createMany($salesInvoiceItems);
         $salesInvoice->services()->createMany($salesInvoiceServices);
         $salesInvoice->downPayments()->attach(array_column($data['down_payments'] ?? [], 'amount', 'id'));
@@ -160,7 +160,7 @@ class SalesInvoice extends TransactionModel
             ->whereIn(DeliveryNote::getTableName('id'), $deliveryNoteIds)
             ->with('form', 'items')
             ->get();
-        
+
         if ($deliveryNotes->isEmpty()) {
             return response()->json([
                 'code' => 422,
@@ -179,7 +179,7 @@ class SalesInvoice extends TransactionModel
             ->whereIn(SalesOrder::getTableName('id'), $salesOrderIds)
             ->with('form', 'services')
             ->get();
-        
+
         if ($salesOrders->isEmpty()) {
             return response()->json([
                 'code' => 422,
@@ -194,6 +194,7 @@ class SalesInvoice extends TransactionModel
     {
         if (empty($salesInvoice->customer_name)) {
             $customer = Customer::findOrFail($salesInvoice->customer->id, ['name']);
+
             return $customer->name;
         }
 
@@ -209,7 +210,7 @@ class SalesInvoice extends TransactionModel
         $items = array_column($items, null, 'item_id');
 
         $salesInvoiceItems = [];
-        
+
         foreach ($deliveryNotes as $deliveryNote) {
             foreach ($deliveryNote->items as $deliveryNoteItem) {
                 $itemId = $deliveryNoteItem->item_id;
@@ -273,23 +274,25 @@ class SalesInvoice extends TransactionModel
 
     private static function getTotalDownPayments($downPayments)
     {
-        return array_reduce($downPayments, function($carry, $downPayment) {
+        return array_reduce($downPayments, function ($carry, $downPayment) {
             return $carry + $downPayment['amount'];
         }, 0);
     }
 
     private static function getAmounts($salesInvoice, $items, $services)
     {
-        $amount = array_reduce($items, function($carry, $item) {
+        $amount = array_reduce($items, function ($carry, $item) {
             $price = $item['quantity'] * ($item['price'] - $item['discount_value']);
+
             return $carry + $price;
         }, 0);
 
-        $amount += array_reduce($services, function($carry, $service) {
+        $amount += array_reduce($services, function ($carry, $service) {
             $price = $service['quantity'] * ($service['price'] - $service['discount_value']);
+
             return $carry + $price;
         }, 0);
-        
+
         $amount -= $salesInvoice->discount_value;
         $amount += $salesInvoice->delivery_fee;
         $amount += $salesInvoice->type_of_tax === 'exclude' ? $salesInvoice->tax : 0;
@@ -299,7 +302,7 @@ class SalesInvoice extends TransactionModel
 
     private static function setDeliveryNotesDone($deliveryNoteIds)
     {
-        if (! empty ($deliveryNoteIds)) {
+        if (! empty($deliveryNoteIds)) {
             $affectedRows = Form::where('formable_type', DeliveryNote::class)
                 ->whereIn('formable_id', $deliveryNoteIds)
                 ->update(['done' => true]);
@@ -310,7 +313,7 @@ class SalesInvoice extends TransactionModel
 
     private static function setSalesOrdersDone($salesOrderIds)
     {
-        if (! empty ($salesOrderIds)) {
+        if (! empty($salesOrderIds)) {
             $affectedRows = Form::where('formable_type', SalesOrder::class)
                 ->whereIn('formable_id', $salesOrderIds)
                 ->update(['done' => true]);

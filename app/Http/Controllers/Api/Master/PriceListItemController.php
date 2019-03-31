@@ -58,7 +58,7 @@ class PriceListItemController extends Controller
                             $price = floatval($priceGroup['pivot']['price']);
                             $discount_value = floatval($priceGroup['pivot']['discount_value']);
                             $discount_percent = $priceGroup['pivot']['discount_percent'];
-                            if (!is_null($discount_percent)) {
+                            if (! is_null($discount_percent)) {
                                 $discount_percent = floatval($discount_percent);
                             }
                             break;

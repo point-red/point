@@ -3,8 +3,8 @@
 namespace App\Model\Sales\SalesInvoice;
 
 use App\Model\Master\Item;
-use App\Model\Master\Allocation;
 use App\Model\TransactionModel;
+use App\Model\Master\Allocation;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
 

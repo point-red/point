@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use App\Http\Resources\ApiResource;
 use App\Model\Master\User;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use Illuminate\Support\Facades\Artisan;

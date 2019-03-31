@@ -356,13 +356,12 @@ trait EloquentFilters
 
             foreach ($relations as $relation) {
                 $query->has($relation);
-
             }
         }
     }
 
     /**
-     * Filter attribute from relation
+     * Filter attribute from relation.
      *
      * [
      *   {
@@ -387,7 +386,7 @@ trait EloquentFilters
                 $relations = $this->convertJavascriptObjectToArray($relations);
                 foreach ($relations as $relation => $filter) {
                     foreach ($filter as $attribute => $value) {
-                        $query->whereHas($relation, function($query) use ($attribute, $value) {
+                        $query->whereHas($relation, function ($query) use ($attribute, $value) {
                             $query->where($attribute, $value);
                         });
                     }
@@ -421,7 +420,6 @@ trait EloquentFilters
             }
         }
     }
-
 
     /**
      * If values is javascript object then convert it to array.

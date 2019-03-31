@@ -2,9 +2,9 @@
 
 namespace App\Model\Sales\SalesOrder;
 
+use App\Model\PointModel;
 use App\Model\Master\Item;
 use App\Model\Master\Allocation;
-use App\Model\PointModel;
 
 class SalesOrderItem extends PointModel
 {

@@ -4,8 +4,6 @@ namespace App\Console\Commands;
 
 use App\Model\Master\Item;
 use App\Model\Master\ItemUnit;
-use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
-use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -48,16 +46,16 @@ class AlterData extends Command
         foreach ($projects as $project) {
 //            $this->line('Clone ' . $project->code);
 //            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
-            $this->line('Alter ' . $project->code);
-            config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
+            $this->line('Alter '.$project->code);
+            config()->set('database.connections.tenant.database', 'point_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
             $items = Item::all();
 
             foreach ($items as $item) {
-                $this->line($item->id . ' ' . $item->units);
+                $this->line($item->id.' '.$item->units);
                 if (count($item->units) == 0) {
-                    $this->line($item->id . ' add unit');
+                    $this->line($item->id.' add unit');
                     $unit = new ItemUnit;
                     $unit->label = 'pcs';
                     $unit->name = 'pcs';

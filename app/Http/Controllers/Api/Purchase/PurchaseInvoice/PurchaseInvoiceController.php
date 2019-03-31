@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
-use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;

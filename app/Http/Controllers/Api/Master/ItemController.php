@@ -181,7 +181,18 @@ class ItemController extends Controller
      */
     public function destroy($id)
     {
+        $relationMethods = ['inventories'];
+
         $item = Item::findOrFail($id);
+
+        foreach ($relationMethods as $relationMethod) {
+            if ($item->$relationMethod()->count() > 0) {
+                return response()->json([
+                    'message' => 'Relation "'.$relationMethod.'" exists'
+                ], 422);
+            }
+        }
+
         $item->delete();
 
         return response()->json([], 204);

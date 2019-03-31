@@ -5,6 +5,7 @@ namespace App\Model\Master;
 use App\Model\Form;
 use App\Model\MasterModel;
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\Inventory\Inventory;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Inventory\OpeningStock\OpeningStock;
 use App\Model\Inventory\OpeningStock\OpeningStockWarehouse;
@@ -31,6 +32,11 @@ class Item extends MasterModel
         'stock_reminder' => 'double',
         'cogs' => 'double',
     ];
+
+    public function inventories()
+    {
+        return $this->hasMany(Inventory::class);
+    }
 
     /**
      * Get all of the groups for the items.

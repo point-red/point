@@ -93,10 +93,7 @@ class ItemController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $item = Item::eloquentFilter($request)
-            ->with('groups')
-            ->with('units')
-            ->findOrFail($id);
+        $item = Item::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($item);
     }

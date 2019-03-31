@@ -8,7 +8,6 @@ use App\Model\Form;
 use App\Model\Inventory\OpeningStock\OpeningStock;
 use App\Model\Inventory\OpeningStock\OpeningStockWarehouse;
 use App\Model\MasterModel;
-use stdClass;
 
 class Item extends MasterModel
 {

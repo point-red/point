@@ -79,14 +79,16 @@ class Item extends MasterModel
             $form->save();
 
             foreach ($data['opening_stocks'] as $osWarehouse) {
-                $openingStockWarehouse = new OpeningStockWarehouse;
-                $openingStockWarehouse->opening_stock_id = $openingStock->id;
-                $openingStockWarehouse->warehouse_id = $osWarehouse['warehouse_id'];
-                $openingStockWarehouse->quantity = $osWarehouse['quantity'];
-                $openingStockWarehouse->price = $osWarehouse['price'];
-                $openingStockWarehouse->save();
+                if ($osWarehouse['warehouse_id'] != null && $osWarehouse['quantity'] != null && $osWarehouse['price'] != null) {
+                    $openingStockWarehouse = new OpeningStockWarehouse;
+                    $openingStockWarehouse->opening_stock_id = $openingStock->id;
+                    $openingStockWarehouse->warehouse_id = $osWarehouse['warehouse_id'];
+                    $openingStockWarehouse->quantity = $osWarehouse['quantity'];
+                    $openingStockWarehouse->price = $osWarehouse['price'];
+                    $openingStockWarehouse->save();
 
-                InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price']);
+                    InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price']);
+                }
             }
         }
 

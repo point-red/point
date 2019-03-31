@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StorePurchaseRequestRequest extends FormRequest
 {
@@ -14,11 +14,11 @@ class StorePurchaseRequestRequest extends FormRequest
      */
     public function authorize()
     {
-        if (!tenant(auth()->user()->id)->hasPermissionTo('create purchase request')) {
+        if (! tenant(auth()->user()->id)->hasPermissionTo('create purchase request')) {
             return false;
         }
 
-         return true;
+        return true;
     }
 
     /**

@@ -2,15 +2,15 @@
 
 namespace App\Model\Purchase\PurchaseInvoice;
 
-use App\Model\Accounting\ChartOfAccountType;
-use App\Model\Accounting\Journal;
+use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\TransactionModel;
-use Carbon\Carbon;
+use App\Model\Accounting\Journal;
+use App\Model\Accounting\ChartOfAccountType;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
 class PurchaseInvoice extends TransactionModel
 {
@@ -91,7 +91,7 @@ class PurchaseInvoice extends TransactionModel
         $purchaseInvoice->fill($data);
         $purchaseInvoice->supplier_id = $purchaseReceives[0]->supplier_id;
         $purchaseInvoice->supplier_name = self::getSupplierName($purchaseInvoice);
-        
+
         $purchaseInvoiceItems = self::getItems($purchaseReceives, $data['items'] ?? []);
         $purchaseInvoiceServices = self::getServices($purchaseReceives, $data['services'] ?? []);
 
@@ -129,6 +129,7 @@ class PurchaseInvoice extends TransactionModel
     {
         if (empty($purchaseInvoice->supplier_name)) {
             $supplier = Supplier::findOrFail($purchaseInvoice->supplier_id, ['name']);
+
             return $supplier->name;
         }
 
@@ -209,13 +210,15 @@ class PurchaseInvoice extends TransactionModel
 
     private static function getAmounts($purchaseInvoice, $items, $services)
     {
-        $amount = array_reduce($items, function($carry, $item) {
+        $amount = array_reduce($items, function ($carry, $item) {
             $price = $item['quantity'] * ($item['price'] - $item['discount_value']);
+
             return $carry + $price;
         }, 0);
 
-        $amount += array_reduce($services, function($carry, $service) {
+        $amount += array_reduce($services, function ($carry, $service) {
             $price = $service['quantity'] * ($service['price'] - $service['discount_value']);
+
             return $carry + $price;
         }, 0);
 

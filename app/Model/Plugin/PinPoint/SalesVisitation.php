@@ -11,7 +11,6 @@ class SalesVisitation extends PointModel
 
     protected $table = 'pin_point_sales_visitations';
 
-
     public function setDueDateAttribute($value)
     {
         $this->attributes['due_date'] = convert_to_server_timezone($value);
@@ -22,7 +21,8 @@ class SalesVisitation extends PointModel
         return convert_to_local_timezone($value);
     }
 
-    public function form() {
+    public function form()
+    {
         return $this->belongsTo(Form::class);
     }
 

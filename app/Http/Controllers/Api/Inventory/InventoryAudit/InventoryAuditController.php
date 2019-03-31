@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Inventory\InventoryAudit;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Inventory\InventoryAudit\InventoryAudit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Model\Inventory\InventoryAudit\InventoryAudit;
 
 class InventoryAuditController extends Controller
 {

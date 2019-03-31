@@ -2,13 +2,13 @@
 
 namespace App\Model\Sales\SalesDownPayment;
 
-use App\Model\Finance\Payment\Payment;
 use App\Model\Form;
 use App\Model\Master\Customer;
-use App\Model\Sales\SalesContract\SalesContract;
-use App\Model\Sales\SalesInvoice\SalesInvoice;
-use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
+use App\Model\Finance\Payment\Payment;
+use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\Sales\SalesInvoice\SalesInvoice;
+use App\Model\Sales\SalesContract\SalesContract;
 
 class SalesDownPayment extends TransactionModel
 {
@@ -54,7 +54,7 @@ class SalesDownPayment extends TransactionModel
 
     public function updateIfDone()
     {
-        $used = $this->invoices->sum(function($invoice) {
+        $used = $this->invoices->sum(function ($invoice) {
             return $invoice->pivot->amount;
         });
         if ($this->amount - $used <= 0) {
@@ -68,12 +68,12 @@ class SalesDownPayment extends TransactionModel
 
         $reference = null;
 
-        if (!empty($data['sales_order_id'])) {
+        if (! empty($data['sales_order_id'])) {
             $downPayment->downpaymentable_id = $data['sales_order_id'];
             $downPayment->downpaymentable_type = SalesOrder::class;
 
             $reference = SalesOrder::findOrFail($data['sales_order_id']);
-        } else if (!empty($data['sales_contract_id'])) {
+        } elseif (! empty($data['sales_contract_id'])) {
             $downPayment->downpaymentable_id = $data['sales_contract_id'];
             $downPayment->downpaymentable_type = SalesContract::class;
 
@@ -83,9 +83,9 @@ class SalesDownPayment extends TransactionModel
         $data['customer_id'] = $reference->customer_id;
         $data['customer_name'] = $reference->customer_name;
         if (empty($data['number'])) {
-            $data['number'] = "DP/{code_customer}/{y}{m}{increment=4}";
+            $data['number'] = 'DP/{code_customer}/{y}{m}{increment=4}';
         }
-        
+
         $downPayment->fill($data);
         $downPayment->save();
 
@@ -98,7 +98,8 @@ class SalesDownPayment extends TransactionModel
         return $downPayment;
     }
 
-    private static function addPaymentCollection($data, $downPayment) {
+    private static function addPaymentCollection($data, $downPayment)
+    {
         $payment = [];
         // payment type should be cash / bank when paid = true
         $payment['payment_type'] = $data['payment_type'] ?? 'payment collection';
@@ -122,11 +123,11 @@ class SalesDownPayment extends TransactionModel
                 'notes' => $downPayment->form->notes,
                 'referenceable_type' => 'sales_down_payment',
                 'referenceable_id' => $downPayment->id,
-            ]
+            ],
         ];
 
         $salePayment = Payment::create($payment);
-        
+
         $downPayment->paid_by = $salePayment->id;
         $downPayment->save();
     }

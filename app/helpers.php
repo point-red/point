@@ -79,7 +79,7 @@ if (! function_exists('get_invitation_code')) {
 
     if (! function_exists('date_tz')) {
         /**
-         * Convert hour:minute:second into 00:00:00
+         * Convert hour:minute:second into 00:00:00.
          *
          * @param $datetime
          * @param null $fromTz
@@ -99,6 +99,7 @@ if (! function_exists('get_invitation_code')) {
 
             $date = new DateTime($datetime, new DateTimeZone($fromTz));
             $date->setTimezone(new DateTimeZone($toTz));
+
             return $date->format('Y-m-d H:i:s');
         }
     }
@@ -135,6 +136,7 @@ if (! function_exists('get_invitation_code')) {
 
             $date = new DateTime($datetime, new DateTimeZone($fromTz));
             $date->setTimezone(new DateTimeZone($toTz));
+
             return $date->format('Y-m-d H:i:s');
         }
     }
@@ -171,13 +173,14 @@ if (! function_exists('get_invitation_code')) {
 
             $date = new DateTime($datetime, new DateTimeZone($fromTz));
             $date->setTimezone(new DateTimeZone($toTz));
+
             return $date->format('Y-m-d H:i:s');
         }
     }
 
     if (! function_exists('convert_to_local_timezone')) {
         /**
-         * Convert datetime to local timezone
+         * Convert datetime to local timezone.
          *
          * @param $value
          * @param null $fromTz
@@ -200,7 +203,7 @@ if (! function_exists('get_invitation_code')) {
 
     if (! function_exists('convert_to_server_timezone')) {
         /**
-         * Convert datetime to server timezone
+         * Convert datetime to server timezone.
          *
          * @param $value
          * @param null $fromTz

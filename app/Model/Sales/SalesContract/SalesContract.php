@@ -3,11 +3,11 @@
 namespace App\Model\Sales\SalesContract;
 
 use App\Model\Form;
-use App\Model\Master\Customer;
-use App\Model\Master\Group;
 use App\Model\Master\Item;
-use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\Master\Group;
+use App\Model\Master\Customer;
 use App\Model\TransactionModel;
+use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\SalesOrder\SalesOrderItem;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
@@ -65,7 +65,8 @@ class SalesContract extends TransactionModel
             ->active();
     }
 
-    public function downPayments() {
+    public function downPayments()
+    {
         return $this->morphMany(SalesDownPayment::class, 'downpaymentable')
             ->joinForm(SalesDownPayment::class)
             ->active();
@@ -79,7 +80,7 @@ class SalesContract extends TransactionModel
         if (! empty($this->items)) {
             $salesContractItems = $this->items;
             $salesContractItemIds = $salesContractItems->pluck('id');
-            
+
             $quantityOrderedItems = SalesOrder::joinForm()
                 ->join(SalesOrderItem::getTableName(), SalesOrder::getTableName('id'), '=', SalesOrderItem::getTableName('sales_order_id'))
                 ->groupBy('sales_contract_item_id')
@@ -89,7 +90,7 @@ class SalesContract extends TransactionModel
                 ->active()
                 ->get()
                 ->pluck('sum_ordered', 'sales_contract_item_id');
-            
+
             foreach ($salesContractItems as $salesContractItem) {
                 $quantityOrdered = $quantityOrderedItems[$salesContractItem->id] ?? 0;
                 if ($salesContractItem->quantity - $quantityOrdered > 0) {
@@ -97,7 +98,7 @@ class SalesContract extends TransactionModel
                     break;
                 }
             }
-        } else if (! empty($this->groupItems)) {
+        } elseif (! empty($this->groupItems)) {
             $salesContractGroupItems = $this->groupItems;
             $salesContractGroupItemIds = $salesContractGroupItems->pluck('id');
 
@@ -110,7 +111,7 @@ class SalesContract extends TransactionModel
                 ->active()
                 ->get()
                 ->pluck('sum_ordered', 'sales_contract_group_item_id');
-            
+
             foreach ($salesContractGroupItems as $salesContractGroupItem) {
                 $quantityOrdered = $quantityOrderedGroupItems[$salesContractGroupItem->id] ?? 0;
                 if ($salesContractGroupItem->quantity - $quantityOrdered > 0) {
@@ -141,7 +142,7 @@ class SalesContract extends TransactionModel
         $groupItems = [];
         $amount = 0;
 
-        if (!empty($data['items'])) {
+        if (! empty($data['items'])) {
             $itemIds = array_column($data['items'], 'item_id');
             $dbItems = Item::select('id', 'name')->whereIn('id', $itemIds)->get()->keyBy('id');
 
@@ -154,7 +155,7 @@ class SalesContract extends TransactionModel
 
                 array_push($items, $contractItem);
             }
-        } else if (!empty($data['groups'])) {
+        } elseif (! empty($data['groups'])) {
             $groupIds = array_column($data['groups'], 'group_id');
             $dbGroups = Group::select('id', 'name')->whereIn('id', $groupIds)->get()->keyBy('id');
 
@@ -172,9 +173,9 @@ class SalesContract extends TransactionModel
         $salesContract->amount = $amount - $salesContract->discount_value + $salesContract->tax;
         $salesContract->save();
 
-        if (!empty($items)) {
+        if (! empty($items)) {
             $salesContract->items()->saveMany($items);
-        } else if (!empty($groupItems)) {
+        } elseif (! empty($groupItems)) {
             $salesContract->groupItems()->saveMany($groupItems);
         }
 

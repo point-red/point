@@ -4,13 +4,11 @@ namespace App\Http\Controllers\Api\Sales\SalesInvoice;
 
 use App\Model\Form;
 use Illuminate\Http\Request;
-use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
-use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesInvoiceController extends Controller
 {
@@ -107,7 +105,7 @@ class SalesInvoiceController extends Controller
         $salesInvoice = SalesInvoice::findOrFail($id);
 
         $salesInvoice->detachDownPayments();
-        
+
         $salesInvoice->delete();
 
         return response()->json([], 204);

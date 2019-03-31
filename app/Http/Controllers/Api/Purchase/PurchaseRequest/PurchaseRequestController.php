@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
-use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
-use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Item;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
+use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
 
 class PurchaseRequestController extends Controller
 {
@@ -112,7 +112,6 @@ class PurchaseRequestController extends Controller
     private function isReferencedByPurchaseOrder($purchaseRequest)
     {
         if ($purchaseRequest->purchaseOrders->count()) {
-
             $purchaseOrders = [];
 
             foreach ($purchaseRequest->purchaseOrders as $purchaseOrder) {
@@ -122,7 +121,7 @@ class PurchaseRequestController extends Controller
             return response()->json([
                 'code' => 422,
                 'message' => 'Cannot edit form because referenced by purchase order',
-                'referenced_by' => $purchaseOrders
+                'referenced_by' => $purchaseOrders,
             ], 422);
         }
 

@@ -46,7 +46,7 @@ class Form extends PointModel
         if (optional(auth()->user())->id) {
             $this->updated_by = optional(auth()->user())->id;
 
-            if (!$this->exists) {
+            if (! $this->exists) {
                 $this->created_by = optional(auth()->user())->id;
             }
         }

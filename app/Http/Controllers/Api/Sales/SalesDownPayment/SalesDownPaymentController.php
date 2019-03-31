@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Sales\SalesDownPayment;
 
 use Illuminate\Http\Request;
 use App\Http\Resources\ApiResource;
-use App\Http\Resources\ApiCollection;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesDownPaymentController extends Controller

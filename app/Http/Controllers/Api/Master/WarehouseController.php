@@ -55,7 +55,7 @@ class WarehouseController extends Controller
     public function show(Request $request, $id)
     {
         $warehouse = Warehouse::eloquentFilter($request)->findOrFail($id);
-        
+
         return new WarehouseResource($warehouse);
     }
 

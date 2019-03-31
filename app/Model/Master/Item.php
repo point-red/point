@@ -2,12 +2,12 @@
 
 namespace App\Model\Master;
 
-use App\Helpers\Inventory\InventoryHelper;
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\Form;
+use App\Model\MasterModel;
+use App\Model\Accounting\ChartOfAccount;
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Inventory\OpeningStock\OpeningStock;
 use App\Model\Inventory\OpeningStock\OpeningStockWarehouse;
-use App\Model\MasterModel;
 
 class Item extends MasterModel
 {
@@ -53,8 +53,9 @@ class Item extends MasterModel
         return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
     }
 
-    public static function create($data) {
-        $item = new Item;
+    public static function create($data)
+    {
+        $item = new self;
         $item->fill($data);
         $item->save();
 
@@ -74,7 +75,7 @@ class Item extends MasterModel
 
             $form = new Form;
             $form->fillData([
-                'date' => now()
+                'date' => now(),
             ], $openingStock);
             $form->save();
 

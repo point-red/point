@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api\Master;
 
 use Illuminate\Http\Request;
 use App\Model\Master\Allocation;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
 use App\Http\Requests\Master\Allocation\StoreAllocationRequest;
 use App\Http\Requests\Master\Allocation\UpdateAllocationRequest;
 

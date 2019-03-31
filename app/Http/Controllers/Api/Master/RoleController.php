@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use Illuminate\Http\Request;
 use App\Model\Auth\Role;
-use App\Http\Resources\ApiCollection;
+use Illuminate\Http\Request;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 
 class RoleController extends Controller
 {

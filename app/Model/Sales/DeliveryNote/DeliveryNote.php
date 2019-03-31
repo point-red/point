@@ -79,7 +79,7 @@ class DeliveryNote extends TransactionModel
             $deliveryNote->shipping_email = $deliveryOrder->shipping_email;
 
             $deliveryOrderItems = $deliveryOrder->items->keyBy('id');
-        } else if (empty($data['customer_name'])) {
+        } elseif (empty($data['customer_name'])) {
             $customer = Customer::find($data['customer_id']);
             $deliveryNote->customer_name = $customer->name;
         }

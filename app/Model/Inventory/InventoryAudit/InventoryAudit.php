@@ -30,7 +30,7 @@ class InventoryAudit extends TransactionModel
 
     public static function create($data)
     {
-        $inventoryAudit = new InventoryAudit;
+        $inventoryAudit = new self;
         $inventoryAudit->warehouse_id = $data['warehouse_id'];
         $inventoryAudit->save();
 

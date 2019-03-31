@@ -2,7 +2,6 @@
 
 namespace App\Model;
 
-use Carbon\Carbon;
 use App\Traits\FormScopes;
 
 class TransactionModel extends PointModel

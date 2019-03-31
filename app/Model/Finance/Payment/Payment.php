@@ -2,11 +2,11 @@
 
 namespace App\Model\Finance\Payment;
 
+use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
-use Carbon\Carbon;
 use App\Model\Accounting\Journal;
 
 class Payment extends TransactionModel
@@ -86,7 +86,7 @@ class Payment extends TransactionModel
 
         $form = new Form;
         $form->fill($data);
-        
+
         $form->formable_id = $payment->id;
         $form->formable_type = self::class;
 
@@ -119,7 +119,7 @@ class Payment extends TransactionModel
 
     private static function getAmounts($paymentDetails)
     {
-        return array_reduce($paymentDetails, function($carry, $detail) {
+        return array_reduce($paymentDetails, function ($carry, $detail) {
             return $carry + $detail['amount'];
         }, 0);
     }

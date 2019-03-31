@@ -154,55 +154,12 @@ class SalesOrder extends TransactionModel
         $salesOrder = new self;
         $salesOrder->fill($data);
 
-        $amount = 0;
-        $salesOrderItems = [];
-        $salesOrderServices = [];
-
         // TODO validation items is optional and must be array
-        $items = $data['items'] ?? [];
-        if (! empty($items) && is_array($items)) {
-            $itemIds = array_column($items, 'item_id');
-            $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
-
-            foreach ($items as $item) {
-                // $item['item_name'] = $dbItems[$item['item_id']]->name;
-                $salesOrderItem = new SalesOrderItem;
-                $salesOrderItem->fill($item);
-                $salesOrderItem->item_name = $dbItems[$item['item_id']]->name;
-                array_push($salesOrderItems, $salesOrderItem);
-
-                $amount = $item['quantity'] * ($salesOrderItem->price - ($item['discount_value'] ?? 0));
-            }
-        } else {
-            // TODO throw error if $items and $services are empty or not an array
-        }
-
         // TODO validation services is required if items is null and must be array
-        $services = $data['services'] ?? [];
-        if (! empty($services) && is_array($services)) {
-            $serviceIds = array_column($services, 'service_id');
-            $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
+        $salesOrderItems = self::getItems($data['items'] ?? []);
+        $salesOrderServices = self::getServices($data['services'] ?? []);
 
-            foreach ($services as $service) {
-                $service['service_name'] = $dbServices[$service['service_id']]->name;
-                $salesOrderService = new SalesOrderService;
-                $salesOrderService->fill($service);
-                array_push($salesOrderServices, $salesOrderService);
-
-                $amount = $service['quantity'] * ($service['price'] - $service['discount_value'] ?? 0);
-            }
-        } else {
-            // TODO throw error if $items and $services are empty or not an array
-        }
-
-        $amount -= $data['discount_value'] ?? 0;
-        $amount += $data['delivery_fee'] ?? 0;
-
-        if ($data['type_of_tax'] === 'exclude' && ! empty($data['tax'])) {
-            $amount += $data['tax'];
-        }
-
-        $salesOrder->amount = $amount;
+        $salesOrder->amount = self::getAmounts($salesOrder, $salesOrderItems, $salesOrderServices);
         $salesOrder->save();
 
         $salesOrder->items()->saveMany($salesOrderItems);
@@ -217,5 +174,60 @@ class SalesOrder extends TransactionModel
         }
 
         return $salesOrder;
+    }
+
+    private static function getItems($items)
+    {
+        if (! empty($items)) {
+            return [];
+        }
+        $salesOrderItems = [];
+
+        $itemIds = array_column($items, 'item_id');
+        $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
+
+        foreach ($items as $item) {
+            $salesOrderItem = new SalesOrderItem;
+            $salesOrderItem->fill($item);
+            $salesOrderItem->item_name = $dbItems[$item['item_id']]->name;
+            array_push($salesOrderItems, $salesOrderItem);
+        }
+
+        return $salesOrderItems;
+    }
+
+    private static function getServices($services)
+    {
+        if (! empty($services)) {
+            return [];
+        }
+        $salesOrderServices = [];
+
+        $serviceIds = array_column($services, 'service_id');
+        $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
+
+        foreach ($services as $service) {
+            $service['service_name'] = $dbServices[$service['service_id']]->name;
+            $salesOrderService = new SalesOrderService;
+            $salesOrderService->fill($service);
+            array_push($salesOrderServices, $salesOrderService);
+        }
+
+        return $salesOrderServices;
+    }
+
+    private static function getAmounts($salesOrder, $salesOrderItems, $salesOrderServices)
+    {
+        $amount = array_reduce($salesOrderItems, function($carry, $item) {
+            return $carry + ($item['price'] - $item['discount_value']) * $item['quantity'];
+        }, 0);
+
+        $amount += array_reduce($salesOrderServices, function($carry, $service) {
+            return $carry + ($service['price'] - $service['discount_value']) * $service['quantity'];
+        }, 0);
+
+        $amount -= $salesOrder->discount_value;
+        $amount += $salesOrder->delivery_fee;
+        $amount += $salesOrder->type_of_tax === 'exclude' ? $salesOrder->tax : 0;
     }
 }

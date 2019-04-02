@@ -24,7 +24,10 @@ class TransferSendItemController extends Controller
             ->addSelect('formable_id as transfer_id')
             ->where('formable_type', TransferSend::class)
             ->orderBy('forms.date', 'desc');
-        // dd($transfers->toSql());
+
+        if(isset($request->status) AND $request->status == 'pending') {
+            $transfers->where('forms.done' , '<>', 1);
+        }
 
         $transfers = pagination($transfers, $request->input('limit'));
 

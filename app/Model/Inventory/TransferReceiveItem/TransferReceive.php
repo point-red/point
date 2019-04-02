@@ -96,6 +96,9 @@ class TransferReceive extends TransactionModel
             ];
         }
 
+        $receive->transferSend->form->done = true;
+        $receive->transferSend->form->save();
+
         $receive->items()->saveMany($array);
         Inventory::insert($array_inv);
         Journal::insert($array_journal_sediaan);

@@ -178,7 +178,7 @@ class SalesOrder extends TransactionModel
 
     private static function getItems($items)
     {
-        if (! empty($items)) {
+        if (empty($items)) {
             return [];
         }
         $salesOrderItems = [];
@@ -198,7 +198,7 @@ class SalesOrder extends TransactionModel
 
     private static function getServices($services)
     {
-        if (! empty($services)) {
+        if (empty($services)) {
             return [];
         }
         $salesOrderServices = [];
@@ -229,5 +229,7 @@ class SalesOrder extends TransactionModel
         $amount -= $salesOrder->discount_value;
         $amount += $salesOrder->delivery_fee;
         $amount += $salesOrder->type_of_tax === 'exclude' ? $salesOrder->tax : 0;
+
+        return $amount;
     }
 }

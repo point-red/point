@@ -38,8 +38,8 @@ class StorePurchaseRequestRequest extends FormRequest
         if ($request->has('items')) {
             $validations = array_merge($validations, [
                 'items.*.item_id' => 'required',
-                'items.*.item_unit_id' => 'required',
                 'items.*.quantity' => 'required',
+                'items.*.unit' => 'required',
             ]);
         }
 

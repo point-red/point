@@ -104,6 +104,8 @@ class PurchaseRequestController extends Controller
             ->with('items.allocation')
             ->with('services.service')
             ->with('services.allocation')
+            ->with('approvers.requestedTo')
+            ->with('approvers.requestedBy')
             ->findOrFail($id);
 
         return new ApiResource($purchaseRequest);

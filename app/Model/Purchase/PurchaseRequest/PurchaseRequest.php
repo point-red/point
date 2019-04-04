@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
+use App\Model\FormApproval;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
@@ -66,6 +67,11 @@ class PurchaseRequest extends TransactionModel
         return $this->belongsTo(Employee::class);
     }
 
+    public function approvers()
+    {
+        return $this->hasManyThrough(FormApproval::class, Form::class, 'formable_id', 'form_id')->where('formable_type', PurchaseRequest::class);
+    }
+
     public function purchaseOrders()
     {
         return $this->hasMany(PurchaseOrder::class)
@@ -88,14 +94,29 @@ class PurchaseRequest extends TransactionModel
         }
 
         $purchaseRequest->fill($data);
+        $purchaseRequest->save();
 
         $amount = 0;
-        $purchaseRequestItems = [];
-        $purchaseRequestServices = [];
+        $amount += self::addItems($purchaseRequest, get_if_set($data['items']));
+        $amount += self::addServices($purchaseRequest, get_if_set($data['services']));
 
-        // Add Purchase Request Items
-        $items = $data['items'] ?? [];
+        $purchaseRequest->amount = $amount;
+        $purchaseRequest->save();
+
+        $form = new Form;
+        $form->fillData($data, $purchaseRequest);
+
+        self::addApproval($form, get_if_set($data['approver_id']));
+
+        return $purchaseRequest;
+    }
+
+    public static function addItems($purchaseRequest, $items = [])
+    {
+        $amount = 0;
+
         if (! empty($items) && is_array($items)) {
+            $purchaseRequestItems = [];
             $itemIds = array_column($items, 'item_id');
             $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
 
@@ -107,10 +128,18 @@ class PurchaseRequest extends TransactionModel
 
                 $amount += $item['quantity'] * $item['price'];
             }
+            $purchaseRequest->items()->saveMany($purchaseRequestItems);
         }
 
-        $services = $data['services'] ?? [];
+        return $amount;
+    }
+
+    public static function addServices($purchaseRequest, $services = [])
+    {
+        $amount = 0;
+
         if (! empty($services) && is_array($services)) {
+            $purchaseRequestServices = [];
             $serviceIds = array_column($services, 'service_id');
             $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
 
@@ -122,17 +151,20 @@ class PurchaseRequest extends TransactionModel
 
                 $amount += $service['quantity'] * $service['price'];
             }
+
+            $purchaseRequest->services()->saveMany($purchaseRequestServices);
         }
 
-        $purchaseRequest->amount = $amount;
-        $purchaseRequest->save();
+        return $amount;
+    }
 
-        $purchaseRequest->items()->saveMany($purchaseRequestItems);
-        $purchaseRequest->services()->saveMany($purchaseRequestServices);
-
-        $form = new Form;
-        $form->fillData($data, $purchaseRequest);
-
-        return $purchaseRequest;
+    public static function addApproval($form, $approverId)
+    {
+        if (!empty($approverId)) {
+            FormApproval::create($form->id, $approverId);
+        } else {
+            $form->approved = true;
+            $form->save();
+        }
     }
 }

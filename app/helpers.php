@@ -2,7 +2,7 @@
 
 use Carbon\Carbon;
 
-if (! function_exists('log_array')) {
+if (! function_exists('log_object')) {
     /**
      * Log an object / array.
      *
@@ -221,6 +221,23 @@ if (! function_exists('get_invitation_code')) {
             }
 
             return Carbon::parse($value, $fromTz)->timezone($toTz)->toDateTimeString();
+        }
+    }
+
+    if (! function_exists('get_if_set')) {
+        /**
+         * Convert datetime to server timezone.
+         *
+         * @param $var
+         * @return string
+         */
+        function get_if_set(& $var)
+        {
+            if (isset($var)) {
+                return $var;
+            }
+
+            return null;
         }
     }
 }

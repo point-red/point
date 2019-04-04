@@ -175,7 +175,7 @@ class Payment extends TransactionModel
         $journal->journalable_type = $payment->paymentable_type;
         $journal->journalable_id = $payment->paymentable_id;
         $journal->chart_of_account_id = $payment->payment_account_id;
-        if ($payment->disbursed) {
+        if (! $payment->disbursed) {
             $journal->debit = $payment->amount;
         } else {
             $journal->credit = $payment->amount;
@@ -189,7 +189,7 @@ class Payment extends TransactionModel
             $journal->journalable_type = $paymentDetail->referenceable_type;
             $journal->journalable_id = $paymentDetail->referenceable_id;
             $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
-            if ($payment->disbursed) {
+            if (! $payment->disbursed) {
                 $journal->credit = $paymentDetail->amount;
             } else {
                 $journal->debit = $paymentDetail->amount;

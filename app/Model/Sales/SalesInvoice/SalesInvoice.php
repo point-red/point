@@ -357,7 +357,7 @@ class SalesInvoice extends TransactionModel
         $journal = new Journal;
         $journal->form_id = $salesInvoice->form->id;
         $journal->chart_of_account_id = ChartOfAccountType::where('name', 'sales income')->first()->accounts->first()->id;
-        $journal->credit = $salesInvoice->amount;
+        $journal->credit = $salesInvoice->amount - $salesInvoice->tax;
         $journal->save();
 
         foreach ($salesInvoice->items as $salesItem) {
@@ -377,7 +377,7 @@ class SalesInvoice extends TransactionModel
             $journal->journalable_type = Item::class;
             $journal->journalable_id = $salesItem->item_id;
             $journal->chart_of_account_id = ChartOfAccountType::where('name', 'inventory')->first()->accounts->first()->id;
-            $journal->credit = $cogs;
+            $journal->credit = $cogs * $salesItem->quantity;
             $journal->save();
 
             // 4. Cogs
@@ -385,8 +385,8 @@ class SalesInvoice extends TransactionModel
             $journal->form_id = $salesInvoice->form->id;
             $journal->journalable_type = Item::class;
             $journal->journalable_id = $salesItem->item_id;
-            $journal->chart_of_account_id = ChartOfAccountType::where('name', 'inventory')->first()->accounts->first()->id;
-            $journal->credit = $cogs;
+            $journal->chart_of_account_id = ChartOfAccountType::where('name', 'cost of sales')->first()->accounts->first()->id;
+            $journal->debit = $cogs * $salesItem->quantity;
             $journal->save();
         }
 

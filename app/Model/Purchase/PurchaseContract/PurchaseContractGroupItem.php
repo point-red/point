@@ -29,4 +29,9 @@ class PurchaseContractGroupItem extends TransactionModel
     {
         return $this->belongsTo(PurchaseContract::class);
     }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
 }

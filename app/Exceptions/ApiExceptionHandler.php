@@ -69,6 +69,15 @@ trait ApiExceptionHandler
             ], $exception->getCode());
         }
 
+        // handle form rules exception
+        if ($exception instanceof IsReferencedException) {
+            return response()->json([
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
+                'referenced_by' => $exception->getReferenced(),
+            ], $exception->getCode());
+        }
+
         /* Handle server error or library error */
         if ($exception->getCode() >= 500 || ! $exception->getCode()) {
             return response()->json([

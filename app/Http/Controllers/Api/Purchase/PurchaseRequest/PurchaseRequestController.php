@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
-use App\Model\Form;
 use App\Model\Master\Item;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
@@ -14,7 +13,6 @@ use App\Model\HumanResource\Employee\Employee;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
 use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
-use App\Model\FormCancellation;
 
 class PurchaseRequestController extends Controller
 {
@@ -43,7 +41,6 @@ class PurchaseRequestController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
      * Request :
      *  - required_date (Date)
      *  - number (String)
@@ -66,9 +63,9 @@ class PurchaseRequestController extends Controller
      *      - description (String Optional)
      *      - allocation_id (Int Optional)
      *
-     * @param \Illuminate\Http\Request $request
-     * @throws \Throwable
+     * @param StorePurchaseRequestRequest $request
      * @return ApiResource
+     * @throws \Throwable
      */
     public function store(StorePurchaseRequestRequest $request)
     {
@@ -93,22 +90,12 @@ class PurchaseRequestController extends Controller
      * Display the specified resource.
      *
      * @param Request $request
-     * @param int $id
+     * @param $id
      * @return ApiResource
      */
     public function show(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::eloquentFilter($request)
-            ->with('form')
-            ->with('employee')
-            ->with('supplier')
-            ->with('items.item')
-            ->with('items.allocation')
-            ->with('services.service')
-            ->with('services.allocation')
-            ->with('approvers.requestedTo')
-            ->with('approvers.requestedBy')
-            ->findOrFail($id);
+        $purchaseRequest = PurchaseRequest::eloquentFilter($request)->with('form')->findOrFail($id);
 
         return new ApiResource($purchaseRequest);
     }
@@ -117,16 +104,14 @@ class PurchaseRequestController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param PurchaseRequest $purchaseRequest
+     * @param $id
      * @return ApiResource
      * @throws \Throwable
      */
-    public function update(Request $request, PurchaseRequest $purchaseRequest)
+    public function update(Request $request, $id)
     {
-        $error = $purchaseRequest->isAllowedToUpdate();
-        if (! empty($error)) {
-            return $error;
-        }
+        $purchaseRequest = PurchaseRequest::findOrFail($id);
+        $purchaseRequest->isAllowedToUpdate();
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseRequest) {
             $purchaseRequest->form->archive();
@@ -151,16 +136,14 @@ class PurchaseRequestController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param PurchaseRequest $purchaseRequest
+     * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PurchaseRequest $purchaseRequest)
+    public function destroy($id)
     {
-        $error = $purchaseRequest->isAllowedToUpdate();
-        if (! empty($error)) {
-            return $error;
-        }
+        $purchaseRequest = PurchaseRequest::findOrFail($id);
+        $purchaseRequest->isAllowedToUpdate();
 
-        return $purchaseRequest->cancel();
+        return $purchaseRequest->requestCancel();
     }
 }

@@ -195,7 +195,7 @@ class PurchaseOrder extends TransactionModel
         $purchaseOrder->services()->saveMany($purchaseOrderServices);
 
         $form = new Form;
-        $form->fillData($data, $purchaseOrder);
+        $form->saveData($data, $purchaseOrder);
 
         return $purchaseOrder;
     }

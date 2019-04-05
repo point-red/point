@@ -87,7 +87,7 @@ class DeliveryNote extends TransactionModel
         $deliveryNote->save();
 
         $form = new Form;
-        $form->fillData($data, $deliveryNote);
+        $form->saveData($data, $deliveryNote);
 
         // TODO items is required and must be array
         $array = [];

@@ -107,7 +107,7 @@ class DeliveryOrder extends TransactionModel
         $deliveryOrder->save();
 
         $form = new Form;
-        $form->fillData($data, $deliveryOrder);
+        $form->saveData($data, $deliveryOrder);
 
         // TODO items is required and must be array
         $array = [];

@@ -41,31 +41,16 @@ class FormApproval extends Model
         $this->attributes['approval_at'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
 
-    public static function create($formId, $requestedTo)
+    public function approve()
     {
-        $formApproval = new FormApproval;
-        $formApproval->form_id = $formId;
-        $formApproval->requested_at = now();
-        $formApproval->requested_by = auth()->user()->id;
-        $formApproval->requested_to = $requestedTo;
-        $formApproval->expired_at = date('Y-m-d H:i:s', strtotime('+7 days'));
-        $formApproval->token = substr(md5(now()), 0, 24);
-        $formApproval->save();
-    }
-
-    public static function approve($formId, $token, $reason = '')
-    {
-        $form = Form::findOrFail($formId);
+        $form = $this->form;
 
         if ($form->approved != null) {
             return false;
         }
 
-        $formApproval = FormApproval::where('form_id', $formId)->where('token', $token)->first();
-        $formApproval->approval_at = now();
-        $formApproval->approved = true;
-        $formApproval->reason = $reason;
-        $formApproval->save();
+        $this->approval_at = now();
+        $this->save();
 
         $form->approved = true;
         $form->save();
@@ -73,19 +58,17 @@ class FormApproval extends Model
         return true;
     }
 
-    public static function reject($formId, $token, $reason = '')
+    public function reject($reason)
     {
-        $form = Form::findOrFail($formId);
+        $form = $this->form;
 
         if ($form->approved != null) {
             return false;
         }
 
-        $formApproval = FormApproval::where('form_id', $formId)->where('token', $token)->first();
-        $formApproval->approval_at = now();
-        $formApproval->approved = false;
-        $formApproval->reason = $reason;
-        $formApproval->save();
+        $this->approval_at = now();
+        $this->reason = $reason;
+        $this->save();
 
         $form->approved = false;
         $form->save();

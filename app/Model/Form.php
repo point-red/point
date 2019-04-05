@@ -17,8 +17,6 @@ class Form extends PointModel
     protected $fillable = [
         'date',
         'notes',
-        'done',
-        'approved',
     ];
 
     public function save(array $options = [])
@@ -57,9 +55,14 @@ class Form extends PointModel
     /**
      * The approvals that belong to the form.
      */
-    public function approval()
+    public function approvals()
     {
         return $this->hasMany(FormApproval::class);
+    }
+
+    public function cancellations()
+    {
+        return $this->hasMany(FormCancellation::class);
     }
 
     /**
@@ -75,7 +78,7 @@ class Form extends PointModel
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function fillData($data, $transaction)
+    public function saveData($data, $transaction)
     {
         $defaultNumberPostfix = '{y}{m}{increment=4}';
 
@@ -87,24 +90,41 @@ class Form extends PointModel
             $transaction->customer_id,
             $transaction->supplier_id
         );
-        $this->save();
+        $this->setApproval($data['approver_id'] ?? null);
     }
 
-    public static function archive($form)
+    private function setApproval($approverId)
+    {
+        if ($approverId) {
+            $this->save();
+
+            $formApproval = new FormApproval;
+            $formApproval->requested_to = $approverId;
+            $formApproval->requested_at = now();
+            $formApproval->requested_by = auth()->user()->id;
+            $formApproval->expired_at = date('Y-m-d H:i:s', strtotime('+7 days'));
+            $formApproval->token = substr(md5(now()), 0, 24);
+
+            $this->approvals()->save($formApproval);
+        } else {
+            $this->approved = true;
+            $this->save();
+        }
+    }
+
+    public function archive($editedNotes)
     {
         // Archive form number
-        $form->edited_number = $form->number;
-        $form->number = null;
-        $form->save();
+        $this->edited_number = $this->number;
+        $this->number = null;
+        $this->save();
 
         // Remove relationship with journal and inventory
-        Inventory::where('form_id', $form->id)->delete();
-        Journal::where('form_id', $form->id)->orWhere('form_reference_id', $form->id)->delete();
-
-        return $form;
+        Inventory::where('form_id', $this->id)->delete();
+        Journal::where('form_id', $this->id)->orWhere('form_reference_id', $this->id)->delete();
     }
 
-    public static function cancel($form)
+    public function cancel()
     {
         // Cancel form
         $form->canceled = true;
@@ -113,8 +133,6 @@ class Form extends PointModel
         // Remove relationship with journal and inventory
         Inventory::where('form_id', $form->id)->delete();
         Journal::where('form_id', $form->id)->orWhere('form_reference_id', $form->id)->delete();
-
-        return $form;
     }
 
     /**

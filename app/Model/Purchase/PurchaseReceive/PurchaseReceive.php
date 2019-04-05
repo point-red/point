@@ -110,7 +110,7 @@ class PurchaseReceive extends TransactionModel
         $purchaseReceive->save();
 
         $form = new Form;
-        $form->fillData($data, $purchaseReceive);
+        $form->saveData($data, $purchaseReceive);
 
         // TODO validation items is optional and must be array
         $items = $data['items'] ?? [];

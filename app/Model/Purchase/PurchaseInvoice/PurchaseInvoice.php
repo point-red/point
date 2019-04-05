@@ -104,7 +104,7 @@ class PurchaseInvoice extends TransactionModel
         $purchaseInvoice->services()->createMany($purchaseInvoiceServices);
 
         $form = new Form;
-        $form->fillData($data, $purchaseInvoice);
+        $form->saveData($data, $purchaseInvoice);
 
         self::setPurchaseReceiveDone($data['purchase_receive_ids']);
         self::updateInventory($purchaseInvoice, $purchaseReceives);

@@ -46,7 +46,7 @@ class CutOffController extends Controller
         $cutOff->save();
 
         $form = new Form;
-        $form->fillData($request->all(), $cutOff);
+        $form->saveData($request->all(), $cutOff);
 
         $details = $request->get('details');
         for ($i = 0; $i < count($details); $i++) {

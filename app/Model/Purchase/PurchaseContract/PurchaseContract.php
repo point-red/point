@@ -46,50 +46,69 @@ class PurchaseContract extends TransactionModel
     public static function create($data)
     {
         $purchaseContract = new self;
-        if (empty($data['supplier_name'])) {
-            $data['supplier_name'] = Supplier::find($data['supplier_id'], ['name']);
-        }
         $purchaseContract->fill($data);
-        $purchaseContract->save();
+
+        if (! empty($data['items'])) {
+            $purchaseContract = self::createContractItem($purchaseContract, $data['items']);
+        } else if (! empty($data['group_items'])) {
+            $purchaseContract = self::createContractGroupItems($purchaseContract, $data['group_items']);
+        }
 
         $form = new Form;
         $form->saveData($data, $purchaseContract);
 
-        $items = [];
-        $groupItems = [];
-        $amount = 0;
+        return $purchaseContract;
+    }
 
-        if ($data['items']) {
-            foreach ($data['items'] as $item) {
-                $contractItem = new PurchaseContractItem;
-                $contractItem->fill($item);
-
-                $amount += $item->quantity * $item->price;
-
-                array_push($items, $contractItem);
-            }
-        } elseif ($data['group_items']) {
-            foreach ($data['group_items'] as $groupItem) {
-                $contractGroupItem = new PurchaseContractGroupItem;
-                $contractGroupItem->fill($groupItem);
-
-                $amount += $groupItem->quantity * $groupItem->price;
-
-                array_push($groupItems, $contractGroupItem);
-            }
-        }
-
-        $purchaseContract->amount = $amount;
+    /**
+     * Separate function for contract item because
+     * contract can has only items or item groups
+     * and not both at the same contract
+     */
+    private static function createContractItem($purchaseContract, $items)
+    {
+        $items = self::getItems($items);
+        $purchaseContract->amount = self::getAmount($items);
         $purchaseContract->save();
-
-        if (! empty($items)) {
-            $purchaseContract->items()->saveMany($items);
-        }
-
-        if (! empty($groupItems)) {
-            $purchaseContract->groupItems()->saveMany($items);
-        }
+        $purchaseContract->items()->saveMany($items);
 
         return $purchaseContract;
+    }
+
+    private static function createContractGroupItems($purchaseContract, $groupItems)
+    {
+        $groupItems = self::getGroupItems($groupItems);
+        $purchaseContract->amount = self::getAmount($groupItems);
+        $purchaseContract->save();
+        $purchaseContract->groupItems()->saveMany($groupItems);
+
+        return $purchaseContract;
+    }
+
+    private static function getItems($items)
+    {
+        return array_map(function($item) {
+            $contractItem = new PurchaseContractItem;
+            $contractItem->fill($item);
+
+            return $contractItem;
+        }, $items);
+    }
+
+    private static function getGroupItems($groupItems)
+    {
+        return array_map(function($groupItem) {
+            $contractGroupItem = new PurchaseContractGroupItem;
+            $contractGroupItem->fill($groupItem);
+
+            return $contractGroupItem;
+        }, $groupItems);
+    }
+
+    private static function getAmount($details)
+    {
+        return array_reduce($details, function($carry, $detail) {
+            return $carry + $detail->quantity * $detail->price;
+        }, 0);
     }
 }

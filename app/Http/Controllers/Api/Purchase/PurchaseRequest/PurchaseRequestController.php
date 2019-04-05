@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
+use App\Model\Form;
 use App\Model\Master\Item;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
@@ -111,56 +112,37 @@ class PurchaseRequestController extends Controller
         return new ApiResource($purchaseRequest);
     }
 
-    private function isReferencedByPurchaseOrder($purchaseRequest)
-    {
-        if ($purchaseRequest->purchaseOrders->count()) {
-            $purchaseOrders = [];
-
-            foreach ($purchaseRequest->purchaseOrders as $purchaseOrder) {
-                $purchaseOrders[$purchaseOrder->id] = 'purchase order';
-            }
-
-            return response()->json([
-                'code' => 422,
-                'message' => 'Cannot edit form because referenced by purchase order',
-                'referenced_by' => $purchaseOrders,
-            ], 422);
-        }
-
-        return [];
-    }
-
     /**
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param int $id
+     * @param PurchaseRequest $purchaseRequest
      * @return ApiResource
      * @throws \Throwable
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, PurchaseRequest $purchaseRequest)
     {
-        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-            $purchaseRequest = PurchaseRequest::with('form', 'purchaseOrders')->findOrFail($id);
+        $error = PurchaseRequest::isAllowedToUpdate($purchaseRequest);
+        if ($error) {
+            return $error;
+        }
 
-            // Check if purchase request not referenced by purchase order
-            $errorReferenced = $this->isReferencedByPurchaseOrder($purchaseRequest);
-            if (! empty($errorReferenced)) {
-                return $errorReferenced;
-            }
+        $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseRequest) {
+            $purchaseRequest->load('form', 'purchaseOrders');
 
-            // Archived old purchase request
-            $purchaseRequest->form->edited_number = $purchaseRequest->form->number;
-            $purchaseRequest->form->number = null;
-            $purchaseRequest->save();
+            $archivedForm = Form::archive($purchaseRequest->form);
 
-            // Create new purchase request
-            $request['number'] = $purchaseRequest->form->edited_number;
-            $newPurchaseRequest = PurchaseRequest::create($request->all());
-            $newPurchaseRequest->form->edited_form_id = $purchaseRequest->form->id;
-            $newPurchaseRequest->form->save();
+            $purchaseRequest = PurchaseRequest::create($request->all(), $archivedForm);
+            $purchaseRequest
+                ->load('form')
+                ->load('employee')
+                ->load('supplier')
+                ->load('items.item')
+                ->load('items.allocation')
+                ->load('services.service')
+                ->load('services.allocation');
 
-            return new ApiResource($newPurchaseRequest);
+            return new ApiResource($purchaseRequest);
         });
 
         return $result;
@@ -169,21 +151,17 @@ class PurchaseRequestController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param PurchaseRequest $purchaseRequest
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(PurchaseRequest $purchaseRequest)
     {
-        $purchaseRequest = PurchaseRequest::with('form', 'purchaseOrders')->findOrFail($id);
-
-        // Check if purchase request not referenced by purchase order
-        $errorReferenced = $this->isReferencedByPurchaseOrder($purchaseRequest);
-        if (! empty($errorReferenced)) {
-            return $errorReferenced;
+        $error = PurchaseRequest::isAllowedToUpdate($purchaseRequest);
+        if ($error) {
+            return $error;
         }
 
-        $purchaseRequest->form->canceled = true;
-        $purchaseRequest->form->save();
+        Form::cancel($purchaseRequest->form);
 
         return response()->json([], 204);
     }

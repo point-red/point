@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use App\Model\Accounting\Journal;
+use App\Model\Inventory\Inventory;
 use App\Model\Master\User;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
@@ -86,6 +88,33 @@ class Form extends PointModel
             $transaction->supplier_id
         );
         $this->save();
+    }
+
+    public static function archive($form)
+    {
+        // Archive form number
+        $form->edited_number = $form->number;
+        $form->number = null;
+        $form->save();
+
+        // Remove relationship with journal and inventory
+        Inventory::where('form_id', $form->id)->delete();
+        Journal::where('form_id', $form->id)->orWhere('form_reference_id', $form->id)->delete();
+
+        return $form;
+    }
+
+    public static function cancel($form)
+    {
+        // Cancel form
+        $form->canceled = true;
+        $form->save();
+
+        // Remove relationship with journal and inventory
+        Inventory::where('form_id', $form->id)->delete();
+        Journal::where('form_id', $form->id)->orWhere('form_reference_id', $form->id)->delete();
+
+        return $form;
     }
 
     /**

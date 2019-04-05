@@ -79,7 +79,7 @@ class PurchaseRequest extends TransactionModel
             ->active();
     }
 
-    public static function create($data)
+    public static function create($data, $archivedForm = null)
     {
         $purchaseRequest = new self;
 
@@ -105,6 +105,9 @@ class PurchaseRequest extends TransactionModel
 
         $form = new Form;
         $form->fillData($data, $purchaseRequest);
+        if ($archivedForm) {
+            $form->number = $archivedForm->number;
+        }
 
         self::addApproval($form, get_if_set($data['approver_id']));
 
@@ -166,5 +169,25 @@ class PurchaseRequest extends TransactionModel
             $form->approved = true;
             $form->save();
         }
+    }
+
+    public static function isAllowedToUpdate($purchaseRequest)
+    {
+        // Check if not referenced by purchase order
+        if ($purchaseRequest->purchaseOrders->count()) {
+            $purchaseOrders = [];
+
+            foreach ($purchaseRequest->purchaseOrders as $purchaseOrder) {
+                $purchaseOrders[$purchaseOrder->id] = $purchaseOrder->form->number;
+            }
+
+            return response()->json([
+                'code' => 422,
+                'message' => 'Cannot edit form because referenced by purchase order',
+                'referenced_by' => $purchaseRequest->purchaseOrders,
+            ], 422);
+        }
+
+        return [];
     }
 }

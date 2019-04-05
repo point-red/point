@@ -2,10 +2,10 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
+use App\Exceptions\IsReferencedException;
 use App\Model\FormApproval;
 use Carbon\Carbon;
 use App\Model\Form;
-use App\Model\Master\Service;
 use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
 use App\Model\HumanResource\Employee\Employee;
@@ -82,15 +82,8 @@ class PurchaseRequest extends TransactionModel
     {
         // Check if not referenced by purchase order
         if ($this->purchaseOrders->count()) {
-
-            return response()->json([
-                'code' => 422,
-                'message' => 'Cannot edit form because referenced by purchase order',
-                'referenced_by' => $this->purchaseOrders,
-            ], 422);
+            throw new IsReferencedException('Cannot edit form because referenced by purchase order', $this->purchaseOrders);
         }
-
-        return [];
     }
 
     public static function create($data)
@@ -98,10 +91,9 @@ class PurchaseRequest extends TransactionModel
         $purchaseRequest = new self;
         $purchaseRequest->fill($data);
 
-        $items = self::getItems($data['items'] ?? []);
-        $services = self::getServices($data['services'] ?? []);
-
-        $purchaseRequest->amount = self::getAmount($purchaseRequest, $items, $services);
+        $items = self::mapItems($data['items'] ?? []);
+        $services = self::mapServices($data['services'] ?? []);
+        $purchaseRequest->amount = self::calculateAmount($items, $services);
         $purchaseRequest->save();
 
         $purchaseRequest->items()->saveMany($items);
@@ -113,9 +105,9 @@ class PurchaseRequest extends TransactionModel
         return $purchaseRequest;
     }
 
-    private static function getItems($items)
+    private static function mapItems($items)
     {
-        return array_map(function($item) {
+        return array_map(function ($item) {
             $purchaseRequestItem = new PurchaseRequestItem;
             $purchaseRequestItem->fill($item);
 
@@ -123,13 +115,24 @@ class PurchaseRequest extends TransactionModel
         }, $items);
     }
 
-    private static function getServices($services)
+    private static function mapServices($services)
     {
-        return array_map(function($service) {
+        return array_map(function ($service) {
             $purchaseRequestService = new PurchaseRequestService;
             $purchaseRequestService->fill($service);
 
             return $purchaseRequestService;
         }, $services);
+    }
+
+    private static function calculateAmount($items, $services)
+    {
+        $amount = array_reduce($items, function($carry, $item) {
+            return $carry + $item->quantity * $item->converter * $item->price;
+        });
+        $amount += array_reduce($services, function($carry, $service) {
+            return $carry + $service->quantity * $service->converter * $service->price;
+        });
+        return $amount;
     }
 }

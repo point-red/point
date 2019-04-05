@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Http\Resources\ApiResource;
 use App\Traits\FormScopes;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,7 @@ class TransactionModel extends PointModel
 
             $this->form->cancellations()->save($formCancellation);
 
-            return response()->json($formCancellation, 201);
+            return new ApiResource($formCancellation);
         } else {
             $this->form->cancel();
 

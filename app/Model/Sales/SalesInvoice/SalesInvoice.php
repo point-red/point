@@ -142,7 +142,7 @@ class SalesInvoice extends TransactionModel
         $salesInvoice->downPayments()->attach(array_column($data['down_payments'] ?? [], 'amount', 'id'));
 
         $form = new Form;
-        $form->fillData($data, $salesInvoice);
+        $form->saveData($data, $salesInvoice);
 
         self::setDeliveryNotesDone($data['delivery_note_ids'] ?? []);
         self::setSalesOrdersDone($data['sales_order_ids'] ?? []);

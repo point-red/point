@@ -180,7 +180,7 @@ class SalesContract extends TransactionModel
         }
 
         $form = new Form;
-        $form->fillData($data, $salesContract);
+        $form->saveData($data, $salesContract);
 
         return $salesContract;
     }

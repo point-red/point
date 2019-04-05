@@ -36,4 +36,39 @@ class FormCancellation extends Model
     {
         $this->attributes['approval_at'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
+
+    public function approve()
+    {
+        $form = $this->form;
+
+        if ($form->canceled != null) {
+            return false;
+        }
+
+        $this->approval_at = now();
+        $this->save();
+
+        $form->canceled = true;
+        $form->save();
+
+        return true;
+    }
+
+    public function reject($reason)
+    {
+        $form = $this->form;
+
+        if ($form->approved != null) {
+            return false;
+        }
+
+        $this->approval_at = now();
+        $this->reason = $reason;
+        $this->save();
+
+        $form->canceled = false;
+        $form->save();
+
+        return true;
+    }
 }

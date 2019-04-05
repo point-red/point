@@ -80,7 +80,7 @@ class Item extends MasterModel
             $openingStock->save();
 
             $form = new Form;
-            $form->fillData([
+            $form->saveData([
                 'date' => now(),
             ], $openingStock);
             $form->save();

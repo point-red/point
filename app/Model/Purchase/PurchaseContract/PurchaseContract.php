@@ -53,7 +53,7 @@ class PurchaseContract extends TransactionModel
         $purchaseContract->save();
 
         $form = new Form;
-        $form->fillData($data, $purchaseContract);
+        $form->saveData($data, $purchaseContract);
 
         $items = [];
         $groupItems = [];

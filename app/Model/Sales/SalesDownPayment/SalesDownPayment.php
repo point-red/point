@@ -90,7 +90,7 @@ class SalesDownPayment extends TransactionModel
         $downPayment->save();
 
         $form = new Form;
-        $form->fillData($data, $downPayment);
+        $form->saveData($data, $downPayment);
 
         // Add Payment Collection
         self::addPaymentCollection($data, $downPayment);

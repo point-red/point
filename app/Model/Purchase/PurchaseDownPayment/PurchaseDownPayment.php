@@ -72,7 +72,7 @@ class PurchaseDownPayment extends Model
         $downPayment->save();
 
         $form = new Form;
-        $form->fillData($data, $downPayment);
+        $form->saveData($data, $downPayment);
 
         return $downPayment;
     }

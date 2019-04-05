@@ -166,7 +166,7 @@ class SalesOrder extends TransactionModel
         $salesOrder->services()->saveMany($salesOrderServices);
 
         $form = new Form;
-        $form->fillData($data, $salesOrder);
+        $form->saveData($data, $salesOrder);
 
         // TODO validation if item_id trully belong to group on the contract
         if (isset($salesContract)) {

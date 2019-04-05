@@ -14,6 +14,7 @@ class PurchaseRequestItem extends TransactionModel
 
     protected $fillable = [
         'item_id',
+        'item_name',
         'quantity',
         'unit',
         'converter',

@@ -14,6 +14,7 @@ use App\Model\HumanResource\Employee\Employee;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
 use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
+use App\Model\FormCancellation;
 
 class PurchaseRequestController extends Controller
 {
@@ -122,17 +123,16 @@ class PurchaseRequestController extends Controller
      */
     public function update(Request $request, PurchaseRequest $purchaseRequest)
     {
-        $error = PurchaseRequest::isAllowedToUpdate($purchaseRequest);
-        if ($error) {
+        $error = $purchaseRequest->isAllowedToUpdate();
+        if (! empty($error)) {
             return $error;
         }
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseRequest) {
-            $purchaseRequest->load('form', 'purchaseOrders');
+            $purchaseRequest->form->archive();
+            $request['number'] = $purchaseRequest->form->edited_number;
 
-            $archivedForm = Form::archive($purchaseRequest->form);
-
-            $purchaseRequest = PurchaseRequest::create($request->all(), $archivedForm);
+            $purchaseRequest = PurchaseRequest::create($request->all());
             $purchaseRequest
                 ->load('form')
                 ->load('employee')
@@ -156,13 +156,11 @@ class PurchaseRequestController extends Controller
      */
     public function destroy(PurchaseRequest $purchaseRequest)
     {
-        $error = PurchaseRequest::isAllowedToUpdate($purchaseRequest);
-        if ($error) {
+        $error = $purchaseRequest->isAllowedToUpdate();
+        if (! empty($error)) {
             return $error;
         }
 
-        Form::cancel($purchaseRequest->form);
-
-        return response()->json([], 204);
+        return $purchaseRequest->cancel();
     }
 }

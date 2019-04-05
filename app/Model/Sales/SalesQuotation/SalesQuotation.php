@@ -141,7 +141,7 @@ class SalesQuotation extends TransactionModel
         $salesQuotation->services()->saveMany($salesQuotationServices);
 
         $form = new Form;
-        $form->fillData($data, $salesQuotation);
+        $form->saveData($data, $salesQuotation);
 
         return $salesQuotation;
     }

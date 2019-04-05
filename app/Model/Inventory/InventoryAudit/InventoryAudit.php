@@ -35,7 +35,7 @@ class InventoryAudit extends TransactionModel
         $inventoryAudit->save();
 
         $form = new Form;
-        $form->fillData($data, $inventoryAudit);
+        $form->saveData($data, $inventoryAudit);
 
         $items = $data['items'];
         $inventoryAuditItems = [];

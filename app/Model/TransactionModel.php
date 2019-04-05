@@ -3,37 +3,29 @@
 namespace App\Model;
 
 use App\Traits\FormScopes;
+use Illuminate\Http\Request;
 
 class TransactionModel extends PointModel
 {
     use FormScopes;
 
-    public function edit($data)
+    public function requestCancel(Request $request)
     {
-        $newTransaction = $this->create($data);
-        $newId = $newTransaction->form->id;
+        if ($request->has('approver_id')) {
+            $formCancellation = new FormCancellation;
+            $formCancellation->requested_to = $request->approver_id;
+            $formCancellation->requested_at = now();
+            $formCancellation->requested_by = auth()->user()->id;
+            $formCancellation->expired_at = date('Y-m-d H:i:s', strtotime('+7 days'));
+            $formCancellation->token = substr(md5(now()), 0, 24);
 
-        $this->archive($data['edited_notes'] ?? null, $newId);
+            $this->form->cancellations()->save($formCancellation);
 
-        $this->updateAllEditedFormId($newId);
+            return response()->json($formCancellation, 201);
+        } else {
+            $this->form->cancel();
 
-        return $newTransaction;
-    }
-
-    private function archive($notes, $newId)
-    {
-        $this->form->edited_number = $this->form->number;
-        $this->form->number = null;
-        $this->form->edited_notes = $notes;
-        $this->form->edited_form_id = $newId;
-        $this->form->save();
-    }
-
-    private function updateAllEditedFormId($newId)
-    {
-        $oldId = $this->form->id;
-        Form::where('edited_form_id', $oldId)->update([
-            'edited_form_id' => $newId,
-        ]);
+            return response()->json([], 204);
+        }
     }
 }

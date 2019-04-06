@@ -10,6 +10,7 @@ use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
 
 class PurchaseReceive extends TransactionModel
 {
@@ -60,138 +61,117 @@ class PurchaseReceive extends TransactionModel
         return $this->belongsTo(Warehouse::class);
     }
 
+    public function isAllowedToUpdate()
+    {
+        // Check if not referenced by purchase order
+        if ($this->purchaseReceives->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->purchaseReceives);
+        }
+    }
+
     public static function create($data)
     {
         $purchaseReceive = new self;
         $purchaseReceive->fill($data);
 
-        $total = 0;
-        $additionalFee = 0;
-
         if (! empty($data['purchase_order_id'])) {
             $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
-            $purchaseOrderItems = $purchaseOrder->items->keyBy('id');
-
-            $purchaseOrderServices = $purchaseOrder->services->keyBy('id');
-            // TODO maybe need to add additional check
-            // if the $purchaseOrder canceled / rejected / archived
-            $purchaseReceive->supplier_id = $purchaseOrder->supplier_id;
-            $purchaseReceive->supplier_name = $purchaseOrder->supplier_name;
-            $purchaseReceive->billing_address = $purchaseOrder->billing_address;
-            $purchaseReceive->billing_phone = $purchaseOrder->billing_phone;
-            $purchaseReceive->billing_email = $purchaseOrder->billing_email;
-            $purchaseReceive->shipping_address = $purchaseOrder->shipping_address;
-            $purchaseReceive->shipping_phone = $purchaseOrder->shipping_phone;
-            $purchaseReceive->shipping_email = $purchaseOrder->shipping_email;
-
-            $additionalFee = $purchaseOrder->delivery_fee - $purchaseOrder->discount_value;
-            $total = $purchaseOrder->amount - $additionalFee - $purchaseOrder->tax;
-        }
-        // TODO throw error if purchase_order_id and supplier_id both null
-        elseif (! empty($data['supplier_id'])) {
-            // TODO validation supplier_name is optional non empty string
-            if (empty($data['supplier_name'])) {
-                $supplier = Supplier::find($data['supplier_id'], ['name']);
-                $purchaseReceive->supplier_name = $supplier->name;
-            }
-
-            $additionalFee = ($data['delivery_fee'] ?? 0) - ($data['discount_value'] ?? 0);
-            $totalItemPrice = array_reduce($data['items'], function ($carry, $item) {
-                $price = ($item['price'] ?? 0) * $item['quantity'];
-                if ($price > 0) {
-                    return $carry + $price - ($item['discount_value'] ?? 0);
-                }
-
-                return 0;
-            }, 0);
-            $total = $totalItemPrice - $additionalFee - $data['tax'];
+            $purchaseReceive = self::fillDataFromPurchaseOrder($purchaseReceive, $purchaseOrder);
         }
 
+        $items = self::mapItems($data['items'] ?? []);
+        $services = self::mapServices($data['services'] ?? []);
+
+        $purchaseReceive->amount = self::calculateAmount($purchaseOrder ?? null, $items, $services);
         $purchaseReceive->save();
+        
+        $purchaseReceive->items()->saveMany($items);
+        $purchaseReceive->services()->saveMany($services);
 
         $form = new Form;
         $form->saveData($data, $purchaseReceive);
-
-        // TODO validation items is optional and must be array
-        $items = $data['items'] ?? [];
-        if (! empty($items) && is_array($items)) {
-            $array = [];
-
-            if (empty($purchaseOrder)) {
-                $itemIds = array_column($items, 'item_id');
-                $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
-            }
-
-            foreach ($items as $item) {
-                $purchaseReceiveItem = new PurchaseReceiveItem;
-                $purchaseReceiveItem->fill($item);
-
-                $purchaseOrderItemId = $item['purchase_order_item_id'] ?? null;
-
-                // TODO validation purchaseOrderItemId is optional and must be integer
-                if (! empty($purchaseOrderItemId)) {
-                    $purchaseOrderItem = $purchaseOrderItems[$purchaseOrderItemId];
-                    $purchaseReceiveItem->item_id = $purchaseOrderItem->item_id;
-                    $purchaseReceiveItem->item_name = $purchaseOrderItem->item_name;
-                    $purchaseReceiveItem->price = $purchaseOrderItem->price;
-                    $purchaseReceiveItem->discount_percent = $purchaseOrderItem->discount_percent;
-                    $purchaseReceiveItem->discount_value = $purchaseOrderItem->discount_value;
-                    $purchaseReceiveItem->allocation_id = $purchaseOrderItem->allocation_id;
-                } else {
-                    $purchaseReceiveItem->item_id = $item['item_id'];
-                    $purchaseReceiveItem->item_name = $dbItems[$item['item_id']]->name;
-                }
-
-                array_push($array, $purchaseReceiveItem);
-
-                // Insert to inventories table
-                $totalPerItem = ($purchaseReceiveItem->price - $purchaseReceiveItem->discount_value) * $purchaseReceiveItem->quantity;
-                $feePerItem = $totalPerItem / $total * $additionalFee;
-                $price = ($totalPerItem + $feePerItem) / $purchaseReceiveItem->quantity;
-                InventoryHelper::increase($form->id, $data['warehouse_id'], $purchaseReceiveItem->item_id, $purchaseReceiveItem->quantity, $price);
-            }
-
-            $purchaseReceive->items()->saveMany($array);
-        }
-
-        // TODO validation services is required if items is null and must be array
-        $services = $data['services'] ?? [];
-        if (! empty($services) && is_array($services)) {
-            $array = [];
-
-            if (! empty($purchaseOrder)) {
-                $serviceIds = array_column($services, 'service_id');
-                $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
-            }
-
-            foreach ($services as $service) {
-                $purchaseReceiveService = new PurchaseReceiveService;
-                $purchaseReceiveService->fill($service);
-
-                $purchaseOrderServiceId = $service['purchase_order_service_id'];
-                if (isset($purchaseOrderServices) && isset($purchaseOrderServices[$purchaseOrderServiceId])) {
-                    $purchaseOrderService = $purchaseOrderServices[$purchaseOrderServiceId];
-                    $purchaseReceiveService->service_id = $purchaseOrderService->service_id;
-                    $purchaseReceiveService->service_name = $purchaseOrderService->service_name;
-                    $purchaseReceiveService->price = $purchaseOrderService->price;
-                    $purchaseReceiveService->discount_percent = $purchaseOrderService->discount_percent;
-                    $purchaseReceiveService->discount_value = $purchaseOrderService->discount_value;
-                    $purchaseReceiveService->allocation_id = $purchaseOrderService->allocation_id;
-                }
-                // TODO validation service_id is required if purchaseOrderItemId is null, and must be integer
-                else {
-                    $purchaseReceiveService->service_id = $service['service_id'];
-                    $purchaseReceiveService->service_name = $dbServices[$service['service_id']]->name;
-                }
-                array_push($array, $purchaseReceiveService);
-            }
-            $purchaseReceive->services()->saveMany($array);
-        }
 
         if (isset($purchaseOrder)) {
             $purchaseOrder->updateIfDone();
         }
 
+        self::insertInventory($form, $purchaseOrder ?? null, $purchaseReceive);
+
         return $purchaseReceive;
+    }
+
+    private static function fillDataFromPurchaseOrder($purchaseReceive, $purchaseOrder)
+    {
+        $purchaseReceive->supplier_id = $purchaseOrder->supplier_id;
+        $purchaseReceive->supplier_name = $purchaseOrder->supplier_name;
+        $purchaseReceive->billing_address = $purchaseOrder->billing_address;
+        $purchaseReceive->billing_phone = $purchaseOrder->billing_phone;
+        $purchaseReceive->billing_email = $purchaseOrder->billing_email;
+        $purchaseReceive->shipping_address = $purchaseOrder->shipping_address;
+        $purchaseReceive->shipping_phone = $purchaseOrder->shipping_phone;
+        $purchaseReceive->shipping_email = $purchaseOrder->shipping_email;
+
+        return $purchaseReceive;
+    }
+
+    private static function mapItems($items)
+    {
+        return array_map(function($item) {
+            $purchaseReceiveItem = new PurchaseReceiveItem;
+            $purchaseReceiveItem->fill($item);
+
+            return $purchaseReceiveItem;
+        }, $items);
+    }
+
+    private static function mapServices($services)
+    {
+        return array_map(function($service) {
+            $purchaseReceiveServices = new PurchaseReceiveService;
+            $purchaseReceiveServices->fill($service);
+
+            return $purchaseReceiveServices;
+        }, $services);
+    }
+
+    private static function calculateAmount($purchaseOrder, $items, $services)
+    {
+        $amount = array_reduce($items, function ($carry, $item) {
+            return $carry + $item->quantity * $item->converter * ($item->price - $item->discount_value);
+        }, 0);
+
+        $amount += array_reduce($services, function($carry, $service) {
+            return $carry + $service->quantity * ($service->price - $service->discount_value);
+        }, 0);
+
+        if (! empty($purchaseOrder)) {
+            $amount -= $purchaseOrder->discount_value;
+            $amount += $purchaseOrder->delivery_fee;
+            
+            if ($purchaseOrder->type_of_tax === 'exclude') {
+                $amount += $purchaseOrder->tax;
+            }
+        }
+
+        return $amount;
+    }
+
+    private static function insertInventory($form, $purchaseOrder, $purchaseReceive)
+    {
+        $additionalFee = 0;
+        $totalItemsAmount = 1; // prevent division by 0
+
+        if (! empty($purchaseOrder)) {
+            $additionalFee = $purchaseOrder->delivery_fee - $purchaseOrder->discount_value;
+            $totalItemsAmount = $purchaseOrder->amount - $additionalFee - $purchaseOrder->tax;
+        }
+
+        foreach ($purchaseReceive->items as $item) {
+            $totalPerItem = ($item->price - $item->discount_value) * $item->quantity * $item->converter;
+            $feePerItem = $totalPerItem / $totalItemsAmount * $additionalFee;
+            $price = ($totalPerItem + $feePerItem) / $item->quantity;
+
+            InventoryHelper::increase($form->id, $purchaseReceive->warehouse_id, $item->item_id, $item->quantity, $price);
+        }
     }
 }

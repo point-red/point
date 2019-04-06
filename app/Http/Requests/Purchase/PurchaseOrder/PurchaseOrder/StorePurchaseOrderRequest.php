@@ -45,8 +45,8 @@ class StorePurchaseOrderRequest extends FormRequest
             'type_of_tax' => ValidationRule::typeOfTax(),
             'tax' => ValidationRule::tax(),
 
-            'items' => 'required_without:services',
-            'services' => 'required_without:items',
+            'items' => 'required_without:services|array',
+            'services' => 'required_without:items|array',
         ];
 
         $rulesPurchaseOrderItems = [

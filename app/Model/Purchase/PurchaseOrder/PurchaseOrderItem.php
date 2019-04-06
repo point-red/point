@@ -15,6 +15,7 @@ class PurchaseOrderItem extends TransactionModel
     protected $fillable = [
         'purchase_request_item_id',
         'item_id',
+        'item_name',
         'quantity',
         'price',
         'discount_percent',

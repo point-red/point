@@ -49,6 +49,8 @@ class PurchaseOrder extends TransactionModel
         'tax' => 'double',
     ];
 
+    public $defaultNumberPrefix = 'PO';
+
     public function getEtaAttribute($value)
     {
         return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
@@ -58,8 +60,6 @@ class PurchaseOrder extends TransactionModel
     {
         $this->attributes['eta'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
-
-    public $defaultNumberPrefix = 'PO';
 
     public function form()
     {
@@ -130,73 +130,71 @@ class PurchaseOrder extends TransactionModel
         }
     }
 
+    public function isAllowedToUpdate()
+    {
+        // Check if not referenced by purchase order
+        if ($this->purchaseReceives->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->purchaseReceives);
+        }
+    }
+
     public static function create($data)
     {
         $purchaseOrder = new self;
-
-        // TODO validation supplier_name is optional type non empty string
-        if (empty($data['supplier_name'])) {
-            $supplier = Supplier::find($data['supplier_id'], ['name']);
-            $data['supplier_name'] = $supplier->name;
-        }
-
         $purchaseOrder->fill($data);
 
-        $amount = 0;
-        $purchaseOrderItems = [];
-        $purchaseOrderServices = [];
+        $items = self::mapItems($data['items'] ?? []);
+        $services = self::mapServices($data['services'] ?? []);
 
-        // TODO validation items is optional and must be array
-        $items = $data['items'] ?? [];
-        if (! empty($items) && is_array($items)) {
-            $itemIds = array_column($items, 'item_id');
-            $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
-
-            foreach ($items as $item) {
-                $purchaseOrderItem = new PurchaseOrderItem;
-                $purchaseOrderItem->fill($item);
-                $purchaseOrderItem->item_name = $dbItems[$item['item_id']]->name;
-                array_push($purchaseOrderItems, $purchaseOrderItem);
-
-                $amount += $item['quantity'] * ($item['price'] - $item['discount_value'] ?? 0);
-            }
-        } else {
-            // TODO throw error if $items is not an array
-        }
-        // TODO validation services is required if items is null and must be array
-        $services = $data['services'] ?? [];
-        if (! empty($services) && is_array($services)) {
-            $serviceIds = array_column($services, 'service_id');
-            $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
-
-            foreach ($services as $service) {
-                $purchaseOrderService = new PurchaseOrderService;
-                $purchaseOrderService->fill($service);
-                $purchaseOrderService->service_name = $dbServices[$service['service_id']]->name;
-                array_push($purchaseOrderServices, $purchaseOrderService);
-
-                $amount += $service['quantity'] * ($service['price'] - $service['discount_value'] ?? 0);
-            }
-        } else {
-            // TODO throw error if $services is not an array
-        }
-
-        $amount -= $data['discount_value'] ?? 0;
-        $amount += $data['delivery_fee'] ?? 0;
-
-        if ($data['type_of_tax'] === 'exclude' && ! empty($data['tax'])) {
-            $amount += $data['tax'];
-        }
-
-        $purchaseOrder->amount = $amount;
+        $purchaseOrder->amount = self::calculateAmount($purchaseOrder, $items, $services);
         $purchaseOrder->save();
 
-        $purchaseOrder->items()->saveMany($purchaseOrderItems);
-        $purchaseOrder->services()->saveMany($purchaseOrderServices);
+        $purchaseOrder->items()->saveMany($items);
+        $purchaseOrder->services()->saveMany($services);
 
         $form = new Form;
         $form->saveData($data, $purchaseOrder);
 
         return $purchaseOrder;
+    }
+
+    private static function mapItems($items)
+    {
+        return array_map(function($item) {
+            $purchaseOrderItem = new PurchaseOrderItem;
+            $purchaseOrderItem->fill($item);
+
+            return $purchaseOrderItem;
+        }, $items);
+    }
+
+    private static function mapServices($services)
+    {
+        return array_map(function($service) {
+            $purchaseOrderService = new PurchaseOrderService;
+            $purchaseOrderService->fill($service);
+
+            return $purchaseOrderService;
+        }, $services);
+    }
+
+    private static function calculateAmount($purchaseOrder, $items, $services)
+    {
+        $amount = array_reduce($items, function($carry, $item) {
+            return $carry + $item->quantity * ($item->price - $item->discount_value) * $item->converter;
+        }, 0);
+
+        $amount += array_reduce($services, function($carry, $service) {
+            return $carry + $service->quantity * ($service->price - $service->discount_value);
+        }, 0);
+
+        $amount -= $purchaseOrder->discount_value;
+        $amount += $purchaseOrder->delivery_fee;
+
+        if ($purchaseOrder->type_of_tax === 'exclude') {
+            $amount += $purchaseOrder->tax;
+        }
+
+        return $amount;
     }
 }

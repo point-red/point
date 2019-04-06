@@ -11,6 +11,8 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
+use App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder\UpdatePurchaseOrderRequest;
+use App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder\StorePurchaseOrderRequest;
 
 class PurchaseOrderController extends Controller
 {
@@ -79,7 +81,7 @@ class PurchaseOrderController extends Controller
      * @throws \Throwable
      * @return ApiResource
      */
-    public function store(Request $request)
+    public function store(StorePurchaseOrderRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseOrder = PurchaseOrder::create($request->all());
@@ -108,31 +110,29 @@ class PurchaseOrderController extends Controller
     {
         $purchaseOrder = PurchaseOrder::eloquentFilter($request)
             ->with('form')
-            ->with('purchaseRequest')
-            ->with('warehouse')
-            ->with('supplier')
-            ->with('items.item')
-            ->with('items.allocation')
-            ->with('services.service')
-            ->with('services.allocation')
             ->findOrFail($id);
 
-        $purchaseOrderItemIds = $purchaseOrder->items->pluck('id');
+        /**
+         * anything except 0 is considered true, including "false"
+         */
+        if ($request->get('remaining_info')) {
+            $purchaseOrderItemIds = $purchaseOrder->items->pluck('id');
 
-        $tempArray = PurchaseReceive::joinForm()
-            ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
-            ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
-            ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
-            ->groupBy('purchase_order_item_id')
-            ->active()
-            ->get();
+            $tempArray = PurchaseReceive::joinForm()
+                ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
+                ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
+                ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
+                ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
+                ->groupBy('purchase_order_item_id')
+                ->active()
+                ->get();
 
-        $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');
+            $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');
 
-        foreach ($purchaseOrder->items as $key => $purchaseOrderItem) {
-            $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;
-            $purchaseOrderItem->quantity_pending = $purchaseOrderItem->quantity - $quantityReceived;
+            foreach ($purchaseOrder->items as $key => $purchaseOrderItem) {
+                $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;
+                $purchaseOrderItem->quantity_pending = $purchaseOrderItem->quantity - $quantityReceived;
+            }
         }
 
         return new ApiResource($purchaseOrder);
@@ -145,15 +145,26 @@ class PurchaseOrderController extends Controller
      * @param int  $id
      * @return ApiResource
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePurchaseOrderRequest $request, $id)
     {
-        // TODO prevent delete if referenced by purchase receive
-        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-            $purchaseOrder = PurchaseOrder::findOrFail($id);
+        $purchaseOrder = PurchaseOrder::findOrFail($id);
+        $purchaseOrder->isAllowedToUpdate();
 
-            $newPurchaseOrder = $purchaseOrder->edit($request->all());
+        $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseOrder) {
+            $purchaseOrder->form->archive();
+            $request['number'] = $purchaseOrder->form->edited_number;
 
-            return new ApiResource($newPurchaseOrder);
+            $purchaseOrder = PurchaseOrder::create($request->all());
+            $purchaseOrder
+                ->load('form')
+                ->load('employee')
+                ->load('supplier')
+                ->load('items.item')
+                ->load('items.allocation')
+                ->load('services.service')
+                ->load('services.allocation');
+
+            return new ApiResource($purchaseOrder);
         });
 
         return $result;
@@ -168,9 +179,8 @@ class PurchaseOrderController extends Controller
     public function destroy($id)
     {
         $purchaseOrder = PurchaseOrder::findOrFail($id);
+        $purchaseOrder->isAllowedToUpdate();
 
-        $purchaseOrder->delete();
-
-        return response()->json([], 204);
+        return $purchaseOrder->requestCancel();
     }
 }

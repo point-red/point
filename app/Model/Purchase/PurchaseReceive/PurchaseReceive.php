@@ -63,10 +63,7 @@ class PurchaseReceive extends TransactionModel
 
     public function isAllowedToUpdate()
     {
-        // Check if not referenced by purchase order
-        if ($this->purchaseReceives->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->purchaseReceives);
-        }
+        // TODO Check if not referenced by purchase invoice
     }
 
     public static function create($data)
@@ -82,7 +79,6 @@ class PurchaseReceive extends TransactionModel
         $items = self::mapItems($data['items'] ?? []);
         $services = self::mapServices($data['services'] ?? []);
 
-        $purchaseReceive->amount = self::calculateAmount($purchaseOrder ?? null, $items, $services);
         $purchaseReceive->save();
         
         $purchaseReceive->items()->saveMany($items);
@@ -132,28 +128,6 @@ class PurchaseReceive extends TransactionModel
 
             return $purchaseReceiveServices;
         }, $services);
-    }
-
-    private static function calculateAmount($purchaseOrder, $items, $services)
-    {
-        $amount = array_reduce($items, function ($carry, $item) {
-            return $carry + $item->quantity * $item->converter * ($item->price - $item->discount_value);
-        }, 0);
-
-        $amount += array_reduce($services, function($carry, $service) {
-            return $carry + $service->quantity * ($service->price - $service->discount_value);
-        }, 0);
-
-        if (! empty($purchaseOrder)) {
-            $amount -= $purchaseOrder->discount_value;
-            $amount += $purchaseOrder->delivery_fee;
-            
-            if ($purchaseOrder->type_of_tax === 'exclude') {
-                $amount += $purchaseOrder->tax;
-            }
-        }
-
-        return $amount;
     }
 
     private static function insertInventory($form, $purchaseOrder, $purchaseReceive)

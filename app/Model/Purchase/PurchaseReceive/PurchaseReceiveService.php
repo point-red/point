@@ -15,6 +15,7 @@ class PurchaseReceiveService extends TransactionModel
     protected $fillable = [
         'purchase_order_item_id',
         'service_id',
+        'service_name',
         'quantity',
         'notes',
         'allocation_id',

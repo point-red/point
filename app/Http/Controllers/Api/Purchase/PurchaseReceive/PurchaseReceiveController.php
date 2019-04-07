@@ -128,13 +128,26 @@ class PurchaseReceiveController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // TODO prevent delete if referenced by purchase invoice
-        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-            $purchaseReceive = PurchaseReceive::findOrFail($id);
+        $purchaseReceive = PurchaseReceive::findOrFail($id);
+        $purchaseReceive->isAllowedToUpdate();
 
-            $newPurchaseReceive = $purchaseReceive->edit($request->all());
+        $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseReceive) {
+            $purchaseReceive->form->archive();
 
-            return new ApiResource($newPurchaseReceive);
+            Inventory::where('form_id', $purchaseReceive->form->id)->delete();
+
+            $request['number'] = $purchaseReceive->form->edited_number;
+
+            $purchaseReceive = PurchaseReceive::create($request->all());
+            $purchaseReceive
+                ->load('form')
+                ->load('supplier')
+                ->load('items.item')
+                ->load('items.allocation')
+                ->load('services.service')
+                ->load('services.allocation');
+
+            return new ApiResource($purchaseReceive);
         });
 
         return $result;
@@ -149,9 +162,8 @@ class PurchaseReceiveController extends Controller
     public function destroy($id)
     {
         $purchaseReceive = PurchaseReceive::findOrFail($id);
+        $purchaseReceive->isAllowedToUpdate();
 
-        $purchaseReceive->delete();
-
-        return response()->json([], 204);
+        return $purchaseReceive->requestCancel();
     }
 }

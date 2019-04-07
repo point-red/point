@@ -11,6 +11,8 @@ use App\Model\Accounting\Journal;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
+use App\Model\Finance\Payment\PaymentDetail;
+use App\Model\Inventory\Inventory;
 
 class PurchaseInvoice extends TransactionModel
 {
@@ -25,6 +27,7 @@ class PurchaseInvoice extends TransactionModel
         'discount_value',
         'type_of_tax',
         'tax',
+        'supplier_id',
         'supplier_name',
         'invoice_number',
     ];
@@ -76,6 +79,11 @@ class PurchaseInvoice extends TransactionModel
         return $this->belongsToMany(PurchaseDownPayment::class, 'down_payment_invoice', 'down_payment_id', 'invoice_id');
     }
 
+    public function payments()
+    {
+        return $this->morphMany(PaymentDetail::class, 'referenceable');
+    }
+
     public function updateIfDone()
     {
         if ($this->remaining <= 0) {
@@ -83,143 +91,68 @@ class PurchaseInvoice extends TransactionModel
         }
     }
 
+    public function isAllowedToUpdate()
+    {
+        // Check if not referenced by payments
+        if ($this->payments->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by payments', $this->payments);
+        }
+    }
+
     public static function create($data)
     {
-        $purchaseReceives = self::getPurchaseReceives($data['purchase_receive_ids']);
-
         $purchaseInvoice = new self;
         $purchaseInvoice->fill($data);
-        $purchaseInvoice->supplier_id = $purchaseReceives[0]->supplier_id;
-        $purchaseInvoice->supplier_name = self::getSupplierName($purchaseInvoice);
 
-        $purchaseInvoiceItems = self::getItems($purchaseReceives, $data['items'] ?? []);
-        $purchaseInvoiceServices = self::getServices($purchaseReceives, $data['services'] ?? []);
+        $items = self::mapItems($data['items'] ?? []);
+        $services = self::mapServices($data['services'] ?? []);
 
-        $purchaseInvoice->amount = self::getAmounts($purchaseInvoice, $purchaseInvoiceItems, $purchaseInvoiceServices);
+        $purchaseInvoice->amount = self::calculateAmount($purchaseInvoice, $items, $services);
         $purchaseInvoice->remaining = $purchaseInvoice->amount;
 
         $purchaseInvoice->save();
 
-        $purchaseInvoice->items()->createMany($purchaseInvoiceItems);
-        $purchaseInvoice->services()->createMany($purchaseInvoiceServices);
+        $purchaseInvoice->items()->saveMany($items);
+        $purchaseInvoice->services()->saveMany($services);
 
         $form = new Form;
         $form->saveData($data, $purchaseInvoice);
 
         self::setPurchaseReceiveDone($data['purchase_receive_ids']);
-        self::updateInventory($purchaseInvoice, $purchaseReceives);
+        self::updateInventory($purchaseInvoice);
         self::updateJournal($purchaseInvoice);
 
         return $purchaseInvoice;
     }
 
-    private static function getPurchaseReceives($purchaseReceiveIds)
+    private static function mapItems($items)
     {
-        return PurchaseReceive::joinForm()
-            ->active()
-            ->notDone()
-            ->whereIn(PurchaseReceive::getTableName('id'), $purchaseReceiveIds)
-            ->with('form', 'items', 'services')
-            ->get();
+        return array_map(function($item) {
+            $purchaseInvoiceItem = new PurchaseInvoiceItem;
+            $purchaseInvoiceItem->fill($item);
 
-        // TODO check if $purchaseReceives contains at least 1 record and return error if 0 records
+            return $purchaseInvoiceItem;
+        }, $items);
     }
 
-    private static function getSupplierName($purchaseInvoice)
+    private static function mapServices($services)
     {
-        if (empty($purchaseInvoice->supplier_name)) {
-            $supplier = Supplier::findOrFail($purchaseInvoice->supplier_id, ['name']);
+        return array_map(function($item) {
+            $purchaseInvoiceService = new PurchaseInvoiceService;
+            $purchaseInvoiceService->fill($item);
 
-            return $supplier->name;
-        }
-
-        return $purchaseInvoice->supplier_name;
+            return $purchaseInvoiceService;
+        }, $services);
     }
 
-    private static function getItems($purchaseReceives, $items)
-    {
-        // TODO validation items is optional and must be array
-        if (empty($items)) {
-            return [];
-        }
-
-        $items = array_column($items, null, 'item_id');
-
-        $purchaseInvoiceItems = [];
-
-        foreach ($purchaseReceives as $purchaseReceive) {
-            foreach ($purchaseReceive->items as $purchaseReceiveItem) {
-                $itemId = $purchaseReceiveItem->item_id;
-                $item = $items[$itemId];
-
-                array_push($purchaseInvoiceItems, [
-                    'purchase_receive_id' => $purchaseReceiveItem->purchase_receive_id,
-                    'purchase_receive_item_id' => $purchaseReceiveItem->id,
-                    'item_id' => $itemId,
-                    'item_name' => $purchaseReceiveItem->item_name,
-                    'quantity' => $purchaseReceiveItem->quantity,
-                    'unit' => $purchaseReceiveItem->unit,
-                    'converter' => $purchaseReceiveItem->converter,
-                    'price' => $item['price'],
-                    'discount_percent' => $item['discount_percent'] ?? null,
-                    'discount_value' => $item['discount_value'] ?? 0,
-                    'taxable' => $item['taxable'] ?? true,
-                    'notes' => $item['notes'] ?? null,
-                    'allocation_id' => $item['allocation_id'] ?? null,
-                ]);
-            }
-        }
-
-        return $purchaseInvoiceItems;
-    }
-
-    private static function getServices($purchaseReceives, $services)
-    {
-        // TODO validation services is required if items is null and must be array
-        if (empty($services)) {
-            return [];
-        }
-
-        $services = array_column($services, null, 'service_id');
-
-        $purchaseInvoiceServices = [];
-
-        foreach ($purchaseReceives as $purchaseReceive) {
-            foreach ($purchaseReceive->services as $purchaseReceiveService) {
-                $serviceId = $purchaseReceiveService->service_id;
-                $service = $services[$serviceId];
-
-                array_push($purchaseInvoiceServices, [
-                    'purchase_receive_id' => $purchaseReceiveService->purchase_receive_id,
-                    'purchase_receive_service_id' => $purchaseReceiveService->id,
-                    'service_id' => $serviceId,
-                    'service_name' => $purchaseReceiveService->service_name,
-                    'quantity' => $purchaseReceiveService->quantity,
-                    'price' => $service['price'],
-                    'discount_percent' => $service['discount_percent'] ?? null,
-                    'discount_value' => $service['discount_value'] ?? 0,
-                    'taxable' => $service['taxable'],
-                    'notes' => $service['notes'] ?? null,
-                    'allocation_id' => $service['allocation_id'] ?? null,
-                ]);
-            }
-        }
-
-        return $purchaseInvoiceServices;
-    }
-
-    private static function getAmounts($purchaseInvoice, $items, $services)
+    private static function calculateAmount($purchaseInvoice, $items, $services)
     {
         $amount = array_reduce($items, function ($carry, $item) {
-            $price = $item['quantity'] * ($item['price'] - $item['discount_value']);
-
-            return $carry + $price;
+            return $carry + $item->quantity * $item->converter * ($item->price - $item->discount_value);
         }, 0);
 
         $amount += array_reduce($services, function ($carry, $service) {
-            $price = $service['quantity'] * ($service['price'] - $service['discount_value']);
-
-            return $carry + $price;
+            return $carry + $service->quantity * ($service->price - $service->discount_value);
         }, 0);
 
         $amount -= $purchaseInvoice->discount_value;
@@ -238,9 +171,37 @@ class PurchaseInvoice extends TransactionModel
         // TODO do something if $affectedRows === 0 or different than count(PurchaseReceiveIds)
     }
 
-    private static function updateInventory($purchaseInvoice, $purchaseReceives)
+    /**
+     * Update price, cogs in inventory
+     */
+    private static function updateInventory($purchaseInvoice)
     {
-        // TODO: update value if different from order
+        $purchaseInvoice->load('items.purchaseReceive.form');
+        $items = $purchaseInvoice->items;
+
+        foreach ($items as $item) {
+            $formId = $item->purchaseReceive->form->id;
+            $itemId = $item->item_id;
+
+            $additionalFee = $purchaseInvoice->delivery_fee - $purchaseInvoice->discount_value;
+            $total = $purchaseInvoice->amount - $additionalFee - $purchaseInvoice->tax;
+            $price = self::calculatePrice($item, $total, $additionalFee);
+            
+            Inventory::where('form_id', $formId)
+                ->where('item_id', $itemId)
+                ->update([
+                    'price' => $price,
+                    // TODO calculate COGS
+                ]);
+        }
+    }
+
+    private static function calculatePrice($item, $total, $additionalFee)
+    {
+        $totalPerItem = ($item->price - $item->discount_value) * $item->quantity * $item->converter;
+        $feePerItem = $totalPerItem / $total * $additionalFee;
+
+        return ($totalPerItem + $feePerItem) / $item->quantity;
     }
 
     private static function updateJournal($purchaseInvoice)

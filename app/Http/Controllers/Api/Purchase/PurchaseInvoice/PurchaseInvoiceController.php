@@ -10,6 +10,8 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\StorePurchaseInvoiceRequest;
+use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\UpdatePurchaseInvoiceRequest;
 
 class PurchaseInvoiceController extends Controller
 {
@@ -39,7 +41,7 @@ class PurchaseInvoiceController extends Controller
      * @throws \Throwable
      * @return ApiResource
      */
-    public function store(Request $request)
+    public function store(StorePurchaseInvoiceRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseInvoice = PurchaseInvoice::create($request->all());
@@ -88,15 +90,25 @@ class PurchaseInvoiceController extends Controller
      * @param int  $id
      * @return ApiResource
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePurchaseInvoiceRequest $request, $id)
     {
-        // TODO prevent delete if referenced by purchase payment
-        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-            $purchaseInvoice = PurchaseInvoice::findOrFail($id);
+        $purchaseInvoice = PurchaseInvoice::findOrFail($id);
+        $purchaseInvoice->isAllowedToUpdate();
 
-            $newPurchaseInvoice = $purchaseInvoice->edit($request->all());
+        $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseInvoice) {
+            $purchaseInvoice->form->archive();
+            $request['number'] = $purchaseInvoice->form->edited_number;
 
-            return new ApiResource($newPurchaseInvoice);
+            $purchaseInvoice = PurchaseInvoice::create($request->all());
+            $purchaseInvoice
+            ->load('form')
+            ->load('supplier')
+            ->load('items.item')
+            ->load('items.allocation')
+            ->load('services.service')
+            ->load('services.allocation');
+
+            return new ApiResource($purchaseInvoice);
         });
 
         return $result;
@@ -110,10 +122,9 @@ class PurchaseInvoiceController extends Controller
      */
     public function destroy($id)
     {
-        $purchaseInvoice = PurchaseInvoice::findOrFail($id);
+        $purchaseInvoice = PurchaseRequest::findOrFail($id);
+        $purchaseInvoice->isAllowedToUpdate();
 
-        $purchaseInvoice->delete();
-
-        return response()->json([], 204);
+        return $purchaseInvoice->requestCancel();
     }
 }

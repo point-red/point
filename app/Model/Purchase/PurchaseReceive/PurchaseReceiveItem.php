@@ -44,10 +44,4 @@ class PurchaseReceiveItem extends TransactionModel
     {
         return $this->belongsTo(Allocation::class);
     }
-
-    // For TransactionController
-    public function setPurchasePriceAttribute($value)
-    {
-        $this->attributes['price'] = $value;
-    }
 }

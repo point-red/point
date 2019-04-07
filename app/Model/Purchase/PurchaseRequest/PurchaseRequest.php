@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
+use App\Exceptions\FormArchivedException;
 use App\Exceptions\IsReferencedException;
 use App\Model\FormApproval;
 use Carbon\Carbon;
@@ -78,8 +79,28 @@ class PurchaseRequest extends TransactionModel
             ->active();
     }
 
+    public function archives()
+    {
+        return PurchaseRequest::joinForm()
+            ->with('form')
+            ->where('edited_number', $this->form->number ?? $this->form->edited_number)
+            ->get();
+    }
+
+    public function withOrigin()
+    {
+        if ($this->form->edited_number) {
+            $this->origin = PurchaseRequest::joinForm()->with('form')->where('number', $this->form->edited_number)->first();
+        }
+    }
+
     public function isAllowedToUpdate()
     {
+        // Check if form not archived
+        if (is_null($this->form->number)) {
+            throw new FormArchivedException();
+        }
+
         // Check if not referenced by purchase order
         if ($this->purchaseOrders->count()) {
             throw new IsReferencedException('Cannot edit form because referenced by purchase order', $this->purchaseOrders);

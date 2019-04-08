@@ -24,7 +24,7 @@ class CreateChartOfAccountsTable extends Migration
             $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();
 
-            $table->unique(['type_id', 'name']);
+            $table->unique(['number', 'name']);
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('type_id')->references('id')->on('chart_of_account_types')->onDelete('cascade');

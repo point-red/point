@@ -148,8 +148,8 @@ class ChartOfAccountSeeder extends Seeder
         $inventory = ['sediaan bahan baku', 'sediaan bahan pembantu', 'sediaan barang dalam proses', 'sediaan barang jadi (manufaktur)', 'sediaan dalam perjalanan', 'sediaan lain-lain'];
         $inventoryNumber = ['10601', '10602', '10603', '10604', '10605', '10699'];
 
-        $accountReceivable = ['piutang usaha'];
-        $accountReceivableNumber = ['10401'];
+        $accountReceivable = ['piutang usaha', 'uang muka penjualan'];
+        $accountReceivableNumber = ['10401', '10402'];
 
         $otherAccountReceivable = ['piutang direksi', 'piutang karyawan', 'ppn masukan'];
         $otherAccountReceivableNumber = ['10501', '10502', '10503'];
@@ -166,8 +166,8 @@ class ChartOfAccountSeeder extends Seeder
         $otherAssetDepreciation = ['akumulasi amortisasi aktiva tak berwujud'];
         $otherAssetDepreciationNumber = ['12103'];
 
-        $currentLiability = ['wesel bayar ', 'utang usaha', 'utang bank bca', 'utang bank mandiri'];
-        $currentLiabilityNumber = ['20101', '20201', '20301', '20302', '20401', '20402', '20403', '20499'];
+        $currentLiability = ['wesel bayar ', 'utang usaha', 'uang muka pembelian', 'utang bank bca', 'utang bank mandiri'];
+        $currentLiabilityNumber = ['20101', '20201', '20301', '20302', '20303', '20401', '20402', '20403', '20499'];
 
         $otherCurrentLiability = ['utang pihak ketiga', 'utang pembelian aktiva', 'utang ppn', 'ppn keluaran', 'utang lain-lain'];
         $otherCurrentLiabilityNumber = ['20401', '20402', '20403', '20404', '20499'];

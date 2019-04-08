@@ -19,6 +19,7 @@ class SettingJournalSeeder extends Seeder
 
         $this->openingBalanceInventory();
         $this->purchase();
+        $this->sales();
     }
 
     private function openingBalanceInventory()
@@ -56,10 +57,28 @@ class SettingJournalSeeder extends Seeder
         }
     }
 
+    private function sales()
+    {
+        $accounts = [
+            'account receivable' => $this->getAccountId('piutang usaha'),
+            'down payment' => $this->getAccountId('uang muka penjualan'),
+            'discount' => $this->getAccountId('potongan penjualan'),
+            'income tax payable' => $this->getAccountId('ppn keluaran'),
+        ];
+
+        foreach ($accounts as $key => $value) {
+            $settingJournal = new SettingJournal;
+            $settingJournal->feature = 'sales';
+            $settingJournal->name = $key;
+            $settingJournal->description = '';
+            $settingJournal->chart_of_account_id = $value;
+            $settingJournal->save();
+        }
+    }
+
     private function getAccountId($account)
     {
         foreach ($this->chartOfAccounts as $chartOfAccount) {
-            info($chartOfAccount);
             if ($chartOfAccount->name == $account) {
                 return $chartOfAccount->id;
             }

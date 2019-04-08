@@ -4,6 +4,11 @@ namespace App\Http\Requests;
 
 class ValidationRule {
 
+  public static function converter()
+  {
+    return 'required|numeric';
+  }
+  
   public static function deliveryFee()
   {
     return 'numeric|min:0';
@@ -29,6 +34,16 @@ class ValidationRule {
     return "bail|nullable|integer|min:0|exists:tenant.$table,$column";
   }
 
+  public static function quantity()
+  {
+    return 'required|numeric|min:0';
+  }
+
+  public static function price()
+  {
+    return 'required|numeric|min:0';
+  }
+
   public static function needDownPayment()
   {
     return 'numeric|min:0';
@@ -42,5 +57,10 @@ class ValidationRule {
   public static function typeOfTax()
   {
     return 'required|in:non,include,exclude';
+  }
+
+  public static function unit()
+  {
+    return 'required|string';
   }
 }

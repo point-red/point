@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseInvoice;
 
+use App\Model\SettingJournal;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
@@ -221,7 +222,7 @@ class PurchaseInvoice extends TransactionModel
         $journal->form_id = $purchaseInvoice->form->id;
         $journal->journalable_type = Supplier::class;
         $journal->journalable_id = $purchaseInvoice->supplier_id;
-        $journal->chart_of_account_id = ChartOfAccountType::where('name', 'current liability')->first()->accounts->first()->id;
+        $journal->chart_of_account_id = get_setting_journal('purchase', 'account payable');
         $journal->credit = $purchaseInvoice->amount;
         $journal->save();
 
@@ -247,7 +248,7 @@ class PurchaseInvoice extends TransactionModel
             $journal->form_id = $purchaseInvoice->form->id;
             $journal->journalable_type = Item::class;
             $journal->journalable_id = $purchaseItem->item_id;
-            $journal->chart_of_account_id = ChartOfAccountType::where('name', 'inventory')->first()->accounts->first()->id;
+            $journal->chart_of_account_id = $purchaseItem->item->chart_of_account_id;
             $journal->debit = $itemAmount;
             $journal->save();
         }
@@ -255,7 +256,7 @@ class PurchaseInvoice extends TransactionModel
         // 3. Income Tax Receivable
         $journal = new Journal;
         $journal->form_id = $purchaseInvoice->form->id;
-        $journal->chart_of_account_id = ChartOfAccountType::where('name', 'other account receivable')->first()->accounts->first()->id;
+        $journal->chart_of_account_id = get_setting_journal('purchase', 'income tax receivable');
         $journal->debit = $purchaseInvoice->tax;
         $journal->save();
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Model\SettingJournal;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
@@ -239,6 +240,22 @@ if (! function_exists('get_invitation_code')) {
             }
 
             return null;
+        }
+    }
+
+    if (! function_exists('get_setting_journal')) {
+        /**
+         * Get default journal account for transaction.
+         *
+         * @param $feature
+         * @param $name
+         * @return string
+         */
+        function get_setting_journal($feature, $name)
+        {
+            $settingJournal = SettingJournal::where('feature', $feature)->where('name', $name)->first();
+
+            return $settingJournal->id;
         }
     }
 }

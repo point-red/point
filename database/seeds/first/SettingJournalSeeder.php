@@ -64,6 +64,8 @@ class SettingJournalSeeder extends Seeder
             'down payment' => $this->getAccountId('uang muka penjualan'),
             'discount' => $this->getAccountId('potongan penjualan'),
             'income tax payable' => $this->getAccountId('ppn keluaran'),
+            'sales income' => $this->getAccountId('penjualan'),
+            'cost of sales' => $this->getAccountId('beban pokok penjualan'),
         ];
 
         foreach ($accounts as $key => $value) {

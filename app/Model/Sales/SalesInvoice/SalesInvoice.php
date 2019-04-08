@@ -349,14 +349,14 @@ class SalesInvoice extends TransactionModel
         $journal->form_id = $salesInvoice->form->id;
         $journal->journalable_type = Customer::class;
         $journal->journalable_id = $salesInvoice->customer_id;
-        $journal->chart_of_account_id = ChartOfAccountType::where('name', 'account receivable')->first()->accounts->first()->id;
+        $journal->chart_of_account_id = get_setting_journal('sales', 'account receivable');
         $journal->debit = $salesInvoice->amount;
         $journal->save();
 
         // 2. Sales Income
         $journal = new Journal;
         $journal->form_id = $salesInvoice->form->id;
-        $journal->chart_of_account_id = ChartOfAccountType::where('name', 'sales income')->first()->accounts->first()->id;
+        $journal->chart_of_account_id = get_setting_journal('sales', 'sales income');
         $journal->credit = $salesInvoice->amount - $salesInvoice->tax;
         $journal->save();
 
@@ -376,7 +376,7 @@ class SalesInvoice extends TransactionModel
             $journal->form_id = $salesInvoice->form->id;
             $journal->journalable_type = Item::class;
             $journal->journalable_id = $salesItem->item_id;
-            $journal->chart_of_account_id = ChartOfAccountType::where('name', 'inventory')->first()->accounts->first()->id;
+            $journal->chart_of_account_id = $salesItem->item->chart_of_account_id;
             $journal->credit = $cogs * $salesItem->quantity;
             $journal->save();
 
@@ -385,7 +385,7 @@ class SalesInvoice extends TransactionModel
             $journal->form_id = $salesInvoice->form->id;
             $journal->journalable_type = Item::class;
             $journal->journalable_id = $salesItem->item_id;
-            $journal->chart_of_account_id = ChartOfAccountType::where('name', 'cost of sales')->first()->accounts->first()->id;
+            $journal->chart_of_account_id = get_setting_journal('sales', 'cost of sales');
             $journal->debit = $cogs * $salesItem->quantity;
             $journal->save();
         }
@@ -393,7 +393,7 @@ class SalesInvoice extends TransactionModel
         // 5. Income Tax Payable
         $journal = new Journal;
         $journal->form_id = $salesInvoice->form->id;
-        $journal->chart_of_account_id = ChartOfAccountType::where('name', 'other current liability')->first()->accounts->first()->id;
+        $journal->chart_of_account_id = get_setting_journal('sales', 'income tax payable');
         $journal->credit = $salesInvoice->tax;
         $journal->save();
     }

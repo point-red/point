@@ -7,6 +7,7 @@ use App\Model\CloudStorage;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\Kpi\KpiTemplateImport;
 use Illuminate\Support\Facades\Storage;
@@ -63,7 +64,7 @@ class KpiTemplateImportController extends Controller
     public function saveStorage($tenantCode, $file)
     {
         $tenant = strtolower($tenantCode);
-        $key = str_random(16);
+        $key = Str::random(16);
         $fileName = strtoupper($tenant)
           .' - KPI Template Import - ';
         $fileExt = 'xlsx';

@@ -97,6 +97,12 @@ class PurchaseRequestController extends Controller
     {
         $purchaseRequest = PurchaseRequest::eloquentFilter($request)->with('form')->findOrFail($id);
 
+        if ($request->has('with_archives')) {
+            $purchaseRequest->archives = $purchaseRequest->archives();
+        }
+
+        $purchaseRequest->withOrigin();
+
         return new ApiResource($purchaseRequest);
     }
 
@@ -110,8 +116,9 @@ class PurchaseRequestController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::findOrFail($id);
-        $purchaseRequest->isAllowedToUpdate();
+        $purchaseRequest = PurchaseRequest::with('form')->findOrFail($id);
+        info($request->get('date'));
+        $purchaseRequest->isAllowedToUpdate($request->get('date'));
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseRequest) {
             $purchaseRequest->form->archive();
@@ -136,13 +143,14 @@ class PurchaseRequestController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param Request $request
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
-        $purchaseRequest->isAllowedToUpdate();
+        $purchaseRequest->isAllowedToUpdate($request->get('date'));
 
         return $purchaseRequest->requestCancel();
     }

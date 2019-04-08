@@ -7,6 +7,7 @@ use App\Model\CloudStorage;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ScaleWeightItemExport;
 
@@ -15,7 +16,7 @@ class ScaleWeightItemExportController extends Controller
     public function export(Request $request)
     {
         $tenant = strtolower($request->header('Tenant'));
-        $key = str_random(16);
+        $key = Str::random(16);
         $fileName = strtoupper($tenant)
             .' - Scale Weight Item Report - '
             .date('dMY', strtotime($request->get('date_from')))

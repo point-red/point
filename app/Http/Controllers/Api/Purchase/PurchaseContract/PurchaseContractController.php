@@ -9,6 +9,8 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseContract\PurchaseContract;
+use App\Http\Requests\Purchase\PurchaseContract\StorePurchaseContractRequest;
+use App\Http\Requests\Purchase\PurchaseContract\UpdatePurchaseContractRequest;
 
 class PurchaseContractController extends Controller
 {
@@ -33,11 +35,11 @@ class PurchaseContractController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @param  App\Http\Requests\Purchase\PurchaseContract\StorePurchaseContractRequest $request
+     * @return App\Http\Resources\ApiResource
      * @throws \Throwable
      */
-    public function store(Request $request)
+    public function store(StorePurchaseContractRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseContract = PurchaseContract::create($request->all());
@@ -70,13 +72,30 @@ class PurchaseContractController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Http\Requests\Purchase\PurchaseContract\UpdatePurchaseContractRequest $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return App\Http\Resources\ApiResource
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePurchaseContractRequest $request, $id)
     {
-        //
+        $purchaseContract = PurchaseContract::findOrFail($id);
+        $purchaseContract->isAllowedToUpdate();
+
+        $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseContract) {
+            $purchaseContract->form->archive();
+            $request['number'] = $purchaseContract->form->edited_number;
+
+            $purchaseContract = PurchaseContract::create($request->all());
+            $purchaseContract
+                ->load('form')
+                ->load('supplier')
+                ->load('items.item')
+                ->load('groupItems.group');
+
+            return new ApiResource($purchaseContract);
+        });
+
+        return $result;
     }
 
     /**
@@ -87,6 +106,9 @@ class PurchaseContractController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $purchaseContract = PurchaseContract::findOrFail($id);
+        $purchaseContract->isAllowedToUpdate();
+
+        return $purchaseContract->requestCancel();
     }
 }

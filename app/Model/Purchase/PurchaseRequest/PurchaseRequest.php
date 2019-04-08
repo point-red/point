@@ -98,7 +98,6 @@ class PurchaseRequest extends TransactionModel
     public function isAllowedToUpdate($date)
     {
         // Check if date is in the same period
-        info($date .'!='. $this->form->date);
         if (date('Y-m', strtotime($date)) != date('Y-m', strtotime($this->form->date))) {
             throw new UpdatePeriodNotAllowedException();
         }

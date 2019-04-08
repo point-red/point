@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 if (! function_exists('log_object')) {
     /**
@@ -37,7 +38,7 @@ if (! function_exists('get_invitation_code')) {
         $activationCode = null;
 
         do {
-            $random = strtoupper(str_random(12));
+            $random = strtoupper(Str::random(12));
             if (! \App\Model\Project\Project::where('invitation_code', $random)->first()) {
                 $activationCode = $random;
             }

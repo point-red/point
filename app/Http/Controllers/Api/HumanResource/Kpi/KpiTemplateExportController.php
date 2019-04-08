@@ -7,6 +7,7 @@ use App\Model\CloudStorage;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\Kpi\KpiTemplateExport;
 use App\Model\HumanResource\Kpi\KpiTemplate;
@@ -21,7 +22,7 @@ class KpiTemplateExportController extends Controller
         $kpiTemplate = KpiTemplate::where('id', $request->id)->first();
 
         $tenant = strtolower($request->header('Tenant'));
-        $key = str_random(16);
+        $key = Str::random(16);
         $fileName = strtoupper($tenant)
           .' - KPI Template Export - '.$kpiTemplate->name;
         $fileExt = 'xlsx';

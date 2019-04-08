@@ -7,6 +7,7 @@ use App\Model\CloudStorage;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PinPoint\Performance\PerformanceExport;
 
@@ -26,7 +27,7 @@ class PerformanceReportExportController extends Controller
             $month = date('M Y', $time);
             $days = date('t', $time);
 
-            $key = str_random(16);
+            $key = Str::random(16);
             $fileName = strtoupper($tenant).' - Performance Report - '.$month;
             $fileExt = 'xlsx';
             $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;

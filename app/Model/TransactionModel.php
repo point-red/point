@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use App\Exceptions\FormArchivedException;
+use App\Exceptions\UpdatePeriodNotAllowedException;
 use App\Http\Resources\ApiResource;
 use App\Traits\FormScopes;
 use Illuminate\Http\Request;
@@ -27,6 +29,20 @@ class TransactionModel extends PointModel
             $this->form->cancel();
 
             return response()->json([], 204);
+        }
+    }
+
+    public function updatedFormNotArchived()
+    {
+        if (is_null($this->form->number)) {
+            throw new FormArchivedException();
+        }
+    }
+
+    public function updatedFormInSamePeriod($date)
+    {
+        if (date('Y-m', strtotime($date)) != date('Y-m', strtotime($this->form->date))) {
+            throw new UpdatePeriodNotAllowedException();
         }
     }
 }

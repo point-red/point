@@ -147,10 +147,10 @@ class PurchaseRequestController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy($id)
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
-        $purchaseRequest->isAllowedToUpdate($request->get('date'));
+        $purchaseRequest->isAllowedToDelete();
 
         return $purchaseRequest->requestCancel();
     }

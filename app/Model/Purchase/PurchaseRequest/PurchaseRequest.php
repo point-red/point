@@ -97,20 +97,15 @@ class PurchaseRequest extends TransactionModel
 
     public function isAllowedToUpdate($date)
     {
-        // Check if date is in the same period
-        if (date('Y-m', strtotime($date)) != date('Y-m', strtotime($this->form->date))) {
-            throw new UpdatePeriodNotAllowedException();
-        }
+        $this->updatedFormInSamePeriod($date);
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
 
-        // Check if form not archived
-        if (is_null($this->form->number)) {
-            throw new FormArchivedException();
-        }
-
-        // Check if not referenced by purchase order
-        if ($this->purchaseOrders->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by purchase order', $this->purchaseOrders);
-        }
+    public function isAllowedToDelete()
+    {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
     }
 
     public static function create($data)
@@ -161,5 +156,13 @@ class PurchaseRequest extends TransactionModel
             return $carry + $service->quantity * $service->converter * $service->price;
         });
         return $amount;
+    }
+
+    private function isNotReferenced()
+    {
+        // Check if not referenced by purchase order
+        if ($this->purchaseOrders->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by purchase order', $this->purchaseOrders);
+        }
     }
 }

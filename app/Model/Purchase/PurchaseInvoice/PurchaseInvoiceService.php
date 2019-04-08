@@ -16,6 +16,7 @@ class PurchaseInvoiceService extends Model
         'purchase_receive_id',
         'purchase_receive_service_id',
         'service_id',
+        'service_name',
         'quantity',
         'price',
         'discount_percent',

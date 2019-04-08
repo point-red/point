@@ -13,7 +13,7 @@ class UpdatePurchaseInvoiceRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,8 +23,20 @@ class UpdatePurchaseInvoiceRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
+        $ruleForm = [
+            'date' => 'required|date',
         ];
+
+        $rulePurchaseInvoice = [];
+
+        $rulePurchaseInvoiceItems = [
+            'item_name' => 'required|string',
+        ];
+
+        $rulePurchaseInvoiceServices = [
+            'service_name' => 'required|string',
+        ];
+
+        return array_merge($ruleForm, $rulePurchaseInvoice, $rulePurchaseInvoiceItems, $rulePurchaseInvoiceServices);
     }
 }

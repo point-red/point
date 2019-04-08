@@ -129,12 +129,12 @@ class Form extends PointModel
     public function cancel()
     {
         // Cancel form
-        $form->canceled = true;
-        $form->save();
+        $this->canceled = true;
+        $this->save();
 
         // Remove relationship with journal and inventory
-        Inventory::where('form_id', $form->id)->delete();
-        Journal::where('form_id', $form->id)->orWhere('form_id_reference', $form->id)->delete();
+        Inventory::where('form_id', $this->id)->delete();
+        Journal::where('form_id', $this->id)->orWhere('form_id_reference', $this->id)->delete();
     }
 
     /**

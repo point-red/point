@@ -29,7 +29,9 @@ trait EloquentFilters
             ->orFilterMin($request->get('or_filter_min'))
             ->orFilterMax($request->get('or_filter_max'))
             ->orFilterNull($request->get('or_filter_null'))
-            ->orFilterNotNull($request->get('or_filter_not_null'));
+            ->orFilterNotNull($request->get('or_filter_not_null'))
+            ->orFilterWhereHas($request->get('or_filter_where_has'))
+            ->orFilterWhereHasLike($request->get('or_filter_where_has_like'));
     }
 
     /**
@@ -388,6 +390,43 @@ trait EloquentFilters
                     foreach ($filter as $attribute => $value) {
                         $query->whereHas($relation, function ($query) use ($attribute, $value) {
                             $query->where($attribute, $value);
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    public function scopeOrFilterWhereHas($query, $values)
+    {
+        if (! is_null($values)) {
+            foreach ($values as $relations) {
+                $relations = $this->convertJavascriptObjectToArray($relations);
+                foreach ($relations as $relation => $filter) {
+                    foreach ($filter as $attribute => $value) {
+                        $query->orWhereHas($relation, function ($query) use ($attribute, $value) {
+                            $query->where($attribute, $value);
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    public function scopeOrFilterWhereHasLike($query, $values)
+    {
+        if (! is_null($values)) {
+            foreach ($values as $relations) {
+                $relations = $this->convertJavascriptObjectToArray($relations);
+                foreach ($relations as $relation => $filter) {
+                    foreach ($filter as $attribute => $value) {
+                        $query->orWhereHas($relation, function ($query) use ($attribute, $value) {
+                            $query->where(function ($query) use ($value, $attribute) {
+                                $words = explode(' ', $value);
+                                foreach ($words as $word) {
+                                    $query->orWhere($attribute, 'like', '%'.$word.'%');
+                                }
+                            });
                         });
                     }
                 }

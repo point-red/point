@@ -151,8 +151,8 @@ class ChartOfAccountSeeder extends Seeder
         $accountReceivable = ['piutang usaha'];
         $accountReceivableNumber = ['10401'];
 
-        $otherAccountReceivable = ['piutang direksi', 'piutang karyawan'];
-        $otherAccountReceivableNumber = ['10501', '10502'];
+        $otherAccountReceivable = ['piutang direksi', 'piutang karyawan', 'ppn masukan'];
+        $otherAccountReceivableNumber = ['10501', '10502', '10503'];
 
         $fixedAsset = ['tanah lokasi kota surabaya', 'bangunan pabrik', 'bangunan kantor', 'mesin', 'peralatan', 'instalasi listrik', 'inventaris pabrik', 'inventaris kantor', 'kendaraan pabrik', 'kendaraan kantor', 'kendaraan penjualan'];
         $fixedAssetNumber = ['11101', '11102', '11201', '11202', '11301', '11302', '11303', '11401', '11402', '11501', '11502', '11503'];
@@ -169,8 +169,8 @@ class ChartOfAccountSeeder extends Seeder
         $currentLiability = ['wesel bayar ', 'utang usaha', 'utang bank bca', 'utang bank mandiri'];
         $currentLiabilityNumber = ['20101', '20201', '20301', '20302', '20401', '20402', '20403', '20499'];
 
-        $otherCurrentLiability = ['utang pihak ketiga', 'utang pembelian aktiva', 'utang ppn', 'utang lain-lain'];
-        $otherCurrentLiabilityNumber = ['20401', '20402', '20403', '20499'];
+        $otherCurrentLiability = ['utang pihak ketiga', 'utang pembelian aktiva', 'utang ppn', 'ppn keluaran', 'utang lain-lain'];
+        $otherCurrentLiabilityNumber = ['20401', '20402', '20403', '20404', '20499'];
 
         $longTermLiability = ['gaji ymh dibayar', 'sewa ymh dibayar', 'listrik, air & telpon ymh dibayar', 'asuransi ymh dibayar', 'lain-lain ymh dibayar', 'utang bank jangka panjang'];
         $longTermLiabilityNumber = ['20501', '20502', '20503', '20504', '20505', '21001'];
@@ -187,8 +187,8 @@ class ChartOfAccountSeeder extends Seeder
         $salesIncome = ['penjualan', 'pendapatan lain', 'retur penjualan', 'potongan penjualan', 'pendapatan (beban) selisih kas'];
         $salesIncomeNumber = ['40101', '40102', '40103', '40104', '40105'];
 
-        $otherIncome = ['pendapatan bunga', 'pendapatan selisih pembayaran', 'pendapatan selisih kurs', 'pendapatan atas penjualan aktiva', 'pendapatan non operasional lain-lain'];
-        $otherIncomeNumber = ['41101', '41102', '41103', '41104', '41199'];
+        $otherIncome = ['pendapatan bunga', 'pendapatan selisih pembayaran', 'pendapatan selisih kurs', 'pendapatan atas penjualan aktiva', 'potongan pembelian', 'pendapatan non operasional lain-lain'];
+        $otherIncomeNumber = ['41101', '41102', '41103', '41104', '41105', '41199'];
 
         $costOfSales = ['beban pokok penjualan', 'angkutan'];
         $costOfSalesNumber = ['50101', '50102'];

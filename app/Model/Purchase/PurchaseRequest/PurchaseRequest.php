@@ -4,6 +4,7 @@ namespace App\Model\Purchase\PurchaseRequest;
 
 use App\Exceptions\FormArchivedException;
 use App\Exceptions\IsReferencedException;
+use App\Exceptions\UpdatePeriodNotAllowedException;
 use App\Model\FormApproval;
 use Carbon\Carbon;
 use App\Model\Form;
@@ -94,8 +95,14 @@ class PurchaseRequest extends TransactionModel
         }
     }
 
-    public function isAllowedToUpdate()
+    public function isAllowedToUpdate($date)
     {
+        // Check if date is in the same period
+        info($date .'!='. $this->form->date);
+        if (date('Y-m', strtotime($date)) != date('Y-m', strtotime($this->form->date))) {
+            throw new UpdatePeriodNotAllowedException();
+        }
+
         // Check if form not archived
         if (is_null($this->form->number)) {
             throw new FormArchivedException();

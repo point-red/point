@@ -1,6 +1,7 @@
 <?php
 
 Route::prefix('purchase')->namespace('Purchase')->group(function () {
+    Route::get('pending', 'PurchasePendingController@index');
     Route::apiResource('contracts', 'PurchaseContract\\PurchaseContractController');
     Route::apiResource('requests', 'PurchaseRequest\\PurchaseRequestController');
     Route::apiResource('down-payments', 'PurchaseDownPayment\\PurchaseDownPaymentController');

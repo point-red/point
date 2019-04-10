@@ -17,6 +17,7 @@ class Form extends PointModel
     protected $fillable = [
         'date',
         'notes',
+        'increment_group'
     ];
 
     public function save(array $options = [])
@@ -226,14 +227,23 @@ class Form extends PointModel
     {
         preg_match_all('/{increment=(\d)}/', $this->number, $regexResult);
         if (! empty($regexResult)) {
-            $increment = self::where('formable_type', $this->formable_type)
+            $lastForm = self::where('formable_type', $this->formable_type)
                 ->whereNotNull('number')
-                ->whereMonth('date', date('n', strtotime($this->date)))
-                ->count();
+                ->where('increment_group', $this->increment_group)
+                ->orderBy('increment', 'desc')
+                ->first();
+
+            $increment = 0;
+
+            if ($lastForm) {
+                $increment = $lastForm->increment;
+            }
+
+            $this->increment = $increment + 1;
 
             foreach ($regexResult[0] as $key => $value) {
                 $padUntil = $regexResult[1][$key];
-                $result = str_pad($increment + 1, $padUntil, '0', STR_PAD_LEFT);
+                $result = str_pad($this->increment, $padUntil, '0', STR_PAD_LEFT);
                 $this->number = str_replace($value, $result, $this->number);
             }
         }

@@ -21,12 +21,7 @@ class SalesContractController extends Controller
      */
     public function index(Request $request)
     {
-        $salesContracts = SalesContract::eloquentFilter($request)
-            ->join(Customer::getTableName(), SalesContract::getTableName('customer_id'), '=', Customer::getTableName('id'))
-            ->select(SalesContract::getTableName('*'))
-            ->joinForm()
-            ->notArchived()
-            ->with('form');
+        $salesContracts = SalesContract::eloquentFilter($request);
 
         $salesContracts = pagination($salesContracts, $request->get('limit'));
 
@@ -63,9 +58,7 @@ class SalesContractController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $salesContract = SalesContract::joinForm()
-            ->eloquentFilter($request)
-            ->findOrFail($id);
+        $salesContract = SalesContract::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($salesContract);
     }

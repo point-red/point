@@ -18,10 +18,7 @@ class SalesDownPaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $downPayment = SalesDownPayment::eloquentFilter($request)
-            ->joinForm()
-            ->notArchived()
-            ->with('form', 'customer', 'downpaymentable');
+        $downPayment = SalesDownPayment::eloquentFilter($request);
 
         $downPayment = pagination($downPayment, $request->get('limit'));
 

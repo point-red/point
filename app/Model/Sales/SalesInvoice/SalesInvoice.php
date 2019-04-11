@@ -83,10 +83,7 @@ class SalesInvoice extends TransactionModel
      */
     public function payments()
     {
-        return $this->morphMany(PaymentDetail::class, 'referenceable')
-            ->join(Payment::getTableName(), Payment::getTableName('id'), '=', PaymentDetail::getTableName('payment_id'))
-            ->joinForm(Payment::class)
-            ->active();
+        return $this->morphMany(PaymentDetail::class, 'referenceable')->active();
     }
 
     public function detachDownPayments()
@@ -154,9 +151,7 @@ class SalesInvoice extends TransactionModel
 
     private static function setDeliveryNotes($deliveryNoteIds)
     {
-        $deliveryNotes = DeliveryNote::joinForm()
-            ->active()
-            ->notDone()
+        $deliveryNotes = DeliveryNote::activePending()
             ->whereIn(DeliveryNote::getTableName('id'), $deliveryNoteIds)
             ->with('form', 'items')
             ->get();
@@ -173,9 +168,7 @@ class SalesInvoice extends TransactionModel
 
     private static function setSalesOrders($salesOrderIds)
     {
-        $salesOrders = SalesOrder::joinForm()
-            ->active()
-            ->notDone()
+        $salesOrders = SalesOrder::activePending()
             ->whereIn(SalesOrder::getTableName('id'), $salesOrderIds)
             ->with('form', 'services')
             ->get();

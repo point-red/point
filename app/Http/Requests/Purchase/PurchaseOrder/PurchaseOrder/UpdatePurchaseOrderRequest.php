@@ -23,9 +23,7 @@ class UpdatePurchaseOrderRequest extends FormRequest
      */
     public function rules()
     {
-        $rulesForm = [
-            'date' => 'required|date',
-        ];
+        $rulesForm = ValidationRule::form();
 
         $rulesPurchaseOrder = [
             'purchase_request_id' => ValidationRule::optionalForeignKey('purchase_requests'),
@@ -33,7 +31,7 @@ class UpdatePurchaseOrderRequest extends FormRequest
 
             'supplier_id' => ValidationRule::foreignKey('suppliers'),
             'supplier_name' => 'required|string',
-            'warehouse_id' => 'nullable|'.ValidationRule::optionalForeignKey('warehouses'),
+            'warehouse_id' => ValidationRule::optionalForeignKey('warehouses'),
             'eta' => 'date',
             'cash_only' => 'boolean',
             'need_down_payment' => ValidationRule::needDownPayment(),

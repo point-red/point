@@ -18,10 +18,7 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $payment = Payment::eloquentFilter($request)
-            ->joinForm()
-            ->notArchived()
-            ->select(Payment::getTableName('*'));
+        $payment = Payment::eloquentFilter($request);
 
         if ($request->has('type')) {
             $paymentType = strtoupper($request->get('type'));
@@ -31,8 +28,6 @@ class PaymentController extends Controller
             $disbursed = $request->get('disbursed');
             $payment->where('disbursed', $disbursed);
         }
-
-        $payment->with('form');
 
         $payment = pagination($payment, $request->get('limit'));
 

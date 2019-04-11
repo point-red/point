@@ -75,6 +75,11 @@ class PurchaseInvoice extends TransactionModel
         return $this->belongsTo(Supplier::class);
     }
 
+    public function purchaseReceives()
+    {
+        return $this->belongsToMany(PurchaseReceive::class, 'purchase_invoice_items');
+    }
+
     public function downPayments()
     {
         return $this->belongsToMany(PurchaseDownPayment::class, 'down_payment_invoice', 'down_payment_id', 'invoice_id');
@@ -82,8 +87,10 @@ class PurchaseInvoice extends TransactionModel
 
     public function payments()
     {
-        return $this->morphMany(PaymentDetail::class, 'referenceable');
+        return $this->morphMany(PaymentDetail::class, 'referenceable')->active();
     }
+
+    // public function purchase
 
     public function updateIfDone()
     {
@@ -119,7 +126,7 @@ class PurchaseInvoice extends TransactionModel
         $form = new Form;
         $form->saveData($data, $purchaseInvoice);
 
-        self::setPurchaseReceiveDone($data['purchase_receive_ids']);
+        self::setPurchaseReceiveDone($purchaseInvoice);
         self::updateInventory($purchaseInvoice);
         self::updateJournal($purchaseInvoice);
 
@@ -128,6 +135,10 @@ class PurchaseInvoice extends TransactionModel
 
     private static function mapItems($items)
     {
+        if (empty($items)) {
+            return [];
+        }
+
         return array_map(function($item) {
             $purchaseInvoiceItem = new PurchaseInvoiceItem;
             $purchaseInvoiceItem->fill($item);
@@ -138,9 +149,13 @@ class PurchaseInvoice extends TransactionModel
 
     private static function mapServices($services)
     {
-        return array_map(function($item) {
+        if (empty($services)) {
+            return [];
+        }
+
+        return array_map(function($service) {
             $purchaseInvoiceService = new PurchaseInvoiceService;
-            $purchaseInvoiceService->fill($item);
+            $purchaseInvoiceService->fill($service);
 
             return $purchaseInvoiceService;
         }, $services);
@@ -163,13 +178,12 @@ class PurchaseInvoice extends TransactionModel
         return $amount;
     }
 
-    private static function setPurchaseReceiveDone($purchaseReceiveIds)
+    private static function setPurchaseReceiveDone($purchaseInvoice)
     {
-        $affectedRows = Form::where('formable_type', PurchaseReceive::class)
-            ->whereIn('formable_id', $purchaseReceiveIds)
-            ->update(['done' => true]);
-
-        // TODO do something if $affectedRows === 0 or different than count(PurchaseReceiveIds)
+        $purchaseReceives = $purchaseInvoice->purchaseReceives;
+        foreach ($purchaseReceives as $receive) {
+            $receive->form()->update(['done' => true]);
+        }
     }
 
     /**

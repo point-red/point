@@ -19,10 +19,7 @@ class InventoryAuditController extends Controller
      */
     public function index(Request $request)
     {
-        $inventoryAudits = InventoryAudit::eloquentFilter($request)
-            ->joinForm()
-            ->notArchived()
-            ->with('form');
+        $inventoryAudits = InventoryAudit::eloquentFilter($request);
 
         $inventoryAudits = pagination($inventoryAudits, $request->get('limit'));
 

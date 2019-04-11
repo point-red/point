@@ -19,10 +19,7 @@ class PurchaseDownPaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $downPayments = PurchaseDownPayment::eloquentFilter($request)
-            ->joinForm()
-            ->notArchived()
-            ->with('form', 'supplier', 'downpaymentable');
+        $downPayments = PurchaseDownPayment::eloquentFilter($request)->with('downpaymentable');
 
         $downPayments = pagination($downPayments, $request->get('limit'));
 

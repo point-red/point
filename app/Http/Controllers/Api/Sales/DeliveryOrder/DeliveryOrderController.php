@@ -22,11 +22,7 @@ class DeliveryOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $deliverOrders = DeliveryOrder::eloquentFilter($request)
-            ->join(Customer::getTableName(), DeliveryOrder::getTableName('customer_id'), '=', Customer::getTableName('id'))
-            ->joinForm()
-            ->notArchived()
-            ->with('form');
+        $deliverOrders = DeliveryOrder::eloquentFilter($request);
 
         $deliverOrders = pagination($deliverOrders, $request->get('limit'));
 
@@ -75,13 +71,12 @@ class DeliveryOrderController extends Controller
 
         $deliveryOrderItemIds = $deliveryOrder->items->pluck('id');
 
-        $tempArray = DeliveryNote::joinForm()
+        $tempArray = DeliveryNote::active()
             ->join(DeliveryNoteItem::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_note_id'))
             ->groupBy('delivery_order_item_id')
             ->select(DeliveryNoteItem::getTableName('delivery_order_item_id'))
             ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
             ->whereIn('delivery_order_item_id', $deliveryOrderItemIds)
-            ->active()
             ->get();
 
         $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'delivery_order_item_id');

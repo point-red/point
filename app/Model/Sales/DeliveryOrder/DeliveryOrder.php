@@ -58,9 +58,7 @@ class DeliveryOrder extends TransactionModel
 
     public function deliveryNotes()
     {
-        return $this->hasMany(DeliveryNote::class)
-            ->joinForm(DeliveryNote::class)
-            ->active();
+        return $this->hasMany(DeliveryNote::class)->active();
     }
 
     public function updateIfDone()
@@ -68,13 +66,12 @@ class DeliveryOrder extends TransactionModel
         $deliveryOrderItems = $this->items;
         $deliveryOrderItemIds = $deliveryOrderItems->pluck('id');
 
-        $tempArray = DeliveryNote::joinForm()
+        $tempArray = DeliveryNote::active()
             ->join(DeliveryNoteItem::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_note_id'))
             ->groupBy('delivery_order_item_id')
             ->select(DeliveryNoteItem::getTableName('delivery_order_item_id'))
             ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
             ->whereIn('delivery_order_item_id', $deliveryOrderItemIds)
-            ->active()
             ->get();
 
         $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'delivery_order_item_id');

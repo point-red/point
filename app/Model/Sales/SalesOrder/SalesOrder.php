@@ -85,9 +85,7 @@ class SalesOrder extends TransactionModel
 
     public function deliveryOrders()
     {
-        return $this->hasMany(DeliveryOrder::class)
-            ->joinForm(DeliveryOrder::class)
-            ->active();
+        return $this->hasMany(DeliveryOrder::class)->active();
     }
 
     public function warehouse()
@@ -97,15 +95,12 @@ class SalesOrder extends TransactionModel
 
     public function downPayments()
     {
-        return $this->morphMany(SalesDownPayment::class, 'downpaymentable')
-            ->joinForm(SalesDownPayment::class)
-            ->active();
+        return $this->morphMany(SalesDownPayment::class, 'downpaymentable')->active();
     }
 
     public function salesContract()
     {
-        return $this->belongsTo(SalesContract::class)
-            ->joinForm(SalesContract::class);
+        return $this->belongsTo(SalesContract::class);
     }
 
     public function updateIfDone()
@@ -113,13 +108,12 @@ class SalesOrder extends TransactionModel
         $salesOrderItems = $this->items;
         $salesOrderItemIds = $salesOrderItems->pluck('id');
 
-        $tempArray = DeliveryOrder::joinForm()
+        $tempArray = DeliveryOrder::active()
             ->join(DeliveryOrderItem::getTableName(), DeliveryOrder::getTableName('id'), '=', DeliveryOrderItem::getTableName('delivery_order_id'))
             ->groupBy('sales_order_item_id')
             ->select(DeliveryOrderItem::getTableName('sales_order_item_id'))
             ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
             ->whereIn('sales_order_item_id', $salesOrderItemIds)
-            ->active()
             ->get();
 
         $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'sales_order_item_id');

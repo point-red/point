@@ -21,11 +21,7 @@ class PurchaseContractController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseContracts = PurchaseContract::eloquentFilter($request)
-            ->joinForm()
-            ->join(Supplier::getTableName(), PurchaseContract::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
-            ->notArchived()
-            ->with('form');
+        $purchaseContracts = PurchaseContract::eloquentFilter($request);
 
         $purchaseContracts = pagination($purchaseContracts, $request->get('limit'));
 
@@ -62,9 +58,7 @@ class PurchaseContractController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseContract = PurchaseContract::eloquentFilter($request)
-            ->with('form')
-            ->findOrFail($id);
+        $purchaseContract = PurchaseContract::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($purchaseContract);
     }

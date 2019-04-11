@@ -20,10 +20,7 @@ class SalesInvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $salesInvoices = SalesInvoice::eloquentFilter($request)
-            ->joinForm()
-            ->notArchived()
-            ->with('form');
+        $salesInvoices = SalesInvoice::eloquentFilter($request);
 
         $salesInvoices = pagination($salesInvoices, $request->get('limit'));
 

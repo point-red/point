@@ -19,11 +19,7 @@ class DeliveryNoteController extends Controller
      */
     public function index(Request $request)
     {
-        $deliveryNote = DeliveryNote::eloquentFilter($request)
-            ->join(Customer::getTableName(), DeliveryNote::getTableName('customer_id'), '=', Customer::getTableName('id'))
-            ->joinForm()
-            ->notArchived()
-            ->with('form');
+        $deliveryNote = DeliveryNote::eloquentFilter($request);
 
         $deliveryNote = pagination($deliveryNote, $request->get('limit'));
 

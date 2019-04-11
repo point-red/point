@@ -24,9 +24,7 @@ class StorePurchaseReceiveRequest extends FormRequest
      */
     public function rules()
     {
-        $ruleForm = [
-            'date' => 'required|date',
-        ];
+        $ruleForm = ValidationRule::form();
 
         $rulePurchaseReceive = [
             'supplier_id' => ValidationRule::foreignKey('suppliers'),

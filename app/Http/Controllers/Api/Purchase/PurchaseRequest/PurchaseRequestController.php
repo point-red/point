@@ -24,15 +24,7 @@ class PurchaseRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseRequests = PurchaseRequest::eloquentFilter($request)
-            ->joinForm()
-            ->leftJoin(Supplier::getTableName(), PurchaseRequest::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
-            ->leftJoin(Employee::getTableName(), PurchaseRequest::getTableName('employee_id'), '=', Employee::getTableName('id'))
-            ->leftJoin(PurchaseRequestItem::getTableName(), PurchaseRequestItem::getTableName('purchase_request_id'), '=', PurchaseRequest::getTableName('id'))
-            ->leftJoin(Item::getTableName(), Item::getTableName('id'), '=', PurchaseRequestItem::getTableName('item_id'))
-            ->notArchived()
-            ->groupBy('forms.id')
-            ->with('form');
+        $purchaseRequests = PurchaseRequest::eloquentFilter($request);
 
         $purchaseRequests = pagination($purchaseRequests, $request->get('limit'));
 

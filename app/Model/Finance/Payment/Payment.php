@@ -91,7 +91,7 @@ class Payment extends TransactionModel
         $form->formable_type = self::class;
 
         $form->generateFormNumber(
-            self::getPaymentFormNumber($payment, $data['number'], $data['date']),
+            self::getPaymentFormNumber($payment, $data['number'], $data['increment_group']),
             $data['paymentable_id'],
             $data['paymentable_id']
         );
@@ -124,7 +124,7 @@ class Payment extends TransactionModel
         }, 0);
     }
 
-    private static function getPaymentFormNumber($payment, $number, $date)
+    private static function getPaymentFormNumber($payment, $number, $incrementGroup)
     {
         $defaultFormat = '{payment_type}-{disbursed}{y}{m}{increment=4}';
         $formNumber = $number ?? $defaultFormat;
@@ -132,12 +132,22 @@ class Payment extends TransactionModel
         // Different method to get increment because payment number is considering payment_type
         preg_match_all('/{increment=(\d)}/', $formNumber, $regexResult);
         if (! empty($regexResult)) {
-            $increment = self::joinForm()
-                ->notArchived()
-                ->whereMonth(Form::getTableName('date'), date('n', strtotime($date)))
-                ->where(self::getTableName('payment_type'), $payment->payment_type)
-                ->where(self::getTableName('disbursed'), $payment->disbursed)
-                ->count();
+            $lastPayment = Self::whereHas('form', function($query) use($incrementGroup){
+                $query->whereNotNull('number')
+                    ->where('increment_group', $incrementGroup);
+            })
+            ->where('payment_type', $payment->payment_type)
+            ->where('disbursed', $payment->disbursed)
+            ->with(['form' => function($query) {
+                $query->orderBy('increment', 'desc');
+            }])
+            ->first();
+    
+            $increment = 1;
+    
+            if (! empty($lastPayment)) {
+                $increment += $lastPayment->form->increment;
+            }
 
             foreach ($regexResult[0] as $key => $value) {
                 $padUntil = $regexResult[1][$key];

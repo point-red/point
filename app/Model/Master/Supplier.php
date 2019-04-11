@@ -5,6 +5,7 @@ namespace App\Model\Master;
 use App\Model\MasterModel;
 use App\Model\Accounting\Journal;
 use App\Model\Finance\Payment\Payment;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
 class Supplier extends MasterModel
 {
@@ -80,5 +81,10 @@ class Supplier extends MasterModel
     public function payments()
     {
         return $this->morphMany(Payment::class, 'paymentable');
+    }
+
+    public function purchaseReceives()
+    {
+        return $this->hasMany(PurchaseReceive::class);
     }
 }

@@ -45,4 +45,22 @@ class TransactionModel extends PointModel
             throw new UpdatePeriodNotAllowedException();
         }
     }
+
+    public function archives()
+    {
+        return Form::whereNotNull('edited_number')
+            ->where('formable_type', $this->formable_type)
+            ->where('increment', $this->increment)
+            ->where('increment_group', $this->increment_group)
+            ->get();
+    }
+
+    public function origin ()
+    {
+        return Form::whereNull('edited_number')
+            ->where('formable_type', $this->formable_type)
+            ->where('increment', $this->increment)
+            ->where('increment_group', $this->increment_group)
+            ->get();
+    }
 }

@@ -20,11 +20,7 @@ class PurchaseReceiveController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseReceives = PurchaseReceive::eloquentFilter($request)
-            ->join(Supplier::getTableName(), PurchaseReceive::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
-            ->joinForm()
-            ->notArchived()
-            ->with('form');
+        $purchaseReceives = PurchaseReceive::eloquentFilter($request);
 
         $purchaseReceives = pagination($purchaseReceives, $request->get('limit'));
 
@@ -104,16 +100,7 @@ class PurchaseReceiveController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseReceive = PurchaseReceive::eloquentFilter($request)
-            ->with('form')
-            ->with('purchaseOrder.form')
-            ->with('warehouse')
-            ->with('supplier')
-            ->with('items.item')
-            ->with('items.allocation')
-            ->with('services.service')
-            ->with('services.allocation')
-            ->findOrFail($id);
+        $purchaseReceive = PurchaseReceive::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($purchaseReceive);
     }

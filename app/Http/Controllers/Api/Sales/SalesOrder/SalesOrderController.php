@@ -21,11 +21,7 @@ class SalesOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $salesOrders = SalesOrder::eloquentFilter($request)
-            ->join(Customer::getTableName(), SalesOrder::getTableName('customer_id'), '=', Customer::getTableName('id'))
-            ->joinForm()
-            ->notArchived()
-            ->with('form');
+        $salesOrders = SalesOrder::eloquentFilter($request);
 
         $salesOrders = pagination($salesOrders, $request->get('limit'));
 
@@ -75,13 +71,12 @@ class SalesOrderController extends Controller
 
         $salesOrderItemIds = $salesOrder->items->pluck('id');
 
-        $tempArray = DeliveryOrder::joinForm()
+        $tempArray = DeliveryOrder::active()
             ->join(DeliveryOrderItem::getTableName(), DeliveryOrder::getTableName('id'), '=', DeliveryOrderItem::getTableName('delivery_order_id'))
             ->groupBy('sales_order_item_id')
             ->select(DeliveryOrderItem::getTableName('sales_order_item_id'))
             ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
             ->whereIn('sales_order_item_id', $salesOrderItemIds)
-            ->active()
             ->get();
 
         $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'sales_order_item_id');

@@ -3,14 +3,12 @@
 namespace App\Model\Purchase\PurchaseReceive;
 
 use App\Model\Form;
-use App\Model\Master\Item;
-use App\Model\Master\Service;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 
 class PurchaseReceive extends TransactionModel
 {
@@ -54,6 +52,11 @@ class PurchaseReceive extends TransactionModel
     public function purchaseOrder()
     {
         return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
+    }
+
+    public function purchaseInvoice()
+    {
+        return $this->belongsToMany(PurchaseInvoice::class, 'purchase_invoice_items')->active();
     }
 
     public function warehouse()

@@ -46,7 +46,7 @@ class PurchaseDownPayment extends Model
 
     public function invoices()
     {
-        return $this->belongsToMany(PurchaseInvoice::class, 'down_payment_invoice', 'invoice_id', 'down_payment_id');
+        return $this->belongsToMany(PurchaseInvoice::class, 'down_payment_invoice', 'invoice_id', 'down_payment_id')->active();
     }
 
     public static function create($data)

@@ -60,16 +60,12 @@ class SalesContract extends TransactionModel
 
     public function salesOrders()
     {
-        return $this->hasMany(SalesOrder::class)
-            ->joinForm(SalesOrder::class)
-            ->active();
+        return $this->hasMany(SalesOrder::class)->active();
     }
 
     public function downPayments()
     {
-        return $this->morphMany(SalesDownPayment::class, 'downpaymentable')
-            ->joinForm(SalesDownPayment::class)
-            ->active();
+        return $this->morphMany(SalesDownPayment::class, 'downpaymentable')->active();
     }
 
     public function updateIfDone()
@@ -81,13 +77,12 @@ class SalesContract extends TransactionModel
             $salesContractItems = $this->items;
             $salesContractItemIds = $salesContractItems->pluck('id');
 
-            $quantityOrderedItems = SalesOrder::joinForm()
+            $quantityOrderedItems = SalesOrder::active()
                 ->join(SalesOrderItem::getTableName(), SalesOrder::getTableName('id'), '=', SalesOrderItem::getTableName('sales_order_id'))
                 ->groupBy('sales_contract_item_id')
                 ->select(SalesOrderItem::getTableName('sales_contract_item_id'))
                 ->addSelect(\DB::raw('SUM(quantity) AS sum_ordered'))
                 ->whereIn('sales_contract_item_id', $salesContractItemIds)
-                ->active()
                 ->get()
                 ->pluck('sum_ordered', 'sales_contract_item_id');
 
@@ -102,13 +97,12 @@ class SalesContract extends TransactionModel
             $salesContractGroupItems = $this->groupItems;
             $salesContractGroupItemIds = $salesContractGroupItems->pluck('id');
 
-            $quantityOrderedGroupItems = SalesOrder::joinForm()
+            $quantityOrderedGroupItems = SalesOrder::active()
                 ->join(SalesOrderItem::getTableName(), SalesOrder::getTableName('id'), '=', SalesOrderItem::getTableName('sales_order_id'))
                 ->groupBy('sales_contract_group_item_id')
                 ->select(SalesOrderItem::getTableName('sales_contract_group_item_id'))
                 ->addSelect(\DB::raw('SUM(quantity) AS sum_ordered'))
                 ->whereIn('sales_contract_group_item_id', $salesContractGroupItemIds)
-                ->active()
                 ->get()
                 ->pluck('sum_ordered', 'sales_contract_group_item_id');
 

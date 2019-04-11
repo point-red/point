@@ -46,9 +46,7 @@ class PurchaseContract extends TransactionModel
 
     public function purchaseOrders()
     {
-        return $this->hasMany(PurchaseOrder::class)
-            ->joinForm()
-            ->active();
+        return $this->hasMany(PurchaseOrder::class)->active();
     }
 
     public function isAllowedToUpdate()

@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 
-use App\Model\Form;
 use Illuminate\Http\Request;
-use App\Model\Master\Supplier;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
@@ -12,6 +10,8 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\StorePurchaseInvoiceRequest;
 use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\UpdatePurchaseInvoiceRequest;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
 class PurchaseInvoiceController extends Controller
 {
@@ -23,11 +23,7 @@ class PurchaseInvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseInvoices = PurchaseInvoice::eloquentFilter($request)
-            ->joinForm()
-            ->join(Supplier::getTableName(), PurchaseInvoice::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
-            ->notArchived()
-            ->with('form');
+        $purchaseInvoices = PurchaseInvoice::eloquentFilter($request);
 
         $purchaseInvoices = pagination($purchaseInvoices, $request->get('limit'));
 
@@ -69,16 +65,7 @@ class PurchaseInvoiceController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseInvoice = PurchaseInvoice::eloquentFilter($request)
-            ->with('form')
-            ->with('supplier')
-            ->with('items.item')
-            ->with('items.allocation')
-            ->with('items.purchaseReceive.form')
-            ->with('services.service')
-            ->with('services.allocation')
-            ->with('services.purchaseReceive.form')
-            ->findOrFail($id);
+        $purchaseInvoice = PurchaseInvoice::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($purchaseInvoice);
     }
@@ -122,7 +109,7 @@ class PurchaseInvoiceController extends Controller
      */
     public function destroy($id)
     {
-        $purchaseInvoice = PurchaseRequest::findOrFail($id);
+        $purchaseInvoice = PurchaseInvoice::findOrFail($id);
         $purchaseInvoice->isAllowedToUpdate();
 
         return $purchaseInvoice->requestCancel();

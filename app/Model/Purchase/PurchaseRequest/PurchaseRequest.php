@@ -75,24 +75,7 @@ class PurchaseRequest extends TransactionModel
 
     public function purchaseOrders()
     {
-        return $this->hasMany(PurchaseOrder::class)
-            ->joinForm(PurchaseOrder::class)
-            ->active();
-    }
-
-    public function archives()
-    {
-        return PurchaseRequest::joinForm()
-            ->with('form')
-            ->where('edited_number', $this->form->number ?? $this->form->edited_number)
-            ->get();
-    }
-
-    public function withOrigin()
-    {
-        if ($this->form->edited_number) {
-            $this->origin = PurchaseRequest::joinForm()->with('form')->where('number', $this->form->edited_number)->first();
-        }
+        return $this->hasMany(PurchaseOrder::class)->active();
     }
 
     public function isAllowedToUpdate($date)

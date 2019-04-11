@@ -47,6 +47,7 @@ class PurchaseOrder extends TransactionModel
         'discount_percent' => 'double',
         'discount_value' => 'double',
         'tax' => 'double',
+        'need_down_payment' => 'double',
     ];
 
     public $defaultNumberPrefix = 'PO';
@@ -88,9 +89,7 @@ class PurchaseOrder extends TransactionModel
 
     public function purchaseReceives()
     {
-        return $this->hasMany(PurchaseReceive::class)
-            ->joinForm(PurchaseReceive::class)
-            ->active();
+        return $this->hasMany(PurchaseReceive::class)->active();
     }
 
     public function warehouse()
@@ -103,13 +102,12 @@ class PurchaseOrder extends TransactionModel
         $purchaseOrderItems = $this->items;
         $purchaseOrderItemIds = $purchaseOrderItems->pluck('id');
 
-        $tempArray = PurchaseReceive::joinForm()
+        $tempArray = PurchaseReceive::activePending()
             ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
             ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
             ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
             ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
             ->groupBy('purchase_order_item_id')
-            ->active()
             ->get();
 
         $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');

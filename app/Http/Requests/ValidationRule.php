@@ -28,6 +28,16 @@ class ValidationRule {
   {
     return "bail|required|integer|min:0|exists:tenant.$table,$column";
   }
+
+  public static function form()
+  {
+    return [
+      'date' => 'required|date',
+      'number'=> 'nullable|string',
+      'increment_group' => 'required|integer',
+      'approver_id' => self::foreignKey('users'),
+    ];
+  }
   
   public static function optionalForeignKey(String $table, String $column = 'id')
   {

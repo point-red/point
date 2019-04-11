@@ -24,11 +24,7 @@ class PurchaseOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseOrders = PurchaseOrder::eloquentFilter($request)
-            ->join(Supplier::getTableName(), PurchaseOrder::getTableName('supplier_id'), '=', Supplier::getTableName('id'))
-            ->joinForm()
-            ->notArchived()
-            ->with('form');
+        $purchaseOrders = PurchaseOrder::eloquentFilter($request);
 
         $purchaseOrders = pagination($purchaseOrders, $request->get('limit'));
 
@@ -108,9 +104,7 @@ class PurchaseOrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseOrder = PurchaseOrder::eloquentFilter($request)
-            ->with('form')
-            ->findOrFail($id);
+        $purchaseOrder = PurchaseOrder::eloquentFilter($request)->findOrFail($id);
 
         /**
          * anything except 0 is considered true, including "false"
@@ -118,18 +112,17 @@ class PurchaseOrderController extends Controller
         if ($request->get('remaining_info')) {
             $purchaseOrderItemIds = $purchaseOrder->items->pluck('id');
 
-            $tempArray = PurchaseReceive::joinForm()
+            $tempArray = PurchaseReceive::activePending()
                 ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
                 ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
                 ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
                 ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
                 ->groupBy('purchase_order_item_id')
-                ->active()
                 ->get();
 
             $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');
 
-            foreach ($purchaseOrder->items as $key => $purchaseOrderItem) {
+            foreach ($purchaseOrder->items as $purchaseOrderItem) {
                 $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;
                 $purchaseOrderItem->quantity_pending = $purchaseOrderItem->quantity - $quantityReceived;
             }

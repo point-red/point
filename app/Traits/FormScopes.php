@@ -6,116 +6,112 @@ use App\Model\Form;
 
 trait FormScopes
 {
-    public function scopeJoinForm($query, $callerClass = null)
-    {
-        $callerClass = $callerClass ?? get_class($this);
-        $query->select($callerClass::getTableName('*'))
-            ->join(Form::getTableName(), Form::getTableName('formable_id'), '=', $callerClass::getTableName('id'))
-            ->where(Form::getTableName('formable_type'), $callerClass);
-    }
-
     public function scopeDone($query)
     {
-        $query->where(Form::getTableName('done'), true);
+        $query->whereHas('form', function($q) {
+            $q->where('done', true);
+        });
     }
 
-    public function scopeOrDone($query)
-    {
-        $query->orWhere(Form::getTableName('done'), true);
-    }
 
     public function scopeNotDone($query)
     {
-        $query->where(Form::getTableName('done'), false);
+        $query->whereHas('form', function($q) {
+            $q->where('done', false);
+        });
     }
 
-    public function scopeOrNotDone($query)
+
+    public function scopeApproved($query)
     {
-        $query->orWhere(Form::getTableName('done'), false);
+        $query->whereHas('form', function($q) {
+            $q->where('approved', true);
+        });
     }
 
-    public function scopeApprovalApproved($query)
-    {
-        $query->where(Form::getTableName('approved'), true);
-    }
-
-    public function scopeOrApprovalApproved($query)
-    {
-        $query->orWhere(Form::getTableName('approved'), true);
-    }
 
     public function scopeApprovalRejected($query)
     {
-        $query->where(Form::getTableName('approved'), false);
+        $query->whereHas('form', function($q) {
+            $q->where('approved', false);
+        });
     }
 
-    public function scopeOrApprovalRejected($query)
-    {
-        $query->orWhere(Form::getTableName('approved'), false);
-    }
 
     public function scopeApprovalPending($query)
     {
-        $query->whereNull(Form::getTableName('approved'));
+        $query->whereHas('form', function($q) {
+            $q->whereNull('approved');
+        });
     }
 
-    public function scopeOrApprovalPending($query)
-    {
-        $query->orWhereNull(Form::getTableName('approved'));
-    }
 
     public function scopeNotRejected($query)
     {
-        $query->approvalPending()->orApprovalApproved();
+        $query->whereHas('form', function($q) {
+            $q->whereNull('approved');
+            $q->orWhere('approved', true);
+        });
     }
 
     public function scopeCancellationApproved($query)
     {
-        $query->where(Form::getTableName('canceled'), true);
+        $query->whereHas('form', function($q) {
+            $q->where('canceled', true);
+        });
     }
 
-    public function scopeOrCancellationApproved($query)
-    {
-        $query->orWhere(Form::getTableName('canceled'), true);
-    }
 
     public function scopeCancellationRejected($query)
     {
-        $query->where(Form::getTableName('canceled'), false);
+        $query->whereHas('form', function($q) {
+            $q->where('canceled', false);
+        });
     }
 
-    public function scopeOrCancellationRejected($query)
-    {
-        $query->orWhere(Form::getTableName('canceled'), false);
-    }
 
     public function scopeCancellationPending($query)
     {
-        $query->whereNull(Form::getTableName('canceled'));
+        $query->whereHas('form', function($q) {
+            $q->whereNull('canceled');
+        });
     }
 
-    public function scopeOrCancellationPending($query)
-    {
-        $query->orWhereNull(Form::getTableName('canceled'));
-    }
 
     public function scopeNotCanceled($query)
     {
-        $query->cancellationPending()->orCancellationRejected();
+        $query->whereHas('form', function($q) {
+            $q->whereNull('canceled');
+            $q->orWhere('canceled', true);
+        });
     }
 
     public function scopeNotArchived($query)
     {
-        $query->whereNotNull(Form::getTableName('number'));
+        $query->whereHas('form', function($q) {
+            $q->whereNotNull('number');
+        });
     }
 
     public function scopeArchived($query)
     {
-        $query->whereNull(Form::getTableName('number'));
+        $query->whereHas('form', function($q) {
+            $q->whereNull('number');
+        });
     }
 
     public function scopeActive($query)
     {
         $query->notCanceled()->notRejected()->notArchived();
+    }
+
+    public function scopeActivePending($query)
+    {
+        $query->active()->notDone();
+    }
+
+    public function scopeActiveDone($query)
+    {
+        $query->active()->done();
     }
 }

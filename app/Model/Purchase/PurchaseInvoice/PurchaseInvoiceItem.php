@@ -4,10 +4,10 @@ namespace App\Model\Purchase\PurchaseInvoice;
 
 use App\Model\Master\Item;
 use App\Model\Master\Allocation;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\TransactionModel;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
-class PurchaseInvoiceItem extends Model
+class PurchaseInvoiceItem extends TransactionModel
 {
     protected $connection = 'tenant';
 

@@ -42,8 +42,8 @@ class NewCommand extends Command
     public function handle()
     {
         $this->line('create point database');
-        Artisan::call('tenant:database:delete', ['db_name' => 'point']);
-        Artisan::call('tenant:database:create', ['db_name' => 'point']);
+        Artisan::call('tenant:database:delete', ['db_name' => env('DB_DATABASE')]);
+        Artisan::call('tenant:database:create', ['db_name' => env('DB_DATABASE')]);
         Artisan::call('migrate');
         Artisan::call('passport:install');
 

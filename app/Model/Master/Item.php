@@ -82,6 +82,7 @@ class Item extends MasterModel
             $form = new Form;
             $form->saveData([
                 'date' => now(),
+                'increment_group' => date('Ym'),
             ], $openingStock);
             $form->save();
 

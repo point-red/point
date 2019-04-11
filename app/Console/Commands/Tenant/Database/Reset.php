@@ -52,8 +52,6 @@ class Reset extends Command
 
         $this->line('Reset project '.$project->code.' started');
 
-        DB::connection('tenant')->beginTransaction();
-
         // Recreate new database for tenant project
         $dbName = env('DB_DATABASE').'_'.strtolower($project->code);
         $this->line('1/4. Recreate database');
@@ -78,8 +76,6 @@ class Reset extends Command
 
         $this->line('4/4. Seed required data');
         Artisan::call('tenant:seed:first', ['db_name' => $dbName]);
-
-        DB::connection('tenant')->commit();
 
         $this->line('Reset project '.$project->code.' finished');
     }

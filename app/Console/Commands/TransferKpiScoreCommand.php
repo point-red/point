@@ -47,7 +47,7 @@ class TransferKpiScoreCommand extends Command
         $projects = Project::all();
 
         foreach ($projects as $project) {
-            $databaseName = 'point_'.strtolower($project->code);
+            $databaseName = env('DB_DATABASE').'_'.strtolower($project->code);
             $this->line('Transfer KPI : '.$project->code);
 
             // Update tenant database name in configuration

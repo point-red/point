@@ -54,7 +54,7 @@ class ProjectController extends Controller
         }
 
         // Create new database for tenant project
-        $dbName = 'point_'.strtolower($request->get('code'));
+        $dbName = env('DB_DATABASE').'_'.strtolower($request->get('code'));
         Artisan::call('tenant:database:create', ['db_name' => $dbName]);
 
         // Update tenant database name in configuration
@@ -111,7 +111,7 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id)->load('users');
 
-        $dbName = 'point_'.strtolower($project->code);
+        $dbName = env('DB_DATABASE').'_'.strtolower($project->code);
 
         $project->db_size = dbm_get_size($dbName, 'tenant');
 
@@ -158,7 +158,7 @@ class ProjectController extends Controller
 
         // Delete database tenant
         Artisan::call('tenant:database:delete', [
-            'db_name' => 'point_'.strtolower($project->code),
+            'db_name' => env('DB_DATABASE').'_'.strtolower($project->code),
         ]);
 
         return new ProjectResource($project);

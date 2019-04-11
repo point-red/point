@@ -60,7 +60,7 @@ class SalesVisitationTeamLeadNotificationCommand extends Command
 
             // Update tenant database name in configuration
             $this->line('Notification : '.$project->code);
-            $databaseName = 'point_'.strtolower($project->code);
+            $databaseName = env('DB_DATABASE').'_'.strtolower($project->code);
             config()->set('database.connections.tenant.database', strtolower($databaseName));
             DB::connection('tenant')->reconnect();
 

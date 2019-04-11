@@ -43,7 +43,7 @@ class Rollbacks extends Command
         $projects = Project::all();
 
         foreach ($projects as $project) {
-            $databaseName = 'point_'.strtolower($project->code);
+            $databaseName = env('DB_DATABASE').'_'.strtolower($project->code);
 
             $this->line('Rollback '.$project->code);
 

@@ -41,7 +41,7 @@ class BackupClone extends Command
     {
         // tenant subdomain equal to tenant database name
         $backupDatabase = 'backup_'.$this->argument('project_code');
-        $sourceDatabase = 'point_'.$this->argument('project_code');
+        $sourceDatabase = env('DB_DATABASE').'_'.$this->argument('project_code');
 
         // drop tenant database if exists
         $process = new Process('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "drop database if exists '.$backupDatabase.'"');

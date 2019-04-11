@@ -55,7 +55,7 @@ class Reset extends Command
         DB::connection('tenant')->beginTransaction();
 
         // Recreate new database for tenant project
-        $dbName = 'point_'.strtolower($project->code);
+        $dbName = env('DB_DATABASE').'_'.strtolower($project->code);
         $this->line('1/4. Recreate database');
         Artisan::call('tenant:database:delete', ['db_name' => $dbName]);
         Artisan::call('tenant:database:create', ['db_name' => $dbName]);

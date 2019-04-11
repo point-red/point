@@ -44,7 +44,7 @@ class Migrates extends Command
 
         foreach ($projects as $project) {
             // Recreate new database for tenant project
-            $databaseName = 'point_'.strtolower($project->code);
+            $databaseName = env('DB_DATABASE').'_'.strtolower($project->code);
 
             $this->line('Migrate '.$project->code);
 

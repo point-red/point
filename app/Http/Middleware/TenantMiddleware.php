@@ -60,7 +60,7 @@ class TenantMiddleware
                 }
             }
 
-            config()->set('database.connections.tenant.database', 'point_'.$request->header('Tenant'));
+            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.$request->header('Tenant'));
             DB::connection('tenant')->reconnect();
         }
 

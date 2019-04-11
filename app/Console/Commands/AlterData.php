@@ -47,7 +47,7 @@ class AlterData extends Command
 //            $this->line('Clone ' . $project->code);
 //            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
             $this->line('Alter '.$project->code);
-            config()->set('database.connections.tenant.database', 'point_'.strtolower($project->code));
+            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
             $items = Item::all();
@@ -77,7 +77,7 @@ class AlterData extends Command
 //            DB::connection('tenant')->statement('ALTER TABLE `pin_point_sales_visitations` ADD COLUMN is_repeat_order BOOLEAN DEFAULT false AFTER payment_received');
 
 //            $this->line('Migrate ' . $project->code);
-//            Artisan::call('tenant:migrate', ['db_name' => 'point_' . strtolower($project->code)]);
+//            Artisan::call('tenant:migrate', ['db_name' => env('DB_DATABASE').'_' . strtolower($project->code)]);
         }
     }
 }

@@ -11,6 +11,8 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
+use App\Http\Requests\Sales\SalesOrder\SalesOrder\StoreSalesOrderRequest;
+use App\Http\Requests\Sales\SalesOrder\SalesOrder\UpdateSalesOrderRequest;
 
 class SalesOrderController extends Controller
 {
@@ -34,7 +36,7 @@ class SalesOrderController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreSalesOrderRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $salesOrder = SalesOrder::create($request->all());
@@ -58,16 +60,7 @@ class SalesOrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $salesOrder = SalesOrder::eloquentFilter($request)
-            ->with('form')
-            ->with('salesQuotation')
-            ->with('warehouse')
-            ->with('customer')
-            ->with('items.item')
-            ->with('items.allocation')
-            ->with('services.service')
-            ->with('services.allocation')
-            ->findOrFail($id);
+        $salesOrder = SalesOrder::eloquentFilter($request)->findOrFail($id);
 
         $salesOrderItemIds = $salesOrder->items->pluck('id');
 
@@ -96,15 +89,28 @@ class SalesOrderController extends Controller
      * @param int  $id
      * @return ApiResource
      */
-    public function update(Request $request, $id)
+    public function update(UpdateSalesOrderRequest $request, $id)
     {
         // TODO prevent delete if referenced by delivery order
-        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-            $salesOrder = SalesOrder::findOrFail($id);
+        $salesOrder = SalesOrder::with('form')->findOrFail($id);
+        
+        $salesOrder->isAllowedToUpdate($request->get('date'));
 
-            $newSalesOrder = $salesOrder->edit($request->all());
+        $result = DB::connection('tenant')->transaction(function () use ($request, $salesOrder) {
+            $salesOrder->form->archive();
+            $request['number'] = $salesOrder->form->edited_number;
 
-            return new ApiResource($newSalesOrder);
+            $salesOrder = SalesOrder::create($request->all());
+            $salesOrder
+                ->load('form')
+                ->load('employee')
+                ->load('supplier')
+                ->load('items.item')
+                ->load('items.allocation')
+                ->load('services.service')
+                ->load('services.allocation');
+
+            return new ApiResource($salesOrder);
         });
 
         return $result;
@@ -119,9 +125,8 @@ class SalesOrderController extends Controller
     public function destroy($id)
     {
         $salesOrder = SalesOrder::findOrFail($id);
+        $salesOrder->isAllowedToDelete();
 
-        $salesOrder->delete();
-
-        return response()->json([], 204);
+        return $salesOrder->requestCancel();
     }
 }

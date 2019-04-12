@@ -2,8 +2,6 @@
 
 namespace App\Traits;
 
-use App\Model\Form;
-
 trait FormScopes
 {
     public function scopeDone($query)

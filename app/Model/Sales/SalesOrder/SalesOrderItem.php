@@ -14,6 +14,7 @@ class SalesOrderItem extends PointModel
 
     protected $fillable = [
         'item_id',
+        'item_name',
         'quantity',
         'price',
         'discount_percent',

@@ -14,6 +14,7 @@ class SalesOrderService extends Model
 
     protected $fillable = [
         'service_id',
+        'service_name',
         'quantity',
         'price',
         'discount_percent',

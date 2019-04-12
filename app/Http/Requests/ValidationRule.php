@@ -55,7 +55,7 @@ class ValidationRule {
       'date' => 'required|date',
       'number'=> 'nullable|string',
       'increment_group' => 'required|integer',
-      'approver_id' => self::foreignKey('users'),
+      'approver_id' => self::foreignKeyNullable('users'),
     ];
   }
 

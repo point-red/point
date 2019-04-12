@@ -13,6 +13,7 @@ class SalesContractGroupItem extends TransactionModel
 
     protected $fillable = [
         'group_id',
+        'group_name',
         'price',
         'quantity',
         'discount_percent',

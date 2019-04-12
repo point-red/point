@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
-use App\Model\Master\Item;
+use App\Model\Form;
+use App\Model\HumanResource\Employee\Employee;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Model\HumanResource\Employee\Employee;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
 use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
 
 class PurchaseRequestController extends Controller
@@ -25,6 +24,29 @@ class PurchaseRequestController extends Controller
     public function index(Request $request)
     {
         $purchaseRequests = PurchaseRequest::eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('supplier', $fields)) {
+                $purchaseRequests = $purchaseRequests->join(Supplier::getTableName(), function ($q) {
+                    $q->on(Supplier::getTableName('id'), '=', PurchaseRequest::getTableName('supplier_id'));
+                });
+            }
+
+            if (in_array('employee', $fields)) {
+                $purchaseRequests = $purchaseRequests->join(Employee::getTableName(), function ($q) {
+                    $q->on(Employee::getTableName('id'), '=', PurchaseRequest::getTableName('employee_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $purchaseRequests = $purchaseRequests->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', PurchaseRequest::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), PurchaseRequest::class);
+                });
+            }
+        }
 
         $purchaseRequests = pagination($purchaseRequests, $request->get('limit'));
 

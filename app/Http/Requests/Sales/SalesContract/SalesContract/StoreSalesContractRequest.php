@@ -4,6 +4,7 @@ namespace App\Http\Requests\Sales\SalesContract\SalesContract;
 
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ValidationRule;
 
 class StoreSalesContractRequest extends FormRequest
 {
@@ -24,28 +25,42 @@ class StoreSalesContractRequest extends FormRequest
      */
     public function rules(Request $request)
     {
-        $array = [
-            'customer_id' => 'bail|required|integer|min:1|exists:tenant.customers,id',
-            'customer_name' => 'bail|string|min:1',
+        $rulesForm = ValidationRule::form();
+        
+        $rulesSalesContract = [
+            'customer_id' => ValidationRule::foreignKey('customers'),
+            'customer_name' => 'required|string',
+            'cash_only' => 'boolean',
+            'need_down_payment' => ValidationRule::needDownPayment(),
+            'discount_percent' => ValidationRule::discountPercent(),
+            'discount_value' => ValidationRule::discountValue(),
+            'type_of_tax' => ValidationRule::typeOfTax(),
+            'tax' => ValidationRule::tax(),
         ];
 
         if ($request->has('items')) {
-            $array = array_merge($array, [
-                'items.*.item_id' => 'bail|required|integer|min:1|exists:tenant.items,id',
-                'items.*.price' => 'bail|required|numeric|min:0|not_in:0',
-                'items.*.quantity' => 'bail|required|numeric|min:0|not_in:0',
-                'items.*.allocation_id' => 'bail|integer|min:1|exists:tenant.allocations,id',
-            ]);
+            $rulesSalesContractItem = [
+                'items' => 'required|array',
+                'items.*.item_id' => ValidationRule::foreignKey('items'),
+                'items.*.price' => ValidationRule::price(),
+                'items.*.quantity' => ValidationRule::quantity(),
+                'items.*.converter' => ValidationRule::converter(),
+                'items.*.converter' => ValidationRule::unit(),
+                'items.*.allocation_id' => ValidationRule::foreignKeyOptional('allocations'),
+            ];
+
+            return array_merge($rulesForm, $rulesSalesContract, $rulesSalesContractItem);
         } else {
-            \Log::info('has groups');
-            $array = array_merge($array, [
-                'groups.*.group_id' => 'bail|required|integer|min:1|exists:tenant.groups,id',
-                'groups.*.price' => 'bail|required|numeric|min:0|not_in:0',
-                'groups.*.quantity' => 'bail|required|numeric|min:0|not_in:0',
-                'groups.*.allocation_id' => 'bail|integer|min:1|exists:tenant.allocations,id',
-            ]);
+            $rulesSalesContractItemGroup = [
+                'groups' => 'required|array',
+                'groups.*.group_id' => ValidationRule::foreignKey('groups'),
+                'groups.*.price' => ValidationRule::price(),
+                'groups.*.quantity' => ValidationRule::quantity(),
+                'groups.*.allocation_id' => ValidationRule::foreignKeyOptional('allocations'),
+            ];
+
+            return array_merge($rulesForm, $rulesSalesContract, $rulesSalesContractItemGroup);
         }
 
-        return $array;
     }
 }

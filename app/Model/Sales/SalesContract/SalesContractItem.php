@@ -13,6 +13,7 @@ class SalesContractItem extends TransactionModel
 
     protected $fillable = [
         'item_id',
+        'item_name',
         'price',
         'quantity',
         'discount_percent',

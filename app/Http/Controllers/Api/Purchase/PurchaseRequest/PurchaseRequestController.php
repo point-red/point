@@ -115,7 +115,7 @@ class PurchaseRequestController extends Controller
             $purchaseRequest->archives = $purchaseRequest->archives();
         }
 
-        $purchaseRequest->withOrigin();
+        $purchaseRequest->origin();
 
         return new ApiResource($purchaseRequest);
     }
@@ -131,12 +131,14 @@ class PurchaseRequestController extends Controller
     public function update(Request $request, $id)
     {
         $purchaseRequest = PurchaseRequest::with('form')->findOrFail($id);
-        info($request->get('date'));
+
         $purchaseRequest->isAllowedToUpdate($request->get('date'));
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseRequest) {
             $purchaseRequest->form->archive();
             $request['number'] = $purchaseRequest->form->edited_number;
+            $request['increment'] = $purchaseRequest->form->increment;
+            $request['increment_group'] = $purchaseRequest->form->increment_group;
 
             $purchaseRequest = PurchaseRequest::create($request->all());
             $purchaseRequest

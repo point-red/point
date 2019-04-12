@@ -48,19 +48,25 @@ class TransactionModel extends PointModel
 
     public function archives()
     {
-        return Form::whereNotNull('edited_number')
-            ->where('formable_type', $this->formable_type)
-            ->where('increment', $this->increment)
-            ->where('increment_group', $this->increment_group)
+        return get_class($this)::join('forms', 'forms.formable_id', '=', $this::getTableName('id'))
+            ->whereNotNull('edited_number')
+            ->where('formable_type', $this->form->formable_type)
+            ->where('increment', $this->form->increment)
+            ->where('increment_group', $this->form->increment_group)
+            ->select($this::getTableName('*'))
+            ->with('form')
             ->get();
     }
 
-    public function origin ()
+    public function origin()
     {
-        return Form::whereNull('edited_number')
-            ->where('formable_type', $this->formable_type)
-            ->where('increment', $this->increment)
-            ->where('increment_group', $this->increment_group)
+        return get_class($this)::join('forms', 'forms.formable_id', '=', $this::getTableName('id'))
+            ->whereNull('edited_number')
+            ->where('formable_type', $this->form->formable_type)
+            ->where('increment', $this->form->increment)
+            ->where('increment_group', $this->form->increment_group)
+            ->select($this::getTableName('*'))
+            ->with('form')
             ->get();
     }
 }

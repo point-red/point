@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseOrder;
 
+use App\Http\Requests\Purchase\PurchaseOrder\StorePurchaseOrderRequest;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
@@ -51,9 +52,7 @@ class PurchaseOrderController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
      * Request :
-     *
      *  - number (String)
      *  - date (String YYYY-MM-DD hh:mm:ss)
      *  - purchase_request_id (Int, Optional)
@@ -80,7 +79,6 @@ class PurchaseOrderController extends Controller
      *      - taxable (Boolean, Optional)
      *      - description (String)
      *      - allocation_id (Int, Optional)
-     *
      *  - services (Array) :
      *      - service_id (Int)
      *      - quantity (Decimal)
@@ -91,9 +89,9 @@ class PurchaseOrderController extends Controller
      *      - description (String)
      *      - allocation_id (Int, Optional)
      *
-     * @param \Illuminate\Http\Request $request
-     * @throws \Throwable
+     * @param \App\Http\Controllers\Api\Purchase\PurchaseOrder\StorePurchaseOrderRequest $request
      * @return ApiResource
+     * @throws \Throwable
      */
     public function store(StorePurchaseOrderRequest $request)
     {
@@ -152,9 +150,10 @@ class PurchaseOrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param int  $id
+     * @param UpdatePurchaseOrderRequest $request
+     * @param int $id
      * @return ApiResource
+     * @throws \Throwable
      */
     public function update(UpdatePurchaseOrderRequest $request, $id)
     {

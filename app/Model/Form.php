@@ -116,7 +116,6 @@ class Form extends PointModel
     public function archive($editedNotes = '')
     {
         // Archive form number
-        $this->edited_form_id = $this->id;
         $this->edited_number = $this->number;
         $this->edited_notes = $editedNotes;
         $this->number = null;

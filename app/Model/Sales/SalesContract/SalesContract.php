@@ -3,8 +3,6 @@
 namespace App\Model\Sales\SalesContract;
 
 use App\Model\Form;
-use App\Model\Master\Item;
-use App\Model\Master\Group;
 use App\Model\Master\Customer;
 use App\Model\TransactionModel;
 use App\Model\Sales\SalesOrder\SalesOrder;
@@ -124,58 +122,80 @@ class SalesContract extends TransactionModel
         }
     }
 
+    public function isAllowedToUpdate($date)
+    {
+        $this->updatedFormInSamePeriod($date);
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    public function isAllowedToDelete()
+    {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
     public static function create($data)
     {
         $salesContract = new self;
-        if (empty($data['customer_name'])) {
-            $data['customer_name'] = Customer::find($data['customer_id'], ['name']);
-        }
         $salesContract->fill($data);
 
-        $items = [];
-        $groupItems = [];
-        $amount = 0;
-
-        if (! empty($data['items'])) {
-            $itemIds = array_column($data['items'], 'item_id');
-            $dbItems = Item::select('id', 'name')->whereIn('id', $itemIds)->get()->keyBy('id');
-
-            foreach ($data['items'] as $item) {
-                $contractItem = new SalesContractItem;
-                $contractItem->fill($item);
-                $contractItem->item_name = $dbItems[$item['item_id']]->name;
-
-                $amount += $item['quantity'] * ($item['price'] - $item['discount_value']);
-
-                array_push($items, $contractItem);
-            }
-        } elseif (! empty($data['groups'])) {
-            $groupIds = array_column($data['groups'], 'group_id');
-            $dbGroups = Group::select('id', 'name')->whereIn('id', $groupIds)->get()->keyBy('id');
-
-            foreach ($data['groups'] as $groupItem) {
-                $contractGroup = new SalesContractGroupItem;
-                $contractGroup->fill($groupItem);
-                $contractGroup->group_name = $dbGroups[$groupItem['group_id']]->name;
-
-                $amount += $groupItem['quantity'] * ($groupItem['price'] - $groupItem['discount_value']);
-
-                array_push($groupItems, $contractGroup);
-            }
-        }
-
-        $salesContract->amount = $amount - $salesContract->discount_value + $salesContract->tax;
+        $items = self::mapItems($data['items'] ?? []);
+        $groupItems = self::mapGroupItems($data['groups'] ?? []);
+        
+        $salesContract->amount = self::calculateAmount($salesContract, $items, $groupItems);
         $salesContract->save();
 
-        if (! empty($items)) {
-            $salesContract->items()->saveMany($items);
-        } elseif (! empty($groupItems)) {
-            $salesContract->groupItems()->saveMany($groupItems);
-        }
+        $salesContract->items()->saveMany($items);
+        $salesContract->groupItems()->saveMany($groupItems);
 
         $form = new Form;
         $form->saveData($data, $salesContract);
 
         return $salesContract;
+    }
+
+    private static function mapItems($items)
+    {
+        return array_map(function($item) {
+            $contractItem = new SalesContractItem;
+            $contractItem->fill($item);
+
+            return $contractItem;
+        }, $items);
+    }
+    
+    private static function mapGroupItems($groups)
+    {
+        return array_map(function($group) {
+            $contractGroup = new SalesContractGroupItem;
+            $contractGroup->fill($group);
+
+            return $contractGroup;
+        }, $groups);
+    }
+
+    private static function calculateAmount($salesContract, $items, $groups)
+    {
+        $amount = array_reduce($items, function($carry, $item) {
+            return $carry + $item->quantity * $item->converter * ($item->price - $item->discount_value);
+        }, 0);
+
+        $amount += array_reduce($groups, function($carry, $group) {
+            return $carry + $group->quantity * ($group->price - $group->discount_value);
+        }, 0);
+
+        $amount -= $salesContract->discount_value;
+        $amount += $salesContract->type_of_tax === 'exclude' ? $salesContract->tax : 0;
+
+        return $amount;
+    }
+
+    private function isNotReferenced()
+    {
+        // Check if not referenced by purchase order
+        if ($this->salesOrders->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by sales order', $this->salesOrders);
+        }
     }
 }

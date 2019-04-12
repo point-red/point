@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesContract\SalesContract;
 use App\Http\Requests\Sales\SalesContract\SalesContract\StoreSalesContractRequest;
+use App\Http\Requests\Sales\SalesContract\SalesContract\UpdateSalesContractRequest;
 
 class SalesContractController extends Controller
 {
@@ -70,9 +71,22 @@ class SalesContractController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateSalesContractRequest $request, $id)
     {
-        //
+        $salesContract = SalesContract::with('form')->findOrFail($id);
+        $salesContract->isAllowedToUpdate($request->get('date'));
+
+        $result = DB::connection('tenant')->transaction(function () use ($request, $salesContract) {
+            $salesContract->form->archive();
+            $request['number'] = $salesContract->form->edited_number;
+
+            $salesContract = SalesContract::create($request->all());
+            $salesContract->load('form');
+
+            return new ApiResource($salesContract);
+        });
+
+        return $result;
     }
 
     /**
@@ -83,6 +97,9 @@ class SalesContractController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $salesContract = SalesContract::findOrFail($id);
+        $salesContract->isAllowedToDelete();
+
+        return $salesContract->requestCancel();
     }
 }

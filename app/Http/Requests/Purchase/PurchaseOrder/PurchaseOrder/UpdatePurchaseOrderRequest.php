@@ -26,12 +26,12 @@ class UpdatePurchaseOrderRequest extends FormRequest
         $rulesForm = ValidationRule::form();
 
         $rulesPurchaseOrder = [
-            'purchase_request_id' => ValidationRule::optionalForeignKey('purchase_requests'),
-            'purchase_contract_id' => ValidationRule::optionalForeignKey('purchase_contracts'),
+            'purchase_request_id' => ValidationRule::foreignKeyNullable('purchase_requests'),
+            'purchase_contract_id' => ValidationRule::foreignKeyNullable('purchase_contracts'),
 
             'supplier_id' => ValidationRule::foreignKey('suppliers'),
             'supplier_name' => 'required|string',
-            'warehouse_id' => ValidationRule::optionalForeignKey('warehouses'),
+            'warehouse_id' => ValidationRule::foreignKeyNullable('warehouses'),
             'eta' => 'date',
             'cash_only' => 'boolean',
             'need_down_payment' => ValidationRule::needDownPayment(),
@@ -46,7 +46,7 @@ class UpdatePurchaseOrderRequest extends FormRequest
         ];
 
         $rulesPurchaseOrderItems = [
-            'items.*.purchase_request_item_id' => ValidationRule::optionalForeignKey('items'),
+            'items.*.purchase_request_item_id' => ValidationRule::foreignKeyNullable('items'),
             'items.*.item_id' => ValidationRule::foreignKey('items'),
             'items.*.item_name' => 'required|string',
             'items.*.quantity' => ValidationRule::quantity(),
@@ -56,11 +56,11 @@ class UpdatePurchaseOrderRequest extends FormRequest
             'items.*.taxable' => 'boolean',
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::converter(),
-            'items.*.allocation_id' => ValidationRule::optionalForeignKey('allocations'),
+            'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
         ];
 
         $rulesPurchaseOrderServices = [
-            'services.*.purchase_request_item_id' => ValidationRule::optionalForeignKey('services'),
+            'services.*.purchase_request_item_id' => ValidationRule::foreignKeyNullable('services'),
             'services.*.service_id' => ValidationRule::foreignKey('services'),
             'services.*.service_name' => 'required|string',
             'services.*.quantity' => ValidationRule::quantity(),
@@ -68,7 +68,7 @@ class UpdatePurchaseOrderRequest extends FormRequest
             'services.*.discount_percent' => ValidationRule::discountPercent(),
             'services.*.discount_value' => ValidationRule::discountValue(),
             'services.*.taxable' => 'boolean',
-            'services.*.allocation_id' => ValidationRule::optionalForeignKey('allocations'),
+            'services.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
         ];
 
         return array_merge($rulesForm, $rulesPurchaseOrder, $rulesPurchaseOrderItems, $rulesPurchaseOrderServices);

@@ -47,7 +47,7 @@ class StorePurchaseInvoiceRequest extends FormRequest
             'items.*.price' => ValidationRule::price(),
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::converter(),
-            'items.*.allocation_id' => ValidationRule::optionalForeignKey('allocations'),
+            'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
         ];
 
         $rulesPurchaseInvoiceServices = [
@@ -55,7 +55,7 @@ class StorePurchaseInvoiceRequest extends FormRequest
             'services.*.service_name' => 'required|string',
             'services.*.quantity' => ValidationRule::quantity(),
             'services.*.price' => ValidationRule::price(),
-            'services.*.allocation_id' => ValidationRule::optionalForeignKey('allocations'),
+            'services.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
         ];
 
         return array_merge($rulesForm, $rulesPurchaseInvoice, $rulesPurchaseInvoiceItems, $rulesPurchaseInvoiceServices);

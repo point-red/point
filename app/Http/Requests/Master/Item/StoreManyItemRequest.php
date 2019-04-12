@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Master\Item;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ValidationRule;
 
 class StoreManyItemRequest extends FormRequest
 {
@@ -28,9 +29,11 @@ class StoreManyItemRequest extends FormRequest
     public function rules()
     {
         return [
-            'items.*.chart_of_account_id' => 'required',
+            'items.*.chart_of_account_id' => ValidationRule::foreignKey('chart_of_accounts'),
             'items.*.units' => 'required|array',
-            'items.*.groups' => 'array',
+            'items.*.groups' => 'nullable|array',
+
+            // TODO each units and groups fields
         ];
     }
 }

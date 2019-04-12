@@ -29,7 +29,7 @@ class UpdatePurchaseReceiveRequest extends FormRequest
             'supplier_id' => ValidationRule::foreignKey('suppliers'),
             'supplier_name' => 'required|string',
             'warehouse_id' => ValidationRule::foreignKey('warehouses'),
-            'purchase_order_id' => ValidationRule::optionalForeignKey('purchase_orders'),
+            'purchase_order_id' => ValidationRule::foreignKeyNullable('purchase_orders'),
 
             'items' => 'required_without:services|array',
             'services' => 'required_without:items|array',
@@ -42,7 +42,7 @@ class UpdatePurchaseReceiveRequest extends FormRequest
             'items.*.quantity' => ValidationRule::quantity(),
             'items.*.unit' => ValidationRule::quantity(),
             'items.*.converter' => ValidationRule::quantity(),
-            'items.*.allocation_id' => ValidationRule::optionalForeignKey('allocations'),
+            'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
         ];
 
         $rulePurchaseReceiveServices = [
@@ -50,7 +50,7 @@ class UpdatePurchaseReceiveRequest extends FormRequest
             'services.*.service_name' => 'required|string',
             'services.*.purchase_order_service_id' => ValidationRule::foreignKey('purchase_order_services'),
             'services.*.quantity' => ValidationRule::quantity(),
-            'services.*.allocation_id' => ValidationRule::optionalForeignKey('allocations'),
+            'services.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
         ];
 
         return array_merge($ruleForm, $rulePurchaseReceive, $rulePurchaseReceiveItems, $rulePurchaseReceiveServices);

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Master\Item;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ValidationRule;
 
 class StoreItemRequest extends FormRequest
 {
@@ -29,9 +30,15 @@ class StoreItemRequest extends FormRequest
     public function rules()
     {
         return [
-            'chart_of_account_id' => 'required',
+            'name' => 'required|string',
+            'chart_of_account_id' => ValidationRule::foreignKey('chart_of_accounts'),
+            'code' => 'bail|nullable|string|unique:items,code',
+            'barcode' => 'bail|nullable|string|unique:items,barcode',
+            'stock_reminder' => 'numeric|min:0',
+            'taxable' => 'boolean',
             'units' => 'required|array',
             'groups' => 'array',
+            // TODO each units and groups field
         ];
     }
 }

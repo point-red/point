@@ -115,7 +115,9 @@ class PurchaseRequestController extends Controller
             $purchaseRequest->archives = $purchaseRequest->archives();
         }
 
-        $purchaseRequest->origin();
+        if ($request->has('with_origin')) {
+            $purchaseRequest->origin = $purchaseRequest->origin();
+        }
 
         return new ApiResource($purchaseRequest);
     }

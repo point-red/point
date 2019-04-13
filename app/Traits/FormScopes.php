@@ -2,8 +2,6 @@
 
 namespace App\Traits;
 
-use App\Model\Form;
-
 trait FormScopes
 {
     public function scopeDone($query)
@@ -13,14 +11,12 @@ trait FormScopes
         });
     }
 
-
     public function scopeNotDone($query)
     {
         $query->whereHas('form', function($q) {
             $q->where('done', false);
         });
     }
-
 
     public function scopeApproved($query)
     {
@@ -29,7 +25,6 @@ trait FormScopes
         });
     }
 
-
     public function scopeApprovalRejected($query)
     {
         $query->whereHas('form', function($q) {
@@ -37,14 +32,12 @@ trait FormScopes
         });
     }
 
-
     public function scopeApprovalPending($query)
     {
         $query->whereHas('form', function($q) {
             $q->whereNull('approved');
         });
     }
-
 
     public function scopeNotRejected($query)
     {
@@ -61,7 +54,6 @@ trait FormScopes
         });
     }
 
-
     public function scopeCancellationRejected($query)
     {
         $query->whereHas('form', function($q) {
@@ -69,14 +61,12 @@ trait FormScopes
         });
     }
 
-
     public function scopeCancellationPending($query)
     {
         $query->whereHas('form', function($q) {
             $q->whereNull('canceled');
         });
     }
-
 
     public function scopeNotCanceled($query)
     {

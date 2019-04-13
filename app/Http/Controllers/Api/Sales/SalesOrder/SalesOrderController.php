@@ -103,8 +103,7 @@ class SalesOrderController extends Controller
             $salesOrder = SalesOrder::create($request->all());
             $salesOrder
                 ->load('form')
-                ->load('employee')
-                ->load('supplier')
+                ->load('customer')
                 ->load('items.item')
                 ->load('items.allocation')
                 ->load('services.service')

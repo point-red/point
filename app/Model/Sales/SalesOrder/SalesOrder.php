@@ -133,6 +133,19 @@ class SalesOrder extends TransactionModel
             $this->form->save();
         }
     }
+    
+    public function isAllowedToUpdate($date)
+    {
+        $this->updatedFormInSamePeriod($date);
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    public function isAllowedToDelete()
+    {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
 
     public static function create($data)
     {
@@ -199,6 +212,17 @@ class SalesOrder extends TransactionModel
             $salesOrder->salesContract->updateIfDone();
         } else if (! is_null($salesOrder->sales_quotation_id)) {
             $salesOrder->salesQuotation->updateIfDone();
+        }
+    }
+
+    private function isNotReferenced()
+    {
+        // Check if not referenced by purchase order
+        if ($this->deliveryOrders->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by delivery order(s)', $this->deliveryOrders);
+        }
+        if ($this->downPayments->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by down payment(s)', $this->downPayments);
         }
     }
 }

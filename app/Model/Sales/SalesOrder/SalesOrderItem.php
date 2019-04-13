@@ -14,6 +14,7 @@ class SalesOrderItem extends PointModel
 
     protected $fillable = [
         'item_id',
+        'item_name',
         'quantity',
         'price',
         'discount_percent',
@@ -44,5 +45,13 @@ class SalesOrderItem extends PointModel
     public function allocation()
     {
         return $this->belongsTo(Allocation::class);
+    }
+
+    public function salesOrderItems()
+    {
+        return $this->hasMany(SalesOrderItem::class)
+            ->whereHas('salesOrder', function($query) {
+                $query->active();
+            });
     }
 }

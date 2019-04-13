@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Purchase\PurchaseOrder;
+namespace App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ValidationRule;

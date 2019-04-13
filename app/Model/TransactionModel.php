@@ -67,6 +67,6 @@ class TransactionModel extends PointModel
             ->where('increment_group', $this->form->increment_group)
             ->select($this::getTableName('*'))
             ->with('form')
-            ->get();
+            ->first();
     }
 }

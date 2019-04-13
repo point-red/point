@@ -68,52 +68,29 @@ class SalesContract extends TransactionModel
 
     public function updateIfDone()
     {
-        // Make form done when all items / group items ordered
+        // Make form done when all items / group items quantity ordered
         $done = true;
 
-        if (! empty($this->items)) {
-            $salesContractItems = $this->items;
-            $salesContractItemIds = $salesContractItems->pluck('id');
+        if ($this->items->isNotEmpty()) { 
+            $items = $this->items()->with('salesOrderItems')->get();
 
-            $quantityOrderedItems = SalesOrder::active()
-                ->join(SalesOrderItem::getTableName(), SalesOrder::getTableName('id'), '=', SalesOrderItem::getTableName('sales_order_id'))
-                ->groupBy('sales_contract_item_id')
-                ->select(SalesOrderItem::getTableName('sales_contract_item_id'))
-                ->addSelect(\DB::raw('SUM(quantity) AS sum_ordered'))
-                ->whereIn('sales_contract_item_id', $salesContractItemIds)
-                ->get()
-                ->pluck('sum_ordered', 'sales_contract_item_id');
-
-            foreach ($salesContractItems as $salesContractItem) {
-                $quantityOrdered = $quantityOrderedItems[$salesContractItem->id] ?? 0;
-                if ($salesContractItem->quantity - $quantityOrdered > 0) {
+            foreach ($items as $item) {
+                $quantityOrdered = $item->salesOrderItems->sum('quantity');
+                if ($item->quantity - $quantityOrdered > 0) {
                     $done = false;
                     break;
                 }
             }
-        } elseif (! empty($this->groupItems)) {
-            $salesContractGroupItems = $this->groupItems;
-            $salesContractGroupItemIds = $salesContractGroupItems->pluck('id');
+        } elseif ($this->groupItems->isNotEmpty()) {
+            $groupItems = $this->groupItems()->with('salesOrderItems')->get();
 
-            $quantityOrderedGroupItems = SalesOrder::active()
-                ->join(SalesOrderItem::getTableName(), SalesOrder::getTableName('id'), '=', SalesOrderItem::getTableName('sales_order_id'))
-                ->groupBy('sales_contract_group_item_id')
-                ->select(SalesOrderItem::getTableName('sales_contract_group_item_id'))
-                ->addSelect(\DB::raw('SUM(quantity) AS sum_ordered'))
-                ->whereIn('sales_contract_group_item_id', $salesContractGroupItemIds)
-                ->get()
-                ->pluck('sum_ordered', 'sales_contract_group_item_id');
-
-            foreach ($salesContractGroupItems as $salesContractGroupItem) {
-                $quantityOrdered = $quantityOrderedGroupItems[$salesContractGroupItem->id] ?? 0;
-                if ($salesContractGroupItem->quantity - $quantityOrdered > 0) {
+            foreach ($groupItems as $groupItem) {
+                $quantityOrdered = $groupItem->salesOrderItems->sum('quantity');
+                if ($groupItem->quantity - $quantityOrdered > 0) {
                     $done = false;
                     break;
                 }
             }
-        } else {
-            // TODO throw error if sales contract doesn't have items and groupItems
-            $done = false;
         }
 
         if ($done === true) {
@@ -142,7 +119,7 @@ class SalesContract extends TransactionModel
 
         $items = self::mapItems($data['items'] ?? []);
         $groupItems = self::mapGroupItems($data['groups'] ?? []);
-        
+
         $salesContract->amount = self::calculateAmount($salesContract, $items, $groupItems);
         $salesContract->save();
 

@@ -133,91 +133,70 @@ class SalesOrder extends TransactionModel
             $this->form->save();
         }
     }
+    
+    public function isAllowedToUpdate($date)
+    {
+        $this->updatedFormInSamePeriod($date);
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    public function isAllowedToDelete()
+    {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
 
     public static function create($data)
     {
-        if (! empty($data['sales_contract_id'])) {
-            $salesContract = SalesContract::findOrFail($data['sales_contract_id']);
-        }
-        // TODO validation customer_name is optional type non empty string
-        if (empty($data['customer_name'])) {
-            $customer = Customer::find($data['customer_id'], ['name']);
-            $data['customer_name'] = $customer->name;
-        }
-
         $salesOrder = new self;
         $salesOrder->fill($data);
 
-        // TODO validation items is optional and must be array
-        // TODO validation services is required if items is null and must be array
-        $salesOrderItems = self::getItems($data['items'] ?? []);
-        $salesOrderServices = self::getServices($data['services'] ?? []);
+        $items = self::mapItems($data['items'] ?? []);
+        $services = self::mapServices($data['services'] ?? []);
 
-        $salesOrder->amount = self::getAmounts($salesOrder, $salesOrderItems, $salesOrderServices);
+        $salesOrder->amount = self::calculateAmount($salesOrder, $items, $services);
         $salesOrder->save();
 
-        $salesOrder->items()->saveMany($salesOrderItems);
-        $salesOrder->services()->saveMany($salesOrderServices);
+        $salesOrder->items()->saveMany($items);
+        $salesOrder->services()->saveMany($services);
 
         $form = new Form;
         $form->saveData($data, $salesOrder);
 
-        // TODO validation if item_id trully belong to group on the contract
-        if (isset($salesContract)) {
-            $salesContract->updateIfDone();
-        }
+        self::setReferenceDone($salesOrder);
 
         return $salesOrder;
     }
 
-    private static function getItems($items)
+    private static function mapItems($items)
     {
-        if (empty($items)) {
-            return [];
-        }
-        $salesOrderItems = [];
-
-        $itemIds = array_column($items, 'item_id');
-        $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
-
-        foreach ($items as $item) {
+        return array_map(function($item) {
             $salesOrderItem = new SalesOrderItem;
             $salesOrderItem->fill($item);
-            $salesOrderItem->item_name = $dbItems[$item['item_id']]->name;
-            array_push($salesOrderItems, $salesOrderItem);
-        }
 
-        return $salesOrderItems;
+            return $salesOrderItem;
+        }, $items);
     }
 
-    private static function getServices($services)
+    private static function mapServices($services)
     {
-        if (empty($services)) {
-            return [];
-        }
-        $salesOrderServices = [];
-
-        $serviceIds = array_column($services, 'service_id');
-        $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
-
-        foreach ($services as $service) {
-            $service['service_name'] = $dbServices[$service['service_id']]->name;
+        return array_map(function($service) {
             $salesOrderService = new SalesOrderService;
             $salesOrderService->fill($service);
-            array_push($salesOrderServices, $salesOrderService);
-        }
 
-        return $salesOrderServices;
+            return $salesOrderService;
+        }, $services);
     }
 
-    private static function getAmounts($salesOrder, $salesOrderItems, $salesOrderServices)
+    private static function calculateAmount($salesOrder, $items, $services)
     {
-        $amount = array_reduce($salesOrderItems, function($carry, $item) {
-            return $carry + ($item['price'] - $item['discount_value']) * $item['quantity'];
+        $amount = array_reduce($items, function($carry, $item) {
+            return $carry + ($item->price - $item->discount_value) * $item->quantity * $item->converter;
         }, 0);
 
-        $amount += array_reduce($salesOrderServices, function($carry, $service) {
-            return $carry + ($service['price'] - $service['discount_value']) * $service['quantity'];
+        $amount += array_reduce($services, function($carry, $service) {
+            return $carry + ($service->price - $service->discount_value) * $service->quantity;
         }, 0);
 
         $amount -= $salesOrder->discount_value;
@@ -225,5 +204,25 @@ class SalesOrder extends TransactionModel
         $amount += $salesOrder->type_of_tax === 'exclude' ? $salesOrder->tax : 0;
 
         return $amount;
+    }
+
+    private static function setReferenceDone($salesOrder)
+    {
+        if (! is_null($salesOrder->sales_contract_id)) {
+            $salesOrder->salesContract->updateIfDone();
+        } else if (! is_null($salesOrder->sales_quotation_id)) {
+            $salesOrder->salesQuotation->updateIfDone();
+        }
+    }
+
+    private function isNotReferenced()
+    {
+        // Check if not referenced by purchase order
+        if ($this->deliveryOrders->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by delivery order(s)', $this->deliveryOrders);
+        }
+        if ($this->downPayments->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by down payment(s)', $this->downPayments);
+        }
     }
 }

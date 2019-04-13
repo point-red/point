@@ -16,7 +16,7 @@ class ValidationRule {
 
   public static function discountPercent()
   {
-    return 'numeric|between:0,100';
+    return 'nullable|numeric|between:0,100';
   }
 
   public static function discountValue()

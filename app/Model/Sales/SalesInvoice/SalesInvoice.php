@@ -12,7 +12,6 @@ use App\Model\Inventory\Inventory;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Accounting\ChartOfAccountType;
-use App\Model\Finance\Payment\PaymentDetail;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
@@ -83,7 +82,7 @@ class SalesInvoice extends TransactionModel
      */
     public function payments()
     {
-        return $this->morphMany(PaymentDetail::class, 'referenceable')->active();
+        return $this->morphToMany(Payment::class, 'referenceable', 'payment_details')->active();
     }
 
     public function detachDownPayments()

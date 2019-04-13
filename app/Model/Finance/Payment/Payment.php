@@ -71,14 +71,19 @@ class Payment extends TransactionModel
         $this->attributes['payment_type'] = strtoupper($value);
     }
 
+    public function isAllowedToUpdate()
+    {
+        // TODO isAllowed to  update?
+    }
+
     public static function create($data)
     {
         $payment = new self;
         $payment->fill($data);
 
-        $paymentDetails = self::getPaymentDetails($data['details'] ?? []);
+        $paymentDetails = self::mapPaymentDetails($data['details'] ?? []);
 
-        $payment->amount = self::getAmounts($paymentDetails);
+        $payment->amount = self::calculateAmount($paymentDetails);
         $payment->paymentable_name = $payment->paymentable->name;
         $payment->save();
 
@@ -91,10 +96,15 @@ class Payment extends TransactionModel
         $form->formable_type = self::class;
 
         $form->generateFormNumber(
-            self::getPaymentFormNumber($payment, $data['number'], $data['increment_group']),
+            self::generateFormNumber($payment, $data['number'], $data['increment_group']),
             $data['paymentable_id'],
             $data['paymentable_id']
         );
+
+        if (empty($data['approver_id'])) {
+            $form->done = true;
+        }
+        
         $form->save();
 
         self::updateReferenceDone($paymentDetails);
@@ -103,28 +113,24 @@ class Payment extends TransactionModel
         return $payment;
     }
 
-    private static function getPaymentDetails($details)
+    private static function mapPaymentDetails($details)
     {
-        $paymentDetails = [];
-
-        foreach ($details as $detail) {
+        return array_map(function($detail) {
             $paymentDetail = new PaymentDetail;
             $paymentDetail->fill($detail);
 
-            array_push($paymentDetails, $paymentDetail);
-        }
-
-        return $paymentDetails;
+            return $paymentDetail;
+        }, $details);
     }
 
-    private static function getAmounts($paymentDetails)
+    private static function calculateAmount($paymentDetails)
     {
         return array_reduce($paymentDetails, function ($carry, $detail) {
             return $carry + $detail['amount'];
         }, 0);
     }
 
-    private static function getPaymentFormNumber($payment, $number, $incrementGroup)
+    private static function generateFormNumber($payment, $number, $incrementGroup)
     {
         $defaultFormat = '{payment_type}-{disbursed}{y}{m}{increment=4}';
         $formNumber = $number ?? $defaultFormat;

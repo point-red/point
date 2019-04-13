@@ -66,12 +66,7 @@ class PaymentController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $payment = Payment::eloquentFilter($request)
-            ->with('form')
-            ->with('paymentable')
-            ->with('details.referenceable')
-            ->with('details.allocation')
-            ->findOrFail($id);
+        $payment = Payment::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($payment);
     }
@@ -87,10 +82,18 @@ class PaymentController extends Controller
     {
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
             $payment = Payment::findOrFail($id);
-            // TODO update payment detail remaining
-            $newPayment = $payment->edit($request->all());
+            
+            $payment->form->archive();
+            
+            $payment = Payment::create($request->all());
 
-            return new ApiResource($newPayment);
+            $payment
+                ->load('form')
+                ->load('paymentable')
+                ->load('details.referenceable')
+                ->load('details.allocation');
+
+            return new ApiResource($payment);
         });
 
         return $result;
@@ -105,9 +108,8 @@ class PaymentController extends Controller
     public function destroy($id)
     {
         $payment = Payment::findOrFail($id);
-        // TODO update payment detail remaining
-        $payment->delete();
+        $payment->isAllowedToDelete();
 
-        return response()->json([], 204);
+        return $payment->requestCancel();
     }
 }

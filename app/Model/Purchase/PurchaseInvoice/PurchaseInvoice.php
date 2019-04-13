@@ -43,6 +43,8 @@ class PurchaseInvoice extends TransactionModel
         'remaining' => 'double',
     ];
 
+    public $defaultNumberPrefix = 'PI';
+    
     public function getDueDateAttribute($value)
     {
         return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
@@ -52,8 +54,6 @@ class PurchaseInvoice extends TransactionModel
     {
         $this->attributes['due_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
-
-    public $defaultNumberPrefix = 'PI';
 
     public function form()
     {
@@ -101,6 +101,12 @@ class PurchaseInvoice extends TransactionModel
 
     public function isAllowedToUpdate()
     {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    private function isNotReferenced()
+    {
         // Check if not referenced by payments
         if ($this->payments->count()) {
             throw new IsReferencedException('Cannot edit form because referenced by payments', $this->payments);
@@ -135,10 +141,6 @@ class PurchaseInvoice extends TransactionModel
 
     private static function mapItems($items)
     {
-        if (empty($items)) {
-            return [];
-        }
-
         return array_map(function($item) {
             $purchaseInvoiceItem = new PurchaseInvoiceItem;
             $purchaseInvoiceItem->fill($item);
@@ -149,10 +151,6 @@ class PurchaseInvoice extends TransactionModel
 
     private static function mapServices($services)
     {
-        if (empty($services)) {
-            return [];
-        }
-
         return array_map(function($service) {
             $purchaseInvoiceService = new PurchaseInvoiceService;
             $purchaseInvoiceService->fill($service);

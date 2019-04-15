@@ -23,27 +23,39 @@ class ValidationRule {
   {
     return 'numeric|min:0';
   }
-  
-  /**
-   * User must provide this column, and can not be null value
-   */
+
+    /**
+     * User must provide this column, and can not be null value
+     *
+     * @param String $table
+     * @param String $column
+     * @return string
+     */
   public static function foreignKey(String $table, String $column = 'id')
   {
     return "bail|required|integer|min:0|exists:tenant.$table,$column";
   }
-  
-  /**
-   * User can skip this column from input or provide null value to this column
-   */
+
+    /**
+     * User can skip this column from input or provide null value to this column
+     *
+     * @param String $table
+     * @param String $column
+     * @return string
+     */
   public static function foreignKeyNullable(String $table, String $column = 'id')
   {
     return "bail|nullable|integer|min:0|exists:tenant.$table,$column";
   }
 
-  /**
-   * User can skip this column from input, but can not provide null value
-   * Useful for update validation where user do not want to change not nullable column
-   */
+    /**
+     * User can skip this column from input, but can not provide null value
+     * Useful for update validation where user do not want to change not nullable column
+     *
+     * @param String $table
+     * @param String $column
+     * @return string
+     */
   public static function foreignKeyOptional(String $table, String $column = 'id')
   {
     return "bail|integer|min:0|exists:tenant.$table,$column";

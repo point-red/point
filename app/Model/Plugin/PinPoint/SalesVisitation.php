@@ -3,6 +3,7 @@
 namespace App\Model\Plugin\PinPoint;
 
 use App\Model\Form;
+use App\Model\Master\Customer;
 use App\Model\PointModel;
 
 class SalesVisitation extends PointModel
@@ -24,6 +25,11 @@ class SalesVisitation extends PointModel
     public function form()
     {
         return $this->belongsTo(Form::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     public function interestReasons()

@@ -114,6 +114,7 @@ class SalesDownPayment extends TransactionModel
         $payment['paymentable_id'] = $downPayment->customer_id;
         $payment['paymentable_type'] = 'customer';
         $payment['paymentable_name'] = $downPayment->customer->name;
+        $payment['increment_group'] = $data['increment_group'];
 
         $payment['details'] = [
             0 => [

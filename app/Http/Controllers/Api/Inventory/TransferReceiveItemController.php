@@ -39,6 +39,14 @@ class TransferReceiveItemController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'form.date' => 'required|date_format:Y-m-d h:i:s',
+            'form.warehouse_from' => 'required|exists:tenant.warehouses,id',
+            'form.warehouse_to' => 'required|exists:tenant.warehouses,id',
+            'form.transfer_id' => 'required|exists:tenant.transfer_sends,id',
+            'items.*.item' => 'required|exists:tenant.items,id',
+            'items.*.quantity' => 'required|numeric|gt:0',
+        ]);
         // dd($request->all());
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $receive = TransferReceive::create($request->all());

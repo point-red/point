@@ -122,24 +122,20 @@ class PurchaseOrderController extends Controller
         $purchaseOrder = PurchaseOrder::eloquentFilter($request)->findOrFail($id);
 
         /**
-         * anything except 0 is considered true, including "false"
+         * anything except 0 is considered true, including string "false"
          */
         if ($request->get('remaining_info')) {
-            $purchaseOrderItemIds = $purchaseOrder->items->pluck('id');
+            $purchaseReceives = $purchaseOrder->purchaseReceives()->with('items')->get();
 
-            $tempArray = PurchaseReceive::activePending()
-                ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
-                ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
-                ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
-                ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
-                ->groupBy('purchase_order_item_id')
-                ->get();
-
-            $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');
-
-            foreach ($purchaseOrder->items as $purchaseOrderItem) {
-                $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;
-                $purchaseOrderItem->quantity_pending = $purchaseOrderItem->quantity - $quantityReceived;
+            foreach ($purchaseOrder->items as $orderItem) {
+                $orderItem->quantity_pending = $orderItem->quantity;
+        
+                foreach ($purchaseReceives as $receive) {
+                    $receiveItem = $receive->items->firstWhere('purchase_order_item_id', $orderItem->id);
+                    if ($receiveItem) {
+                        $orderItem->quantity_pending -= $receiveItem->quantity;
+                    }
+                }
             }
         }
 

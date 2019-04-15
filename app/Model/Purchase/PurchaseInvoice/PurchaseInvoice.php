@@ -77,7 +77,7 @@ class PurchaseInvoice extends TransactionModel
 
     public function purchaseReceives()
     {
-        return $this->belongsToMany(PurchaseReceive::class, 'purchase_invoice_items');
+        return $this->belongsToMany(PurchaseReceive::class, 'purchase_invoice_items')->distinct();
     }
 
     public function downPayments()

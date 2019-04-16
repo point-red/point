@@ -40,7 +40,7 @@ class TransferReceiveItemController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'form.date' => 'required|date_format:Y-m-d h:i:s',
+            'form.date' => 'required|date_format:Y-m-d H:i:s',
             'form.warehouse_from' => 'required|exists:tenant.warehouses,id',
             'form.warehouse_to' => 'required|exists:tenant.warehouses,id',
             'form.transfer_id' => 'required|exists:tenant.transfer_sends,id',

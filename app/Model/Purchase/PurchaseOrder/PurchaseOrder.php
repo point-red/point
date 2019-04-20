@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseOrder;
 
+use App\Exceptions\IsReferencedException;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
@@ -129,6 +130,14 @@ class PurchaseOrder extends TransactionModel
     }
 
     public function isAllowedToUpdate()
+    {
+        // Check if not referenced by purchase order
+        if ($this->purchaseReceives->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->purchaseReceives);
+        }
+    }
+
+    public function isAllowedToDelete()
     {
         // Check if not referenced by purchase order
         if ($this->purchaseReceives->count()) {

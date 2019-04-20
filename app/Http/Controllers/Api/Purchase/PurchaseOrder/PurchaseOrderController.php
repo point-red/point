@@ -10,8 +10,6 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
 use App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder\UpdatePurchaseOrderRequest;
 use App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder\StorePurchaseOrderRequest;
 

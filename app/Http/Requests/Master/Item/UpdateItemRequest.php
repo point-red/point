@@ -33,8 +33,6 @@ class UpdateItemRequest extends FormRequest
             'taxable' => 'boolean',
             'units' => 'array',
             'groups' => 'nullable|array',
-
-            // TODO each units and groups field
         ];
     }
 }

@@ -72,7 +72,7 @@ trait FormScopes
     {
         $query->whereHas('form', function($q) {
             $q->whereNull('canceled');
-            $q->orWhere('canceled', true);
+            $q->orWhere('canceled', false);
         });
     }
 

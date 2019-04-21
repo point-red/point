@@ -47,11 +47,8 @@ class SalesOrderItem extends PointModel
         return $this->belongsTo(Allocation::class);
     }
 
-    public function salesOrderItems()
+    public function salesOrder()
     {
-        return $this->hasMany(SalesOrderItem::class)
-            ->whereHas('salesOrder', function($query) {
-                $query->active();
-            });
+        return $this->belongsTo(SalesOrder::class);
     }
 }

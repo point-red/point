@@ -21,6 +21,7 @@ class Payment extends TransactionModel
         'due_date',
         'paymentable_type',
         'paymentable_id',
+        'paymentable_name',
         'payment_account_id',
     ];
 

@@ -37,6 +37,12 @@ class SalesOrder extends TransactionModel
         'discount_value',
         'type_of_tax',
         'tax',
+        'shipping_address',
+        'shipping_phone',
+        'shipping_email',
+        'billing_address',
+        'billing_phone',
+        'billing_email',
     ];
 
     protected $casts = [

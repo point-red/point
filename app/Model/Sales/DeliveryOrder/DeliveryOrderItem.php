@@ -22,6 +22,9 @@ class DeliveryOrderItem extends TransactionModel
     ];
 
     protected $casts = [
+        'price' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double',
         'quantity' => 'double',
         'converter' => 'double',
     ];

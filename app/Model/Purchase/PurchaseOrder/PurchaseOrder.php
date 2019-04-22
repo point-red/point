@@ -163,6 +163,11 @@ class PurchaseOrder extends TransactionModel
         if ($this->purchaseReceives->count()) {
             throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->purchaseReceives);
         }
+
+        // Check if not referenced by purchase order
+        if ($this->downPayments->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by down payment', $this->downPayments);
+        }
     }
 
     public static function create($data)
@@ -181,6 +186,11 @@ class PurchaseOrder extends TransactionModel
 
         $form = new Form;
         $form->saveData($data, $purchaseOrder);
+
+        if (get_if_set($data['purchase_request_id'])) {
+            $purchaseRequest = PurchaseRequest::findOrFail($data['purchase_request_id']);
+            $purchaseRequest->updateIfDone();
+        }
 
         return $purchaseOrder;
     }

@@ -86,7 +86,7 @@ class PurchaseOrderController extends Controller
      *      - description (String)
      *      - allocation_id (Int, Optional).
      *
-     * @param \App\Http\Controllers\Api\Purchase\PurchaseOrder\StorePurchaseOrderRequest $request
+     * @param StorePurchaseOrderRequest $request
      * @return ApiResource
      * @throws \Throwable
      */

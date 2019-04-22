@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
+use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\FormApproval;
@@ -10,6 +11,7 @@ use App\Model\TransactionModel;
 use App\Exceptions\IsReferencedException;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseRequest extends TransactionModel
 {
@@ -145,6 +147,38 @@ class PurchaseRequest extends TransactionModel
         // Check if not referenced by purchase order
         if ($this->purchaseOrders->count()) {
             throw new IsReferencedException('Cannot edit form because referenced by purchase order', $this->purchaseOrders);
+        }
+    }
+
+    public function updateIfDone()
+    {
+        $purchaseRequestItems = $this->items;
+        $purchaseRequestItemIds = $purchaseRequestItems->pluck('id');
+
+        $tempArray = PurchaseOrder::activePending()
+            ->join(PurchaseOrderItem::getTableName(), PurchaseOrder::getTableName('id'), '=', PurchaseOrderItem::getTableName('purchase_order_id'))
+            ->select(PurchaseOrderItem::getTableName('*'))
+            ->addSelect(DB::raw('SUM(quantity) AS sum_ordered'))
+            ->whereIn(PurchaseOrderItem::getTableName('purchase_request_item_id'), $purchaseRequestItemIds)
+            ->whereNotNull(PurchaseOrderItem::getTableName('purchase_request_item_id'))
+            ->groupBy(PurchaseOrderItem::getTableName('purchase_request_item_id'))
+            ->get();
+
+        $quantityOrderedItems = $tempArray->pluck('sum_ordered', 'purchase_request_item_id');
+
+        // Make form done when all item ordered
+        $done = true;
+        foreach ($purchaseRequestItems as $purchaseRequestItem) {
+            $quantityOrdered = $quantityOrderedItems[$purchaseRequestItem->id] ?? 0;
+            if ($purchaseRequestItem->quantity - $quantityOrdered > 0) {
+                $done = false;
+                break;
+            }
+        }
+
+        if ($done === true) {
+            $this->form->done = true;
+            $this->form->save();
         }
     }
 }

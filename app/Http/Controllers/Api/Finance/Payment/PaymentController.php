@@ -82,9 +82,9 @@ class PaymentController extends Controller
     {
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
             $payment = Payment::findOrFail($id);
-            
+
             $payment->form->archive();
-            
+
             $payment = Payment::create($request->all());
 
             $payment

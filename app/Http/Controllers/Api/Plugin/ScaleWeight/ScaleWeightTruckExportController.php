@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
 use Carbon\Carbon;
 use App\Model\CloudStorage;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ScaleWeightTruckExport;
 

@@ -72,7 +72,7 @@ class UpdateSalesOrderRequest extends FormRequest
 
             'services.*.sales_quotation_service_id' => ValidationRule::foreignKeyNullable('sales_quotation_services'),
         ];
-        
+
         return array_merge($rulesForm, $rulesSalesOrder, $rulesSalesOrderItems, $rulesSalesOrderServices);
     }
 }

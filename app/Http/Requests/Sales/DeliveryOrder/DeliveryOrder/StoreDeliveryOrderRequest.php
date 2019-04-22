@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDeliveryOrderRequest extends FormRequest
 {
@@ -35,7 +35,7 @@ class StoreDeliveryOrderRequest extends FormRequest
 
         $rulesDeliveryOrderItems = [
             'items.*.item_id' => ValidationRule::foreignKey('items'),
-            
+
             'items.*.sales_order_item_id' => ValidationRule::foreignKey('sales_order_items'),
             'items.*.quantity' => ValidationRule::quantity(),
             'items.*.unit' => ValidationRule::unit(),

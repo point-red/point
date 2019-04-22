@@ -64,7 +64,7 @@ class PurchaseContract extends TransactionModel
 
         if (! empty($data['items'])) {
             $purchaseContract = self::createContractItem($purchaseContract, $data['items']);
-        } else if (! empty($data['group_items'])) {
+        } elseif (! empty($data['group_items'])) {
             $purchaseContract = self::createContractGroupItems($purchaseContract, $data['group_items']);
         }
 
@@ -77,7 +77,7 @@ class PurchaseContract extends TransactionModel
     /**
      * Separate function for contract item because
      * contract can has only items or item groups
-     * and not both at the same contract
+     * and not both at the same contract.
      */
     private static function createContractItem($purchaseContract, $items)
     {
@@ -101,7 +101,7 @@ class PurchaseContract extends TransactionModel
 
     private static function getItems($items)
     {
-        return array_map(function($item) {
+        return array_map(function ($item) {
             $contractItem = new PurchaseContractItem;
             $contractItem->fill($item);
 
@@ -111,7 +111,7 @@ class PurchaseContract extends TransactionModel
 
     private static function getGroupItems($groupItems)
     {
-        return array_map(function($groupItem) {
+        return array_map(function ($groupItem) {
             $contractGroupItem = new PurchaseContractGroupItem;
             $contractGroupItem->fill($groupItem);
 
@@ -121,7 +121,7 @@ class PurchaseContract extends TransactionModel
 
     private static function getAmount($details)
     {
-        return array_reduce($details, function($carry, $detail) {
+        return array_reduce($details, function ($carry, $detail) {
             return $carry + $detail->quantity * $detail->price;
         }, 0);
     }

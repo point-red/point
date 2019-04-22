@@ -118,13 +118,13 @@ class DeliveryOrder extends TransactionModel
     public static function mapItems($items, $salesOrder)
     {
         $salesOrderItems = $salesOrder->items;
-        
-        return array_map(function($item) use ($salesOrderItems) {
+
+        return array_map(function ($item) use ($salesOrderItems) {
             $salesOrderItem = $salesOrderItems->firstWhere('item_id', $item['item_id']);
 
             $deliveryOrderItem = new DeliveryOrderItem;
             $deliveryOrderItem->fill($item);
-            
+
             $deliveryOrderItem->sales_order_item_id = $salesOrderItem->id;
             $deliveryOrderItem->item_name = $salesOrderItem->item_name;
             $deliveryOrderItem->price = $salesOrderItem->price;

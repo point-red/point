@@ -4,12 +4,13 @@ namespace App\Model\Purchase\PurchaseDownPayment;
 
 use App\Model\Form;
 use App\Model\Master\Supplier;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\TransactionModel;
+use App\Exceptions\IsReferencedException;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Model\Purchase\PurchaseContract\PurchaseContract;
 
-class PurchaseDownPayment extends Model
+class PurchaseDownPayment extends TransactionModel
 {
     protected $connection = 'tenant';
 
@@ -46,7 +47,15 @@ class PurchaseDownPayment extends Model
 
     public function invoices()
     {
-        return $this->belongsToMany(PurchaseInvoice::class, 'down_payment_invoice', 'invoice_id', 'down_payment_id')->active();
+        return $this->belongsToMany(PurchaseInvoice::class, 'purchase_down_payment_invoice', 'invoice_id', 'down_payment_id')->active();
+    }
+
+    public function isAllowedToDelete()
+    {
+        // Check if not referenced by purchase invoice
+        if ($this->invoices->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by invoice', $this->invoices);
+        }
     }
 
     public static function create($data)
@@ -69,6 +78,7 @@ class PurchaseDownPayment extends Model
         $downPayment->supplier_id = $reference->id;
         $downPayment->supplier_name = $reference->name;
         $downPayment->fill($data);
+        $downPayment->remaining = $data['amount'];
         $downPayment->save();
 
         $form = new Form;

@@ -2,11 +2,11 @@
 
 namespace App\Model;
 
-use App\Model\Accounting\Journal;
-use App\Model\Inventory\Inventory;
 use App\Model\Master\User;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
+use App\Model\Accounting\Journal;
+use App\Model\Inventory\Inventory;
 
 class Form extends PointModel
 {
@@ -17,7 +17,7 @@ class Form extends PointModel
     protected $fillable = [
         'date',
         'notes',
-        'increment_group'
+        'increment_group',
     ];
 
     public function save(array $options = [])

@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StorePurchaseOrderRequest extends FormRequest
 {
@@ -27,10 +27,8 @@ class StorePurchaseOrderRequest extends FormRequest
         $rulesForm = ValidationRule::form();
 
         $rulesPurchaseOrder = [
-            
             'purchase_request_id' => ValidationRule::foreignKeyNullable('purchase_requests'),
             'purchase_contract_id' => ValidationRule::foreignKeyNullable('purchase_contracts'),
-
             'supplier_id' => ValidationRule::foreignKey('suppliers'),
             'supplier_name' => 'required|string',
             'warehouse_id' => ValidationRule::foreignKeyNullable('warehouses'),
@@ -42,7 +40,6 @@ class StorePurchaseOrderRequest extends FormRequest
             'discount_value' => ValidationRule::discountValue(),
             'type_of_tax' => ValidationRule::typeOfTax(),
             'tax' => ValidationRule::tax(),
-
             'items' => 'required_without:services|array',
             'services' => 'required_without:items|array',
         ];

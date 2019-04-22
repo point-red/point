@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Sales\SalesContract\SalesContract;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateSalesContractRequest extends FormRequest
 {
@@ -25,7 +25,7 @@ class UpdateSalesContractRequest extends FormRequest
     public function rules(Request $request)
     {
         $rulesForm = ValidationRule::form();
-        
+
         $rulesSalesContract = [
             'customer_id' => ValidationRule::foreignKey('customers'),
             'customer_name' => 'required|string',

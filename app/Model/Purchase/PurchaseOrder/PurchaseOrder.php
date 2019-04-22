@@ -4,14 +4,14 @@ namespace App\Model\Purchase\PurchaseOrder;
 
 use Carbon\Carbon;
 use App\Model\Form;
-use App\Model\Master\Item;
-use App\Model\Master\Service;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
+use App\Exceptions\IsReferencedException;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
 class PurchaseOrder extends TransactionModel
 {
@@ -92,6 +92,27 @@ class PurchaseOrder extends TransactionModel
         return $this->hasMany(PurchaseReceive::class)->active();
     }
 
+    public function downPayments()
+    {
+        return $this->morphMany(PurchaseDownPayment::class, 'downpaymentable')
+            ->active();
+    }
+
+    public function paidDownPayments()
+    {
+        return $this->morphMany(PurchaseDownPayment::class, 'downpaymentable')
+            ->active()
+            ->whereNotNull('paid_by');
+    }
+
+    public function remainingDownPayments()
+    {
+        return $this->morphMany(PurchaseDownPayment::class, 'downpaymentable')
+            ->active()
+            ->where('remaining', '>', 0)
+            ->whereNotNull('paid_by');
+    }
+
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
@@ -136,6 +157,19 @@ class PurchaseOrder extends TransactionModel
         }
     }
 
+    public function isAllowedToDelete()
+    {
+        // Check if not referenced by purchase order
+        if ($this->purchaseReceives->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->purchaseReceives);
+        }
+
+        // Check if not referenced by purchase order
+        if ($this->downPayments->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by down payment', $this->downPayments);
+        }
+    }
+
     public static function create($data)
     {
         $purchaseOrder = new self;
@@ -153,12 +187,17 @@ class PurchaseOrder extends TransactionModel
         $form = new Form;
         $form->saveData($data, $purchaseOrder);
 
+        if (get_if_set($data['purchase_request_id'])) {
+            $purchaseRequest = PurchaseRequest::findOrFail($data['purchase_request_id']);
+            $purchaseRequest->updateIfDone();
+        }
+
         return $purchaseOrder;
     }
 
     private static function mapItems($items)
     {
-        return array_map(function($item) {
+        return array_map(function ($item) {
             $purchaseOrderItem = new PurchaseOrderItem;
             $purchaseOrderItem->fill($item);
 
@@ -168,7 +207,7 @@ class PurchaseOrder extends TransactionModel
 
     private static function mapServices($services)
     {
-        return array_map(function($service) {
+        return array_map(function ($service) {
             $purchaseOrderService = new PurchaseOrderService;
             $purchaseOrderService->fill($service);
 
@@ -178,11 +217,11 @@ class PurchaseOrder extends TransactionModel
 
     private static function calculateAmount($purchaseOrder, $items, $services)
     {
-        $amount = array_reduce($items, function($carry, $item) {
+        $amount = array_reduce($items, function ($carry, $item) {
             return $carry + $item->quantity * ($item->price - $item->discount_value) * $item->converter;
         }, 0);
 
-        $amount += array_reduce($services, function($carry, $service) {
+        $amount += array_reduce($services, function ($carry, $service) {
             return $carry + $service->quantity * ($service->price - $service->discount_value);
         }, 0);
 

@@ -99,9 +99,10 @@ trait EloquentFilters
     }
 
     /**
-     * ?group_by=customer.id,customer.name
+     * ?group_by=customer.id,customer.name.
      */
-    public function scopeFieldGroupBy($query, $values) {
+    public function scopeFieldGroupBy($query, $values)
+    {
         if ($values) {
             $columns = explode(',', $values);
             foreach ($columns as $column) {
@@ -126,9 +127,9 @@ trait EloquentFilters
                 $relation = explode('.', $key);
                 $column = array_pop($relation);
                 $relation = implode('.', $relation);
-                
+
                 if (! empty($relation)) {
-                    $query->whereHas($relation, function($query) use ($column, $value) {
+                    $query->whereHas($relation, function ($query) use ($column, $value) {
                         $query->where($column, $value);
                     });
                 } else {
@@ -153,9 +154,9 @@ trait EloquentFilters
             $relation = explode('.', $key);
             $column = array_pop($relation);
             $relation = implode('.', $relation);
-            
+
             if (! empty($relation)) {
-                $query->whereHas($relation, function($query) use ($column, $value) {
+                $query->whereHas($relation, function ($query) use ($column, $value) {
                     $query->where($column, '!=', $value);
                 });
             } else {
@@ -181,15 +182,14 @@ trait EloquentFilters
                 $relation = explode('.', $key);
                 $column = array_pop($relation);
                 $relation = implode('.', $relation);
-                if (!empty($relation)) {
-                    $query->orWhereHas($relation, function($query) use ($value, $column){
+                if (! empty($relation)) {
+                    $query->orWhereHas($relation, function ($query) use ($value, $column) {
                         $words = explode(' ', $value);
                         foreach ($words as $word) {
                             $query->where($column, 'like', '%'.$word.'%');
                         }
                     });
-                }
-                else {
+                } else {
                     $query->orWhere(function ($query) use ($value, $key) {
                         $words = explode(' ', $value);
                         foreach ($words as $word) {
@@ -218,7 +218,7 @@ trait EloquentFilters
             $relation = implode('.', $relation);
 
             if (! empty($relation)) {
-                $query->whereHas($relation, function($query) use ($column, $value) {
+                $query->whereHas($relation, function ($query) use ($column, $value) {
                     $query->where($column, '>=', $value);
                 });
             } else {
@@ -244,9 +244,9 @@ trait EloquentFilters
             $relation = implode('.', $relation);
 
             if (! empty($relation)) {
-                $query->whereHas($relation, function($query) use ($column, $value) {
+                $query->whereHas($relation, function ($query) use ($column, $value) {
                     $query->where($column, '<=', $value);
-                }); 
+                });
             } else {
                 $query->where($key, '<=', $value);
             }
@@ -297,9 +297,9 @@ trait EloquentFilters
                 $relation = explode('.', $column);
                 $columnName = array_pop($relation);
                 $relation = implode('.', $relation);
-                
+
                 if (! empty($relation)) {
-                    $query->whereHas($relation, function($query) use($columnName) {
+                    $query->whereHas($relation, function ($query) use ($columnName) {
                         $query->whereNotNull($columnName);
                     });
                 } else {
@@ -549,33 +549,33 @@ trait EloquentFilters
 
         if ($value === 'done') {
             $query->done();
-        } else if ($value === 'notDone') {
+        } elseif ($value === 'notDone') {
             $query->notDone();
-        } else if ($value === 'approved') {
+        } elseif ($value === 'approved') {
             $query->approved();
-        } else if ($value === 'rejected') {
+        } elseif ($value === 'rejected') {
             $query->approvalRejected();
-        } else if ($value === 'approvalPending') {
+        } elseif ($value === 'approvalPending') {
             $query->approvalPending();
-        } else if ($value === 'approvalNotRejected') {
+        } elseif ($value === 'approvalNotRejected') {
             $query->notRejected();
-        } else if ($value === 'cancellationApproved') {
+        } elseif ($value === 'cancellationApproved') {
             $query->cancellationApproved();
-        } else if ($value === 'cancellationRejected') {
+        } elseif ($value === 'cancellationRejected') {
             $query->cancellationRejected();
-        } else if ($value === 'cancellationPending') {
+        } elseif ($value === 'cancellationPending') {
             $query->cancellationPending();
-        } else if ($value === 'notCancelled') {
+        } elseif ($value === 'notCancelled') {
             $query->notCanceled();
-        } else if ($value === 'notArchived') {
+        } elseif ($value === 'notArchived') {
             $query->notArchived();
-        } else if ($value === 'archived') {
+        } elseif ($value === 'archived') {
             $query->archived();
-        } else if ($value === 'active') {
+        } elseif ($value === 'active') {
             $query->active();
-        } else if ($value === 'activePending') {
+        } elseif ($value === 'activePending') {
             $query->activePending();
-        } else if ($value === 'activeDone') {
+        } elseif ($value === 'activeDone') {
             $query->activeDone();
         }
     }

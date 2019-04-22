@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Purchase;
 
-use App\Http\Resources\ApiCollection;
 use App\Model\Form;
-use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 
 class PurchasePendingController extends Controller
 {

@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Master\Item;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateItemRequest extends FormRequest
 {
@@ -33,8 +33,6 @@ class UpdateItemRequest extends FormRequest
             'taxable' => 'boolean',
             'units' => 'array',
             'groups' => 'nullable|array',
-
-            // TODO each units and groups field
         ];
     }
 }

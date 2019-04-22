@@ -5,7 +5,6 @@ namespace App\Console\Commands\Tenant\Database;
 use App\Model\Master\User;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 
 class Reset extends Command

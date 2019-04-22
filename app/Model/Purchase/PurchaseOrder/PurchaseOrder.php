@@ -3,10 +3,9 @@
 namespace App\Model\Purchase\PurchaseOrder;
 
 use App\Exceptions\IsReferencedException;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use Carbon\Carbon;
 use App\Model\Form;
-use App\Model\Master\Item;
-use App\Model\Master\Service;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
@@ -91,6 +90,24 @@ class PurchaseOrder extends TransactionModel
     public function purchaseReceives()
     {
         return $this->hasMany(PurchaseReceive::class)->active();
+    }
+
+    public function downPayments()
+    {
+        return $this->morphMany(PurchaseDownPayment::class, 'downpaymentable');
+    }
+
+    public function paidDownPayments()
+    {
+        return $this->morphMany(PurchaseDownPayment::class, 'downpaymentable')
+            ->whereNotNull('paid_by');
+    }
+
+    public function remainingDownPayments()
+    {
+        return $this->morphMany(PurchaseDownPayment::class, 'downpaymentable')
+            ->where('remaining', '>', 0)
+            ->whereNotNull('paid_by');
     }
 
     public function warehouse()

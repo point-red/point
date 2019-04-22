@@ -69,6 +69,7 @@ class PurchaseDownPayment extends Model
         $downPayment->supplier_id = $reference->id;
         $downPayment->supplier_name = $reference->name;
         $downPayment->fill($data);
+        $downPayment->remaining = $data['amount'];
         $downPayment->save();
 
         $form = new Form;

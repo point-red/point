@@ -2,18 +2,16 @@
 
 namespace App\Model\Purchase\PurchaseInvoice;
 
-use App\Model\SettingJournal;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
-use App\Model\Accounting\ChartOfAccountType;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
-use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use App\Model\Inventory\Inventory;
 use App\Model\Finance\Payment\Payment;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
 class PurchaseInvoice extends TransactionModel
 {
@@ -44,7 +42,7 @@ class PurchaseInvoice extends TransactionModel
     ];
 
     public $defaultNumberPrefix = 'PI';
-    
+
     public function getDueDateAttribute($value)
     {
         return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
@@ -141,7 +139,7 @@ class PurchaseInvoice extends TransactionModel
 
     private static function mapItems($items)
     {
-        return array_map(function($item) {
+        return array_map(function ($item) {
             $purchaseInvoiceItem = new PurchaseInvoiceItem;
             $purchaseInvoiceItem->fill($item);
 
@@ -151,7 +149,7 @@ class PurchaseInvoice extends TransactionModel
 
     private static function mapServices($services)
     {
-        return array_map(function($service) {
+        return array_map(function ($service) {
             $purchaseInvoiceService = new PurchaseInvoiceService;
             $purchaseInvoiceService->fill($service);
 
@@ -185,7 +183,7 @@ class PurchaseInvoice extends TransactionModel
     }
 
     /**
-     * Update price, cogs in inventory
+     * Update price, cogs in inventory.
      */
     private static function updateInventory($purchaseInvoice)
     {
@@ -199,7 +197,7 @@ class PurchaseInvoice extends TransactionModel
             $additionalFee = $purchaseInvoice->delivery_fee - $purchaseInvoice->discount_value;
             $total = $purchaseInvoice->amount - $additionalFee - $purchaseInvoice->tax;
             $price = self::calculatePrice($item, $total, $additionalFee);
-            
+
             Inventory::where('form_id', $formId)
                 ->where('item_id', $itemId)
                 ->update([

@@ -2,11 +2,11 @@
 
 namespace App\Model;
 
-use App\Exceptions\FormArchivedException;
-use App\Exceptions\UpdatePeriodNotAllowedException;
-use App\Http\Resources\ApiResource;
 use App\Traits\FormScopes;
 use Illuminate\Http\Request;
+use App\Http\Resources\ApiResource;
+use App\Exceptions\FormArchivedException;
+use App\Exceptions\UpdatePeriodNotAllowedException;
 
 class TransactionModel extends PointModel
 {

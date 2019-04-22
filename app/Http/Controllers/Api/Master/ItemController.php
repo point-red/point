@@ -188,7 +188,7 @@ class ItemController extends Controller
         foreach ($relationMethods as $relationMethod) {
             if ($item->$relationMethod()->count() > 0) {
                 return response()->json([
-                    'message' => 'Relation "'.$relationMethod.'" exists'
+                    'message' => 'Relation "'.$relationMethod.'" exists',
                 ], 422);
             }
         }

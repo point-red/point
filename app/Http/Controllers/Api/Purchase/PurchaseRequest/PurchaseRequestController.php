@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\HumanResource\Employee\Employee;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
 
 class PurchaseRequestController extends Controller
@@ -75,7 +75,7 @@ class PurchaseRequestController extends Controller
      *      - quantity (Decimal)
      *      - price (Decimal)
      *      - description (String Optional)
-     *      - allocation_id (Int Optional)
+     *      - allocation_id (Int Optional).
      *
      * @param StorePurchaseRequestRequest $request
      * @return ApiResource

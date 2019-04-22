@@ -1,8 +1,8 @@
 <?php
 
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\SettingJournal;
 use Illuminate\Database\Seeder;
+use App\Model\Accounting\ChartOfAccount;
 
 class SettingJournalSeeder extends Seeder
 {
@@ -25,7 +25,7 @@ class SettingJournalSeeder extends Seeder
     private function openingBalanceInventory()
     {
         $accounts = [
-            'retained earning' => $this->getAccountId('modal disetor')
+            'retained earning' => $this->getAccountId('modal disetor'),
         ];
 
         foreach ($accounts as $key => $value) {
@@ -85,7 +85,5 @@ class SettingJournalSeeder extends Seeder
                 return $chartOfAccount->id;
             }
         }
-
-        return null;
     }
 }

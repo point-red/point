@@ -105,7 +105,7 @@ class Payment extends TransactionModel
         if (empty($data['approver_id'])) {
             $form->done = true;
         }
-        
+
         $form->save();
 
         self::updateReferenceDone($paymentDetails);
@@ -116,7 +116,7 @@ class Payment extends TransactionModel
 
     private static function mapPaymentDetails($details)
     {
-        return array_map(function($detail) {
+        return array_map(function ($detail) {
             $paymentDetail = new PaymentDetail;
             $paymentDetail->fill($detail);
 
@@ -139,19 +139,19 @@ class Payment extends TransactionModel
         // Different method to get increment because payment number is considering payment_type
         preg_match_all('/{increment=(\d)}/', $formNumber, $regexResult);
         if (! empty($regexResult)) {
-            $lastPayment = Self::whereHas('form', function($query) use($incrementGroup){
+            $lastPayment = Self::whereHas('form', function ($query) use ($incrementGroup) {
                 $query->whereNotNull('number')
                     ->where('increment_group', $incrementGroup);
             })
             ->where('payment_type', $payment->payment_type)
             ->where('disbursed', $payment->disbursed)
-            ->with(['form' => function($query) {
+            ->with(['form' => function ($query) {
                 $query->orderBy('increment', 'desc');
             }])
             ->first();
-    
+
             $increment = 1;
-    
+
             if (! empty($lastPayment)) {
                 $increment += $lastPayment->form->increment;
             }

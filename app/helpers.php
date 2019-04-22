@@ -1,8 +1,8 @@
 <?php
 
-use App\Model\SettingJournal;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use App\Model\SettingJournal;
 
 if (! function_exists('log_object')) {
     /**
@@ -233,13 +233,11 @@ if (! function_exists('get_invitation_code')) {
          * @param $var
          * @return string
          */
-        function get_if_set(& $var)
+        function get_if_set(&$var)
         {
             if (isset($var)) {
                 return $var;
             }
-
-            return null;
         }
     }
 

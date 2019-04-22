@@ -83,7 +83,7 @@ class PurchaseReceive extends TransactionModel
         $services = self::mapServices($data['services'] ?? []);
 
         $purchaseReceive->save();
-        
+
         $purchaseReceive->items()->saveMany($items);
         $purchaseReceive->services()->saveMany($services);
 
@@ -115,7 +115,7 @@ class PurchaseReceive extends TransactionModel
 
     private static function mapItems($items)
     {
-        return array_map(function($item) {
+        return array_map(function ($item) {
             $purchaseReceiveItem = new PurchaseReceiveItem;
             $purchaseReceiveItem->fill($item);
 
@@ -125,7 +125,7 @@ class PurchaseReceive extends TransactionModel
 
     private static function mapServices($services)
     {
-        return array_map(function($service) {
+        return array_map(function ($service) {
             $purchaseReceiveServices = new PurchaseReceiveService;
             $purchaseReceiveServices->fill($service);
 

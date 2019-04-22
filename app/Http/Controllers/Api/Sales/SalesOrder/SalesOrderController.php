@@ -93,7 +93,7 @@ class SalesOrderController extends Controller
     {
         // TODO prevent delete if referenced by delivery order
         $salesOrder = SalesOrder::with('form')->findOrFail($id);
-        
+
         $salesOrder->isAllowedToUpdate($request->get('date'));
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $salesOrder) {

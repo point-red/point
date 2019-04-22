@@ -2,16 +2,16 @@
 
 namespace App\Model\Purchase\PurchaseOrder;
 
-use App\Exceptions\IsReferencedException;
-use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
+use App\Exceptions\IsReferencedException;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
 class PurchaseOrder extends TransactionModel
 {
@@ -187,7 +187,7 @@ class PurchaseOrder extends TransactionModel
 
     private static function mapItems($items)
     {
-        return array_map(function($item) {
+        return array_map(function ($item) {
             $purchaseOrderItem = new PurchaseOrderItem;
             $purchaseOrderItem->fill($item);
 
@@ -197,7 +197,7 @@ class PurchaseOrder extends TransactionModel
 
     private static function mapServices($services)
     {
-        return array_map(function($service) {
+        return array_map(function ($service) {
             $purchaseOrderService = new PurchaseOrderService;
             $purchaseOrderService->fill($service);
 
@@ -207,11 +207,11 @@ class PurchaseOrder extends TransactionModel
 
     private static function calculateAmount($purchaseOrder, $items, $services)
     {
-        $amount = array_reduce($items, function($carry, $item) {
+        $amount = array_reduce($items, function ($carry, $item) {
             return $carry + $item->quantity * ($item->price - $item->discount_value) * $item->converter;
         }, 0);
 
-        $amount += array_reduce($services, function($carry, $service) {
+        $amount += array_reduce($services, function ($carry, $service) {
             return $carry + $service->quantity * ($service->price - $service->discount_value);
         }, 0);
 

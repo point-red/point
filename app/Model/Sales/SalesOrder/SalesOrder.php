@@ -5,7 +5,6 @@ namespace App\Model\Sales\SalesOrder;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
-use App\Model\Master\Service;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
@@ -139,7 +138,7 @@ class SalesOrder extends TransactionModel
             $this->form->save();
         }
     }
-    
+
     public function isAllowedToUpdate($date)
     {
         $this->updatedFormInSamePeriod($date);
@@ -177,7 +176,7 @@ class SalesOrder extends TransactionModel
 
     private static function mapItems($items)
     {
-        return array_map(function($item) {
+        return array_map(function ($item) {
             $salesOrderItem = new SalesOrderItem;
             $salesOrderItem->fill($item);
 
@@ -187,7 +186,7 @@ class SalesOrder extends TransactionModel
 
     private static function mapServices($services)
     {
-        return array_map(function($service) {
+        return array_map(function ($service) {
             $salesOrderService = new SalesOrderService;
             $salesOrderService->fill($service);
 
@@ -197,11 +196,11 @@ class SalesOrder extends TransactionModel
 
     private static function calculateAmount($salesOrder, $items, $services)
     {
-        $amount = array_reduce($items, function($carry, $item) {
+        $amount = array_reduce($items, function ($carry, $item) {
             return $carry + ($item->price - $item->discount_value) * $item->quantity * $item->converter;
         }, 0);
 
-        $amount += array_reduce($services, function($carry, $service) {
+        $amount += array_reduce($services, function ($carry, $service) {
             return $carry + ($service->price - $service->discount_value) * $service->quantity;
         }, 0);
 
@@ -216,7 +215,7 @@ class SalesOrder extends TransactionModel
     {
         if (! is_null($salesOrder->sales_contract_id)) {
             $salesOrder->salesContract->updateIfDone();
-        } else if (! is_null($salesOrder->sales_quotation_id)) {
+        } elseif (! is_null($salesOrder->sales_quotation_id)) {
             $salesOrder->salesQuotation->updateIfDone();
         }
     }

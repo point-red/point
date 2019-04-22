@@ -11,7 +11,6 @@ use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Sales\SalesOrder\SalesOrder;
-use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 

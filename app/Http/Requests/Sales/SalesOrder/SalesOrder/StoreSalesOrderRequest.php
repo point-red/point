@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Sales\SalesOrder\SalesOrder;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreSalesOrderRequest extends FormRequest
 {
@@ -73,7 +73,7 @@ class StoreSalesOrderRequest extends FormRequest
 
             'services.*.sales_quotation_service_id' => ValidationRule::foreignKeyNullable('sales_quotation_services'),
         ];
-        
+
         return array_merge($rulesForm, $rulesSalesOrder, $rulesSalesOrderItems, $rulesSalesOrderServices);
     }
 }

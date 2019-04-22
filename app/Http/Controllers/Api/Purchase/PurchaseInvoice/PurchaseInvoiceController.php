@@ -10,8 +10,6 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\StorePurchaseInvoiceRequest;
 use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\UpdatePurchaseInvoiceRequest;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
 class PurchaseInvoiceController extends Controller
 {

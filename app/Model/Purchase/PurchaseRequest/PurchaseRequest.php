@@ -2,12 +2,12 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
-use App\Exceptions\IsReferencedException;
-use App\Model\FormApproval;
 use Carbon\Carbon;
 use App\Model\Form;
+use App\Model\FormApproval;
 use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
+use App\Exceptions\IsReferencedException;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 
@@ -68,7 +68,7 @@ class PurchaseRequest extends TransactionModel
 
     public function approvers()
     {
-        return $this->hasManyThrough(FormApproval::class, Form::class, 'formable_id', 'form_id')->where('formable_type', PurchaseRequest::class);
+        return $this->hasManyThrough(FormApproval::class, Form::class, 'formable_id', 'form_id')->where('formable_type', self::class);
     }
 
     public function purchaseOrders()
@@ -130,12 +130,13 @@ class PurchaseRequest extends TransactionModel
 
     private static function calculateAmount($items, $services)
     {
-        $amount = array_reduce($items, function($carry, $item) {
+        $amount = array_reduce($items, function ($carry, $item) {
             return $carry + $item->quantity * $item->converter * $item->price;
         });
-        $amount += array_reduce($services, function($carry, $service) {
+        $amount += array_reduce($services, function ($carry, $service) {
             return $carry + $service->quantity * $service->converter * $service->price;
         });
+
         return $amount;
     }
 

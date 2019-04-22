@@ -10,8 +10,8 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder\UpdatePurchaseOrderRequest;
 use App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder\StorePurchaseOrderRequest;
+use App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder\UpdatePurchaseOrderRequest;
 
 class PurchaseOrderController extends Controller
 {
@@ -84,7 +84,7 @@ class PurchaseOrderController extends Controller
      *      - discount_value (Decimal, Optional)
      *      - taxable (Boolean, Optional)
      *      - description (String)
-     *      - allocation_id (Int, Optional)
+     *      - allocation_id (Int, Optional).
      *
      * @param \App\Http\Controllers\Api\Purchase\PurchaseOrder\StorePurchaseOrderRequest $request
      * @return ApiResource
@@ -119,7 +119,7 @@ class PurchaseOrderController extends Controller
     {
         $purchaseOrder = PurchaseOrder::eloquentFilter($request)->findOrFail($id);
 
-        /**
+        /*
          * anything except 0 is considered true, including string "false"
          */
         if ($request->get('remaining_info')) {
@@ -127,7 +127,7 @@ class PurchaseOrderController extends Controller
 
             foreach ($purchaseOrder->items as $orderItem) {
                 $orderItem->quantity_pending = $orderItem->quantity;
-        
+
                 foreach ($purchaseReceives as $receive) {
                     $receiveItem = $receive->items->firstWhere('purchase_order_item_id', $orderItem->id);
                     if ($receiveItem) {

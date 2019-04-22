@@ -106,26 +106,17 @@ class DeliveryOrder extends TransactionModel
         $form = new Form;
         $form->saveData($data, $deliveryOrder);
 
-        $items = self::mapItems($data['items'], $salesOrder);
+        // TODO items is required and must be array
+        $array = [];
+        $items = $data['items'];
 
-        $deliveryOrder->items()->saveMany($items);
+        $salesOrderItems = $salesOrder->items->keyBy('id');
 
-        $salesOrder->updateIfDone();
-
-        return $deliveryOrder;
-    }
-
-    public static function mapItems($items, $salesOrder)
-    {
-        $salesOrderItems = $salesOrder->items;
-        
-        return array_map(function($item) use ($salesOrderItems) {
-            $salesOrderItem = $salesOrderItems->firstWhere('item_id', $item['item_id']);
+        foreach ($items as $item) {
+            $salesOrderItem = $salesOrderItems[$item['sales_order_item_id']];
 
             $deliveryOrderItem = new DeliveryOrderItem;
             $deliveryOrderItem->fill($item);
-            
-            $deliveryOrderItem->sales_order_item_id = $salesOrderItem->id;
             $deliveryOrderItem->item_name = $salesOrderItem->item_name;
             $deliveryOrderItem->price = $salesOrderItem->price;
             $deliveryOrderItem->discount_percent = $salesOrderItem->discount_percent;
@@ -133,7 +124,12 @@ class DeliveryOrder extends TransactionModel
             $deliveryOrderItem->taxable = $salesOrderItem->taxable;
             $deliveryOrderItem->allocation_id = $salesOrderItem->allocation_id;
 
-            return $deliveryOrderItem;
-        }, $items);
+            array_push($array, $deliveryOrderItem);
+        }
+        $deliveryOrder->items()->saveMany($array);
+
+        $salesOrder->updateIfDone();
+
+        return $deliveryOrder;
     }
 }

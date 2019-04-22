@@ -19,6 +19,7 @@ class DeliveryOrderItem extends TransactionModel
         'unit',
         'converter',
         'notes',
+        'allocation_id',
     ];
 
     protected $casts = [

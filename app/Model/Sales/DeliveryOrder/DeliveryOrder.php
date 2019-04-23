@@ -9,6 +9,7 @@ use App\Model\TransactionModel;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
+use App\Exceptions\IsReferencedException;
 
 class DeliveryOrder extends TransactionModel
 {
@@ -63,32 +64,34 @@ class DeliveryOrder extends TransactionModel
 
     public function updateIfDone()
     {
-        $deliveryOrderItems = $this->items;
-        $deliveryOrderItemIds = $deliveryOrderItems->pluck('id');
-
-        $tempArray = DeliveryNote::active()
-            ->join(DeliveryNoteItem::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_note_id'))
-            ->groupBy('delivery_order_item_id')
-            ->select(DeliveryNoteItem::getTableName('delivery_order_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
-            ->whereIn('delivery_order_item_id', $deliveryOrderItemIds)
-            ->get();
-
-        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'delivery_order_item_id');
-
-        // Make form done when all items delivered
         $done = true;
-        foreach ($deliveryOrderItems as $deliveryOrderItem) {
-            $quantityDelivered = $quantityDeliveredItems[$deliveryOrderItem->id] ?? 0;
-            if ($deliveryOrderItem->quantity - $quantityDelivered > 0) {
+        $items = $this->items()->with('deliveryNoteItems')->get();
+        foreach ($items as $item) {
+            $quantitySent = $item->deliveryNoteItems->sum('quantity');
+            if ($item->quantity > $quantitySent) {
                 $done = false;
                 break;
             }
         }
-
-        if ($done == true) {
+        if ($done === true) {
             $this->form->done = true;
             $this->form->save();
+        }
+    }
+
+    public function isAllowedToUpdate()
+    {
+        // Check if not referenced by purchase order
+        if ($this->deliveryNotes->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by delivery note', $this->deliveryNotes);
+        }
+    }
+
+    public function isAllowedToDelete()
+    {
+        // Check if not referenced by purchase order
+        if ($this->deliveryNotes->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by delivery note', $this->deliveryNotes);
         }
     }
 
@@ -115,25 +118,31 @@ class DeliveryOrder extends TransactionModel
         return $deliveryOrder;
     }
 
-    public static function mapItems($items, $salesOrder)
+    private static function mapItems($items, $salesOrder)
     {
         $salesOrderItems = $salesOrder->items;
 
         return array_map(function ($item) use ($salesOrderItems) {
-            $salesOrderItem = $salesOrderItems->firstWhere('item_id', $item['item_id']);
+            $salesOrderItem = $salesOrderItems->firstWhere('id', $item['sales_order_item_id']);
 
             $deliveryOrderItem = new DeliveryOrderItem;
             $deliveryOrderItem->fill($item);
-
-            $deliveryOrderItem->sales_order_item_id = $salesOrderItem->id;
-            $deliveryOrderItem->item_name = $salesOrderItem->item_name;
-            $deliveryOrderItem->price = $salesOrderItem->price;
-            $deliveryOrderItem->discount_percent = $salesOrderItem->discount_percent;
-            $deliveryOrderItem->discount_value = $salesOrderItem->discount_value;
-            $deliveryOrderItem->taxable = $salesOrderItem->taxable;
-            $deliveryOrderItem->allocation_id = $salesOrderItem->allocation_id;
-
+            $deliveryOrderItem = self::setDeliveryOrderItem($deliveryOrderItem, $salesOrderItem);
+            
             return $deliveryOrderItem;
         }, $items);
+    }
+    
+    private static function setDeliveryOrderItem($deliveryOrderItem, $salesOrderItem)
+    {
+        $deliveryOrderItem->item_id = $salesOrderItem->item_id;
+        $deliveryOrderItem->item_name = $salesOrderItem->item_name;
+        $deliveryOrderItem->price = $salesOrderItem->price;
+        $deliveryOrderItem->discount_percent = $salesOrderItem->discount_percent;
+        $deliveryOrderItem->discount_value = $salesOrderItem->discount_value;
+        $deliveryOrderItem->taxable = $salesOrderItem->taxable;
+        $deliveryOrderItem->allocation_id = $salesOrderItem->allocation_id;
+
+        return $deliveryOrderItem;
     }
 }

@@ -5,6 +5,7 @@ namespace App\Model\Sales\SalesOrder;
 use App\Model\PointModel;
 use App\Model\Master\Item;
 use App\Model\Master\Allocation;
+use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
 
 class SalesOrderItem extends PointModel
 {
@@ -50,5 +51,13 @@ class SalesOrderItem extends PointModel
     public function salesOrder()
     {
         return $this->belongsTo(SalesOrder::class);
+    }
+
+    public function deliveryOrderItems()
+    {
+        return $this->hasMany(DeliveryOrderItem::class)
+            ->whereHas('deliveryOrder', function($query) {
+                $query->active();
+            });
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 
+use App\Model\Form;
+use App\Model\Master\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
@@ -22,6 +24,23 @@ class PurchaseInvoiceController extends Controller
     public function index(Request $request)
     {
         $purchaseInvoices = PurchaseInvoice::eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('supplier', $fields)) {
+                $purchaseInvoices = $purchaseInvoices->join(Supplier::getTableName(), function ($q) {
+                    $q->on(Supplier::getTableName('id'), '=', PurchaseInvoice::getTableName('supplier_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $purchaseInvoices = $purchaseInvoices->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', PurchaseInvoice::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), PurchaseInvoice::class);
+                });
+            }
+        }
 
         $purchaseInvoices = pagination($purchaseInvoices, $request->get('limit'));
 

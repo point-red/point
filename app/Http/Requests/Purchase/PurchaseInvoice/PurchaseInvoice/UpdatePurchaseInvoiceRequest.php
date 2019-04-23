@@ -46,6 +46,9 @@ class UpdatePurchaseInvoiceRequest extends FormRequest
             'items.*.price' => ValidationRule::price(),
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::converter(),
+            'items.*.discount_value' => ValidationRule::discountValue(),
+            'items.*.discount_percent' => ValidationRule::discountPercent(),
+            'items.*.taxable' => 'boolean',
             'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
         ];
 
@@ -54,6 +57,8 @@ class UpdatePurchaseInvoiceRequest extends FormRequest
             'services.*.service_name' => 'required|string',
             'services.*.quantity' => ValidationRule::quantity(),
             'services.*.price' => ValidationRule::price(),
+            'services.*.discount_value' => ValidationRule::discountValue(),
+            'services.*.discount_percent' => ValidationRule::discountPercent(),
             'services.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
         ];
 

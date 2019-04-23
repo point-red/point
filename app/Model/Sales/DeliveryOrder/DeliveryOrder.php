@@ -97,52 +97,31 @@ class DeliveryOrder extends TransactionModel
 
     public static function create($data)
     {
-        $salesOrder = SalesOrder::findOrFail($data['sales_order_id']);
-        // TODO add check if $salesOrder is canceled / rejected / archived
-
         $deliveryOrder = new self;
         $deliveryOrder->fill($data);
-        $deliveryOrder->customer_id = $salesOrder->customer_id;
-        $deliveryOrder->customer_name = $salesOrder->customer_name;
-        $deliveryOrder->save();
 
+        $deliveryOrder->save();
+        
+        $items = self::mapItems($data['items']);
+        $deliveryOrder->items()->saveMany($items);
+        
         $form = new Form;
         $form->saveData($data, $deliveryOrder);
 
-        $items = self::mapItems($data['items'], $salesOrder);
-
-        $deliveryOrder->items()->saveMany($items);
-
-        $salesOrder->updateIfDone();
+        if ($salesOrder = $deliveryOrder->salesOrder) {
+            $salesOrder->updateIfDone();
+        }
 
         return $deliveryOrder;
     }
 
-    private static function mapItems($items, $salesOrder)
+    private static function mapItems($items)
     {
-        $salesOrderItems = $salesOrder->items;
-
-        return array_map(function ($item) use ($salesOrderItems) {
-            $salesOrderItem = $salesOrderItems->firstWhere('id', $item['sales_order_item_id']);
-
+        return array_map(function ($item) {
             $deliveryOrderItem = new DeliveryOrderItem;
             $deliveryOrderItem->fill($item);
-            $deliveryOrderItem = self::setDeliveryOrderItem($deliveryOrderItem, $salesOrderItem);
             
             return $deliveryOrderItem;
         }, $items);
-    }
-    
-    private static function setDeliveryOrderItem($deliveryOrderItem, $salesOrderItem)
-    {
-        $deliveryOrderItem->item_id = $salesOrderItem->item_id;
-        $deliveryOrderItem->item_name = $salesOrderItem->item_name;
-        $deliveryOrderItem->price = $salesOrderItem->price;
-        $deliveryOrderItem->discount_percent = $salesOrderItem->discount_percent;
-        $deliveryOrderItem->discount_value = $salesOrderItem->discount_value;
-        $deliveryOrderItem->taxable = $salesOrderItem->taxable;
-        $deliveryOrderItem->allocation_id = $salesOrderItem->allocation_id;
-
-        return $deliveryOrderItem;
     }
 }

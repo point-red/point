@@ -8,7 +8,6 @@ use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
-use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
 use App\Exceptions\IsReferencedException;
 
 class DeliveryOrder extends TransactionModel
@@ -20,8 +19,10 @@ class DeliveryOrder extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
+        'customer_id',
         'warehouse_id',
         'sales_order_id',
+        'customer_name',
         'billing_address',
         'billing_phone',
         'billing_email',

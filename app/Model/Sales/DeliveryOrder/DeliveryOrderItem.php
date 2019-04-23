@@ -16,10 +16,16 @@ class DeliveryOrderItem extends TransactionModel
     protected $fillable = [
         'sales_order_item_id',
         'item_id',
+        'item_name',
         'quantity',
+        'price',
+        'discount_percent',
+        'discount_value',
+        'taxable',
         'unit',
         'converter',
         'notes',
+        'allocation_id',
     ];
 
     protected $casts = [

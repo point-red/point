@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseReceive;
 
+use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseReceiveRequest;
+use App\Model\Form;
+use App\Model\Inventory\Inventory;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +25,23 @@ class PurchaseReceiveController extends Controller
     {
         $purchaseReceives = PurchaseReceive::eloquentFilter($request);
 
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('supplier', $fields)) {
+                $purchaseReceives = $purchaseReceives->join(Supplier::getTableName(), function ($q) {
+                    $q->on(Supplier::getTableName('id'), '=', PurchaseReceive::getTableName('supplier_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $purchaseReceives = $purchaseReceives->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', PurchaseReceive::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), PurchaseReceive::class);
+                });
+            }
+        }
+
         $purchaseReceives = pagination($purchaseReceives, $request->get('limit'));
 
         return new ApiCollection($purchaseReceives);
@@ -29,9 +49,7 @@ class PurchaseReceiveController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
      * Request :
-     *
      *  - number (String)
      *  - date (String YYYY-MM-DD hh:mm:ss)
      *  - purchase_request_id (Int, Optional)
@@ -58,7 +76,6 @@ class PurchaseReceiveController extends Controller
      *      - taxable (Boolean, Optional)
      *      - description (String)
      *      - allocation_id (Int, Optional)
-     *
      *  - services (Array) :
      *      - service_id (Int)
      *      - quantity (Decimal)
@@ -69,11 +86,11 @@ class PurchaseReceiveController extends Controller
      *      - description (String)
      *      - allocation_id (Int, Optional)
      *
-     * @param \Illuminate\Http\Request $request
-     * @throws \Throwable
+     * @param StorePurchaseReceiveRequest $request
      * @return ApiResource
+     * @throws \Throwable
      */
-    public function store(Request $request)
+    public function store(StorePurchaseReceiveRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseReceive = PurchaseReceive::create($request->all());

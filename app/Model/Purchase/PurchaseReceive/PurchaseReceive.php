@@ -27,7 +27,7 @@ class PurchaseReceive extends TransactionModel
         'license_plate',
     ];
 
-    public $defaultNumberPrefix = 'P-RECEIVE';
+    public $defaultNumberPrefix = 'RECEIVE';
 
     public function form()
     {

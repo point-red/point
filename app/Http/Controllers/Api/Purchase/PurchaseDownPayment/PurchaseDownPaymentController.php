@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseDownPayment;
 
+use App\Http\Requests\Purchase\PurchaseDownPayment\PurchaseDownPayment\StorePurchaseDownPaymentRequest;
+use App\Http\Requests\Purchase\PurchaseDownPayment\PurchaseDownPayment\UpdatePurchaseDownPaymentRequest;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use Illuminate\Http\Request;
@@ -48,11 +50,11 @@ class PurchaseDownPaymentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param StorePurchaseDownPaymentRequest $request
      * @return \Illuminate\Http\Response
      * @throws \Throwable
      */
-    public function store(Request $request)
+    public function store(StorePurchaseDownPaymentRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $downPayment = PurchaseDownPayment::create($request->all());
@@ -83,13 +85,13 @@ class PurchaseDownPaymentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param UpdatePurchaseDownPaymentRequest $request
+     * @param  int $id
+     * @return void
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePurchaseDownPaymentRequest $request, $id)
     {
-        //
+        // currently doesn't have update method
     }
 
     /**
@@ -104,6 +106,8 @@ class PurchaseDownPaymentController extends Controller
         $downPayment = PurchaseDownPayment::findOrFail($id);
         $downPayment->isAllowedToDelete();
 
-        return $downPayment->requestCancel($request);
+        $downPayment->requestCancel($request);
+
+        return response()->json([], 204);
     }
 }

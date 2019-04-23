@@ -102,14 +102,24 @@ class PurchaseInvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $purchaseInvoice = PurchaseInvoice::findOrFail($id);
-        $purchaseInvoice->isAllowedToUpdate();
+        $purchaseInvoice->isAllowedToDelete();
 
-        return $purchaseInvoice->requestCancel();
+        $response = $purchaseInvoice->requestCancel($request);
+
+        if (!$response) {
+            foreach ($purchaseInvoice->purchaseReceives as $purchaseReceive) {
+                $purchaseReceive->form->done = false;
+                $purchaseReceive->form->save();
+            }
+        }
+
+        return response()->json([], 204);
     }
 }

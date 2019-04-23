@@ -169,6 +169,13 @@ class PurchaseReceiveController extends Controller
         $purchaseReceive = PurchaseReceive::findOrFail($id);
         $purchaseReceive->isAllowedToDelete();
 
-        return $purchaseReceive->requestCancel($request);
+        $response = $purchaseReceive->requestCancel($request);
+
+        if (!$response) {
+            $purchaseReceive->purchaseOrder->form->done = false;
+            $purchaseReceive->purchaseOrder->form->save();
+        }
+
+        return response()->json([], 204);
     }
 }

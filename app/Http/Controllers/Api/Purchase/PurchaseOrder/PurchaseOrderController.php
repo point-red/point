@@ -185,6 +185,15 @@ class PurchaseOrderController extends Controller
         $purchaseOrder = PurchaseOrder::findOrFail($id);
         $purchaseOrder->isAllowedToDelete();
 
-        return $purchaseOrder->requestCancel($request);
+        $response = $purchaseOrder->requestCancel($request);
+
+        if (!$response) {
+            if ($purchaseOrder->purchaseRequest) {
+                $purchaseOrder->purchaseRequest->form->done = false;
+                $purchaseOrder->purchaseRequest->form->save();
+            }
+        }
+
+        return response()->json([], 204);
     }
 }

@@ -98,9 +98,8 @@ class SalesContract extends TransactionModel
         }
     }
 
-    public function isAllowedToUpdate($date)
+    public function isAllowedToUpdate()
     {
-        $this->updatedFormInSamePeriod($date);
         $this->updatedFormNotArchived();
         $this->isNotReferenced();
     }

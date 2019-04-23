@@ -94,17 +94,31 @@ class SalesInvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $salesInvoice = SalesInvoice::findOrFail($id);
+        $salesInvoice->isAllowedToDelete();
 
-        $salesInvoice->detachDownPayments();
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+            $salesInvoice->detachDownPayments();
+            $response = $salesInvoice->requestCancel($request);
 
-        $salesInvoice->delete();
+            if (!$response) {
+                foreach ($salesInvoice->items as $salesInvoiceItem) {
+                    if ($salesInvoiceItem->deliveryNote) {
+                        $salesInvoiceItem->deliveryNote->form->done = false;
+                        $salesInvoiceItem->deliveryNote->form->save();
+                    }
+                }
+            }
 
-        return response()->json([], 204);
+            return response()->json([], 204);
+        });
+
+        return $result;
     }
 }

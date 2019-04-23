@@ -72,8 +72,9 @@ class SalesInvoiceController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param int  $id
+     * @param int $id
      * @return ApiResource
+     * @throws \Throwable
      */
     public function update(Request $request, $id)
     {
@@ -97,6 +98,7 @@ class SalesInvoiceController extends Controller
      * @param Request $request
      * @param  int $id
      * @return \Illuminate\Http\Response
+     * @throws \Throwable
      */
     public function destroy(Request $request, $id)
     {

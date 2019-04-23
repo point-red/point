@@ -13,7 +13,6 @@ class DeliveryNoteItem extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'item_id',
         'delivery_order_item_id',
         'gross_weight',
         'tare_weight',
@@ -22,12 +21,6 @@ class DeliveryNoteItem extends TransactionModel
         'unit',
         'converter',
         'notes',
-        'price',
-        'discount_percent',
-        'discount_value',
-        'taxable',
-        'allocation_id',
-        'sell_price',
     ];
 
     protected $casts = [
@@ -51,9 +44,8 @@ class DeliveryNoteItem extends TransactionModel
         return $this->belongsTo(Allocation::class);
     }
 
-    // For TransactionController
-    public function setSellPriceAttribute($value)
+    public function deliveryNote()
     {
-        $this->attributes['price'] = $value;
+        return $this->belongsTo(DeliveryNote::class);
     }
 }

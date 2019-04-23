@@ -9,6 +9,7 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
+use App\Http\Requests\Sales\DeliveryNote\DeliveryNote\StoreDeliveryNoteRequest;
 
 class DeliveryNoteController extends Controller
 {
@@ -33,7 +34,7 @@ class DeliveryNoteController extends Controller
      * @return \Illuminate\Http\Response
      * @throws \Throwable
      */
-    public function store(Request $request)
+    public function store(StoreDeliveryNoteRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $deliveryNote = DeliveryNote::create($request->all());

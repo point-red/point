@@ -110,30 +110,17 @@ class SalesOrder extends TransactionModel
 
     public function updateIfDone()
     {
-        $salesOrderItems = $this->items;
-        $salesOrderItemIds = $salesOrderItems->pluck('id');
-
-        $tempArray = DeliveryOrder::active()
-            ->join(DeliveryOrderItem::getTableName(), DeliveryOrder::getTableName('id'), '=', DeliveryOrderItem::getTableName('delivery_order_id'))
-            ->groupBy('sales_order_item_id')
-            ->select(DeliveryOrderItem::getTableName('sales_order_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
-            ->whereIn('sales_order_item_id', $salesOrderItemIds)
-            ->get();
-
-        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'sales_order_item_id');
-
-        // Make form done when all item delivered
         $done = true;
-        foreach ($salesOrderItems as $salesOrderItem) {
-            $quantityDelivered = $quantityDeliveredItems[$salesOrderItem->id] ?? 0;
-            if ($salesOrderItem->quantity - $quantityDelivered > 0) {
+        $items = $this->items()->with('deliveryOrderItems')->get();
+        foreach ($items as $item) {
+            $quantitySent = $item->deliveryOrderItems->sum('quantity');
+            if ($item->quantity > $quantitySent) {
                 $done = false;
                 break;
             }
         }
 
-        if ($done == true) {
+        if ($done === true) {
             $this->form->done = true;
             $this->form->save();
         }

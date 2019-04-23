@@ -160,14 +160,15 @@ class PurchaseReceiveController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $purchaseReceive = PurchaseReceive::findOrFail($id);
-        $purchaseReceive->isAllowedToUpdate();
+        $purchaseReceive->isAllowedToDelete();
 
-        return $purchaseReceive->requestCancel();
+        return $purchaseReceive->requestCancel($request);
     }
 }

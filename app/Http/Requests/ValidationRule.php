@@ -64,11 +64,11 @@ class ValidationRule
     public static function form()
     {
         return [
-      'date' => 'required|date',
-      'number'=> 'nullable|string',
-      'increment_group' => 'required|integer',
-      'approver_id' => self::foreignKeyNullable('users'),
-    ];
+            'date' => 'required|date',
+            'number'=> 'nullable|string',
+            'increment_group' => 'required|integer',
+            'approver_id' => self::foreignKeyNullable('users'),
+        ];
     }
 
     public static function quantity()

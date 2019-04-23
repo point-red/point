@@ -9,6 +9,7 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
+use App\Http\Requests\Sales\DeliveryNote\DeliveryNote\StoreDeliveryNoteRequest;
 
 class DeliveryNoteController extends Controller
 {
@@ -33,7 +34,7 @@ class DeliveryNoteController extends Controller
      * @return \Illuminate\Http\Response
      * @throws \Throwable
      */
-    public function store(Request $request)
+    public function store(StoreDeliveryNoteRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $deliveryNote = DeliveryNote::create($request->all());
@@ -74,8 +75,9 @@ class DeliveryNoteController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @param int  $id
+     * @param int $id
      * @return ApiResource
+     * @throws \Throwable
      */
     public function update(Request $request, $id)
     {
@@ -94,14 +96,21 @@ class DeliveryNoteController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $deliveryNote = DeliveryNote::findOrFail($id);
+        $deliveryNote->isAllowedToDelete();
 
-        $deliveryNote->delete();
+        $response = $deliveryNote->requestCancel($request);
+
+        if (!$response) {
+            $deliveryNote->deliveryOrder->form->done = false;
+            $deliveryNote->deliveryOrder->form->save();
+        }
 
         return response()->json([], 204);
     }

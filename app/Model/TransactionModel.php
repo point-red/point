@@ -2,11 +2,10 @@
 
 namespace App\Model;
 
-use App\Exceptions\FormArchivedException;
-use App\Exceptions\UpdatePeriodNotAllowedException;
-use App\Http\Resources\ApiResource;
 use App\Traits\FormScopes;
 use Illuminate\Http\Request;
+use App\Exceptions\FormArchivedException;
+use App\Exceptions\UpdatePeriodNotAllowedException;
 
 class TransactionModel extends PointModel
 {
@@ -15,6 +14,7 @@ class TransactionModel extends PointModel
     public function requestCancel(Request $request)
     {
         if ($request->has('approver_id')) {
+            // send request cancel
             $formCancellation = new FormCancellation;
             $formCancellation->requested_to = $request->approver_id;
             $formCancellation->requested_at = now();
@@ -24,11 +24,12 @@ class TransactionModel extends PointModel
 
             $this->form->cancellations()->save($formCancellation);
 
-            return new ApiResource($formCancellation);
+            return true;
         } else {
+            // not request a cancellation form instead direct cancel
             $this->form->cancel();
 
-            return response()->json([], 204);
+            return false;
         }
     }
 

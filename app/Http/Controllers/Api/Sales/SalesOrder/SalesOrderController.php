@@ -93,8 +93,8 @@ class SalesOrderController extends Controller
     {
         // TODO prevent delete if referenced by delivery order
         $salesOrder = SalesOrder::with('form')->findOrFail($id);
-        
-        $salesOrder->isAllowedToUpdate($request->get('date'));
+
+        $salesOrder->isAllowedToUpdate();
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $salesOrder) {
             $salesOrder->form->archive();
@@ -118,14 +118,24 @@ class SalesOrderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $salesOrder = SalesOrder::findOrFail($id);
         $salesOrder->isAllowedToDelete();
 
-        return $salesOrder->requestCancel();
+        $response = $salesOrder->requestCancel($request);
+
+        if (!$response) {
+            if ($salesOrder->salesQuotation) {
+                $salesOrder->salesQuotation->form->done = false;
+                $salesOrder->salesQuotation->form->save();
+            }
+        }
+
+        return response()->json([], 204);
     }
 }

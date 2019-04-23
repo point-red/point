@@ -24,7 +24,7 @@ class CreateDeliveryNotesTable extends Migration
             $table->string('shipping_phone')->nullable();
             $table->string('shipping_email')->nullable();
             $table->unsignedInteger('warehouse_id');
-            $table->unsignedInteger('delivery_order_id')->nullable();
+            $table->unsignedInteger('delivery_order_id');
             $table->string('driver')->nullable();
             $table->string('license_plate')->nullable();
 

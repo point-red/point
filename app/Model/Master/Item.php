@@ -4,8 +4,8 @@ namespace App\Model\Master;
 
 use App\Model\Form;
 use App\Model\MasterModel;
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\Inventory\Inventory;
+use App\Model\Accounting\ChartOfAccount;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Inventory\OpeningStock\OpeningStock;
 use App\Model\Inventory\OpeningStock\OpeningStockWarehouse;

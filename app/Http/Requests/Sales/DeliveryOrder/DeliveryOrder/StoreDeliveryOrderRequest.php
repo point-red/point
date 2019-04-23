@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder;
 
+use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDeliveryOrderRequest extends FormRequest
@@ -13,7 +14,7 @@ class StoreDeliveryOrderRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,8 +24,22 @@ class StoreDeliveryOrderRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
+        $rulesForm = ValidationRule::form();
+
+        $rulesDeliveryOrder = [
+            'sales_order_id' => ValidationRule::foreignKey('sales_orders'),
+            'warehouse_id' => ValidationRule::foreignKeyNullable('warehouses'),
+
+            'items' => 'required|array',
         ];
+
+        $rulesDeliveryOrderItems = [
+            'items.*.sales_order_item_id' => ValidationRule::foreignKey('sales_order_items'),
+            'items.*.quantity' => ValidationRule::quantity(),
+            'items.*.unit' => ValidationRule::unit(),
+            'items.*.converter' => ValidationRule::converter(),
+        ];
+
+        return array_merge($rulesForm, $rulesDeliveryOrder, $rulesDeliveryOrderItems);
     }
 }

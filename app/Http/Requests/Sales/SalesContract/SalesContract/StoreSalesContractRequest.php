@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Sales\SalesContract\SalesContract;
 
 use Illuminate\Http\Request;
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreSalesContractRequest extends FormRequest
 {
@@ -26,7 +26,7 @@ class StoreSalesContractRequest extends FormRequest
     public function rules(Request $request)
     {
         $rulesForm = ValidationRule::form();
-        
+
         $rulesSalesContract = [
             'customer_id' => ValidationRule::foreignKey('customers'),
             'customer_name' => 'required|string',
@@ -61,6 +61,5 @@ class StoreSalesContractRequest extends FormRequest
 
             return array_merge($rulesForm, $rulesSalesContract, $rulesSalesContractItemGroup);
         }
-
     }
 }

@@ -6,7 +6,6 @@ use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\TransactionModel;
 use App\Model\Sales\SalesOrder\SalesOrder;
-use App\Model\Sales\SalesOrder\SalesOrderItem;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesContract extends TransactionModel
@@ -71,7 +70,7 @@ class SalesContract extends TransactionModel
         // Make form done when all items / group items quantity ordered
         $done = true;
 
-        if ($this->items->isNotEmpty()) { 
+        if ($this->items->isNotEmpty()) {
             $items = $this->items()->with('salesOrderItems')->get();
 
             foreach ($items as $item) {
@@ -99,9 +98,8 @@ class SalesContract extends TransactionModel
         }
     }
 
-    public function isAllowedToUpdate($date)
+    public function isAllowedToUpdate()
     {
-        $this->updatedFormInSamePeriod($date);
         $this->updatedFormNotArchived();
         $this->isNotReferenced();
     }
@@ -134,17 +132,17 @@ class SalesContract extends TransactionModel
 
     private static function mapItems($items)
     {
-        return array_map(function($item) {
+        return array_map(function ($item) {
             $contractItem = new SalesContractItem;
             $contractItem->fill($item);
 
             return $contractItem;
         }, $items);
     }
-    
+
     private static function mapGroupItems($groups)
     {
-        return array_map(function($group) {
+        return array_map(function ($group) {
             $contractGroup = new SalesContractGroupItem;
             $contractGroup->fill($group);
 
@@ -154,11 +152,11 @@ class SalesContract extends TransactionModel
 
     private static function calculateAmount($salesContract, $items, $groups)
     {
-        $amount = array_reduce($items, function($carry, $item) {
+        $amount = array_reduce($items, function ($carry, $item) {
             return $carry + $item->quantity * $item->converter * ($item->price - $item->discount_value);
         }, 0);
 
-        $amount += array_reduce($groups, function($carry, $group) {
+        $amount += array_reduce($groups, function ($carry, $group) {
             return $carry + $group->quantity * ($group->price - $group->discount_value);
         }, 0);
 

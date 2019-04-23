@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 
+use App\Model\Form;
+use App\Model\Master\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
@@ -10,8 +12,6 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\StorePurchaseInvoiceRequest;
 use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\UpdatePurchaseInvoiceRequest;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
 class PurchaseInvoiceController extends Controller
 {
@@ -24,6 +24,23 @@ class PurchaseInvoiceController extends Controller
     public function index(Request $request)
     {
         $purchaseInvoices = PurchaseInvoice::eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('supplier', $fields)) {
+                $purchaseInvoices = $purchaseInvoices->join(Supplier::getTableName(), function ($q) {
+                    $q->on(Supplier::getTableName('id'), '=', PurchaseInvoice::getTableName('supplier_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $purchaseInvoices = $purchaseInvoices->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', PurchaseInvoice::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), PurchaseInvoice::class);
+                });
+            }
+        }
 
         $purchaseInvoices = pagination($purchaseInvoices, $request->get('limit'));
 
@@ -104,14 +121,24 @@ class PurchaseInvoiceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $purchaseInvoice = PurchaseInvoice::findOrFail($id);
-        $purchaseInvoice->isAllowedToUpdate();
+        $purchaseInvoice->isAllowedToDelete();
 
-        return $purchaseInvoice->requestCancel();
+        $response = $purchaseInvoice->requestCancel($request);
+
+        if (!$response) {
+            foreach ($purchaseInvoice->purchaseReceives as $purchaseReceive) {
+                $purchaseReceive->form->done = false;
+                $purchaseReceive->form->save();
+            }
+        }
+
+        return response()->json([], 204);
     }
 }

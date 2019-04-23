@@ -2,8 +2,8 @@
 
 namespace App\Model;
 
-use App\Model\Master\User;
 use Carbon\Carbon;
+use App\Model\Master\User;
 use Illuminate\Database\Eloquent\Model;
 
 class FormApproval extends Model
@@ -30,9 +30,10 @@ class FormApproval extends Model
 
     public function getApprovalAtAttribute($value)
     {
-        if (!$value) {
-            return null;
+        if (! $value) {
+            return;
         }
+
         return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
     }
 

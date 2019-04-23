@@ -43,7 +43,7 @@ class SalesContractGroupItem extends TransactionModel
     public function salesOrderItems()
     {
         return $this->hasMany(SalesOrderItem::class)
-            ->whereHas('salesOrder', function($query) {
+            ->whereHas('salesOrder', function ($query) {
                 $query->active();
             });
     }

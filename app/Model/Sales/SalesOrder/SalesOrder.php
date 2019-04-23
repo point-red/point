@@ -5,7 +5,6 @@ namespace App\Model\Sales\SalesOrder;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
-use App\Model\Master\Service;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
@@ -111,38 +110,24 @@ class SalesOrder extends TransactionModel
 
     public function updateIfDone()
     {
-        $salesOrderItems = $this->items;
-        $salesOrderItemIds = $salesOrderItems->pluck('id');
-
-        $tempArray = DeliveryOrder::active()
-            ->join(DeliveryOrderItem::getTableName(), DeliveryOrder::getTableName('id'), '=', DeliveryOrderItem::getTableName('delivery_order_id'))
-            ->groupBy('sales_order_item_id')
-            ->select(DeliveryOrderItem::getTableName('sales_order_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
-            ->whereIn('sales_order_item_id', $salesOrderItemIds)
-            ->get();
-
-        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'sales_order_item_id');
-
-        // Make form done when all item delivered
         $done = true;
-        foreach ($salesOrderItems as $salesOrderItem) {
-            $quantityDelivered = $quantityDeliveredItems[$salesOrderItem->id] ?? 0;
-            if ($salesOrderItem->quantity - $quantityDelivered > 0) {
+        $items = $this->items()->with('deliveryOrderItems')->get();
+        foreach ($items as $item) {
+            $quantitySent = $item->deliveryOrderItems->sum('quantity');
+            if ($item->quantity > $quantitySent) {
                 $done = false;
                 break;
             }
         }
 
-        if ($done == true) {
+        if ($done === true) {
             $this->form->done = true;
             $this->form->save();
         }
     }
-    
-    public function isAllowedToUpdate($date)
+
+    public function isAllowedToUpdate()
     {
-        $this->updatedFormInSamePeriod($date);
         $this->updatedFormNotArchived();
         $this->isNotReferenced();
     }
@@ -177,7 +162,7 @@ class SalesOrder extends TransactionModel
 
     private static function mapItems($items)
     {
-        return array_map(function($item) {
+        return array_map(function ($item) {
             $salesOrderItem = new SalesOrderItem;
             $salesOrderItem->fill($item);
 
@@ -187,7 +172,7 @@ class SalesOrder extends TransactionModel
 
     private static function mapServices($services)
     {
-        return array_map(function($service) {
+        return array_map(function ($service) {
             $salesOrderService = new SalesOrderService;
             $salesOrderService->fill($service);
 
@@ -197,11 +182,11 @@ class SalesOrder extends TransactionModel
 
     private static function calculateAmount($salesOrder, $items, $services)
     {
-        $amount = array_reduce($items, function($carry, $item) {
+        $amount = array_reduce($items, function ($carry, $item) {
             return $carry + ($item->price - $item->discount_value) * $item->quantity * $item->converter;
         }, 0);
 
-        $amount += array_reduce($services, function($carry, $service) {
+        $amount += array_reduce($services, function ($carry, $service) {
             return $carry + ($service->price - $service->discount_value) * $service->quantity;
         }, 0);
 
@@ -216,7 +201,7 @@ class SalesOrder extends TransactionModel
     {
         if (! is_null($salesOrder->sales_contract_id)) {
             $salesOrder->salesContract->updateIfDone();
-        } else if (! is_null($salesOrder->sales_quotation_id)) {
+        } elseif (! is_null($salesOrder->sales_quotation_id)) {
             $salesOrder->salesQuotation->updateIfDone();
         }
     }

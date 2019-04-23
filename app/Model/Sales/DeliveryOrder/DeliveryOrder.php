@@ -8,7 +8,7 @@ use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
-use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
+use App\Exceptions\IsReferencedException;
 
 class DeliveryOrder extends TransactionModel
 {
@@ -19,8 +19,10 @@ class DeliveryOrder extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
+        'customer_id',
         'warehouse_id',
         'sales_order_id',
+        'customer_name',
         'billing_address',
         'billing_phone',
         'billing_email',
@@ -63,73 +65,64 @@ class DeliveryOrder extends TransactionModel
 
     public function updateIfDone()
     {
-        $deliveryOrderItems = $this->items;
-        $deliveryOrderItemIds = $deliveryOrderItems->pluck('id');
-
-        $tempArray = DeliveryNote::active()
-            ->join(DeliveryNoteItem::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_note_id'))
-            ->groupBy('delivery_order_item_id')
-            ->select(DeliveryNoteItem::getTableName('delivery_order_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
-            ->whereIn('delivery_order_item_id', $deliveryOrderItemIds)
-            ->get();
-
-        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'delivery_order_item_id');
-
-        // Make form done when all items delivered
         $done = true;
-        foreach ($deliveryOrderItems as $deliveryOrderItem) {
-            $quantityDelivered = $quantityDeliveredItems[$deliveryOrderItem->id] ?? 0;
-            if ($deliveryOrderItem->quantity - $quantityDelivered > 0) {
+        $items = $this->items()->with('deliveryNoteItems')->get();
+        foreach ($items as $item) {
+            $quantitySent = $item->deliveryNoteItems->sum('quantity');
+            if ($item->quantity > $quantitySent) {
                 $done = false;
                 break;
             }
         }
-
-        if ($done == true) {
+        if ($done === true) {
             $this->form->done = true;
             $this->form->save();
         }
     }
 
+    public function isAllowedToUpdate()
+    {
+        // Check if not referenced by purchase order
+        if ($this->deliveryNotes->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by delivery note', $this->deliveryNotes);
+        }
+    }
+
+    public function isAllowedToDelete()
+    {
+        // Check if not referenced by purchase order
+        if ($this->deliveryNotes->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by delivery note', $this->deliveryNotes);
+        }
+    }
+
     public static function create($data)
     {
-        $salesOrder = SalesOrder::findOrFail($data['sales_order_id']);
-        // TODO add check if $salesOrder is canceled / rejected / archived
-
         $deliveryOrder = new self;
         $deliveryOrder->fill($data);
-        $deliveryOrder->customer_id = $salesOrder->customer_id;
-        $deliveryOrder->customer_name = $salesOrder->customer_name;
-        $deliveryOrder->save();
 
+        $deliveryOrder->save();
+        
+        $items = self::mapItems($data['items']);
+        $deliveryOrder->items()->saveMany($items);
+        
         $form = new Form;
         $form->saveData($data, $deliveryOrder);
 
-        // TODO items is required and must be array
-        $array = [];
-        $items = $data['items'];
-
-        $salesOrderItems = $salesOrder->items->keyBy('id');
-
-        foreach ($items as $item) {
-            $salesOrderItem = $salesOrderItems[$item['sales_order_item_id']];
-
-            $deliveryOrderItem = new DeliveryOrderItem;
-            $deliveryOrderItem->fill($item);
-            $deliveryOrderItem->item_name = $salesOrderItem->item_name;
-            $deliveryOrderItem->price = $salesOrderItem->price;
-            $deliveryOrderItem->discount_percent = $salesOrderItem->discount_percent;
-            $deliveryOrderItem->discount_value = $salesOrderItem->discount_value;
-            $deliveryOrderItem->taxable = $salesOrderItem->taxable;
-            $deliveryOrderItem->allocation_id = $salesOrderItem->allocation_id;
-
-            array_push($array, $deliveryOrderItem);
+        if ($salesOrder = $deliveryOrder->salesOrder) {
+            $salesOrder->updateIfDone();
         }
-        $deliveryOrder->items()->saveMany($array);
-
-        $salesOrder->updateIfDone();
 
         return $deliveryOrder;
+    }
+
+    private static function mapItems($items)
+    {
+        return array_map(function ($item) {
+            $deliveryOrderItem = new DeliveryOrderItem;
+            $deliveryOrderItem->fill($item);
+            
+            return $deliveryOrderItem;
+        }, $items);
     }
 }

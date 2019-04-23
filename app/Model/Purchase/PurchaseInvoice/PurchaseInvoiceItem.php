@@ -3,8 +3,8 @@
 namespace App\Model\Purchase\PurchaseInvoice;
 
 use App\Model\Master\Item;
-use App\Model\Master\Allocation;
 use App\Model\TransactionModel;
+use App\Model\Master\Allocation;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
 class PurchaseInvoiceItem extends TransactionModel

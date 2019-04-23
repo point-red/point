@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
 use App\Model\Form;
-use App\Model\HumanResource\Employee\Employee;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
 
@@ -75,7 +75,7 @@ class PurchaseRequestController extends Controller
      *      - quantity (Decimal)
      *      - price (Decimal)
      *      - description (String Optional)
-     *      - allocation_id (Int Optional)
+     *      - allocation_id (Int Optional).
      *
      * @param StorePurchaseRequestRequest $request
      * @return ApiResource
@@ -134,7 +134,7 @@ class PurchaseRequestController extends Controller
     {
         $purchaseRequest = PurchaseRequest::with('form')->findOrFail($id);
 
-        $purchaseRequest->isAllowedToUpdate($request->get('date'));
+        $purchaseRequest->isAllowedToUpdate();
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseRequest) {
             $purchaseRequest->form->archive();
@@ -165,11 +165,13 @@ class PurchaseRequestController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $purchaseRequest->isAllowedToDelete();
 
-        return $purchaseRequest->requestCancel();
+        $purchaseRequest->requestCancel($request);
+
+        return response()->json([], 204);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseDownPayment;
 
+use App\Model\Form;
+use App\Model\Master\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
@@ -20,6 +22,23 @@ class PurchaseDownPaymentController extends Controller
     public function index(Request $request)
     {
         $downPayments = PurchaseDownPayment::eloquentFilter($request)->with('downpaymentable');
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('supplier', $fields)) {
+                $downPayments = $downPayments->join(Supplier::getTableName(), function ($q) {
+                    $q->on(Supplier::getTableName('id'), '=', PurchaseDownPayment::getTableName('supplier_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $downPayments = $downPayments->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', PurchaseDownPayment::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), PurchaseDownPayment::class);
+                });
+            }
+        }
 
         $downPayments = pagination($downPayments, $request->get('limit'));
 

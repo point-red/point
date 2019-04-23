@@ -75,8 +75,8 @@ class PurchaseDownPayment extends TransactionModel
             $reference = findOrFail($data['purchase_contract_id']);
         }
 
-        $downPayment->supplier_id = $reference->id;
-        $downPayment->supplier_name = $reference->name;
+        $downPayment->supplier_id = $reference->supplier_id;
+        $downPayment->supplier_name = $reference->supplier_name;
         $downPayment->fill($data);
         $downPayment->remaining = $data['amount'];
         $downPayment->save();

@@ -67,14 +67,15 @@ class SalesContractController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param UpdateSalesContractRequest $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
+     * @throws \Throwable
      */
     public function update(UpdateSalesContractRequest $request, $id)
     {
         $salesContract = SalesContract::with('form')->findOrFail($id);
-        $salesContract->isAllowedToUpdate($request->get('date'));
+        $salesContract->isAllowedToUpdate();
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $salesContract) {
             $salesContract->form->archive();
@@ -92,14 +93,17 @@ class SalesContractController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $salesContract = SalesContract::findOrFail($id);
         $salesContract->isAllowedToDelete();
 
-        return $salesContract->requestCancel();
+        $salesContract->requestCancel($request);
+
+        return response()->json([], 204);
     }
 }

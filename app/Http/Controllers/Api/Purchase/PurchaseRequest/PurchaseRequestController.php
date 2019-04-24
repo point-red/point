@@ -134,7 +134,7 @@ class PurchaseRequestController extends Controller
     {
         $purchaseRequest = PurchaseRequest::with('form')->findOrFail($id);
 
-        $purchaseRequest->isAllowedToUpdate($request->get('date'));
+        $purchaseRequest->isAllowedToUpdate();
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseRequest) {
             $purchaseRequest->form->archive();
@@ -165,11 +165,13 @@ class PurchaseRequestController extends Controller
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $purchaseRequest->isAllowedToDelete();
 
-        return $purchaseRequest->requestCancel();
+        $purchaseRequest->requestCancel($request);
+
+        return response()->json([], 204);
     }
 }

@@ -103,6 +103,12 @@ class PurchaseInvoice extends TransactionModel
         $this->isNotReferenced();
     }
 
+    public function isAllowedToDelete()
+    {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
     private function isNotReferenced()
     {
         // Check if not referenced by payments

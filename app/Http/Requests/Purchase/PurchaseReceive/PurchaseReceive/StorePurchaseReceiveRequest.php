@@ -31,7 +31,6 @@ class StorePurchaseReceiveRequest extends FormRequest
             'supplier_name' => 'required|string',
             'warehouse_id' => ValidationRule::foreignKey('warehouses'),
             'purchase_order_id' => ValidationRule::foreignKeyNullable('purchase_orders'),
-
             'items' => 'required_without:services|array',
             'services' => 'required_without:items|array',
         ];
@@ -41,7 +40,7 @@ class StorePurchaseReceiveRequest extends FormRequest
             'items.*.item_name' => 'required|string',
             'items.*.purchase_order_item_id' => ValidationRule::foreignKey('purchase_order_items'),
             'items.*.quantity' => ValidationRule::quantity(),
-            'items.*.unit' => ValidationRule::quantity(),
+            'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::quantity(),
             'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
         ];

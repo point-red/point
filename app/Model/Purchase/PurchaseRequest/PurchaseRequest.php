@@ -78,9 +78,8 @@ class PurchaseRequest extends TransactionModel
         return $this->hasMany(PurchaseOrder::class)->active();
     }
 
-    public function isAllowedToUpdate($date)
+    public function isAllowedToUpdate()
     {
-        $this->updatedFormInSamePeriod($date);
         $this->updatedFormNotArchived();
         $this->isNotReferenced();
     }

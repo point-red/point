@@ -139,7 +139,7 @@ class PermissionSeeder extends Seeder
 
     private function setFinancePermission()
     {
-        Permission::createIfNotExists('menu payment');
+        Permission::createIfNotExists('menu finance');
 
         $allPermission = [
             'payment order',

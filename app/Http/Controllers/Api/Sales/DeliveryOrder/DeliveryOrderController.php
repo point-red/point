@@ -113,14 +113,23 @@ class DeliveryOrderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $deliveryOrder = DeliveryOrder::findOrFail($id);
+        $deliveryOrder->isAllowedToDelete();
 
-        $deliveryOrder->delete();
+        $response = $deliveryOrder->requestCancel($request);
+
+        if (!$response) {
+            if ($deliveryOrder->salesOrder) {
+                $deliveryOrder->salesOrder->form->done = false;
+                $deliveryOrder->salesOrder->form->save();
+            }
+        }
 
         return response()->json([], 204);
     }

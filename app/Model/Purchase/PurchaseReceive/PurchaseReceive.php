@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseReceive;
 
+use App\Exceptions\IsReferencedException;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
@@ -27,7 +28,7 @@ class PurchaseReceive extends TransactionModel
         'license_plate',
     ];
 
-    public $defaultNumberPrefix = 'P-RECEIVE';
+    public $defaultNumberPrefix = 'RECEIVE';
 
     public function form()
     {
@@ -54,7 +55,7 @@ class PurchaseReceive extends TransactionModel
         return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
     }
 
-    public function purchaseInvoice()
+    public function purchaseInvoices()
     {
         return $this->belongsToMany(PurchaseInvoice::class, 'purchase_invoice_items')->active();
     }
@@ -66,7 +67,18 @@ class PurchaseReceive extends TransactionModel
 
     public function isAllowedToUpdate()
     {
-        // TODO Check if not referenced by purchase invoice
+        // Check if not referenced by purchase invoice
+        if ($this->purchaseInvoices->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->purchaseInvoices);
+        }
+    }
+
+    public function isAllowedToDelete()
+    {
+        // Check if not referenced by purchase invoice
+        if ($this->purchaseInvoices->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->purchaseInvoices);
+        }
     }
 
     public static function create($data)
@@ -144,11 +156,13 @@ class PurchaseReceive extends TransactionModel
         }
 
         foreach ($purchaseReceive->items as $item) {
-            $totalPerItem = ($item->price - $item->discount_value) * $item->quantity * $item->converter;
-            $feePerItem = $totalPerItem / $totalItemsAmount * $additionalFee;
-            $price = ($totalPerItem + $feePerItem) / $item->quantity;
+            if ($item->quantity > 0) {
+                $totalPerItem = ($item->price - $item->discount_value) * $item->quantity * $item->converter;
+                $feePerItem = $totalPerItem / $totalItemsAmount * $additionalFee;
+                $price = ($totalPerItem + $feePerItem) / $item->quantity;
 
-            InventoryHelper::increase($form->id, $purchaseReceive->warehouse_id, $item->item_id, $item->quantity, $price);
+                InventoryHelper::increase($form->id, $purchaseReceive->warehouse_id, $item->item_id, $item->quantity, $price);
+            }
         }
     }
 }

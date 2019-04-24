@@ -102,14 +102,26 @@ class PaymentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $payment = Payment::findOrFail($id);
         $payment->isAllowedToDelete();
 
-        return $payment->requestCancel();
+        $response = $payment->requestCancel($request);
+
+        if (!$response) {
+            foreach ($payment->details as $paymentDetail) {
+                if ($paymentDetail->referenceable) {
+                    $paymentDetail->referenceable->form->done = false;
+                    $paymentDetail->referenceable->form->save();
+                }
+            }
+        }
+
+        return response()->json([], 204);
     }
 }

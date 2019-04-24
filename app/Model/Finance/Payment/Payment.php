@@ -74,7 +74,12 @@ class Payment extends TransactionModel
 
     public function isAllowedToUpdate()
     {
-        // TODO isAllowed to  update?
+        // TODO isAllowed to update?
+    }
+
+    public function isAllowedToDelete()
+    {
+        // TODO isAllowed to update?
     }
 
     public static function create($data)

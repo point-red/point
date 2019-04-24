@@ -23,8 +23,46 @@ class UpdateSalesInvoiceRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
+        $rulesForm = ValidationRule::form();
+
+        $rulesSalesInvoice = [
+            'customer_id' => ValidationRule::foreignKey('customers'),
+            'customer_name' => 'required|string',
+            'due_date' => 'required|date',
+            'discount_value' => ValidationRule::discountValue(),
+            'discount_percent' => ValidationRule::discountPercent(),
+            'delivery_fee' => ValidationRule::deliveryFee(),
+            'tax' => ValidationRule::tax(),
+            'type_of_tax' => ValidationRule::typeOfTax(),
+
+            'items' => 'required_without:services|array',
+            'services' => 'required_without:items|array',
         ];
+
+        $rulesSalesInvoiceItems = [
+            'items.*.delivery_note_item_id' => ValidationRule::foreignKey('delivery_note_items'),
+            'items.*.quantity' => ValidationRule::quantity(),
+            'items.*.price' => ValidationRule::price(),
+            'items.*.unit' => ValidationRule::unit(),
+            'items.*.converter' => ValidationRule::converter(),
+            'items.*.discount_value' => ValidationRule::discountValue(),
+            'items.*.discount_percent' => ValidationRule::discountPercent(),
+            'items.*.taxable' => 'boolean',
+            'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
+        ];
+
+        $rulesSalesInvoiceServices = [
+            'services.*.service_id' => ValidationRule::foreignKey('services'),
+            'services.*.service_name' => 'required|string',
+            'services.*.quantity' => ValidationRule::quantity(),
+            'services.*.price' => ValidationRule::price(),
+            'services.*.discount_value' => ValidationRule::discountValue(),
+            'services.*.discount_percent' => ValidationRule::discountPercent(),
+            'services.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
+        ];
+        
+        // TODO validation for downpayment
+
+        return array_merge($rulesForm, $rulesSalesInvoice, $rulesSalesInvoiceItems, $rulesSalesInvoiceServices);
     }
 }

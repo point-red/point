@@ -24,6 +24,7 @@ class SalesDownPayment extends TransactionModel
 
     protected $casts = [
         'amount' => 'double',
+        'remaining' => 'double',
     ];
 
     public $defaultNumberPrefix = 'DP';

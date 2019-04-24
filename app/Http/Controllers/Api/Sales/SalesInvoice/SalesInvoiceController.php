@@ -9,6 +9,8 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
+use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\StoreSalesInvoiceRequest;
+use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\UpdateSalesInvoiceRequest;
 
 class SalesInvoiceController extends Controller
 {
@@ -33,7 +35,7 @@ class SalesInvoiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreSalesInvoiceRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $salesInvoice = SalesInvoice::create($request->all());
@@ -61,9 +63,7 @@ class SalesInvoiceController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $salesInvoice = SalesInvoice::eloquentFilter($request)
-            ->with('form', 'items')
-            ->findOrFail($id);
+        $salesInvoice = SalesInvoice::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($salesInvoice);
     }
@@ -76,17 +76,22 @@ class SalesInvoiceController extends Controller
      * @return ApiResource
      * @throws \Throwable
      */
-    public function update(Request $request, $id)
+    public function update(UpdateSalesInvoiceRequest $request, $id)
     {
         // TODO prevent delete if referenced by payment
-        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-            $salesInvoice = SalesInvoice::findOrFail($id);
+        $salesInvoice = SalesInvoice::findOrFail($id);
+        $salesInvoice->isAllowedToUpdate();
 
-            $newSalesInvoice = $salesInvoice->edit($request->all());
-
+        $result = DB::connection('tenant')->transaction(function () use ($request, $salesInvoice) {
             $salesInvoice->detachDownPayments();
 
-            return new ApiResource($newSalesInvoice);
+            $salesInvoice->form->archive();
+
+            $request['number'] = $salesInvoice->form->edited_number;
+
+            $salesInvoice = SalesInvoice::create($request->all());
+
+            return new ApiResource($salesInvoice);
         });
 
         return $result;
@@ -105,7 +110,7 @@ class SalesInvoiceController extends Controller
         $salesInvoice = SalesInvoice::findOrFail($id);
         $salesInvoice->isAllowedToDelete();
 
-        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+        $result = DB::connection('tenant')->transaction(function () use ($request, $salesInvoice) {
             $salesInvoice->detachDownPayments();
             $response = $salesInvoice->requestCancel($request);
 

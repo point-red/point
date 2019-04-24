@@ -24,6 +24,7 @@ class SalesDownPayment extends TransactionModel
 
     protected $casts = [
         'amount' => 'double',
+        'remaining' => 'double',
     ];
 
     public $defaultNumberPrefix = 'DP';
@@ -87,6 +88,7 @@ class SalesDownPayment extends TransactionModel
         }
 
         $downPayment->fill($data);
+        $downPayment->remaining = $downPayment->amount;
         $downPayment->save();
 
         $form = new Form;
@@ -100,30 +102,31 @@ class SalesDownPayment extends TransactionModel
 
     private static function addPaymentCollection($data, $downPayment)
     {
-        $payment = [];
-        // payment type should be cash / bank when paid = true
-        $payment['payment_type'] = $data['payment_type'] ?? 'payment collection';
-        $payment['payment_account_id'] = $data['payment_account_id'];
-        $payment['due_date'] = $data['due_date'] ?? null;
-        $payment['date'] = $downPayment->form->date;
-        $payment['number'] = $data['payment_number'] ?? null;
-        $payment['done'] = $data['payment_done'] ?? false;
-        $payment['approved'] = $data['payment_approved'] ?? false;
-        $payment['disbursed'] = false;
-        $payment['amount'] = $downPayment->amount;
-        $payment['paymentable_id'] = $downPayment->customer_id;
-        $payment['paymentable_type'] = 'customer';
-        $payment['paymentable_name'] = $downPayment->customer->name;
-        $payment['increment_group'] = $data['increment_group'];
+        $payment = [
+            // payment type should be cash / bank when paid = true
+            'payment_type' => $data['payment_type'] ?? 'payment collection',
+            'payment_account_id' => $data['payment_account_id'],
+            'due_date' => $data['due_date'] ?? null,
+            'date' => $downPayment->form->date,
+            'number' => $data['payment_number'] ?? null,
+            'done' => $data['payment_done'] ?? false,
+            'approved' => $data['payment_approved'] ?? false,
+            'disbursed' => false,
+            'amount' => $downPayment->amount,
+            'paymentable_id' => $downPayment->customer_id,
+            'paymentable_type' => 'customer',
+            'paymentable_name' => $downPayment->customer->name,
+            'increment_group' => $data['increment_group'],
 
-        $payment['details'] = [
-            0 => [
-                'chart_of_account_id' => 1,
-                'allocation_id' => null,
-                'amount' => $downPayment->amount,
-                'notes' => $downPayment->form->notes,
-                'referenceable_type' => 'sales_down_payment',
-                'referenceable_id' => $downPayment->id,
+            'details' => [
+                [
+                    'chart_of_account_id' => 1,
+                    'allocation_id' => null,
+                    'amount' => $downPayment->amount,
+                    'notes' => $downPayment->form->notes,
+                    'referenceable_type' => 'sales_down_payment',
+                    'referenceable_id' => $downPayment->id,
+                ]
             ],
         ];
 

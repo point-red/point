@@ -14,6 +14,7 @@ use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Http\Requests\Transaction\StoreTransactionRequest;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 
 class TransactionController extends Controller
 {
@@ -38,23 +39,36 @@ class TransactionController extends Controller
         DB::connection('tenant')->beginTransaction();
 
         $result = new \stdClass();
-
+        /* PURCHASE */
         if ($request->has('purchase.supplier_id')) {
             $requestData = $request->get('purchase');
+            /* PURCHASE RECEIVE */
             if ($request->has('purchase_receive_number')) {
                 $requestData['number'] = $request->get('purchase_receive_number');
             }
             $purchaseReceive = PurchaseReceive::create($requestData);
             $result->purchase_receive = new ApiResource($purchaseReceive);
 
+            /* PURCHASE INVOICE */
             $requestData = $request->get('purchase');
             if ($request->has('purchase_invoice_number')) {
                 $requestData['number'] = $request->get('purchase_invoice_number');
             }
-            $requestData['purchase_receive_ids'] = [$purchaseReceive->id];
+
+            $requestData['items'] = array_map(function($item) use ($purchaseReceive) {
+                $purchaseReceiveItems = $purchaseReceive->items;
+                $purchaseReceiveItem = $purchaseReceiveItems->firstWhere('item_id', $item['item_id']);
+
+                $item['purchase_receive_item_id'] = $purchaseReceiveItem->id;
+                $item['purchase_receive_id'] = $purchaseReceive->id;
+
+                return $item;
+            }, $requestData['items']);
+
             $purchaseInvoice = PurchaseInvoice::create($requestData);
             $result->purchase_invoice = new ApiResource($purchaseInvoice);
 
+            /* PURCHASE PAYMENT */
             if ($request->has('purchase.payment')) {
                 $purchasePaymentRequest = [
                     'disbursed' => true,
@@ -80,20 +94,47 @@ class TransactionController extends Controller
         // Insert Sales Order, Delivery Order, Delivery Note if customer_id and items is provided
         if ($request->has('sales.customer_id')) {
             $requestData = $request->get('sales');
+            /* DELIVERY ORDER */
+            if ($request->has('delivery_order_number')) {
+                $requestData['number'] = $request->get('delivery_order_number');
+            }
+            $deliveryOrder = DeliveryOrder::create($requestData);
+            
+            /* DELIVERY NOTE */
             if ($request->has('delivery_note_number')) {
                 $requestData['number'] = $request->get('delivery_note_number');
+                $requestData['delivery_order_id'] = $deliveryOrder->id;
             }
+            $requestData['items'] = array_map(function($item) use ($deliveryOrder) {
+                $deliveryOrderItems = $deliveryOrder->items;
+                $deliveryOrderItem = $deliveryOrderItems->firstWhere('item_id', $item['item_id']);
+
+                $item['delivery_order_item_id'] = $deliveryOrderItem->id;
+                $item['delivery_order_id'] = $deliveryOrder->id;
+
+                return $item;
+            }, $requestData['items']);
             $deliveryNote = DeliveryNote::create($requestData);
             $result->delivery_note = new ApiResource($deliveryNote);
 
+            /* SALES INVOICE */
             $requestData = $request->get('sales');
             if ($request->has('sales_invoice_number')) {
                 $requestData['number'] = $request->get('sales_invoice_number');
             }
-            $requestData['delivery_note_ids'] = [$deliveryNote->id];
+            $requestData['items'] = array_map(function($item) use ($deliveryNote) {
+                $deliveryNoteItems = $deliveryNote->items;
+                $deliveryNoteItem = $deliveryNoteItems->firstWhere('item_id', $item['item_id']);
+
+                $item['delivery_note_item_id'] = $deliveryNoteItem->id;
+                $item['delivery_note_id'] = $deliveryNote->id;
+
+                return $item;
+            }, $requestData['items']);
             $salesInvoice = SalesInvoice::create($requestData);
             $result->sales_invoice = new ApiResource($salesInvoice);
 
+            /* SALES PAYMENT */
             if ($request->has('sales_payment_type')) {
                 $salesPaymentRequest = [
                     'disbursed' => false,

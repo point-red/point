@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Finance\Payment;
 
+use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
@@ -20,10 +21,29 @@ class PaymentController extends Controller
     {
         $payment = Payment::eloquentFilter($request);
 
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('paymentable', $fields)) {
+                $model = $payment->paymentable_type;
+                $payment = $payment->join($model::getTableName(), function ($q) use ($model) {
+                    $q->on($model::getTableName('id'), '=', Payment::getTableName('paymentable_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $payment = $payment->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', Payment::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), Payment::class);
+                });
+            }
+        }
+
         if ($request->has('type')) {
             $paymentType = strtoupper($request->get('type'));
             $payment->where('payment_type', $paymentType);
         }
+
         if ($request->has('disbursed')) {
             $disbursed = $request->get('disbursed');
             $payment->where('disbursed', $disbursed);

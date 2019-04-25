@@ -86,9 +86,9 @@ class Payment extends TransactionModel
     {
         $payment = new self;
         $payment->fill($data);
-
+        
         $paymentDetails = self::mapPaymentDetails($data['details'] ?? []);
-
+        
         $payment->amount = self::calculateAmount($paymentDetails);
         $payment->paymentable_name = $payment->paymentable->name;
         $payment->save();
@@ -100,6 +100,8 @@ class Payment extends TransactionModel
 
         $form->formable_id = $payment->id;
         $form->formable_type = self::class;
+
+        info('increment group : ' . $data['increment_group']);
 
         $form->generateFormNumber(
             self::generateFormNumber($payment, $data['number'], $data['increment_group']),
@@ -145,28 +147,30 @@ class Payment extends TransactionModel
         preg_match_all('/{increment=(\d)}/', $formNumber, $regexResult);
         if (! empty($regexResult)) {
             $lastPayment = Self::whereHas('form', function ($query) use ($incrementGroup) {
-                $query->whereNotNull('number')
-                    ->where('increment_group', $incrementGroup);
+                $query->where('increment_group', $incrementGroup);
             })
+            ->notArchived()
             ->where('payment_type', $payment->payment_type)
             ->where('disbursed', $payment->disbursed)
-            ->with(['form' => function ($query) {
-                $query->orderBy('increment', 'desc');
-            }])
+            ->with('form')
+            ->get()
+            ->sortByDesc('form.increment')
             ->first();
-
+            info('last payment ' . json_encode($lastPayment));
             $increment = 1;
 
             if (! empty($lastPayment)) {
                 $increment += $lastPayment->form->increment;
             }
+            info('increment ' . json_encode($increment));
 
             foreach ($regexResult[0] as $key => $value) {
                 $padUntil = $regexResult[1][$key];
-                $result = str_pad($increment + 1, $padUntil, '0', STR_PAD_LEFT);
+                $result = str_pad($increment, $padUntil, '0', STR_PAD_LEFT);
                 $formNumber = str_replace($value, $result, $formNumber);
             }
         }
+        info('form number ' . $formNumber);
 
         // Additional template for payment_type and disbursed
         if (strpos($formNumber, '{payment_type}') !== false) {

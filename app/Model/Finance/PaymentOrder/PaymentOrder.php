@@ -16,7 +16,6 @@ class PaymentOrder extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'payment_type',
         'due_date',
         'paymentable_type',
         'paymentable_id',
@@ -44,6 +43,14 @@ class PaymentOrder extends TransactionModel
     public function setDueDateAttribute($value)
     {
         $this->attributes['due_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+    }
+
+    /**
+     * Get all of the owning paymentable models.
+     */
+    public function paymentable()
+    {
+        return $this->morphTo();
     }
 
     public function form()

@@ -39,7 +39,11 @@ class TenantMiddleware
                     return $next($request);
                 }
 
-                config()->set('project.timezone', $project->timezone);
+                if ($request->header('Timezone') && $request->header('Timezone') != null) {
+                    config()->set('project.timezone', $request->header('Timezone'));
+                } else {
+                    config()->set('project.timezone', $project->timezone);
+                }
 
                 // Update mail configuration on the fly
                 if ($project->preference) {

@@ -6,17 +6,19 @@ use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
-use App\Model\TransactionModel;
-use App\Model\Accounting\Journal;
+use App\Model\HumanResource\Employee\Employee;
 
-class Payment extends TransactionModel
+class PaymentOrder extends Payment
 {
     protected $connection = 'tenant';
+
+    protected $table = 'payments';
 
     public $timestamps = false;
 
     protected $fillable = [
         'payment_type',
+        'payment_type_replacement',
         'disbursed',
         'due_date',
         'paymentable_type',
@@ -32,6 +34,7 @@ class Payment extends TransactionModel
     protected $paymentableType = [
         'customer' => Customer::class,
         'supplier' => Supplier::class,
+        'employee' => Employee::class,
     ];
 
     public function getDueDateAttribute($value)
@@ -84,7 +87,7 @@ class Payment extends TransactionModel
 
     public static function create($data)
     {
-        $payment = new self;
+        $payment = new Payment;
         $payment->fill($data);
         
         $paymentDetails = self::mapPaymentDetails($data['details'] ?? []);
@@ -99,12 +102,10 @@ class Payment extends TransactionModel
         $form->fill($data);
 
         $form->formable_id = $payment->id;
-        $form->formable_type = self::class;
-
-        info('increment group : ' . $data['increment_group']);
+        $form->formable_type = Payment::class;
 
         $form->generateFormNumber(
-            self::generateFormNumber($payment, $data['number'], $data['increment_group']),
+            self::generateFormNumber($payment, $data['number'] ?? null, $data['increment_group']),
             $data['paymentable_id'],
             $data['paymentable_id']
         );
@@ -114,9 +115,6 @@ class Payment extends TransactionModel
         }
 
         $form->save();
-
-        self::updateReferenceDone($paymentDetails);
-        self::updateJournal($payment);
 
         return $payment;
     }
@@ -140,7 +138,7 @@ class Payment extends TransactionModel
 
     private static function generateFormNumber($payment, $number, $incrementGroup)
     {
-        $defaultFormat = '{payment_type}-{disbursed}{y}{m}{increment=4}';
+        $defaultFormat = '{payment_type}{y}{m}{increment=4}';
         $formNumber = $number ?? $defaultFormat;
 
         // Different method to get increment because payment number is considering payment_type
@@ -156,13 +154,12 @@ class Payment extends TransactionModel
             ->get()
             ->sortByDesc('form.increment')
             ->first();
-            info('last payment ' . json_encode($lastPayment));
+
             $increment = 1;
 
             if (! empty($lastPayment)) {
                 $increment += $lastPayment->form->increment;
             }
-            info('increment ' . json_encode($increment));
 
             foreach ($regexResult[0] as $key => $value) {
                 $padUntil = $regexResult[1][$key];
@@ -170,7 +167,6 @@ class Payment extends TransactionModel
                 $formNumber = str_replace($value, $result, $formNumber);
             }
         }
-        info('form number ' . $formNumber);
 
         // Additional template for payment_type and disbursed
         if (strpos($formNumber, '{payment_type}') !== false) {
@@ -182,45 +178,5 @@ class Payment extends TransactionModel
         }
 
         return $formNumber;
-    }
-
-    private static function updateReferenceDone($paymentDetails)
-    {
-        foreach ($paymentDetails as $paymentDetail) {
-            $reference = $paymentDetail->referenceable;
-            $reference->remaining -= $paymentDetail->amount;
-            $reference->updateIfDone();
-            $reference->save();
-        }
-    }
-
-    private static function updateJournal($payment)
-    {
-        $journal = new Journal;
-        $journal->form_id = $payment->form->id;
-        $journal->journalable_type = $payment->paymentable_type;
-        $journal->journalable_id = $payment->paymentable_id;
-        $journal->chart_of_account_id = $payment->payment_account_id;
-        if (! $payment->disbursed) {
-            $journal->debit = $payment->amount;
-        } else {
-            $journal->credit = $payment->amount;
-        }
-        $journal->save();
-
-        foreach ($payment->details as $paymentDetail) {
-            $journal = new Journal;
-            $journal->form_id = $payment->form->id;
-            $journal->form_id_reference = $paymentDetail->referenceable->form->id;
-            $journal->journalable_type = $paymentDetail->referenceable_type;
-            $journal->journalable_id = $paymentDetail->referenceable_id;
-            $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
-            if (! $payment->disbursed) {
-                $journal->credit = $paymentDetail->amount;
-            } else {
-                $journal->debit = $paymentDetail->amount;
-            }
-            $journal->save();
-        }
     }
 }

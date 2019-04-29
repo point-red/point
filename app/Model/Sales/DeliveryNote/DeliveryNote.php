@@ -3,12 +3,12 @@
 namespace App\Model\Sales\DeliveryNote;
 
 use App\Model\Form;
-use App\Model\Master\Item;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\SalesInvoice\SalesInvoice;
 
 class DeliveryNote extends TransactionModel
 {
@@ -58,6 +58,11 @@ class DeliveryNote extends TransactionModel
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function salesInvoices()
+    {
+        return $this->belongsToMany(SalesInvoice::class, 'sales_invoice_items')->active();
     }
 
     public static function create($data)

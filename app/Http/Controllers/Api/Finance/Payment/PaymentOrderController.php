@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Finance\Payment;
 
+use App\Model\Finance\Payment\PaymentOrder;
+use App\Model\Finance\Payment\PaymentVerification;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Http\Resources\ApiResource;
@@ -10,7 +12,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Finance\Payment\Payment;
 use Illuminate\Support\Facades\DB;
 
-class PaymentController extends Controller
+class PaymentOrderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -65,7 +67,7 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $payment = Payment::create($request->all());
+            $payment = PaymentOrder::create($request->all());
 
             $payment
                 ->load('form')

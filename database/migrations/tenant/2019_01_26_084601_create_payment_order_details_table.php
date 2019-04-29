@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSalesInvoiceOthersTable extends Migration
+class CreatePaymentOrderDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,18 @@ class CreateSalesInvoiceOthersTable extends Migration
      */
     public function up()
     {
-        Schema::create('sales_invoice_others', function (Blueprint $table) {
+        Schema::create('payment_order_details', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('sales_invoice_id');
+            $table->unsignedInteger('payment_order_id');
             $table->unsignedInteger('chart_of_account_id');
             $table->unsignedInteger('allocation_id')->nullable();
             $table->unsignedDecimal('amount', 65, 30);
             $table->text('notes')->nullable();
+            // payment reference : invoice / down payment / return
+            $table->unsignedInteger('referenceable_id')->nullable();
+            $table->string('referenceable_type')->nullable();
 
-            $table->foreign('sales_invoice_id')->references('id')->on('sales_invoices')->onDelete('cascade');
+            $table->foreign('payment_order_id')->references('id')->on('payment_orders')->onDelete('cascade');
             $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
             $table->foreign('allocation_id')->references('id')->on('allocations')->onDelete('restrict');
         });
@@ -34,6 +37,6 @@ class CreateSalesInvoiceOthersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales_invoice_others');
+        Schema::dropIfExists('payment_order_details');
     }
 }

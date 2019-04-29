@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePaymentsTable extends Migration
+class CreatePaymentOrdersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,10 @@ class CreatePaymentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('payments', function (Blueprint $table) {
+        Schema::create('payment_orders', function (Blueprint $table) {
             $table->increments('id');
-            // payment type should be cash, bank or cheque
-            // or payment order / payment collection
-            $table->string('payment_type');
-            // chart of account of cash, bank, or cheque
-            $table->unsignedInteger('payment_account_id');
-            $table->boolean('disbursed');
+            $table->datetime('due_date')->nullable();
+            $table->unsignedInteger('payment_account_id')->nullable();
             $table->decimal('amount', 65, 30);
             // with who we make / receive payment
             // it can be supplier / customer / employee
@@ -39,6 +35,6 @@ class CreatePaymentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payments');
+        Schema::dropIfExists('payment_orders');
     }
 }

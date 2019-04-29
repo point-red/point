@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers\Api\Finance\Payment;
 
-use App\Model\Finance\Payment\PaymentOrder;
-use App\Model\Finance\Payment\PaymentVerification;
+use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Form;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Model\Finance\Payment\Payment;
-use Illuminate\Support\Facades\DB;
 
 class PaymentOrderController extends Controller
 {
@@ -22,7 +20,7 @@ class PaymentOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $payment = Payment::eloquentFilter($request);
+        $payment = PaymentOrder::eloquentFilter($request);
 
         if ($request->get('join')) {
             $fields = explode(',', $request->get('join'));
@@ -30,14 +28,14 @@ class PaymentOrderController extends Controller
             if (in_array('paymentable', $fields)) {
                 $model = $payment->paymentable_type;
                 $payment = $payment->join($model::getTableName(), function ($q) use ($model) {
-                    $q->on($model::getTableName('id'), '=', Payment::getTableName('paymentable_id'));
+                    $q->on($model::getTableName('id'), '=', PaymentOrder::getTableName('paymentable_id'));
                 });
             }
 
             if (in_array('form', $fields)) {
                 $payment = $payment->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', Payment::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), Payment::class);
+                    $q->on(Form::getTableName('formable_id'), '=', PaymentOrder::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), PaymentOrder::class);
                 });
             }
         }
@@ -45,11 +43,6 @@ class PaymentOrderController extends Controller
         if ($request->has('type')) {
             $paymentType = strtoupper($request->get('type'));
             $payment->where('payment_type', $paymentType);
-        }
-
-        if ($request->has('disbursed')) {
-            $disbursed = $request->get('disbursed');
-            $payment->where('disbursed', $disbursed);
         }
 
         $payment = pagination($payment, $request->get('limit'));
@@ -90,7 +83,7 @@ class PaymentOrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $payment = Payment::eloquentFilter($request)->findOrFail($id);
+        $payment = PaymentOrder::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($payment);
     }
@@ -106,11 +99,11 @@ class PaymentOrderController extends Controller
     public function update(Request $request, $id)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-            $payment = Payment::findOrFail($id);
+            $payment = PaymentOrder::findOrFail($id);
 
             $payment->form->archive();
 
-            $payment = Payment::create($request->all());
+            $payment = PaymentOrder::create($request->all());
 
             $payment
                 ->load('form')
@@ -133,7 +126,7 @@ class PaymentOrderController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $payment = Payment::findOrFail($id);
+        $payment = PaymentOrder::findOrFail($id);
         $payment->isAllowedToDelete();
 
         $response = $payment->requestCancel($request);

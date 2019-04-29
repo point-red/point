@@ -2,7 +2,7 @@
 
 namespace App\Model\Finance\Payment;
 
-use Carbon\Carbon;
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
@@ -18,7 +18,6 @@ class Payment extends TransactionModel
     protected $fillable = [
         'payment_type',
         'disbursed',
-        'due_date',
         'paymentable_type',
         'paymentable_id',
         'paymentable_name',
@@ -32,17 +31,8 @@ class Payment extends TransactionModel
     protected $paymentableType = [
         'customer' => Customer::class,
         'supplier' => Supplier::class,
+        'employee' => Employee::class,
     ];
-
-    public function getDueDateAttribute($value)
-    {
-        return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
-    }
-
-    public function setDueDateAttribute($value)
-    {
-        $this->attributes['due_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
-    }
 
     public function details()
     {
@@ -100,9 +90,6 @@ class Payment extends TransactionModel
 
         $form->formable_id = $payment->id;
         $form->formable_type = self::class;
-
-        info('increment group : ' . $data['increment_group']);
-
         $form->generateFormNumber(
             self::generateFormNumber($payment, $data['number'], $data['increment_group']),
             $data['paymentable_id'],
@@ -162,7 +149,6 @@ class Payment extends TransactionModel
             if (! empty($lastPayment)) {
                 $increment += $lastPayment->form->increment;
             }
-            info('increment ' . json_encode($increment));
 
             foreach ($regexResult[0] as $key => $value) {
                 $padUntil = $regexResult[1][$key];
@@ -170,7 +156,6 @@ class Payment extends TransactionModel
                 $formNumber = str_replace($value, $result, $formNumber);
             }
         }
-        info('form number ' . $formNumber);
 
         // Additional template for payment_type and disbursed
         if (strpos($formNumber, '{payment_type}') !== false) {

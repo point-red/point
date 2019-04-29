@@ -71,13 +71,13 @@ class PaymentOrder extends TransactionModel
         $paymentOrder = new self;
         $paymentOrder->fill($data);
 
-        $paymentOrderDetails = self::mapPaymentDetails($data['details'] ?? []);
+        $paymentOrderDetails = self::mapPaymentOrderDetails($data['details'] ?? []);
 
         $paymentOrder->amount = self::calculateAmount($paymentOrderDetails);
         $paymentOrder->paymentable_name = $paymentOrder->paymentable->name;
         $paymentOrder->save();
 
-        $paymentOrder->details()->saveMany($paymentDetails);
+        $paymentOrder->details()->saveMany($paymentOrderDetails);
 
         $form = new Form;
         $form->saveData($data, $paymentOrder);
@@ -85,20 +85,20 @@ class PaymentOrder extends TransactionModel
         return $paymentOrder;
     }
 
-    private static function calculateAmount($paymentDetails)
+    private static function calculateAmount($paymentOrderDetails)
     {
-        return array_reduce($paymentDetails, function ($carry, $detail) {
+        return array_reduce($paymentOrderDetails, function ($carry, $detail) {
             return $carry + $detail['amount'];
         }, 0);
     }
 
-    private static function mapPaymentDetails($details)
+    private static function mapPaymentOrderDetails($details)
     {
         return array_map(function ($detail) {
-            $paymentDetail = new PaymentDetail;
-            $paymentDetail->fill($detail);
+            $paymentOrderDetail = new PaymentOrderDetail;
+            $paymentOrderDetail->fill($detail);
 
-            return $paymentDetail;
+            return $paymentOrderDetail;
         }, $details);
     }
 }

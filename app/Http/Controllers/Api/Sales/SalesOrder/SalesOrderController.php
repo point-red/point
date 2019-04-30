@@ -25,6 +25,23 @@ class SalesOrderController extends Controller
     {
         $salesOrders = SalesOrder::eloquentFilter($request);
 
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('customer', $fields)) {
+                $salesOrders->join(Customer::getTableName(), function ($q) {
+                    $q->on(Customer::getTableName('id'), '=', SalesOrder::getTableName('customer_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $salesOrders->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', SalesOrder::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), SalesOrder::class);
+                });
+            }
+        }
+
         $salesOrders = pagination($salesOrders, $request->get('limit'));
 
         return new ApiCollection($salesOrders);
@@ -62,21 +79,19 @@ class SalesOrderController extends Controller
     {
         $salesOrder = SalesOrder::eloquentFilter($request)->findOrFail($id);
 
-        $salesOrderItemIds = $salesOrder->items->pluck('id');
+        if ($request->get('remaining_info')) {
+            $deliveryOrders = $salesOrder->deliveryOrders()->with('items')->get();
 
-        $tempArray = DeliveryOrder::active()
-            ->join(DeliveryOrderItem::getTableName(), DeliveryOrder::getTableName('id'), '=', DeliveryOrderItem::getTableName('delivery_order_id'))
-            ->groupBy('sales_order_item_id')
-            ->select(DeliveryOrderItem::getTableName('sales_order_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
-            ->whereIn('sales_order_item_id', $salesOrderItemIds)
-            ->get();
+            foreach ($salesOrder->items as $salesOrderItem) {
+                $salesOrderItem->quantity_pending = $salesOrderItem->quantity;
 
-        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'sales_order_item_id');
-
-        foreach ($salesOrder->items as $salesOrderItem) {
-            $quantityDelivered = $quantityDeliveredItems[$salesOrderItem->id] ?? 0;
-            $salesOrderItem->quantity_pending = $salesOrderItem->quantity - $quantityDelivered;
+                foreach ($deliveryOrders as $deliveryOrder) {
+                    $deliveryOrderItem = $deliveryOrder->items->firstWhere('sales_order_item_id', $salesOrderItem->id);
+                    if ($deliveryOrderItem) {
+                        $salesOrderItem->quantity_pending -= $deliveryOrderItem->quantity;
+                    }
+                }
+            }
         }
 
         return new ApiResource($salesOrder);

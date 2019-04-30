@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesContract;
 
+use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,23 @@ class SalesContractController extends Controller
     public function index(Request $request)
     {
         $salesContracts = SalesContract::eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('customer', $fields)) {
+                $salesContracts->join(Customer::getTableName(), function ($q) {
+                    $q->on(Customer::getTableName('id'), '=', SalesContract::getTableName('customer_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $salesContracts->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', SalesContract::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), SalesContract::class);
+                });
+            }
+        }
 
         $salesContracts = pagination($salesContracts, $request->get('limit'));
 
@@ -61,6 +79,32 @@ class SalesContractController extends Controller
     {
         $salesContract = SalesContract::eloquentFilter($request)->findOrFail($id);
 
+        if ($request->get('remaining_info')) {
+            $salesOrders = $salesContract->salesOrders()->with('items')->get();
+
+            foreach ($salesContract->items as $contractItem) {
+                $contractItem->quantity_pending = $contractItem->quantity;
+
+                foreach ($salesOrders as $order) {
+                    $orderItem = $order->items->firstWhere('sales_contract_item_id', $contractItem->id);
+                    if ($orderItem) {
+                        $contractItem->quantity_pending -= $orderItem->quantity;
+                    }
+                }
+            }
+            
+            foreach ($salesContract->groupItems as $contractGroupItem) {
+                $contractGroupItem->quantity_pending = $contractGroupItem->quantity;
+
+                foreach ($salesOrders as $order) {
+                    $orderItem = $order->items->firstWhere('sales_contract_group_item_id', $contractGroupItem->id);
+                    if ($orderItem) {
+                        $contractGroupItem->quantity_pending -= $orderItem->quantity;
+                    }
+                }
+            }
+        }
+        
         return new ApiResource($salesContract);
     }
 

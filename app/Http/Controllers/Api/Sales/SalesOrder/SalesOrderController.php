@@ -9,8 +9,6 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesOrder\SalesOrder;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
 use App\Http\Requests\Sales\SalesOrder\SalesOrder\StoreSalesOrderRequest;
 use App\Http\Requests\Sales\SalesOrder\SalesOrder\UpdateSalesOrderRequest;
 

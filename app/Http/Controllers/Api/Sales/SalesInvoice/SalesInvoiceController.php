@@ -24,6 +24,23 @@ class SalesInvoiceController extends Controller
     {
         $salesInvoices = SalesInvoice::eloquentFilter($request);
 
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('customer', $fields)) {
+                $salesInvoices->join(Customer::getTableName(), function ($q) {
+                    $q->on(Customer::getTableName('id'), '=', DeliveryNote::getTableName('customer_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $salesInvoices->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', DeliveryNote::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), DeliveryNote::class);
+                });
+            }
+        }
+
         $salesInvoices = pagination($salesInvoices, $request->get('limit'));
 
         return new ApiCollection($salesInvoices);

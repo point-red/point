@@ -20,6 +20,23 @@ class SalesDownPaymentController extends Controller
     {
         $downPayment = SalesDownPayment::eloquentFilter($request);
 
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('customer', $fields)) {
+                $downPayment->join(Customer::getTableName(), function ($q) {
+                    $q->on(Customer::getTableName('id'), '=', SalesDownPayment::getTableName('customer_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $downPayment->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', SalesDownPayment::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), SalesDownPayment::class);
+                });
+            }
+        }
+        
         $downPayment = pagination($downPayment, $request->get('limit'));
 
         return new ApiCollection($downPayment);

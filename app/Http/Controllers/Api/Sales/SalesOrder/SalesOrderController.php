@@ -11,6 +11,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Http\Requests\Sales\SalesOrder\SalesOrder\StoreSalesOrderRequest;
 use App\Http\Requests\Sales\SalesOrder\SalesOrder\UpdateSalesOrderRequest;
+use App\Model\Form;
 
 class SalesOrderController extends Controller
 {

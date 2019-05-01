@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesDownPayment;
 
+use App\Model\Form;
+use App\Model\Master\Customer;
 use Illuminate\Http\Request;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;

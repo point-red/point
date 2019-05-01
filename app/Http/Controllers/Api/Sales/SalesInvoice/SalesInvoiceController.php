@@ -11,6 +11,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\StoreSalesInvoiceRequest;
 use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\UpdateSalesInvoiceRequest;
+use App\Model\Master\Customer;
 
 class SalesInvoiceController extends Controller
 {
@@ -29,14 +30,14 @@ class SalesInvoiceController extends Controller
 
             if (in_array('customer', $fields)) {
                 $salesInvoices->join(Customer::getTableName(), function ($q) {
-                    $q->on(Customer::getTableName('id'), '=', DeliveryNote::getTableName('customer_id'));
+                    $q->on(Customer::getTableName('id'), '=', SalesInvoice::getTableName('customer_id'));
                 });
             }
 
             if (in_array('form', $fields)) {
                 $salesInvoices->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', DeliveryNote::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), DeliveryNote::class);
+                    $q->on(Form::getTableName('formable_id'), '=', SalesInvoice::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), SalesInvoice::class);
                 });
             }
         }

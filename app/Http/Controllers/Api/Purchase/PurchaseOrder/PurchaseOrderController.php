@@ -160,7 +160,6 @@ class PurchaseOrderController extends Controller
             $purchaseOrder = PurchaseOrder::create($request->all());
             $purchaseOrder
                 ->load('form')
-                ->load('employee')
                 ->load('supplier')
                 ->load('items.item')
                 ->load('items.allocation')

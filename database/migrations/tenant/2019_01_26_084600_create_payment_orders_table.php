@@ -15,6 +15,7 @@ class CreatePaymentOrdersTable extends Migration
     {
         Schema::create('payment_orders', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('payment_type');
             $table->datetime('due_date')->nullable();
             $table->unsignedInteger('payment_account_id')->nullable();
             $table->decimal('amount', 65, 30);

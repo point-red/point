@@ -40,9 +40,9 @@ class PaymentOrderDetail extends TransactionModel
         return $this->belongsTo(Allocation::class);
     }
 
-    public function chartOfAccount()
+    public function account()
     {
-        return $this->belongsTo(ChartOfAccount::class);
+        return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
     }
 
     public function setReferenceableTypeAttribute($value)

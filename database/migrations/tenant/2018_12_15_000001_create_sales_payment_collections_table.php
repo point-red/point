@@ -15,6 +15,7 @@ class CreateSalesPaymentCollectionsTable extends Migration
     {
         Schema::create('sales_payment_collections', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('payment_type');
             $table->datetime('due_date')->nullable();
             $table->unsignedInteger('payment_account_id')->nullable();
             $table->decimal('amount', 65, 30);

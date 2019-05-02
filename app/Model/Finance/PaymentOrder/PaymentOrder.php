@@ -16,6 +16,7 @@ class PaymentOrder extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
+        'payment_type',
         'due_date',
         'paymentable_type',
         'paymentable_id',

@@ -11,6 +11,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\StoreSalesInvoiceRequest;
 use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\UpdateSalesInvoiceRequest;
+use App\Model\Master\Customer;
 
 class SalesInvoiceController extends Controller
 {
@@ -23,6 +24,23 @@ class SalesInvoiceController extends Controller
     public function index(Request $request)
     {
         $salesInvoices = SalesInvoice::eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('customer', $fields)) {
+                $salesInvoices->join(Customer::getTableName(), function ($q) {
+                    $q->on(Customer::getTableName('id'), '=', SalesInvoice::getTableName('customer_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $salesInvoices->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', SalesInvoice::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), SalesInvoice::class);
+                });
+            }
+        }
 
         $salesInvoices = pagination($salesInvoices, $request->get('limit'));
 

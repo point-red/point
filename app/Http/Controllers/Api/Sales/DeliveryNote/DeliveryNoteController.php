@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Http\Requests\Sales\DeliveryNote\DeliveryNote\StoreDeliveryNoteRequest;
+use App\Model\Form;
 
 class DeliveryNoteController extends Controller
 {
@@ -20,11 +21,28 @@ class DeliveryNoteController extends Controller
      */
     public function index(Request $request)
     {
-        $deliveryNote = DeliveryNote::eloquentFilter($request);
+        $deliveryNotes = DeliveryNote::eloquentFilter($request);
 
-        $deliveryNote = pagination($deliveryNote, $request->get('limit'));
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
 
-        return new ApiCollection($deliveryNote);
+            if (in_array('customer', $fields)) {
+                $deliveryNotes->join(Customer::getTableName(), function ($q) {
+                    $q->on(Customer::getTableName('id'), '=', DeliveryNote::getTableName('customer_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $deliveryNotes->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', DeliveryNote::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), DeliveryNote::class);
+                });
+            }
+        }
+
+        $deliveryNotes = pagination($deliveryNotes, $request->get('limit'));
+
+        return new ApiCollection($deliveryNotes);
     }
 
     /**

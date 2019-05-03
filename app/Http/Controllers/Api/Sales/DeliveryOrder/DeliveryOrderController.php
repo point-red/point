@@ -11,6 +11,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
+use App\Model\Form;
 
 class DeliveryOrderController extends Controller
 {
@@ -23,6 +24,23 @@ class DeliveryOrderController extends Controller
     public function index(Request $request)
     {
         $deliverOrders = DeliveryOrder::eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('customer', $fields)) {
+                $deliverOrders->join(Customer::getTableName(), function ($q) {
+                    $q->on(Customer::getTableName('id'), '=', DeliveryOrder::getTableName('customer_id'));
+                });
+            }
+
+            if (in_array('form', $fields)) {
+                $deliverOrders->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', DeliveryOrder::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), DeliveryOrder::class);
+                });
+            }
+        }
 
         $deliverOrders = pagination($deliverOrders, $request->get('limit'));
 
@@ -60,30 +78,21 @@ class DeliveryOrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $deliveryOrder = DeliveryOrder::eloquentFilter($request)
-            ->with('form')
-            ->with('salesOrder.form')
-            ->with('warehouse')
-            ->with('customer')
-            ->with('items.item')
-            ->with('items.allocation')
-            ->findOrFail($id);
+        $deliveryOrder = DeliveryOrder::eloquentFilter($request)->findOrFail($id);
 
-        $deliveryOrderItemIds = $deliveryOrder->items->pluck('id');
+        if ($request->get('remaining_info')) {
+            $deliveryNotes = $deliveryOrder->deliveryNotes()->with('items')->get();
 
-        $tempArray = DeliveryNote::active()
-            ->join(DeliveryNoteItem::getTableName(), DeliveryNote::getTableName('id'), '=', DeliveryNoteItem::getTableName('delivery_note_id'))
-            ->groupBy('delivery_order_item_id')
-            ->select(DeliveryNoteItem::getTableName('delivery_order_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_delivered'))
-            ->whereIn('delivery_order_item_id', $deliveryOrderItemIds)
-            ->get();
+            foreach ($deliveryOrder->items as $deliveryOrderItem) {
+                $deliveryOrderItem->quantity_pending = $deliveryOrderItem->quantity;
 
-        $quantityDeliveredItems = $tempArray->pluck('sum_delivered', 'delivery_order_item_id');
-
-        foreach ($deliveryOrder->items as $deliveryOrderItem) {
-            $quantityDelivered = $quantityDeliveredItems[$deliveryOrderItem->id] ?? 0;
-            $deliveryOrderItem->quantity_pending = $deliveryOrderItem->quantity - $quantityDelivered;
+                foreach ($deliveryNotes as $deliveryNote) {
+                    $deliveryNoteItem = $deliveryNote->items->firstWhere('delivery_order_item_id', $deliveryOrderItem->id);
+                    if ($deliveryNoteItem) {
+                        $deliveryOrderItem->quantity_pending -= $deliveryNoteItem->quantity;
+                    }
+                }
+            }
         }
 
         return new ApiResource($deliveryOrder);

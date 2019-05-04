@@ -52,11 +52,6 @@ class Payment extends TransactionModel
         return $this->morphTo();
     }
 
-    public function setPaymentableTypeAttribute($value)
-    {
-        $this->attributes['paymentable_type'] = $this->paymentableType[$value];
-    }
-
     public function setPaymentTypeAttribute($value)
     {
         $this->attributes['payment_type'] = strtoupper($value);

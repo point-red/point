@@ -25,8 +25,6 @@ class PaymentOrderDetail extends TransactionModel
         'amount' => 'double',
     ];
 
-    protected $referenceableType = [];
-
     /**
      * Get all of the owning referenceable models.
      */
@@ -43,10 +41,5 @@ class PaymentOrderDetail extends TransactionModel
     public function account()
     {
         return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
-    }
-
-    public function setReferenceableTypeAttribute($value)
-    {
-        $this->attributes['referenceable_type'] = $this->referenceableType[$value];
     }
 }

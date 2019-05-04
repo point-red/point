@@ -21,8 +21,10 @@ class CreatePurchasePaymentOrdersTable extends Migration
             $table->decimal('amount', 65, 30);
             $table->unsignedInteger('supplier_id');
             $table->string('supplier_name');
+            $table->unsignedInteger('payment_id')->nullable();
 
             $table->foreign('payment_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
+            $table->foreign('payment_id')->references('id')->on('payments')->onDelete('set null');
         });
     }
 

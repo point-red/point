@@ -158,6 +158,7 @@ return [
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
+        App\Providers\PolymorphicTypeServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,

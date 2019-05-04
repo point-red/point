@@ -102,14 +102,13 @@ class PaymentOrderController extends Controller
             $payment = PaymentOrder::findOrFail($id);
 
             $payment->form->archive();
-
             $payment = PaymentOrder::create($request->all());
-
-            $payment
-                ->load('form')
-                ->load('paymentable')
-                ->load('details.referenceable')
-                ->load('details.allocation');
+            $payment->load([
+                'form',
+                'paymentable',
+                'details.referenceable',
+                'details.allocation',
+            ]);
 
             return new ApiResource($payment);
         });

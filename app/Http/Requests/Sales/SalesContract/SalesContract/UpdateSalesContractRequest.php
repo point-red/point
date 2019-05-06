@@ -4,6 +4,7 @@ namespace App\Http\Requests\Sales\SalesContract\SalesContract;
 
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ValidationRule;
 
 class UpdateSalesContractRequest extends FormRequest
 {
@@ -14,7 +15,7 @@ class UpdateSalesContractRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -45,7 +46,7 @@ class UpdateSalesContractRequest extends FormRequest
                 'items.*.quantity' => ValidationRule::quantity(),
                 'items.*.converter' => ValidationRule::converter(),
                 'items.*.converter' => ValidationRule::unit(),
-                'items.*.allocation_id' => ValidationRule::foreignKeyOptional('allocations'),
+                'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
             ];
 
             return array_merge($rulesForm, $rulesSalesContract, $rulesSalesContractItem);
@@ -55,7 +56,7 @@ class UpdateSalesContractRequest extends FormRequest
                 'groups.*.group_id' => ValidationRule::foreignKey('groups'),
                 'groups.*.price' => ValidationRule::price(),
                 'groups.*.quantity' => ValidationRule::quantity(),
-                'groups.*.allocation_id' => ValidationRule::foreignKeyOptional('allocations'),
+                'groups.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
             ];
 
             return array_merge($rulesForm, $rulesSalesContract, $rulesSalesContractItemGroup);

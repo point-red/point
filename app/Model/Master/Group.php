@@ -3,7 +3,6 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
-use App\Helpers\Master\GroupClassReference;
 
 class Group extends MasterModel
 {
@@ -49,16 +48,5 @@ class Group extends MasterModel
     public function allocations()
     {
         return $this->morphedByMany(Allocation::class, 'groupable');
-    }
-
-    /**
-     * Set the group's type.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setClassReferenceAttribute($value)
-    {
-        $this->attributes['class_reference'] = GroupClassReference::getTypeClass($value);
     }
 }

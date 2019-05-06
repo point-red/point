@@ -36,7 +36,7 @@ class SalesOrderController extends Controller
             if (in_array('form', $fields)) {
                 $salesOrders->join(Form::getTableName(), function ($q) {
                     $q->on(Form::getTableName('formable_id'), '=', SalesOrder::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), SalesOrder::class);
+                        ->where(Form::getTableName('formable_type'), SalesOrder::$morphName);
                 });
             }
         }

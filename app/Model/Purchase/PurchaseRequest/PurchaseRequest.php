@@ -72,7 +72,7 @@ class PurchaseRequest extends TransactionModel
 
     public function approvers()
     {
-        return $this->hasManyThrough(FormApproval::class, Form::class, 'formable_id', 'form_id')->where('formable_type', self::class);
+        return $this->hasManyThrough(FormApproval::class, Form::class, 'formable_id', 'form_id')->where('formable_type', self::$morphName);
     }
 
     public function purchaseOrders()

@@ -22,10 +22,10 @@ class PurchasePendingController extends Controller
     public function index(Request $request)
     {
         $forms = Form::where(function ($query) {
-            $query->where('formable_type', PurchaseRequest::class)
-                ->orWhere('formable_type', PurchaseOrder::class)
-                ->orWhere('formable_type', PurchaseReceive::class)
-                ->orWhere('formable_type', PurchaseInvoice::class);
+            $query->where('formable_type', PurchaseRequest::$morphName)
+                ->orWhere('formable_type', PurchaseOrder::$morphName)
+                ->orWhere('formable_type', PurchaseReceive::$morphName)
+                ->orWhere('formable_type', PurchaseInvoice::$morphName);
         })->where('done', false)->with('formable');
 
         $forms = pagination($forms, $request->get('limit'));

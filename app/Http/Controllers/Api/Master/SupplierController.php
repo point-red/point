@@ -37,49 +37,49 @@ class SupplierController extends Controller
             if (in_array('addresses', $fields)) {
                 $suppliers = $suppliers->leftjoin(Address::getTableName(), function ($q) {
                     $q->on(Address::getTableName('addressable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Address::getTableName('addressable_type'), Supplier::class);
+                        ->where(Address::getTableName('addressable_type'), Supplier::$morphName);
                 });
             }
 
             if (in_array('phones', $fields)) {
                 $suppliers = $suppliers->leftjoin(Phone::getTableName(), function ($q) {
                     $q->on(Phone::getTableName('phoneable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Phone::getTableName('phoneable_type'), Supplier::class);
+                        ->where(Phone::getTableName('phoneable_type'), Supplier::$morphName);
                 });
             }
 
             if (in_array('emails', $fields)) {
                 $suppliers = $suppliers->leftjoin(Email::getTableName(), function ($q) {
                     $q->on(Email::getTableName('emailable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Email::getTableName('emailable_type'), Supplier::class);
+                        ->where(Email::getTableName('emailable_type'), Supplier::$morphName);
                 });
             }
 
             if (in_array('contact_persons', $fields)) {
                 $suppliers = $suppliers->leftjoin(ContactPerson::getTableName(), function ($q) {
                     $q->on(ContactPerson::getTableName('contactable_id'), '=', Supplier::getTableName('id'))
-                        ->where(ContactPerson::getTableName('contactable_type'), Supplier::class);
+                        ->where(ContactPerson::getTableName('contactable_type'), Supplier::$morphName);
                 });
             }
 
             if (in_array('banks', $fields)) {
                 $suppliers = $suppliers->leftjoin(Bank::getTableName(), function ($q) {
                     $q->on(Bank::getTableName('bankable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Bank::getTableName('bankable_type'), Supplier::class);
+                        ->where(Bank::getTableName('bankable_type'), Supplier::$morphName);
                 });
             }
 
             if (in_array('journals', $fields)) {
                 $suppliers = $suppliers->leftjoin(Journal::getTableName(), function ($q) {
                     $q->on(Journal::getTableName('journalable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Journal::getTableName('journalable_type'), Supplier::class);
+                        ->where(Journal::getTableName('journalable_type'), Supplier::$morphName);
                 });
             }
 
             if (in_array('payments', $fields)) {
                 $suppliers = $suppliers->leftjoin(Payment::getTableName(), function ($q) {
                     $q->on(Payment::getTableName('paymentable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Payment::getTableName('paymentable_type'), Supplier::class);
+                        ->where(Payment::getTableName('paymentable_type'), Supplier::$morphName);
                 });
             }
         }
@@ -87,7 +87,7 @@ class SupplierController extends Controller
         if ($request->get('group_id')) {
             $suppliers = $suppliers->join('groupables', function ($q) use ($request) {
                 $q->on('groupables.groupable_id', '=', 'suppliers.id')
-                    ->where('groupables.groupable_type', Supplier::class)
+                    ->where('groupables.groupable_type', Supplier::$morphName)
                     ->where('groupables.group_id', '=', $request->get('group_id'));
             });
         }

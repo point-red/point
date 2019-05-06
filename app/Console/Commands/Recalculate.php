@@ -65,7 +65,7 @@ class Recalculate extends Command
 
                 foreach ($inventories as $inventory) {
                     // update value (recalculating process)
-                    if ($inventory->formable_type == InventoryAudit::class) {
+                    if ($inventory->formable_type == InventoryAudit::$morphName) {
                         // fix i/o value
                         $inventory->quantity = 0;
                     }
@@ -93,7 +93,7 @@ class Recalculate extends Command
 
             foreach ($inventories as $inventory) {
                 // update value (recalculating process)
-                if ($inventory->formable_type == InventoryAudit::class) {
+                if ($inventory->formable_type == InventoryAudit::$morphName) {
                     // fix i/o value
                     $inventory->quantity = 0;
                 }
@@ -124,7 +124,7 @@ class Recalculate extends Command
     private function updateJournal($formId, $itemId, $cogs)
     {
         $inventories = Journal::where('form_id', $formId)
-            ->where('journalable_type', Item::class)
+            ->where('journalable_type', Item::$morphName)
             ->where('journalable_id', $itemId)
             ->where('journalable_id', $itemId)
             ->get();

@@ -37,7 +37,7 @@ class SalesContractController extends Controller
             if (in_array('form', $fields)) {
                 $salesContracts->join(Form::getTableName(), function ($q) {
                     $q->on(Form::getTableName('formable_id'), '=', SalesContract::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), SalesContract::class);
+                        ->where(Form::getTableName('formable_type'), SalesContract::$morphName);
                 });
             }
         }

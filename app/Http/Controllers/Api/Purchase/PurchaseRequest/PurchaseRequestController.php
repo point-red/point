@@ -43,7 +43,7 @@ class PurchaseRequestController extends Controller
             if (in_array('form', $fields)) {
                 $purchaseRequests = $purchaseRequests->join(Form::getTableName(), function ($q) {
                     $q->on(Form::getTableName('formable_id'), '=', PurchaseRequest::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseRequest::class);
+                        ->where(Form::getTableName('formable_type'), PurchaseRequest::$morphName);
                 });
             }
         }

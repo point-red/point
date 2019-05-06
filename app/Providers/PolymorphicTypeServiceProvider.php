@@ -9,6 +9,8 @@ use App\Model\HumanResource\Employee\Employee;
 use App\Model\Inventory\InventoryAudit\InventoryAudit;
 use App\Model\Inventory\OpeningStock\OpeningStock;
 use App\Model\Master\Customer;
+use App\Model\Master\Item;
+use App\Model\Master\Service;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseContract\PurchaseContract;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
@@ -39,6 +41,8 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             Supplier::$morphName => Supplier::class,
             Customer::$morphName => Customer::class,
             Employee::$morphName => Employee::class,
+            Item::$morphName => Item::class,
+            Service::$morphName => Service::class,
             // Inventory
             InventoryAudit::$morphName => InventoryAudit::class,
             OpeningStock::$morphName => OpeningStock::class,

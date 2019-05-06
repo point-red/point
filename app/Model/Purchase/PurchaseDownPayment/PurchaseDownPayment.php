@@ -67,12 +67,12 @@ class PurchaseDownPayment extends TransactionModel
 
         if (! empty($data['purchase_order_id'])) {
             $downPayment->downpaymentable_id = $data['purchase_order_id'];
-            $downPayment->downpaymentable_type = PurchaseOrder::class;
+            $downPayment->downpaymentable_type = PurchaseOrder::$morphName;
 
             $reference = PurchaseOrder::findOrFail($data['purchase_order_id']);
         } elseif (! empty($data['purchase_contract_id'])) {
             $downPayment->downpaymentable_id = $data['purchase_contract_id'];
-            $downPayment->downpaymentable_type = PurchaseContract::class;
+            $downPayment->downpaymentable_type = PurchaseContract::$morphName;
 
             $reference = findOrFail($data['purchase_contract_id']);
         }

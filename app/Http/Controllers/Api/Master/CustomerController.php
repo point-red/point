@@ -37,49 +37,49 @@ class CustomerController extends Controller
             if (in_array('addresses', $fields)) {
                 $customers = $customers->leftjoin(Address::getTableName(), function ($q) {
                     $q->on(Address::getTableName('addressable_id'), '=', Customer::getTableName('id'))
-                        ->where(Address::getTableName('addressable_type'), Customer::class);
+                        ->where(Address::getTableName('addressable_type'), Customer::$morphName);
                 });
             }
 
             if (in_array('phones', $fields)) {
                 $customers = $customers->leftjoin(Phone::getTableName(), function ($q) {
                     $q->on(Phone::getTableName('phoneable_id'), '=', Customer::getTableName('id'))
-                        ->where(Phone::getTableName('phoneable_type'), Customer::class);
+                        ->where(Phone::getTableName('phoneable_type'), Customer::$morphName);
                 });
             }
 
             if (in_array('emails', $fields)) {
                 $customers = $customers->leftjoin(Email::getTableName(), function ($q) {
                     $q->on(Email::getTableName('emailable_id'), '=', Customer::getTableName('id'))
-                        ->where(Email::getTableName('emailable_type'), Customer::class);
+                        ->where(Email::getTableName('emailable_type'), Customer::$morphName);
                 });
             }
 
             if (in_array('contact_persons', $fields)) {
                 $customers = $customers->leftjoin(ContactPerson::getTableName(), function ($q) {
                     $q->on(ContactPerson::getTableName('contactable_id'), '=', Customer::getTableName('id'))
-                        ->where(ContactPerson::getTableName('contactable_type'), Customer::class);
+                        ->where(ContactPerson::getTableName('contactable_type'), Customer::$morphName);
                 });
             }
 
             if (in_array('banks', $fields)) {
                 $customers = $customers->leftjoin(Bank::getTableName(), function ($q) {
                     $q->on(Bank::getTableName('bankable_id'), '=', Customer::getTableName('id'))
-                        ->where(Bank::getTableName('bankable_type'), Customer::class);
+                        ->where(Bank::getTableName('bankable_type'), Customer::$morphName);
                 });
             }
 
             if (in_array('journals', $fields)) {
                 $customers = $customers->leftjoin(Journal::getTableName(), function ($q) {
                     $q->on(Journal::getTableName('journalable_id'), '=', Customer::getTableName('id'))
-                        ->where(Journal::getTableName('journalable_type'), Customer::class);
+                        ->where(Journal::getTableName('journalable_type'), Customer::$morphName);
                 });
             }
 
             if (in_array('payments', $fields)) {
                 $customers = $customers->leftjoin(Payment::getTableName(), function ($q) {
                     $q->on(Payment::getTableName('paymentable_id'), '=', Customer::getTableName('id'))
-                        ->where(Payment::getTableName('paymentable_type'), Customer::class);
+                        ->where(Payment::getTableName('paymentable_type'), Customer::$morphName);
                 });
             }
         }
@@ -87,7 +87,7 @@ class CustomerController extends Controller
         if ($request->get('group_id')) {
             $customers = $customers->leftJoin('groupables', function ($q) use ($request) {
                 $q->on('groupables.groupable_id', '=', 'customers.id')
-                    ->where('groupables.groupable_type', Customer::class)
+                    ->where('groupables.groupable_type', Customer::$morphName)
                     ->where('groupables.group_id', '=', $request->get('group_id'));
             });
         }

@@ -35,7 +35,7 @@ class DeliveryNoteController extends Controller
             if (in_array('form', $fields)) {
                 $deliveryNotes->join(Form::getTableName(), function ($q) {
                     $q->on(Form::getTableName('formable_id'), '=', DeliveryNote::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), DeliveryNote::class);
+                        ->where(Form::getTableName('formable_type'), DeliveryNote::$morphName);
                 });
             }
         }

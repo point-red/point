@@ -35,7 +35,7 @@ class PaymentController extends Controller
             if (in_array('form', $fields)) {
                 $payment = $payment->join(Form::getTableName(), function ($q) {
                     $q->on(Form::getTableName('formable_id'), '=', Payment::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), Payment::class);
+                        ->where(Form::getTableName('formable_type'), Payment::$morphName);
                 });
             }
         }

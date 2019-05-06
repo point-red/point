@@ -63,7 +63,7 @@ class AccountReceivableController extends Controller
 
     private function filterOwner($journals, $ownerId)
     {
-        return $journals->where('journalable_type', Customer::class)->where('journalable_id', $ownerId);
+        return $journals->where('journalable_type', Customer::$morphName)->where('journalable_id', $ownerId);
     }
 
     private function filterForm($journals, $formNumber)

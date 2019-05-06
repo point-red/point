@@ -96,7 +96,7 @@ class SalesInvoice extends TransactionModel
         $downPayments = $this->downPayments;
         $downPaymentIds = $downPayments->pluck('id');
         Form::whereIn('referenceable_id', $downPaymentIds)
-            ->where('referenceable_type', SalesDownPayment::class)
+            ->where('referenceable_type', SalesDownPayment::$morphName)
             ->update(['done' => false]);
     }
 
@@ -204,7 +204,7 @@ class SalesInvoice extends TransactionModel
         if ($salesInvoice->items->count()) {
             $deliveryNoteIds = $salesInvoice->items()->groupBy('delivery_note_id')->pluck('delivery_note_id');
             
-            $affectedRows = Form::where('formable_type', DeliveryNote::class)
+            $affectedRows = Form::where('formable_type', DeliveryNote::$morphName)
                 ->whereIn('formable_id', $deliveryNoteIds)
                 ->update(['done' => true]);
             // TODO do something if $affectedRows === 0 or different than count($deliveryNoteIds)
@@ -216,7 +216,7 @@ class SalesInvoice extends TransactionModel
         if ($salesInvoice->services->count()) {
             $salesOrderIds = $salesInvoice->services()->groupBy('sales_order_id')->pluck('sales_order_id');
             
-            $affectedRows = Form::where('formable_type', SalesOrder::class)
+            $affectedRows = Form::where('formable_type', SalesOrder::$morphName)
                 ->whereIn('formable_id', $salesOrderIds)
                 ->update(['done' => true]);
             // TODO do something if $affectedRows === 0 or different than count($salesOrderIds)

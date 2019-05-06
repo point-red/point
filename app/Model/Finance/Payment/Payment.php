@@ -86,7 +86,7 @@ class Payment extends TransactionModel
         $form->fill($data);
 
         $form->formable_id = $payment->id;
-        $form->formable_type = self::class;
+        $form->formable_type = self::$morphName;
         $form->generateFormNumber(
             self::generateFormNumber($payment, $data['number'], $data['increment_group']),
             $data['paymentable_id'],

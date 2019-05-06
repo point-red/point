@@ -14,7 +14,7 @@ class SalesInvoicePricingController extends Controller
     {
         $salesInvoiceItem = SalesInvoiceItem::join(SalesInvoice::getTableName(), SalesInvoice::getTableName('id'), '=', SalesInvoiceItem::getTableName('sales_invoice_id'))
             ->join(Form::getTableName(), Form::getTableName('formable_id'), '=', SalesInvoice::getTableName('id'))
-            ->where(Form::getTableName('formable_type'), SalesInvoice::class)
+            ->where(Form::getTableName('formable_type'), SalesInvoice::$morphName)
             ->where(SalesInvoiceItem::getTableName('item_id'), $itemId)
             ->where(SalesInvoice::getTableName('customer_id'), $customerId)
             ->orderBy(Form::getTableName('date'), 'desc')

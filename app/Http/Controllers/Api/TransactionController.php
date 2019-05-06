@@ -74,13 +74,13 @@ class TransactionController extends Controller
                     'disbursed' => true,
                     'payment_type' => $request->get('purchase.payment.type'),
                     'paymentable_id' => $request->get('purchase.supplier_id'),
-                    'paymentable_type' => Supplier::class,
+                    'paymentable_type' => Supplier::$morphName,
                     'details' => [
                         'chart_of_account_id' => $request->get('purchase.payment.chart_of_account_id'),
                         'allocation_id' => $request->get('purchase.payment.allocation_id'),
                         'amount' => $purchaseInvoice->amount,
                         'referenceable_id' => $purchaseInvoice->id,
-                        'referenceable_type' => PurchaseInvoice::class,
+                        'referenceable_type' => PurchaseInvoice::$morphName,
                     ],
                 ];
                 if ($request->has('purchase_payment_number')) {
@@ -140,13 +140,13 @@ class TransactionController extends Controller
                     'disbursed' => false,
                     'payment_type' => $request->get('sales_payment_type'),
                     'paymentable_id' => $request->get('sales.customer'),
-                    'paymentable_type' => Customer::class,
+                    'paymentable_type' => Customer::$morphName,
                     'details' => [
                         'chart_of_account_id' => $request->get('sales_payment_chart_of_account_id'),
                         'allocation_id' => $request->get('sales_payment_allocation_id'),
                         'amount' => $salesInvoice->amount,
                         'referenceable_id' => $salesInvoice->id,
-                        'referenceable_type' => SalesInvoice::class,
+                        'referenceable_type' => SalesInvoice::$morphName,
                     ],
                 ];
                 if ($request->has('sales_payment_number')) {

@@ -37,7 +37,7 @@ class SalesInvoiceController extends Controller
             if (in_array('form', $fields)) {
                 $salesInvoices->join(Form::getTableName(), function ($q) {
                     $q->on(Form::getTableName('formable_id'), '=', SalesInvoice::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), SalesInvoice::class);
+                        ->where(Form::getTableName('formable_type'), SalesInvoice::$morphName);
                 });
             }
         }

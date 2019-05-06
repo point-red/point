@@ -256,25 +256,4 @@ if (! function_exists('get_invitation_code')) {
             return $settingJournal->id;
         }
     }
-
-    if (! function_exists('get_short_name')) {
-        /**
-         * Get short name for class
-         *
-         * @param $model
-         * @return string
-         */
-        function get_short_name($model)
-        {
-            $shortName = null;
-
-            try {
-                $shortName = (new ReflectionClass($model))->getShortName();
-            } catch (ReflectionException $e) {
-                // handle error
-            }
-
-            return $shortName;
-        }
-    }
 }

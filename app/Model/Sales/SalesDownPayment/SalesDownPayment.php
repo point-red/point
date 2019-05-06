@@ -73,12 +73,12 @@ class SalesDownPayment extends TransactionModel
 
         if (! empty($data['sales_order_id'])) {
             $downPayment->downpaymentable_id = $data['sales_order_id'];
-            $downPayment->downpaymentable_type = SalesOrder::class;
+            $downPayment->downpaymentable_type = SalesOrder::$morphName;
 
             $reference = SalesOrder::findOrFail($data['sales_order_id']);
         } elseif (! empty($data['sales_contract_id'])) {
             $downPayment->downpaymentable_id = $data['sales_contract_id'];
-            $downPayment->downpaymentable_type = SalesContract::class;
+            $downPayment->downpaymentable_type = SalesContract::$morphName;
 
             $reference = SalesContract::findOrFail($data['sales_contract_id']);
         }

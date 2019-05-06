@@ -37,7 +37,7 @@ class PurchaseDownPaymentController extends Controller
             if (in_array('form', $fields)) {
                 $downPayments = $downPayments->join(Form::getTableName(), function ($q) {
                     $q->on(Form::getTableName('formable_id'), '=', PurchaseDownPayment::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseDownPayment::class);
+                        ->where(Form::getTableName('formable_type'), PurchaseDownPayment::$morphName);
                 });
             }
         }

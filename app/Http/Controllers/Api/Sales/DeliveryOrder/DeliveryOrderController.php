@@ -37,7 +37,7 @@ class DeliveryOrderController extends Controller
             if (in_array('form', $fields)) {
                 $deliverOrders->join(Form::getTableName(), function ($q) {
                     $q->on(Form::getTableName('formable_id'), '=', DeliveryOrder::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), DeliveryOrder::class);
+                        ->where(Form::getTableName('formable_type'), DeliveryOrder::$morphName);
                 });
             }
         }

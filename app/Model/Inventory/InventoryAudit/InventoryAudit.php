@@ -9,6 +9,8 @@ use App\Model\TransactionModel;
 
 class InventoryAudit extends TransactionModel
 {
+    public static $morphName = 'InventoryAudit';
+
     protected $connection = 'tenant';
 
     public $timestamps = false;

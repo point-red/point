@@ -9,6 +9,8 @@ use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
 class Supplier extends MasterModel
 {
+    public static $morphName = 'Supplier';
+
     protected $connection = 'tenant';
 
     protected $fillable = [

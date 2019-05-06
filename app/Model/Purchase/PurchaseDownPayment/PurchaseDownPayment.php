@@ -12,6 +12,8 @@ use App\Model\Purchase\PurchaseContract\PurchaseContract;
 
 class PurchaseDownPayment extends TransactionModel
 {
+    public static $morphName = 'PurchaseDownPayment';
+
     protected $connection = 'tenant';
 
     public $timestamps = false;

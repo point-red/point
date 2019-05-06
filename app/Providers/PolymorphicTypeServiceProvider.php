@@ -36,31 +36,31 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
     {
         Relation::morphMap([
             // Master
-            'Supplier' => Supplier::class,
-            'Customer' => Customer::class,
-            'Employee' => Employee::class,
+            Supplier::$morphName => Supplier::class,
+            Customer::$morphName => Customer::class,
+            Employee::$morphName => Employee::class,
             // Inventory
-            'InventoryAudit' => InventoryAudit::class,
-            'OpeningStock' => OpeningStock::class,
+            InventoryAudit::$morphName => InventoryAudit::class,
+            OpeningStock::$morphName => OpeningStock::class,
             // Purchase
-            'PurchaseRequest' => PurchaseRequest::class,
-            'PurchaseOrder' => PurchaseOrder::class,
-            'PurchaseContract' => PurchaseContract::class,
-            'PurchaseDownPayment' => PurchaseDownPayment::class,
-            'PurchaseInvoice' => PurchaseInvoice::class,
-            'PurchaseReturn' => PurchaseReturn::class,
+            PurchaseRequest::$morphName => PurchaseRequest::class,
+            PurchaseOrder::$morphName => PurchaseOrder::class,
+            PurchaseContract::$morphName => PurchaseContract::class,
+            PurchaseDownPayment::$morphName => PurchaseDownPayment::class,
+            PurchaseInvoice::$morphName => PurchaseInvoice::class,
+            PurchaseReturn::$morphName => PurchaseReturn::class,
             // Sales
-            'SalesQuotation' => SalesQuotation::class,
-            'SalesOrder' => SalesOrder::class,
-            'SalesContract' => SalesContract::class,
-            'SalesDownPayment' => SalesDownPayment::class,
-            'SalesInvoice' => SalesInvoice::class,
-            'SalesReturn' => SalesReturn::class,
+            SalesQuotation::$morphName => SalesQuotation::class,
+            SalesOrder::$morphName => SalesOrder::class,
+            SalesContract::$morphName => SalesContract::class,
+            SalesDownPayment::$morphName => SalesDownPayment::class,
+            SalesInvoice::$morphName => SalesInvoice::class,
+            SalesReturn::$morphName => SalesReturn::class,
             // Finance
-            'PaymentOrder' => PaymentOrder::class,
-            'Payment' => Payment::class,
+            PaymentOrder::$morphName => PaymentOrder::class,
+            Payment::$morphName => Payment::class,
             // Accounting
-            'CutOff' => CutOff::class,
+            CutOff::$morphName => CutOff::class,
         ]);
     }
 

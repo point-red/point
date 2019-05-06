@@ -12,6 +12,8 @@ use App\Model\Sales\SalesInvoice\SalesInvoice;
 
 class DeliveryNote extends TransactionModel
 {
+    public static $morphName = 'SalesDeliveryNote';
+
     protected $connection = 'tenant';
 
     protected $table = 'delivery_notes';

@@ -86,7 +86,7 @@ class Form extends PointModel
 
         $this->fill($data);
         $this->formable_id = $transaction->id;
-        $this->formable_type = (new ReflectionClass($transaction))->getShortName();
+        $this->formable_type = $transaction::$morphName;
         $this->generateFormNumber(
             $data['number'] ?? $transaction->defaultNumberPrefix.$defaultNumberPostfix,
             $transaction->customer_id,

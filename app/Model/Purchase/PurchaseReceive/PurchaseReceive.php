@@ -13,6 +13,8 @@ use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 
 class PurchaseReceive extends TransactionModel
 {
+    public static $morphName = 'PurchaseReceive';
+
     protected $connection = 'tenant';
 
     protected $table = 'purchase_receives';

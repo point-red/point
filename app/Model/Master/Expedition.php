@@ -6,6 +6,8 @@ use App\Model\MasterModel;
 
 class Expedition extends MasterModel
 {
+    public static $morphName = 'Expedition';
+
     protected $connection = 'tenant';
 
     protected $fillable = [

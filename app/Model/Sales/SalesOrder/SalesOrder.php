@@ -16,6 +16,8 @@ use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesOrder extends TransactionModel
 {
+    public static $morphName = 'SalesOrder';
+
     protected $connection = 'tenant';
 
     public $timestamps = false;

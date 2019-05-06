@@ -12,6 +12,8 @@ use App\Model\Inventory\OpeningStock\OpeningStockWarehouse;
 
 class Item extends MasterModel
 {
+    public static $morphName = 'Item';
+
     protected $connection = 'tenant';
 
     protected $fillable = [

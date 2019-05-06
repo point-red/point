@@ -12,6 +12,8 @@ use App\Exceptions\IsReferencedException;
 
 class DeliveryOrder extends TransactionModel
 {
+    public static $morphName = 'SalesDeliveryOrder';
+
     protected $connection = 'tenant';
 
     protected $table = 'delivery_orders';

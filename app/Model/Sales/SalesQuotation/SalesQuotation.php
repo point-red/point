@@ -9,6 +9,8 @@ use App\Model\Sales\SalesOrder\SalesOrder;
 
 class SalesQuotation extends TransactionModel
 {
+    public static $morphName = 'SalesQuotation';
+
     protected $connection = 'tenant';
 
     public $timestamps = false;

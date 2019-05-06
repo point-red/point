@@ -11,6 +11,8 @@ use App\Model\Accounting\Journal;
 
 class Payment extends TransactionModel
 {
+    public static $morphName = 'Payment';
+
     protected $connection = 'tenant';
 
     public $timestamps = false;

@@ -8,6 +8,8 @@ use App\Model\Finance\Payment\Payment;
 
 class Customer extends MasterModel
 {
+    public static $morphName = 'Customer';
+
     protected $connection = 'tenant';
 
     protected $casts = ['credit_ceiling' => 'double'];

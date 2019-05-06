@@ -9,6 +9,8 @@ use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 
 class PurchaseContract extends TransactionModel
 {
+    public static $morphName = 'PurchaseContract';
+
     protected $connection = 'tenant';
 
     public $timestamps = false;

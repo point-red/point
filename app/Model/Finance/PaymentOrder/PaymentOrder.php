@@ -4,15 +4,14 @@ namespace App\Model\Finance\PaymentOrder;
 
 use App\Exceptions\IsReferencedException;
 use App\Model\Finance\Payment\Payment;
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\Master\Customer;
 use Carbon\Carbon;
 use App\Model\Form;
-use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
 
 class PaymentOrder extends TransactionModel
 {
+    public static $morphName = 'PaymentOrder';
+
     protected $connection = 'tenant';
 
     public $timestamps = false;

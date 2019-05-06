@@ -15,9 +15,11 @@ use Illuminate\Support\Facades\DB;
 
 class PurchaseRequest extends TransactionModel
 {
-    protected $connection = 'tenant';
+    public static $morphName = 'PurchaseRequest';
 
     public $timestamps = false;
+
+    protected $connection = 'tenant';
 
     protected $fillable = [
         'required_date',

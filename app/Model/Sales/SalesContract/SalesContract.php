@@ -10,6 +10,8 @@ use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesContract extends TransactionModel
 {
+    public static $morphName = 'SalesContract';
+
     protected $connection = 'tenant';
 
     public $timestamps = false;

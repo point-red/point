@@ -2,6 +2,7 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
+use App\Exceptions\IsReferencedException;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
@@ -16,6 +17,8 @@ use App\Model\Sales\DeliveryNote\DeliveryNote;
 
 class SalesInvoice extends TransactionModel
 {
+    public static $morphName = 'SalesInvoice';
+
     protected $connection = 'tenant';
 
     public $timestamps = false;
@@ -245,7 +248,7 @@ class SalesInvoice extends TransactionModel
         // 1. Account Receivable
         $journal = new Journal;
         $journal->form_id = $salesInvoice->form->id;
-        $journal->journalable_type = Customer::class;
+        $journal->journalable_type = Customer::$morphName;
         $journal->journalable_id = $salesInvoice->customer_id;
         $journal->chart_of_account_id = get_setting_journal('sales', 'account receivable');
         $journal->debit = $salesInvoice->amount;
@@ -272,7 +275,7 @@ class SalesInvoice extends TransactionModel
             // 3. Inventories
             $journal = new Journal;
             $journal->form_id = $salesInvoice->form->id;
-            $journal->journalable_type = Item::class;
+            $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $salesItem->item_id;
             $journal->chart_of_account_id = $salesItem->item->chart_of_account_id;
             $journal->credit = $cogs * $salesItem->quantity;
@@ -281,7 +284,7 @@ class SalesInvoice extends TransactionModel
             // 4. Cogs
             $journal = new Journal;
             $journal->form_id = $salesInvoice->form->id;
-            $journal->journalable_type = Item::class;
+            $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $salesItem->item_id;
             $journal->chart_of_account_id = get_setting_journal('sales', 'cost of sales');
             $journal->debit = $cogs * $salesItem->quantity;

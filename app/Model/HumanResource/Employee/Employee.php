@@ -11,6 +11,8 @@ use App\Model\HumanResource\Employee\Employee\EmployeeCompanyEmail;
 
 class Employee extends MasterModel
 {
+    public static $morphName = 'Employee';
+
     protected $connection = 'tenant';
 
     /**

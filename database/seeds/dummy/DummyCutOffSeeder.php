@@ -57,7 +57,7 @@ class DummyCutOffSeeder extends Seeder
             $cutOffDetail->save();
 
             $journal = new Journal;
-            $journal->journalable_type = get_class(new CutOff());
+            $journal->journalable_type = $cutOff::$morphName;
             $journal->journalable_id = $cutOff->id;
             $journal->date = $cutOff->date;
             $journal->chart_of_account_id = $chartOfAccount->id;
@@ -98,7 +98,7 @@ class DummyCutOffSeeder extends Seeder
             $cutOffDetail->save();
 
             $journal = new Journal;
-            $journal->journalable_type = get_class(new CutOff());
+            $journal->journalable_type = CutOff::$morphName;
             $journal->journalable_id = $cutOff->id;
             $journal->date = $cutOff->date;
             $journal->chart_of_account_id = $chartOfAccount->id;

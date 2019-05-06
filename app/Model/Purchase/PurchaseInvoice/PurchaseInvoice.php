@@ -15,6 +15,8 @@ use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
 class PurchaseInvoice extends TransactionModel
 {
+    public static $morphName = 'PurchaseInvoice';
+
     protected $connection = 'tenant';
 
     public $timestamps = false;
@@ -236,7 +238,7 @@ class PurchaseInvoice extends TransactionModel
         // 1. Account Payable
         $journal = new Journal;
         $journal->form_id = $purchaseInvoice->form->id;
-        $journal->journalable_type = Supplier::class;
+        $journal->journalable_type = Supplier::$morphName;
         $journal->journalable_id = $purchaseInvoice->supplier_id;
         $journal->chart_of_account_id = get_setting_journal('purchase', 'account payable');
         $journal->credit = $purchaseInvoice->amount;
@@ -262,7 +264,7 @@ class PurchaseInvoice extends TransactionModel
             // 2. Inventories
             $journal = new Journal;
             $journal->form_id = $purchaseInvoice->form->id;
-            $journal->journalable_type = Item::class;
+            $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $purchaseItem->item_id;
             $journal->chart_of_account_id = $purchaseItem->item->chart_of_account_id;
             $journal->debit = $itemAmount;

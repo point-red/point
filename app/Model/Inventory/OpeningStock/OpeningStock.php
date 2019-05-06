@@ -6,6 +6,8 @@ use App\Model\TransactionModel;
 
 class OpeningStock extends TransactionModel
 {
+    public static $morphName = 'OpeningStock';
+
     protected $connection = 'tenant';
 
     public $timestamps = false;

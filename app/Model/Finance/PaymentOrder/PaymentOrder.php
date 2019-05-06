@@ -30,12 +30,6 @@ class PaymentOrder extends TransactionModel
         'amount' => 'double',
     ];
 
-    protected $paymentableType = [
-        'customer' => Customer::class,
-        'supplier' => Supplier::class,
-        'employee' => Employee::class,
-    ];
-
     public $defaultNumberPrefix = 'PAYORDER';
 
     public function getDueDateAttribute($value)

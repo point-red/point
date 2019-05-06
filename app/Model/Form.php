@@ -7,6 +7,7 @@ use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
+use ReflectionClass;
 
 class Form extends PointModel
 {
@@ -85,7 +86,7 @@ class Form extends PointModel
 
         $this->fill($data);
         $this->formable_id = $transaction->id;
-        $this->formable_type = get_class($transaction);
+        $this->formable_type = (new ReflectionClass($transaction))->getShortName();
         $this->generateFormNumber(
             $data['number'] ?? $transaction->defaultNumberPrefix.$defaultNumberPostfix,
             $transaction->customer_id,

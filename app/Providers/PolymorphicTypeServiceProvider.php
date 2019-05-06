@@ -24,6 +24,7 @@ use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\Sales\SalesReturn\SalesReturn;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
+use App\Model\Master\Item;
 
 class PolymorphicTypeServiceProvider extends ServiceProvider
 {
@@ -39,6 +40,7 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             Supplier::$morphName => Supplier::class,
             Customer::$morphName => Customer::class,
             Employee::$morphName => Employee::class,
+            Item::$morphName => Item::class,
             // Inventory
             InventoryAudit::$morphName => InventoryAudit::class,
             OpeningStock::$morphName => OpeningStock::class,

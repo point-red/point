@@ -116,7 +116,7 @@ class SalesDownPayment extends TransactionModel
             'disbursed' => false,
             'amount' => $downPayment->amount,
             'paymentable_id' => $downPayment->customer_id,
-            'paymentable_type' => 'customer',
+            'paymentable_type' => Customer::$morphName,
             'paymentable_name' => $downPayment->customer->name,
             'increment_group' => $data['increment_group'],
 

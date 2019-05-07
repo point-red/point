@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice;
 
+use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePurchaseInvoiceRequest extends FormRequest

@@ -26,6 +26,8 @@ use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\Sales\SalesReturn\SalesReturn;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\DeliveryNote\DeliveryNote;
 
 class PolymorphicTypeServiceProvider extends ServiceProvider
 {
@@ -58,6 +60,8 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             SalesOrder::$morphName => SalesOrder::class,
             SalesContract::$morphName => SalesContract::class,
             SalesDownPayment::$morphName => SalesDownPayment::class,
+            DeliveryOrder::$morphName => DeliveryOrder::class,
+            DeliveryNote::$morphName => DeliveryNote::class,
             SalesInvoice::$morphName => SalesInvoice::class,
             SalesReturn::$morphName => SalesReturn::class,
             // Finance

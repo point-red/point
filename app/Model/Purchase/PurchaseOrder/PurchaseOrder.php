@@ -145,10 +145,8 @@ class PurchaseOrder extends TransactionModel
             }
         }
 
-        if ($done === true) {
-            $this->form->done = true;
-            $this->form->save();
-        }
+        $this->form->done = $done;
+        $this->form->save();
     }
 
     public function isAllowedToUpdate()

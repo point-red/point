@@ -123,6 +123,41 @@ class PurchaseReceiveController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param Request $request
+     * @param  int $id
+     * @return ApiResource
+     */
+    public function edit(Request $request, $id)
+    {
+        $purchaseReceive = PurchaseReceive::eloquentFilter($request)->findOrFail($id)->load('items');
+
+        $orderItems = optional($purchaseReceive->purchaseOrder)->items;
+
+        foreach ($orderItems as $orderItem) {
+            $orderItem->quantity_pending = $orderItem->quantity;
+            $orderItem->quantity = 0;
+            foreach ($purchaseReceive->purchaseOrder->purchaseReceives as $receive) {
+                $receiveItem = $receive->items->firstWhere('purchase_order_item_id', $orderItem->id);
+                if (!$receiveItem) {
+                    continue;
+                }
+
+                if ($receiveItem->purchase_receive_id != $id) {
+                    $orderItem->quantity_pending -= $receiveItem->quantity;
+                } else {
+                    $orderItem->quantity = $receiveItem->quantity;
+                }
+            }
+        }
+
+        $purchaseReceive->order_items = $orderItems;
+
+        return new ApiResource($purchaseReceive);
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param Request $request

@@ -25,6 +25,7 @@ class PurchaseReceive extends TransactionModel
         'supplier_id',
         'supplier_name',
         'warehouse_id',
+        'warehouse_name',
         'purchase_order_id',
         'driver',
         'license_plate',

@@ -37,7 +37,7 @@ class PurchaseReceiveController extends Controller
             if (in_array('form', $fields)) {
                 $purchaseReceives = $purchaseReceives->join(Form::getTableName(), function ($q) {
                     $q->on(Form::getTableName('formable_id'), '=', PurchaseReceive::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseReceive::class);
+                        ->where(Form::getTableName('formable_type'), PurchaseReceive::$morphName);
                 });
             }
         }

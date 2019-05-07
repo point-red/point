@@ -37,7 +37,7 @@ class PurchaseInvoiceController extends Controller
             if (in_array('form', $fields)) {
                 $purchaseInvoices = $purchaseInvoices->join(Form::getTableName(), function ($q) {
                     $q->on(Form::getTableName('formable_id'), '=', PurchaseInvoice::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseInvoice::class);
+                        ->where(Form::getTableName('formable_type'), PurchaseInvoice::$morphName);
                 });
             }
         }

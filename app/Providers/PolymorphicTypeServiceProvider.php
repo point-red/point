@@ -16,6 +16,7 @@ use App\Model\Purchase\PurchaseContract\PurchaseContract;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\Purchase\PurchaseReturn\PurchaseReturn;
 use App\Model\Sales\SalesContract\SalesContract;
@@ -51,6 +52,7 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             // Purchase
             PurchaseRequest::$morphName => PurchaseRequest::class,
             PurchaseOrder::$morphName => PurchaseOrder::class,
+            PurchaseReceive::$morphName => PurchaseReceive::class,
             PurchaseContract::$morphName => PurchaseContract::class,
             PurchaseDownPayment::$morphName => PurchaseDownPayment::class,
             PurchaseInvoice::$morphName => PurchaseInvoice::class,

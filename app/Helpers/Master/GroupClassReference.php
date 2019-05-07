@@ -8,28 +8,19 @@ use App\Model\Master\Supplier;
 
 class GroupClassReference
 {
-    private static $classReference = [
-        'supplier' => Supplier::class,
-        'customer' => Customer::class,
-        'item' => Item::class,
-    ];
+    public static function isAvailable($groupType)
+    {
+        $classReference = [
+            Item::$morphName,
+            Customer::$morphName,
+            Supplier::$morphName,
+        ];
+        
+        return in_array($groupType, $classReference);
+    }
 
     public static $isNotAvailableResponse = [
         'code' => 400,
         'message' => 'Group class reference is not valid',
     ];
-
-    public static function isAvailable($groupType)
-    {
-        if (! array_key_exists($groupType, self::$classReference)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public static function getTypeClass($type)
-    {
-        return self::$classReference[$type] ?? null;
-    }
 }

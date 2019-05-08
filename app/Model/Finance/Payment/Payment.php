@@ -2,6 +2,7 @@
 
 namespace App\Model\Finance\Payment;
 
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Form;
 use App\Model\Master\Customer;
@@ -35,6 +36,11 @@ class Payment extends TransactionModel
         'supplier' => Supplier::class,
         'employee' => Employee::class,
     ];
+
+    public function paymentAccount()
+    {
+        return $this->belongsTo(ChartOfAccount::class, 'payment_account_id');
+    }
 
     public function details()
     {
@@ -88,7 +94,7 @@ class Payment extends TransactionModel
         $form->formable_id = $payment->id;
         $form->formable_type = self::$morphName;
         $form->generateFormNumber(
-            self::generateFormNumber($payment, $data['number'], $data['increment_group']),
+            self::generateFormNumber($payment, $data['number'] ?? null, $data['increment_group']),
             $data['paymentable_id'],
             $data['paymentable_id']
         );
@@ -169,10 +175,12 @@ class Payment extends TransactionModel
     private static function updateReferenceDone($paymentDetails)
     {
         foreach ($paymentDetails as $paymentDetail) {
-            $reference = $paymentDetail->referenceable;
-            $reference->remaining -= $paymentDetail->amount;
-            $reference->updateIfDone();
-            $reference->save();
+            if ($paymentDetail->referenceable) {
+                $reference = $paymentDetail->referenceable;
+                $reference->remaining -= $paymentDetail->amount;
+                $reference->updateIfDone();
+                $reference->save();
+            }
         }
     }
 
@@ -193,7 +201,7 @@ class Payment extends TransactionModel
         foreach ($payment->details as $paymentDetail) {
             $journal = new Journal;
             $journal->form_id = $payment->form->id;
-            $journal->form_id_reference = $paymentDetail->referenceable->form->id;
+            $journal->form_id_reference = optional(optional($paymentDetail->referenceable)->form)->id;
             $journal->journalable_type = $paymentDetail->referenceable_type;
             $journal->journalable_id = $paymentDetail->referenceable_id;
             $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;

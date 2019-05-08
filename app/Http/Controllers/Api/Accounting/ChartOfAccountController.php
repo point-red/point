@@ -20,6 +20,15 @@ class ChartOfAccountController extends Controller
     {
         $accounts = ChartOfAccount::eloquentFilter($request);
 
+        // Filter account by type
+        // ex : filter_type = 'cash,bank'
+        if ($request->has('filter_type')) {
+            $types = explode(',', $request->get('filter_type'));
+            $accounts->whereHas('type', function ($query) use ($types) {
+                $query->whereIn('name', $types);
+            });
+        }
+
         $accounts = pagination($accounts, $request->get('limit'));
 
         return new ChartOfAccountCollection($accounts);

@@ -60,9 +60,8 @@ class SalesDownPayment extends TransactionModel
         $used = $this->invoices->sum(function ($invoice) {
             return $invoice->pivot->amount;
         });
-        if ($this->amount - $used <= 0) {
-            $this->form()->update(['done' => true]);
-        }
+        $done = $this->amount - $used <= 0;
+        $this->form()->update(['done' => $done]);
     }
 
     public static function create($data)

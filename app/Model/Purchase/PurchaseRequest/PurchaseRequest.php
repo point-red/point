@@ -153,33 +153,16 @@ class PurchaseRequest extends TransactionModel
 
     public function updateIfDone()
     {
-        $purchaseRequestItems = $this->items;
-        $purchaseRequestItemIds = $purchaseRequestItems->pluck('id');
-
-        $tempArray = PurchaseOrder::activePending()
-            ->join(PurchaseOrderItem::getTableName(), PurchaseOrder::getTableName('id'), '=', PurchaseOrderItem::getTableName('purchase_order_id'))
-            ->select(PurchaseOrderItem::getTableName('*'))
-            ->addSelect(DB::raw('SUM(quantity) AS sum_ordered'))
-            ->whereIn(PurchaseOrderItem::getTableName('purchase_request_item_id'), $purchaseRequestItemIds)
-            ->whereNotNull(PurchaseOrderItem::getTableName('purchase_request_item_id'))
-            ->groupBy(PurchaseOrderItem::getTableName('purchase_request_item_id'))
-            ->get();
-
-        $quantityOrderedItems = $tempArray->pluck('sum_ordered', 'purchase_request_item_id');
-
-        // Make form done when all item ordered
         $done = true;
-        foreach ($purchaseRequestItems as $purchaseRequestItem) {
-            $quantityOrdered = $quantityOrderedItems[$purchaseRequestItem->id] ?? 0;
-            if ($purchaseRequestItem->quantity - $quantityOrdered > 0) {
+        $items = $this->items()->with('purchaseOrderItems')->get();
+        foreach ($items as $item) {
+            $quantityOrdered = $item->purchaseOrderItems->sum('quantity');
+            if ($item->quantity > $quantityOrdered) {
                 $done = false;
                 break;
             }
         }
 
-        if ($done === true) {
-            $this->form->done = true;
-            $this->form->save();
-        }
+        $this->form()->update(['done' => $done]);
     }
 }

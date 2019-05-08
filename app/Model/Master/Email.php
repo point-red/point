@@ -22,7 +22,7 @@ class Email extends MasterModel
             // Delete email
             $ids = array_column($emails, 'id');
             self::where('emailable_id', $obj->id)
-                ->where('emailable_type', get_class($obj))
+                ->where('emailable_type', get_class($obj)::$morphName)
                 ->whereNotIn('id', $ids)->delete();
 
             for ($i = 0; $i < count($emails); $i++) {
@@ -40,7 +40,7 @@ class Email extends MasterModel
                 $email->label = $emails[$i]['label'] ?? null;
                 $email->email = $emails[$i]['email'];
                 $email->is_main = $emails[$i]['is_main'] ?? false;
-                $email->emailable_type = get_class($obj);
+                $email->emailable_type = get_class($obj)::$morphName;
                 $email->emailable_id = $obj->id;
                 $email->save();
             }

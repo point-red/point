@@ -23,11 +23,11 @@ class KpiAutomatedController extends Controller
     {
         $returnable = [];
 
-        if (count($request->automated_ids) > 0 && $request->date)
+        if (count($request->automated_ids) > 0 && $request->startDate && $request->endDate)
         {
             foreach ($request->automated_ids as $automated_id)
             {
-                $returnable[$automated_id] = $this->getAutomatedData($automated_id, $request->date, $request->employeeId);
+                $returnable[$automated_id] = $this->getAutomatedData($automated_id, $request->startDate, $request->endDate, $request->employeeId);
             }
         }
 
@@ -100,8 +100,11 @@ class KpiAutomatedController extends Controller
         //
     }
 
-    public function getAutomatedData($automated_id, $date, $employeeId)
+    public function getAutomatedData($automated_id, $dateFrom, $dateTo, $employeeId)
     {
+        $dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
+        $dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
+
         $employee = Employee::findOrFail($employeeId);
         $userId = $employee->userEmployee->first()->id ?? 0;
         $user = User::findOrFail($userId);
@@ -110,29 +113,26 @@ class KpiAutomatedController extends Controller
         $score = 0;
 
         if ($automated_id === 'C') {
-            $target = (double)$this->queryCallTarget($date);
-            $score = $target ? $this->getCall($date, $userId) : 0;
+            $target = (double)$this->queryCallTarget($dateFrom, $dateTo, $userId);
+            $score = $target ? $this->getCall($dateFrom, $dateTo, $userId) : 0;
         }
         else if ($automated_id === 'EC') {
-            $target = (double)$this->queryEffectiveCallTarget($date);
-            $score = $target ? $this->getEffectiveCall($date, $userId) : 0;
+            $target = (double)$this->queryEffectiveCallTarget($dateFrom, $dateTo, $userId);
+            $score = $target ? $this->getEffectiveCall($dateFrom, $dateTo, $userId) : 0;
         }
         else if ($automated_id === 'V') {
-            $target = (double)$this->queryValueTarget($date);
-            $score = $target ? $this->getValue($date, $userId) : 0;
+            $target = (double)$this->queryValueTarget($dateFrom, $dateTo, $userId);
+            $score = $target ? $this->getValue($dateFrom, $dateTo, $userId) : 0;
         }
 
         return ['score' => $score, 'target' => $target];
     }
 
-    private function getCall($date, $userId)
+    private function getCall($dateFrom, $dateTo, $userId)
     {
         $query = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
             ->select(DB::raw('count(forms.id) as total'))
-            ->whereBetween('forms.date', [
-                date('Y-m-d 00:00:00', strtotime($date)),
-                date('Y-m-d 23:59:59', strtotime($date))
-            ])
+            ->whereBetween('forms.date', [$dateFrom, $dateTo])
             ->where('forms.created_by', $userId)
             ->groupBy('forms.created_by')
             ->first();
@@ -140,16 +140,13 @@ class KpiAutomatedController extends Controller
         return $query ? $query->total : 0;
     }
 
-    private function getEffectiveCall($date, $userId)
+    private function getEffectiveCall($dateFrom, $dateTo, $userId)
     {
         $querySalesVisitationHasDetail = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
             ->join('pin_point_sales_visitation_details', 'pin_point_sales_visitation_details.sales_visitation_id', '=', 'pin_point_sales_visitations.id')
             ->select('pin_point_sales_visitations.id')
             ->addSelect(DB::raw('sum(pin_point_sales_visitation_details.quantity) as totalQty'))
-            ->whereBetween('forms.date', [
-                date('Y-m-d 00:00:00', strtotime($date)),
-                date('Y-m-d 23:59:59', strtotime($date))
-            ])
+            ->whereBetween('forms.date', [$dateFrom, $dateTo])
             ->groupBy('pin_point_sales_visitations.id');
 
         $query = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
@@ -157,10 +154,7 @@ class KpiAutomatedController extends Controller
                 $join->on('pin_point_sales_visitations.id', '=', 'query_sales_visitation_has_detail.id');
             })
             ->selectRaw('count(pin_point_sales_visitations.id) as total')
-            ->whereBetween('forms.date', [
-                date('Y-m-d 00:00:00', strtotime($date)),
-                date('Y-m-d 23:59:59', strtotime($date))
-            ])
+            ->whereBetween('forms.date', [$dateFrom, $dateTo])
             ->where('forms.created_by', $userId)
             ->groupBy('forms.created_by')
             ->first();
@@ -168,48 +162,42 @@ class KpiAutomatedController extends Controller
         return $query ? $query->total : 0;
     }
 
-    private function getValue($date, $userId)
+    private function getValue($dateFrom, $dateTo, $userId)
     {
         $query = SalesVisitation::join('forms', 'forms.id','=',SalesVisitation::getTableName().'.form_id')
             ->join(SalesVisitationDetail::getTableName(), SalesVisitationDetail::getTableName().'.sales_visitation_id', '=', SalesVisitation::getTableName().'.id')
             ->groupBy('forms.created_by')
             ->selectRaw('sum(quantity * price) as value')
-            ->whereBetween('forms.date', [
-                date('Y-m-d 00:00:00', strtotime($date)),
-                date('Y-m-d 23:59:59', strtotime($date))
-            ])
+            ->whereBetween('forms.date', [$dateFrom, $dateTo])
             ->where('forms.created_by', $userId)
             ->first();
 
         return $query ? $query->value : 0;
     }
 
-    private function queryCallTarget($date)
+    private function queryCallTarget($dateFrom, $dateTo, $userId)
     {
-        $query = SalesVisitationTarget::whereBetween('date', [
-            date('Y-m-d 00:00:00', strtotime($date)),
-            date('Y-m-d 23:59:59', strtotime($date))
-        ])->first();
+        $query = SalesVisitationTarget::whereIn('date', function ($query) use ($dateTo, $userId) {
+            $query->selectRaw('max(date)')->from(SalesVisitationTarget::getTableName())->where('date', '<=', $dateTo)->where('user_id', $userId);
+        })->first();
 
         return $query ? $query->call : 0;
     }
 
-    private function queryEffectiveCallTarget($date)
+    private function queryEffectiveCallTarget($dateFrom, $dateTo, $userId)
     {
-        $query = SalesVisitationTarget::whereBetween('date', [
-            date('Y-m-d 00:00:00', strtotime($date)),
-            date('Y-m-d 23:59:59', strtotime($date))
-        ])->first();
+        $query = SalesVisitationTarget::whereIn('date', function ($query) use ($dateTo, $userId) {
+            $query->selectRaw('max(date)')->from(SalesVisitationTarget::getTableName())->where('date', '<=', $dateTo)->where('user_id', $userId);
+        })->first();
         
         return $query ? $query->effective_call : 0;
     }
 
-    private function queryValueTarget($date)
+    private function queryValueTarget($dateFrom, $dateTo, $userId)
     {
-        $query = SalesVisitationTarget::whereBetween('date', [
-            date('Y-m-d 00:00:00', strtotime($date)),
-            date('Y-m-d 23:59:59', strtotime($date))
-        ])->first();
+        $query = SalesVisitationTarget::whereIn('date', function ($query) use ($dateTo, $userId) {
+            $query->selectRaw('max(date)')->from(SalesVisitationTarget::getTableName())->where('date', '<=', $dateTo)->where('user_id', $userId);
+        })->first();
         
         return $query ? $query->value : 0;
     }

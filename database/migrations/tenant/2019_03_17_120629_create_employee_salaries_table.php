@@ -17,7 +17,8 @@ class CreateEmployeeSalariesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('employee_id')->index();
             $table->string('job_location');
-            $table->string('date');
+            $table->datetime('start_date');
+            $table->datetime('end_date');
             $table->double('base_salary');
             $table->double('multiplier_kpi');
             $table->double('daily_transport_allowance');

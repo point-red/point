@@ -46,7 +46,7 @@
 	   	<tr>
 	   		<td></td>
 	        <td>PERIOD:</td>
-	        <td colspan="5">{{ date('F Y', strtotime($employeeSalary->date)) }}</td>
+	        <td colspan="5">{{ date('d F Y', strtotime($employeeSalary->start_date)) }} - {{ date('d F Y', strtotime($employeeSalary->end_date)) }}</td>
 	    </tr>
 	    <tr>
 	    	<th colspan="7">
@@ -67,22 +67,22 @@
 	    </tr>
 	    @foreach($employeeSalary->assessments as $key => $indicator)
 	        <tr>
-	            <td>{{ ++$key }}</td>
+	            <td>{{ ($key + 1) }}</td>
 	            <td>{{ $indicator->name }}</td>
-	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$indicator->name]['week1'], 0) }}%</td>
-	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$indicator->name]['week2'], 0) }}%</td>
-	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$indicator->name]['week3'], 0) }}%</td>
-	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$indicator->name]['week4'], 0) }}%</td>
-	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$indicator->name]['week5'], 0) }}%</td>
+	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$key]['week1'], 0) }}%</td>
+	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$key]['week2'], 0) }}%</td>
+	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$key]['week3'], 0) }}%</td>
+	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$key]['week4'], 0) }}%</td>
+	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$key]['week5'], 0) }}%</td>
 	        </tr>
 	    @endforeach
 	    <tr>
 	        <td colspan="2" style="text-align:center;"><b>MINIMUM COMPONENT SCORE</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_assessments']['week1'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_assessments']['week2'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_assessments']['week3'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_assessments']['week4'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_assessments']['week5'], 0) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_assessments']['week1'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_assessments']['week2'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_assessments']['week3'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_assessments']['week4'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_assessments']['week5'], 2) }}%</b></td>
 	    </tr>
 	    <tr>
 	    	<th colspan="7">
@@ -122,19 +122,19 @@
 	    @endforeach
 	    <tr>
 	        <td colspan="2" style="text-align:center;"><b>ADDITIONAL COMPONENT SCORE</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_achievements']['week1'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_achievements']['week2'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_achievements']['week3'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_achievements']['week4'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_achievements']['week5'], 0) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_achievements']['week1'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_achievements']['week2'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_achievements']['week3'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_achievements']['week4'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($additionalSalaryData['total_achievements']['week5'], 2) }}%</b></td>
 	    </tr>
 	    <tr>
 	        <td colspan="2" style="text-align:center;"><b>FINAL SCORE</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['salary_final_score_week_1'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['salary_final_score_week_2'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['salary_final_score_week_3'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['salary_final_score_week_4'], 0) }}%</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['salary_final_score_week_5'], 0) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['salary_final_score_week_1'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['salary_final_score_week_2'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['salary_final_score_week_3'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['salary_final_score_week_4'], 2) }}%</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['salary_final_score_week_5'], 2) }}%</b></td>
 	    </tr>
 	    <tr>
 	    	<th colspan="7">

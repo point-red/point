@@ -90,9 +90,10 @@ class PurchaseInvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param int  $id
+     * @param UpdatePurchaseInvoiceRequest $request
+     * @param int $id
      * @return ApiResource
+     * @throws \Throwable
      */
     public function update(UpdatePurchaseInvoiceRequest $request, $id)
     {
@@ -104,13 +105,14 @@ class PurchaseInvoiceController extends Controller
             $request['number'] = $purchaseInvoice->form->edited_number;
 
             $purchaseInvoice = PurchaseInvoice::create($request->all());
-            $purchaseInvoice
-            ->load('form')
-            ->load('supplier')
-            ->load('items.item')
-            ->load('items.allocation')
-            ->load('services.service')
-            ->load('services.allocation');
+            $purchaseInvoice->load([
+                'form',
+                'supplier',
+                'items.item',
+                'items.allocation',
+                'services.service',
+                'services.allocation'
+            ]);
 
             return new ApiResource($purchaseInvoice);
         });

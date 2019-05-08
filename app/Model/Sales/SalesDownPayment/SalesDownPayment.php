@@ -126,7 +126,7 @@ class SalesDownPayment extends TransactionModel
                     'allocation_id' => null,
                     'amount' => $downPayment->amount,
                     'notes' => $downPayment->form->notes,
-                    'referenceable_type' => 'sales_down_payment',
+                    'referenceable_type' => SalesDownPayment::$morphName,
                     'referenceable_id' => $downPayment->id,
                 ]
             ],

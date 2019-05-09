@@ -29,7 +29,7 @@ class StoreGroupRequest extends FormRequest
             'name' => [
                 'required',
                 function ($attribute, $value, $fail) {
-                    $classReference = GroupClassReference::getTypeClass($this->class_reference);
+                    $classReference = GroupClassReference::isAvailable($this->class_reference);
                     if (Group::where('name', $value)->where('class_reference', $classReference)->count() > 0) {
                         $fail($attribute.' is already exists.');
                     }

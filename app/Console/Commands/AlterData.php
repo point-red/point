@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Item;
 use App\Model\Project\Project;
-use ChartOfAccountSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
@@ -54,7 +53,7 @@ class AlterData extends Command
             $chartOfAccounts = ChartOfAccount::all();
 
             if ($chartOfAccounts->count() == 0) {
-                $this->call(ChartOfAccountSeeder::class);
+                $this->call('tenant:seeds', ['class' => 'ChartOfAccountSeeder']);
             }
 
             $items = Item::all();

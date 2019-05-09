@@ -53,7 +53,10 @@ class AlterData extends Command
             $chartOfAccounts = ChartOfAccount::all();
 
             if ($chartOfAccounts->count() == 0) {
-                $this->call('tenant:seeds', ['class' => 'ChartOfAccountSeeder']);
+                $this->call('tenant:seed', [
+                    'db_name' => env('DB_DATABASE').'_'.strtolower($project->code),
+                    'class' => 'ChartOfAccountSeeder'
+                ]);
             }
 
             $items = Item::all();

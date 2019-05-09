@@ -22,7 +22,7 @@ class Bank extends MasterModel
             // Delete bank
             $ids = array_column($banks, 'id');
             self::where('bankable_id', $obj->id)
-                ->where('bankable_type', get_class($obj))
+                ->where('bankable_type', get_class($obj)::$morphName)
                 ->whereNotIn('id', $ids)->delete();
 
             for ($i = 0; $i < count($banks); $i++) {
@@ -39,7 +39,7 @@ class Bank extends MasterModel
                 $bank->account_number = $banks[$i]['account_number'];
                 $bank->account_name = $banks[$i]['account_name'];
                 $bank->notes = $banks[$i]['notes'] ?? null;
-                $bank->bankable_type = get_class($obj);
+                $bank->bankable_type = get_class($obj)::$morphName;
                 $bank->bankable_id = $obj->id;
                 $bank->save();
             }

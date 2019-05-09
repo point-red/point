@@ -29,12 +29,13 @@ class PaymentDetail extends TransactionModel
         'amount' => 'double',
     ];
 
-    protected $referenceableType = [
-        'sales_invoice' => SalesInvoice::class,
-        'purchase_invoice' => PurchaseInvoice::class,
-        'sales_down_payment' => SalesDownPayment::class,
-        'purchase_down_payment' => PurchaseDownPayment::class,
-    ];
+    // TODO validation referenceableType 
+    // protected $referenceableType = [
+    //     'SalesInvoice',
+    //     'PurchaseInvoice',
+    //     'SalesDownPayment',
+    //     'PurchaseDownPayment',
+    // ];
 
     /**
      * Get all of the owning referenceable models.
@@ -52,10 +53,5 @@ class PaymentDetail extends TransactionModel
     public function chartOfAccount()
     {
         return $this->belongsTo(ChartOfAccount::class);
-    }
-
-    public function setReferenceableTypeAttribute($value)
-    {
-        $this->attributes['referenceable_type'] = $this->referenceableType[$value];
     }
 }

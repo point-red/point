@@ -85,8 +85,8 @@ class AlterTable extends Command
             DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP FOREIGN KEY `inventories_form_number_foreign`');
             DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN `form_number`');
             DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD `form_id` integer(10) unsigned not null after `id`');
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD CONSTRAINT `journals_form_id_foreign` FOREIGN KEY (`form_id`) references forms (`id`)');
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD INDEX `journals_form_id_index` (`form_id`)');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD CONSTRAINT `inventories_form_id_foreign` FOREIGN KEY (`form_id`) references forms (`id`)');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD INDEX `inventories_form_id_index` (`form_id`)');
             DB::connection('tenant')->statement('ALTER TABLE `price_list_items` MODIFY `date` datetime not null');
             DB::connection('tenant')->statement('ALTER TABLE `price_list_services` MODIFY `date` datetime not null');
         }

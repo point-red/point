@@ -31,7 +31,7 @@ class CreatePurchaseOrdersTable extends Migration
             $table->decimal('need_down_payment', 65, 30)->default(0);
             $table->decimal('delivery_fee', 65, 30)->default(0);
             $table->unsignedDecimal('discount_percent', 33, 30)->nullable();
-            $table->unsignedDecimal('discount_percent', 65, 30)->default(0);
+            $table->unsignedDecimal('discount_value', 65, 30)->default(0);
             $table->string('type_of_tax'); // include / exclude / non
             $table->decimal('tax', 65, 30);
             $table->decimal('amount', 65, 30);

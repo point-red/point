@@ -21,7 +21,7 @@ class CreateSalesContractGroupItemsTable extends Migration
             $table->unsignedDecimal('price', 65, 30);
             $table->decimal('quantity', 65, 30);
             $table->unsignedDecimal('discount_percent', 33, 30)->nullable();
-            $table->unsignedDecimal('discount_percent', 65, 30)->default(0);
+            $table->unsignedDecimal('discount_value', 65, 30)->default(0);
             $table->text('notes')->nullable();
             $table->unsignedInteger('allocation_id')->nullable();
 

@@ -2,12 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Model\Master\Item;
-use App\Model\Master\ItemUnit;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 
 class CloneDatabase extends Command
 {
@@ -16,14 +13,14 @@ class CloneDatabase extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'backup:clone';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Clone database into backup prefix';
 
     /**
      * Create a new command instance.

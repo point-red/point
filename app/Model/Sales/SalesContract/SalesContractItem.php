@@ -4,6 +4,7 @@ namespace App\Model\Sales\SalesContract;
 
 use App\Model\Master\Item;
 use App\Model\TransactionModel;
+use App\Model\Sales\SalesOrder\SalesOrderItem;
 
 class SalesContractItem extends TransactionModel
 {
@@ -40,5 +41,13 @@ class SalesContractItem extends TransactionModel
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    public function salesOrderItems()
+    {
+        return $this->hasMany(SalesOrderItem::class)
+            ->whereHas('salesOrder', function ($query) {
+                $query->active();
+            });
     }
 }

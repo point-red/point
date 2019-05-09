@@ -10,7 +10,6 @@ use App\Model\TransactionModel;
 use App\Exceptions\IsReferencedException;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
 class PurchaseOrder extends TransactionModel
@@ -122,31 +121,18 @@ class PurchaseOrder extends TransactionModel
 
     public function updateIfDone()
     {
-        $purchaseOrderItems = $this->items;
-        $purchaseOrderItemIds = $purchaseOrderItems->pluck('id');
-
-        $tempArray = PurchaseReceive::activePending()
-            ->join(PurchaseReceiveItem::getTableName(), PurchaseReceive::getTableName('id'), '=', PurchaseReceiveItem::getTableName('purchase_receive_id'))
-            ->select(PurchaseReceiveItem::getTableName('purchase_order_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_received'))
-            ->whereIn('purchase_order_item_id', $purchaseOrderItemIds)
-            ->groupBy('purchase_order_item_id')
-            ->get();
-
-        $quantityReceivedItems = $tempArray->pluck('sum_received', 'purchase_order_item_id');
-
-        // Make form done when all item received
+        // TODO check service too
         $done = true;
-        foreach ($purchaseOrderItems as $purchaseOrderItem) {
-            $quantityReceived = $quantityReceivedItems[$purchaseOrderItem->id] ?? 0;
-            if ($purchaseOrderItem->quantity - $quantityReceived > 0) {
+        $items = $this->items()->with('purchaseReceiveItems')->get();
+        foreach ($items as $item) {
+            $quantityReceived = $item->purchaseReceiveItems->sum('quantity');
+            if ($item->quantity > $quantityReceived) {
                 $done = false;
                 break;
             }
         }
 
-        $this->form->done = $done;
-        $this->form->save();
+        $this->form()->update(['done' => $done]);
     }
 
     public function isAllowedToUpdate()

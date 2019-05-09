@@ -45,4 +45,9 @@ class PurchaseReceiveItem extends TransactionModel
     {
         return $this->belongsTo(Allocation::class);
     }
+    
+    public function purchaseReceive()
+    {
+        return $this->belongsTo(PurchaseReceive::class);
+    }
 }

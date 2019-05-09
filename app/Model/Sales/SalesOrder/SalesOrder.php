@@ -105,6 +105,21 @@ class SalesOrder extends TransactionModel
         return $this->morphMany(SalesDownPayment::class, 'downpaymentable')->active();
     }
 
+    public function paidDownPayments()
+    {
+        return $this->morphMany(SalesDownPayment::class, 'downpaymentable')
+            ->active()
+            ->whereNotNull('paid_by');
+    }
+
+    public function remainingDownPayments()
+    {
+        return $this->morphMany(SalesDownPayment::class, 'downpaymentable')
+            ->active()
+            ->where('remaining', '>', 0)
+            ->whereNotNull('paid_by');
+    }
+
     public function salesContract()
     {
         return $this->belongsTo(SalesContract::class);
@@ -112,6 +127,7 @@ class SalesOrder extends TransactionModel
 
     public function updateIfDone()
     {
+        // TODO check service too
         $done = true;
         $items = $this->items()->with('deliveryOrderItems')->get();
         foreach ($items as $item) {
@@ -122,10 +138,7 @@ class SalesOrder extends TransactionModel
             }
         }
 
-        if ($done === true) {
-            $this->form->done = true;
-            $this->form->save();
-        }
+        $this->form()->update(['done' => $done]);
     }
 
     public function isAllowedToUpdate()

@@ -76,10 +76,7 @@ class DeliveryOrder extends TransactionModel
                 break;
             }
         }
-        if ($done === true) {
-            $this->form->done = true;
-            $this->form->save();
-        }
+        $this->form()->update(['done' => $done]);
     }
 
     public function isAllowedToUpdate()

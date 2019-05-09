@@ -68,6 +68,36 @@ class PurchaseContract extends TransactionModel
         }
     }
 
+    public function updateIfDone()
+    {
+        // Make form done when all items / group items quantity ordered
+        $done = true;
+
+        if ($this->items->isNotEmpty()) {
+            $items = $this->items()->with('purchaseOrderItems')->get();
+
+            foreach ($items as $item) {
+                $quantityOrdered = $item->purchaseOrderItems->sum('quantity');
+                if ($item->quantity - $quantityOrdered > 0) {
+                    $done = false;
+                    break;
+                }
+            }
+        } elseif ($this->groupItems->isNotEmpty()) {
+            $groupItems = $this->groupItems()->with('purchaseOrderItems')->get();
+
+            foreach ($groupItems as $groupItem) {
+                $quantityOrdered = $groupItem->purchaseOrderItems->sum('quantity');
+                if ($groupItem->quantity - $quantityOrdered > 0) {
+                    $done = false;
+                    break;
+                }
+            }
+        }
+
+        $this->form()->update(['done' => $done]);
+    }
+
     public static function create($data)
     {
         $purchaseContract = new self;

@@ -23,7 +23,6 @@ class CreateSalesInvoiceServicesTable extends Migration
             $table->decimal('quantity', 65, 30);
             $table->unsignedDecimal('price', 65, 30);
             $table->unsignedDecimal('discount_percent', 33, 30)->nullable();
-            $table->unsignedDecimal('discount_percent', 65, 30)->default(0);
             $table->boolean('taxable')->default(true);
             $table->text('notes')->nullable();
             $table->unsignedInteger('allocation_id')->nullable();

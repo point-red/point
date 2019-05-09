@@ -22,7 +22,6 @@ class CreatePurchaseOrderItemsTable extends Migration
             $table->decimal('quantity', 65, 30);
             $table->unsignedDecimal('price', 65, 30);
             $table->unsignedDecimal('discount_percent', 33, 30)->nullable();
-            $table->unsignedDecimal('discount_percent', 65, 30)->default(0);
             $table->boolean('taxable')->default(true);
             $table->string('unit');
             $table->decimal('converter', 65, 30);

@@ -20,7 +20,6 @@ class CreatePriceListServicesTable extends Migration
             $table->datetime('date');
             $table->unsignedDecimal('price', 65, 30);
             $table->unsignedDecimal('discount_percent', 33, 30)->nullable();
-            $table->unsignedDecimal('discount_percent', 65, 30)->default(0);
             $table->unsignedInteger('created_by')->nullable();
             $table->unsignedInteger('updated_by')->nullable();
             $table->timestamps();

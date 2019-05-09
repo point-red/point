@@ -3,6 +3,7 @@
 namespace App\Model\Purchase\PurchaseContract;
 
 use App\Model\TransactionModel;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
 
 class PurchaseContractItem extends TransactionModel
 {
@@ -30,5 +31,13 @@ class PurchaseContractItem extends TransactionModel
     public function purchaseContract()
     {
         return $this->belongsTo(PurchaseContract::class);
+    }
+
+    public function purchaseOrderItems()
+    {
+        return $this->hasMany(PurchaseOrderItem::class)
+            ->whereHas('purchaseOrder', function ($query) {
+                $query->active();
+            });
     }
 }

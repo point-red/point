@@ -3,6 +3,7 @@
 namespace App\Model\Sales\SalesQuotation;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Model\Sales\SalesOrder\SalesOrderItem;
 
 class SalesQuotationItem extends Model
 {
@@ -24,4 +25,12 @@ class SalesQuotationItem extends Model
         'price' => 'double',
         'converter' => 'double',
     ];
+
+    public function salesOrderItems()
+    {
+        return $this->hasMany(SalesOrderItem::class)
+            ->whereHas('salesOrder', function($query) {
+                $query->active();
+            });
+    }
 }

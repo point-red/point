@@ -94,9 +94,8 @@ class PurchaseInvoice extends TransactionModel
 
     public function updateIfDone()
     {
-        if ($this->remaining <= 0) {
-            $this->form()->update(['done' => true]);
-        }
+        $done = $this->remaining <= 0;
+        $this->form()->update(['done' => $done]);
     }
 
     public function isAllowedToUpdate()

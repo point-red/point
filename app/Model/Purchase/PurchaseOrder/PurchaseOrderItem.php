@@ -5,6 +5,7 @@ namespace App\Model\Purchase\PurchaseOrder;
 use App\Model\Master\Item;
 use App\Model\TransactionModel;
 use App\Model\Master\Allocation;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
 
 class PurchaseOrderItem extends TransactionModel
 {
@@ -43,5 +44,18 @@ class PurchaseOrderItem extends TransactionModel
     public function allocation()
     {
         return $this->belongsTo(Allocation::class);
+    }
+
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(PurchaseOrder::class);
+    }
+
+    public function purchaseReceiveItems()
+    {
+        return $this->hasMany(PurchaseReceiveItem::class)
+            ->whereHas('purchaseReceive', function($query) {
+                $query->active();
+            });
     }
 }

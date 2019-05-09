@@ -6,6 +6,7 @@ use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\TransactionModel;
 use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Exceptions\IsReferencedException;
 
 class SalesQuotation extends TransactionModel
 {
@@ -55,95 +56,90 @@ class SalesQuotation extends TransactionModel
 
     public function updateIfDone()
     {
-        $salesQuotationItems = $this->items;
-        $salesQuotationItemIds = $salesQuotationItems->pluck('id');
-
-        $quantityOrderedItems = SalesOrder::active()
-            ->join(SalesOrderItem::getTableName(), SalesOrder::getTableName('id'), '=', SalesOrderItem::getTableName('sales_order_id'))
-            ->groupBy('sales_quantity_item_id')
-            ->select(SalesOrderItem::getTableName('sales_quantity_item_id'))
-            ->addSelect(\DB::raw('SUM(quantity) AS sum_ordered'))
-            ->whereIn('sales_quantity_item_id', $salesQuotationItemIds)
-            ->get()
-            ->pluck('sum_ordered', 'sales_quantity_item_id');
-
-        // Make form done when all item ordered
+        // TODO check service too
         $done = true;
-        foreach ($salesQuotationItems as $salesQuotationItem) {
-            $quantityOrdered = $quantityOrderedItems[$salesQuotationItem->id] ?? 0;
-            if ($salesQuotationItem->quantity - $quantityOrdered > 0) {
+        $items = $this->items()->with('salesOrderItems')->get();
+        foreach ($items as $item) {
+            $quantitySent = $item->salesOrderItems->sum('quantity');
+            if ($item->quantity > $quantitySent) {
                 $done = false;
                 break;
             }
         }
 
-        if ($done == true) {
-            $this->form->done = true;
-            $this->form->save();
+        $this->form()->update(['done' => $done]);
+    }
+
+    public function isAllowedToUpdate()
+    {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    public function isAllowedToDelete()
+    {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    private function isNotReferenced()
+    {
+        // Check if not referenced by purchase order
+        if ($this->salesOrders->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by sales order(s)', $this->salesOrders);
         }
     }
 
     public static function create($data)
     {
         $salesQuotation = new self;
-
-        // TODO validation customer_name is optional type non empty string
-        if (empty($data['customer_name'])) {
-            $customer = Customer::find($data['customer_id'], ['name']);
-            $data['customer_name'] = $customer->name;
-        }
-
         $salesQuotation->fill($data);
 
-        $amount = 0;
-        $salesQuotationItems = [];
-        $salesQuotationServices = [];
+        $items = self::mapItems($data['items'] ?? []);
+        $services = self::mapServices($data['services'] ?? []);
 
-        // TODO validation items is optional and must be array
-        $items = $data['items'] ?? [];
-        if (! empty($items) && is_array($items)) {
-            $itemIds = array_column($items, 'item_id');
-            $dbItems = Item::whereIn('id', $itemIds)->select('id', 'name')->get()->keyBy('id');
-
-            foreach ($items as $item) {
-                $item['item_name'] = $dbItems[$item['item_id']]->name;
-                $salesQuotationItem = new SalesQuotationItem;
-                $salesQuotationItem->fill($item);
-                array_push($salesQuotationItems, $salesQuotationItem);
-
-                $amount += $item['quantity'] * $item['price'];
-            }
-        } else {
-            // TODO throw error if $items is not an array
-        }
-
-        // TODO validation services is required if items is null and must be array
-        $services = $data['services'] ?? [];
-        if (! empty($items) && is_array($items)) {
-            $serviceIds = array_column($services, 'service_id');
-            $dbServices = Service::whereIn('id', $serviceIds)->select('id', 'name')->get()->keyBy('id');
-
-            foreach ($services as $service) {
-                $service['service_name'] = $dbServices[$service['service_id']]->name;
-                $salesQuotationService = new SalesQuotationService;
-                $salesQuotationService->fill($service);
-                array_push($salesQuotationServices, $salesQuotationService);
-
-                $amount += $service['quantity'] * $service['price'];
-            }
-        } else {
-            // TODO throw error if $services is not an array
-        }
-
-        $salesQuotation->amount = $amount;
+        $salesQuotation->amount = self::calculateAmount($salesQuotation, $items, $services);
         $salesQuotation->save();
 
-        $salesQuotation->items()->saveMany($salesQuotationItems);
-        $salesQuotation->services()->saveMany($salesQuotationServices);
+        $salesQuotation->items()->saveMany($items);
+        $salesQuotation->services()->saveMany($services);
 
         $form = new Form;
         $form->saveData($data, $salesQuotation);
 
         return $salesQuotation;
+    }
+
+    private static function mapItems($items)
+    {
+        return array_map(function ($item) {
+            $salesQuotationItem = new SalesQuotationItem;
+            $salesQuotationItem->fill($item);
+
+            return $salesQuotationItem;
+        }, $items);
+    }
+
+    private static function mapServices($services)
+    {
+        return array_map(function ($service) {
+            $salesQuotationService = new SalesQuotationService;
+            $salesQuotationService->fill($service);
+
+            return $salesQuotationService;
+        }, $services);
+    }
+
+    private static function calculateAmount($items, $services)
+    {
+        $amount = array_reduce($items, function ($carry, $item) {
+            return $carry + ($item->price - $item->discount_value) * $item->quantity * $item->converter;
+        }, 0);
+
+        $amount += array_reduce($services, function ($carry, $service) {
+            return $carry + ($service->price - $service->discount_value) * $service->quantity;
+        }, 0);
+
+        return $amount;
     }
 }

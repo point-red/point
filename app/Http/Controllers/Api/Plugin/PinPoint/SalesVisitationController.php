@@ -36,8 +36,7 @@ class SalesVisitationController extends Controller
             ->with('notInterestReasons')
             ->with('similarProducts')
             ->with('details.item')
-            ->eloquentFilter($request)
-            ->select('pin_point_sales_visitations.*');
+            ->eloquentFilter($request);
 
         if ($request->get('customer_id')) {
             $salesVisitationForm = $salesVisitationForm->where('customer_id', $request->get('customer_id'));

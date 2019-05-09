@@ -2,24 +2,24 @@
 
 namespace App\Exports\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiTemplate;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use App\Model\HumanResource\Kpi\KpiTemplate;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\FromCollection;
 
 class TemplateIndicatorExport implements FromCollection, WithTitle, WithHeadings
 {
-
     private $id;
 
     public function __construct(int $id)
     {
-        $this->id  = $id;
+        $this->id = $id;
     }
 
     public function collection()
     {
         $kpiTemplate = KpiTemplate::where('id', $this->id)->with('Indicators')->first();
+
         return $kpiTemplate->indicators;
     }
 
@@ -35,7 +35,7 @@ class TemplateIndicatorExport implements FromCollection, WithTitle, WithHeadings
             'updated_by',
             'created_at',
             'updated_at',
-            'kpi_template_id'
+            'kpi_template_id',
         ];
     }
 
@@ -43,5 +43,4 @@ class TemplateIndicatorExport implements FromCollection, WithTitle, WithHeadings
     {
         return 'Kpi Template Indicator';
     }
-
 }

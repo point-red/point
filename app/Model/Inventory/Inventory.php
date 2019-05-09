@@ -3,13 +3,24 @@
 namespace App\Model\Inventory;
 
 use App\Model\Form;
+use App\Model\PointModel;
 use App\Model\Master\Item;
+use App\Traits\FormScopes;
 use App\Model\Master\Warehouse;
-use Illuminate\Database\Eloquent\Model;
 
-class Inventory extends Model
+class Inventory extends PointModel
 {
+    use FormScopes;
+
     protected $connection = 'tenant';
+
+    protected $casts = [
+        'price' => 'double',
+        'quantity' => 'double',
+        'cogs' => 'double',
+        'total_quantity' => 'double',
+        'total_value' => 'double',
+    ];
 
     /**
      * The form that belong to the inventory.

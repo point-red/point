@@ -18,7 +18,7 @@ class PerformanceCollection extends ResourceCollection
         return [
             'data' => [
                 'reports' => $this->collection,
-                'items' => Item::select('id', 'name')->get()
+                'items' => Item::select('id', 'name')->get(),
             ],
         ];
     }

@@ -3,8 +3,8 @@
 namespace Tests\Feature\HumanResource\Kpi;
 
 use Tests\TestCase;
+use Tests\RefreshDatabase;
 use App\Model\HumanResource\Kpi\KpiResult;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiResultValidationTest extends TestCase
 {
@@ -31,9 +31,7 @@ class KpiResultValidationTest extends TestCase
         $response = $this->json('POST', 'api/v1/human-resource/kpi/results', $data, [$this->headers]);
 
         $response->assertJsonStructure([
-            'error' => [
-                'errors' => ['score_min', 'score_max', 'criteria', 'notes'],
-            ],
+            'errors' => ['score_min', 'score_max', 'criteria', 'notes'],
         ]);
 
         $response->assertStatus(422);
@@ -49,9 +47,7 @@ class KpiResultValidationTest extends TestCase
         $response = $this->json('PUT', 'api/v1/human-resource/kpi/results/'.$kpiResult->id, $data, [$this->headers]);
 
         $response->assertJsonMissing([
-            'error' => [
-                'errors' => ['score_min', 'score_max', 'criteria'],
-            ],
+            'errors' => ['score_min', 'score_max', 'criteria'],
         ]);
 
         $response->assertStatus(200);
@@ -66,9 +62,7 @@ class KpiResultValidationTest extends TestCase
         $response = $this->json('PUT', 'api/v1/human-resource/kpi/results/'.$kpiResult->id, $data, [$this->headers]);
 
         $response->assertJsonStructure([
-            'error' => [
-                'errors' => ['notes'],
-            ],
+            'errors' => ['notes'],
         ]);
 
         $response->assertStatus(422);

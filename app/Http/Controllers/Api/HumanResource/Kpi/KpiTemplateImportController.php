@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
+use Carbon\Carbon;
+use App\Model\CloudStorage;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\Kpi\KpiTemplateImport;
+use Illuminate\Support\Facades\Storage;
 use App\Imports\Kpi\TemplateCheckImport;
 use App\Model\HumanResource\Kpi\KpiTemplate;
-use App\Model\CloudStorage;
-use App\Model\Project\Project;
-use Carbon\Carbon;
 
 class KpiTemplateImportController extends Controller
 {
     public function check(Request $request)
     {
         $request->validate([
-          'file' => 'required|mimes:xlsx,xls,csv|max:1024'
+          'file' => 'required|mimes:xlsx,xls,csv|max:1024',
         ]);
 
         $file = $this->saveStorage($request->header('Tenant'), request()->file('file'));
@@ -29,32 +30,33 @@ class KpiTemplateImportController extends Controller
 
         if ($exist == null) {
             $response = $this->import($file);
+
             return $response;
         } else {
             return response()->json([
               'message' => 'exist',
               'replace' => $exist->id,
-              'name'    => $exist->name
+              'name'    => $exist->name,
             ], 200);
         }
     }
 
     public function import($file = null)
     {
-      $data = request()->file('file');
+        $data = request()->file('file');
         if (isset($data)) {
             $file = $data;
 
             if (isset(request()->replace)) {
-              $kpiTemplate = KpiTemplate::where('id', request()->replace)->first();
-              $kpiTemplate->delete();
+                $kpiTemplate = KpiTemplate::where('id', request()->replace)->first();
+                $kpiTemplate->delete();
             }
         }
         $import = new KpiTemplateImport();
 
         if (Excel::import($import, $file)) {
             return response()->json([
-              'message' => 'success'
+              'message' => 'success',
             ], 200);
         }
     }
@@ -62,11 +64,11 @@ class KpiTemplateImportController extends Controller
     public function saveStorage($tenantCode, $file)
     {
         $tenant = strtolower($tenantCode);
-        $key = str_random(16);
+        $key = Str::random(16);
         $fileName = strtoupper($tenant)
-          . ' - KPI Template Import - ';
+          .' - KPI Template Import - ';
         $fileExt = 'xlsx';
-        $path = 'tmp/' . $tenant . '/import';
+        $path = 'tmp/'.$tenant.'/import';
 
         $save = Storage::disk(env('STORAGE_DISK'))->put($path, $file);
 
@@ -80,7 +82,7 @@ class KpiTemplateImportController extends Controller
         $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
         $cloudStorage->owner_id = 1;
         $cloudStorage->expired_at = Carbon::now()->addDay(1);
-        $cloudStorage->download_url = env('API_URL') . '/download?key=' . $key;
+        $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
         $cloudStorage->save();
 
         return $save;

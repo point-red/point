@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Master\Item;
 
+use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateItemRequest extends FormRequest
@@ -24,7 +25,14 @@ class UpdateItemRequest extends FormRequest
     public function rules()
     {
         return [
-            // TODO: specify rule
+            'name' => 'string',
+            'chart_of_account_id' => ValidationRule::foreignKeyOptional('chart_of_accounts'),
+            'code' => 'bail|nullable|string|unique:tenant.items,code',
+            'barcode' => 'bail|nullable|string|unique:tenant.items,barcode',
+            'stock_reminder' => 'numeric|min:0',
+            'taxable' => 'boolean',
+            'units' => 'array',
+            'groups' => 'nullable|array',
         ];
     }
 }

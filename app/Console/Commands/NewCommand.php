@@ -15,7 +15,7 @@ class NewCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'dev:new';
+    protected $signature = 'dev:new {database_name?}';
 
     /**
      * The console command description.
@@ -41,13 +41,15 @@ class NewCommand extends Command
      */
     public function handle()
     {
-        $this->line('create point database');
-        Artisan::call('tenant:database:delete', ['db_name' => 'point']);
-        Artisan::call('tenant:database:create', ['db_name' => 'point']);
+        $dbName = $this->argument('database_name') ?? env('DB_DATABASE');
+
+        $this->line('create '.$dbName.' database');
+        Artisan::call('tenant:database:delete', ['db_name' => $dbName]);
+        Artisan::call('tenant:database:create', ['db_name' => $dbName]);
         Artisan::call('migrate');
         Artisan::call('passport:install');
 
-        $this->line('setup new user');
+        $this->line('setup new user "admin" and password "admin"');
         $user = new User;
         $user->name = 'admin';
         $user->first_name = 'admin';
@@ -56,7 +58,7 @@ class NewCommand extends Command
         $user->password = bcrypt('admin');
         $user->save();
 
-        $this->line('setup new project');
+        $this->line('setup new project "dev"');
         $project = new Project;
         $project->owner_id = $user->id;
         $project->code = 'dev';

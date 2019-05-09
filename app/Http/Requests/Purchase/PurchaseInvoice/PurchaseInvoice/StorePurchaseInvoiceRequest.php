@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice;
 
+use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePurchaseInvoiceRequest extends FormRequest
@@ -13,7 +14,7 @@ class StorePurchaseInvoiceRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,8 +24,45 @@ class StorePurchaseInvoiceRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
+        $rulesForm = ValidationRule::form();
+
+        $rulesPurchaseInvoice = [
+            'due_date' => 'required|date',
+            'discount_value' => ValidationRule::discountValue(),
+            'discount_percent' => ValidationRule::discountPercent(),
+            'delivery_fee' => ValidationRule::deliveryFee(),
+            'tax' => ValidationRule::tax(),
+            'type_of_tax' => ValidationRule::typeOfTax(),
+            'supplier_id' => ValidationRule::foreignKey('suppliers'),
+            'supplier_name' => 'required|string',
+
+            'items' => 'required_without:services|array',
+            'services' => 'required_without:items|array',
         ];
+
+        $rulesPurchaseInvoiceItems = [
+            'items.*.item_id' => ValidationRule::foreignKey('items'),
+            'items.*.item_name' => 'required|string',
+            'items.*.quantity' => ValidationRule::quantity(),
+            'items.*.price' => ValidationRule::price(),
+            'items.*.unit' => ValidationRule::unit(),
+            'items.*.converter' => ValidationRule::converter(),
+            'items.*.discount_value' => ValidationRule::discountValue(),
+            'items.*.discount_percent' => ValidationRule::discountPercent(),
+            'items.*.taxable' => 'boolean',
+            'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
+        ];
+
+        $rulesPurchaseInvoiceServices = [
+            'services.*.service_id' => ValidationRule::foreignKey('services'),
+            'services.*.service_name' => 'required|string',
+            'services.*.quantity' => ValidationRule::quantity(),
+            'services.*.price' => ValidationRule::price(),
+            'services.*.discount_value' => ValidationRule::discountValue(),
+            'services.*.discount_percent' => ValidationRule::discountPercent(),
+            'services.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
+        ];
+
+        return array_merge($rulesForm, $rulesPurchaseInvoice, $rulesPurchaseInvoiceItems, $rulesPurchaseInvoiceServices);
     }
 }

@@ -4,8 +4,8 @@ namespace App\Console\Commands\Tenant\Database;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class Rollbacks extends Command
 {
@@ -43,9 +43,9 @@ class Rollbacks extends Command
         $projects = Project::all();
 
         foreach ($projects as $project) {
-            $databaseName = 'point_'.strtolower($project->code);
+            $databaseName = env('DB_DATABASE').'_'.strtolower($project->code);
 
-            $this->line('Rollback ' . $project->code);
+            $this->line('Rollback '.$project->code);
 
             config()->set('database.connections.tenant.database', strtolower($databaseName));
             DB::connection('tenant')->reconnect();

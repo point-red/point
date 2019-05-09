@@ -21,7 +21,7 @@ class Phone extends MasterModel
         if ($phones) {
             // Delete phone
             $ids = array_column($phones, 'id');
-            Phone::where('phoneable_id', $obj->id)
+            self::where('phoneable_id', $obj->id)
                 ->where('phoneable_type', get_class($obj))
                 ->whereNotIn('id', $ids)->delete();
 
@@ -32,9 +32,9 @@ class Phone extends MasterModel
                 // If phone has id then update existing phone
                 // If not then create new phone
                 if (isset($phones[$i]['id'])) {
-                    $phone = Phone::findOrFail($phones[$i]['id']);
+                    $phone = self::findOrFail($phones[$i]['id']);
                 } else {
-                    $phone = new Phone;
+                    $phone = new self;
                 }
 
                 $phone->label = $phones[$i]['label'] ?? null;
@@ -46,6 +46,5 @@ class Phone extends MasterModel
                 $phone->save();
             }
         }
-
     }
 }

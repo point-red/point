@@ -2,35 +2,17 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Http\Requests\HumanResource\Employee\EmployeeGroup\StoreEmployeeGroupRequest;
-use App\Http\Requests\Master\Group\StoreGroupRequest;
-use App\Http\Requests\Master\Group\UpdateGroupRequest;
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
 use App\Model\Master\Group;
 use Illuminate\Http\Request;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Helpers\Master\GroupClassReference;
+use App\Http\Requests\Master\Group\StoreGroupRequest;
+use App\Http\Requests\Master\Group\UpdateGroupRequest;
 
 class GroupController extends Controller
 {
-    private $availableGroupTypes = ['supplier', 'customer', 'item'];
-
-    private $masterNamespace = 'App\Model\Master\\';
-
-    private $groupTypeIsNotAvailableResponse = [
-        'code' => 400,
-        'message' => 'Group type is not available'
-    ];
-
-    private function isGroupTypeAvailable($groupType)
-    {
-        if (!in_array($groupType, $this->availableGroupTypes)) {
-            return false;
-        }
-
-        return true;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -39,15 +21,14 @@ class GroupController extends Controller
      */
     public function index(Request $request)
     {
-        $groupType = $request->get('type');
+        $groupClassReference = $request->get('class_reference');
 
-        if (!$this->isGroupTypeAvailable($groupType)) {
-            return response()->json($this->groupTypeIsNotAvailableResponse);
+        if (! GroupClassReference::isAvailable($groupClassReference)) {
+            return response()->json(GroupClassReference::$isNotAvailableResponse);
         }
 
-        $groups = Group::where('type', $this->masterNamespace . capitalize($groupType))
-            ->eloquentFilter($request)
-            ->paginate($request->get('limit') ?? 20);
+        $groups = Group::where('class_reference', $groupClassReference)->eloquentFilter($request);
+        $groups = pagination($groups, $request->get('limit'));
 
         return new ApiCollection($groups);
     }
@@ -55,15 +36,15 @@ class GroupController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param StoreGroupRequest $request
      * @return ApiResource
      */
     public function store(StoreGroupRequest $request)
     {
-        $groupType = $request->get('type');
+        $groupClassReference = $request->get('class_reference');
 
-        if (!$this->isGroupTypeAvailable($groupType)) {
-            return response()->json($this->groupTypeIsNotAvailableResponse);
+        if (! GroupClassReference::isAvailable($groupClassReference)) {
+            return response()->json(GroupClassReference::$isNotAvailableResponse);
         }
 
         $group = Group::create($request->all());
@@ -104,11 +85,10 @@ class GroupController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
      * @param  int $id
-     * @return ApiResource
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Request $request, $id)
+    public function destroy($id)
     {
         $group = Group::findOrFail($id);
         $group->delete();

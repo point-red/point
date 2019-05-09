@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint\Report\Accumulation;
 
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Model\Plugin\PinPoint\SalesVisitation;
+use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
 
 class SimilarProductReportController extends Controller
 {
@@ -22,13 +22,13 @@ class SimilarProductReportController extends Controller
             if ($carbonDate->englishDayOfWeek == 'Sunday') {
                 array_push($queries, $this->getInterestReason($carbonDate, $j, $i));
                 array_push($totalPerWeek, $this->getTotalPerWeek($carbonDate, $j, $i));
-                $j = $i+1;
+                $j = $i + 1;
             }
 
             if ($i == $months && $carbonDate->englishDayOfWeek != 'Sunday') {
                 array_push($queries, $this->getInterestReason($carbonDate, $j, $i));
                 array_push($totalPerWeek, $this->getTotalPerWeek($carbonDate, $j, $i));
-                $j = $i+1;
+                $j = $i + 1;
             }
 
             $carbonDate->addDay(1);
@@ -38,7 +38,7 @@ class SimilarProductReportController extends Controller
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->select(SalesVisitationSimilarProduct::getTableName().'.name as name');
 
-        foreach($queries as $key => $query) {
+        foreach ($queries as $key => $query) {
             $weekNum = $key + 1;
             $result = $result->leftJoinSub($query, 'week'.$weekNum, function ($join) use ($weekNum) {
                 $join->on(SalesVisitationSimilarProduct::getTableName().'.name', '=', 'week'.$weekNum.'.name');
@@ -54,8 +54,8 @@ class SimilarProductReportController extends Controller
         return response()->json([
             'data' => [
                 'products' => $result,
-                'totalPerWeek' => $totalPerWeek
-            ]
+                'totalPerWeek' => $totalPerWeek,
+            ],
         ], 200);
     }
 

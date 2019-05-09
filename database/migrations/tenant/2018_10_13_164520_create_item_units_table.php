@@ -15,7 +15,7 @@ class CreateItemUnitsTable extends Migration
     {
         Schema::create('item_units', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('label');
+            $table->string('label', 5);
             $table->string('name');
             $table->decimal('converter', 65, 30)->default(1);
             $table->boolean('disabled')->default(false);

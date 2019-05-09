@@ -2,19 +2,18 @@
 
 namespace App\Exports\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiTemplate;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use App\Model\HumanResource\Kpi\KpiTemplate;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\FromCollection;
 
 class TemplateExport implements FromCollection, WithTitle, WithHeadings
 {
-
     private $id;
 
     public function __construct(int $id)
     {
-        $this->id  = $id;
+        $this->id = $id;
     }
 
     public function collection()
@@ -38,5 +37,4 @@ class TemplateExport implements FromCollection, WithTitle, WithHeadings
     {
         return 'Kpi Template';
     }
-
 }

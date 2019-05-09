@@ -2,27 +2,28 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
-use App\Exports\ScaleWeightMergeExport;
-use App\Model\CloudStorage;
-use App\Model\Project\Project;
 use Carbon\Carbon;
+use App\Model\CloudStorage;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ScaleWeightMergeExport;
 
 class ScaleWeightMergeExportController extends Controller
 {
     public function export(Request $request)
     {
         $tenant = strtolower($request->header('Tenant'));
-        $key = str_random(16);
+        $key = Str::random(16);
         $fileName = strtoupper($tenant)
-            . ' - Scale Weight Merge Report - '
-            . date('dMY', strtotime($request->get('date_from')))
-            . '-'
-            . date('dMY', strtotime($request->get('date_to')));
+            .' - Scale Weight Merge Report - '
+            .date('dMY', strtotime($request->get('date_from')))
+            .'-'
+            .date('dMY', strtotime($request->get('date_to')));
         $fileExt = 'xlsx';
-        $path = 'tmp/' . $tenant . '/' . $key . '.' . $fileExt;
+        $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
         $cat = ($request->has('cat')) ? $request->get('cat') : [];
         $result = Excel::store(
             new ScaleWeightMergeExport(
@@ -34,9 +35,9 @@ class ScaleWeightMergeExportController extends Controller
             $path, env('STORAGE_DISK')
         );
 
-        if (!$result) {
+        if (! $result) {
             return response()->json([
-                'message' => 'Failed to export'
+                'message' => 'Failed to export',
             ], 422);
         }
 
@@ -50,13 +51,13 @@ class ScaleWeightMergeExportController extends Controller
         $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
         $cloudStorage->owner_id = auth()->user()->id;
         $cloudStorage->expired_at = Carbon::now()->addDay(1);
-        $cloudStorage->download_url = env('API_URL') . '/download?key=' . $key;
+        $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
         $cloudStorage->save();
 
         return response()->json([
             'data' => [
-                'url' => $cloudStorage->download_url
-            ]
+                'url' => $cloudStorage->download_url,
+            ],
         ], 200);
     }
 }

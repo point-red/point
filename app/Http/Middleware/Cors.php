@@ -25,7 +25,7 @@ class Cors
             'Access-Control-Max-Age' => 86400, // 24 hour
         ];
 
-        foreach($headers as $key => $value) {
+        foreach ($headers as $key => $value) {
             $response->headers->set($key, $value);
         }
 

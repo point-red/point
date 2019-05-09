@@ -98,7 +98,7 @@ class RequestJoinController extends Controller
 
         $user = User::findOrFail($projectUser->user_id);
 
-        $dbName = 'point_'.strtolower($projectUser->project->code);
+        $dbName = env('DB_DATABASE').'_'.strtolower($projectUser->project->code);
         config()->set('database.connections.tenant.database', $dbName);
         DB::connection('tenant')->reconnect();
 

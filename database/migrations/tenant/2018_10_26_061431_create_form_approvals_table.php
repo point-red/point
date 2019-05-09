@@ -19,8 +19,9 @@ class CreateFormApprovalsTable extends Migration
             $table->timestamp('requested_at')->useCurrent();
             $table->unsignedInteger('requested_by');
             $table->unsignedInteger('requested_to');
-            $table->date('expired_at');
-            $table->datetime('approval_at');
+            $table->datetime('expired_at');
+            $table->datetime('approval_at')->nullable();
+            $table->boolean('approved')->nullable();
             $table->string('token');
             $table->string('reason')->nullable();
 

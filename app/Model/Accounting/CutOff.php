@@ -6,6 +6,8 @@ use App\Model\TransactionModel;
 
 class CutOff extends TransactionModel
 {
+    public static $morphName = 'CutOff';
+
     protected $connection = 'tenant';
 
     protected $table = 'cut_offs';

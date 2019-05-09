@@ -12,7 +12,9 @@ class DummyTenantDatabaseSeeder extends Seeder
     public function run()
     {
         // Kpi
+        $this->call(ChartOfAccountSeeder::class);
         $this->call(DummyKpiTemplateSeeder::class);
         $this->call(DummyEmployeeSeeder::class);
+        $this->call(DummyMasterSeeder::class);
     }
 }

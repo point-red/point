@@ -2,15 +2,15 @@
 
 namespace App\Exports\PinPoint;
 
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\BeforeExport;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use App\Model\Plugin\PinPoint\SalesVisitation;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
 class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize
 {
@@ -27,12 +27,12 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
     }
 
     /**
-    * @return \Illuminate\Database\Eloquent\Builder
-    */
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function query()
     {
         return SalesVisitation::query()
-            ->join('forms', 'forms.id', '=', SalesVisitation::getTableName() . '.form_id')
+            ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->with('form')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo]);
     }
@@ -66,7 +66,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
         return [
             date('Y-m-d', strtotime($row->form->date)),
             date('H:i', strtotime($row->form->date)),
-            $row->form->createdBy->first_name . ' ' . $row->form->createdBy->last_name,
+            $row->form->createdBy->first_name.' '.$row->form->createdBy->last_name,
             $row->name,
             $row->group,
             $row->address,
@@ -92,10 +92,11 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
     public function registerEvents(): array
     {
         return [
-            BeforeExport::class  => function(BeforeExport $event) {
+            BeforeExport::class  => function (BeforeExport $event) {
                 $event->writer->setCreator('Point');
             },
-            AfterSheet::class => function(AfterSheet $event) {
+
+            AfterSheet::class => function (AfterSheet $event) {
                 $event->sheet->getDelegate()->getStyle('A1:K1')->getFont()->setBold(true);
                 $styleArray = [
                     'borders' => [

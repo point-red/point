@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class PurchaseReturn extends Model
 {
-    //
+    public static $morphName = 'PurchaseReturn';
 }

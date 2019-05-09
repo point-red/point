@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api\Master;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Model\Master\PricingGroup;
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 
 class PricingGroupController extends Controller
 {
@@ -68,7 +68,7 @@ class PricingGroupController extends Controller
         $pricingGroup = PricingGroup::findOrFail($id);
         $pricingGroup->fill($request->all());
 
-        DB::connection('tenant')->transaction(function ($pricingGroup) {
+        DB::connection('tenant')->transaction(function () use ($pricingGroup) {
             $pricingGroup->save();
         });
 

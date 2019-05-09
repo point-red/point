@@ -21,7 +21,7 @@ class ContactPerson extends MasterModel
         if ($contactPersons) {
             // Delete contact
             $ids = array_column($contactPersons, 'id');
-            ContactPerson::where('contactable_id', $obj->id)
+            self::where('contactable_id', $obj->id)
                 ->where('contactable_type', get_class($obj))
                 ->whereNotIn('id', $ids)->delete();
 
@@ -29,9 +29,9 @@ class ContactPerson extends MasterModel
                 // If contact has id then update existing contact
                 // If not then create new contact
                 if (isset($contactPersons[$i]['id'])) {
-                    $contactPerson = ContactPerson::findOrFail($contactPersons[$i]['id']);
+                    $contactPerson = self::findOrFail($contactPersons[$i]['id']);
                 } else {
-                    $contactPerson = new ContactPerson;
+                    $contactPerson = new self;
                 }
 
                 $contactPerson->code = $contactPersons[$i]['code'] ?? null;
@@ -45,6 +45,5 @@ class ContactPerson extends MasterModel
                 $contactPerson->save();
             }
         }
-
     }
 }

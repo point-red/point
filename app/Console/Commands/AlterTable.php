@@ -53,13 +53,8 @@ class AlterTable extends Command
             DB::connection('tenant')->statement('ALTER TABLE `item_units` MODIFY `label` varchar(5)');
             DB::connection('tenant')->statement('ALTER TABLE `items` MODIFY `stock_reminder` decimal(65,30) unsigned NOT NULL default 0');
             DB::connection('tenant')->statement('ALTER TABLE `items` ADD `stock` decimal(65,30) unsigned NOT NULL default 0 after `disabled`');
-            DB::connection('tenant')->statement('ALTER TABLE `items` ADD `taxable` tinyint(1) NOT NULL default 1 after `notes`');
-            DB::connection('tenant')->statement('ALTER TABLE `items` ADD `unit_default` integer(10) unsigned after `stock_reminder`');
-            DB::connection('tenant')->statement('ALTER TABLE `items` ADD `unit_default_purchase` integer(10) unsigned after `unit_default`');
-            DB::connection('tenant')->statement('ALTER TABLE `items` ADD `unit_default_sales` integer(10) unsigned after `unit_default_purchase`');
             DB::connection('tenant')->statement('ALTER TABLE `groups` ADD `class_reference` varchar(255) not null after `type`');
             DB::connection('tenant')->statement('ALTER TABLE `groups` MODIFY `type` varchar(255) null');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD `notes` text after `edited_notes`');
             DB::connection('tenant')->statement('ALTER TABLE `forms` ADD `increment` integer(10) unsigned not null after `done`');
             DB::connection('tenant')->statement('ALTER TABLE `forms` ADD `increment_group` mediumint(8) unsigned not null after `increment`');
             DB::connection('tenant')->statement('ALTER TABLE `form_approvals` MODIFY `expired_at` datetime not null');

@@ -22,7 +22,7 @@ class ContactPerson extends MasterModel
             // Delete contact
             $ids = array_column($contactPersons, 'id');
             self::where('contactable_id', $obj->id)
-                ->where('contactable_type', get_class($obj))
+                ->where('contactable_type', get_class($obj)::$morphName)
                 ->whereNotIn('id', $ids)->delete();
 
             for ($i = 0; $i < count($contactPersons); $i++) {
@@ -40,7 +40,7 @@ class ContactPerson extends MasterModel
                 $contactPerson->name = $contactPersons[$i]['name'];
                 $contactPerson->phone = $contactPersons[$i]['phone'] ?? null;
                 $contactPerson->email = $contactPersons[$i]['email'] ?? null;
-                $contactPerson->contactable_type = get_class($obj);
+                $contactPerson->contactable_type = get_class($obj)::$morphName;
                 $contactPerson->contactable_id = $obj->id;
                 $contactPerson->save();
             }

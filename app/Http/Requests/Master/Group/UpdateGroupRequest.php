@@ -24,7 +24,18 @@ class UpdateGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
+            'name' => [
+                'required',
+                Rule::unique('tenant.groups')->where(function($query) {
+                    return $query->where('name', $this->name)->where('class_reference', $this->class_reference);
+                })->ignore($this->id),
+            ],
+            'class_reference' => 
+            function ($attribute, $value, $fail) {
+                if (! GroupClassReference::isAvailable($this->class_reference)) {
+                    $fail($attribute.' is not valid');
+                }
+            }
         ];
     }
 }

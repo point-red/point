@@ -18,9 +18,4 @@ class GroupClassReference
         
         return in_array($groupType, $classReference);
     }
-
-    public static $isNotAvailableResponse = [
-        'code' => 400,
-        'message' => 'Group class reference is not valid',
-    ];
 }

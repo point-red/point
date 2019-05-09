@@ -78,7 +78,7 @@ class SalesInvoice extends TransactionModel
 
     public function downPayments()
     {
-        return $this->belongsToMany(SalesDownPayment::class, 'sales_down_payment_invoice', 'down_payment_id', 'invoice_id');
+        return $this->belongsToMany(SalesDownPayment::class, 'sales_down_payment_invoice', 'invoice_id', 'down_payment_id');
     }
 
     /**
@@ -141,7 +141,7 @@ class SalesInvoice extends TransactionModel
 
         $salesInvoice->items()->saveMany($items);
         $salesInvoice->services()->saveMany($services);
-        $salesInvoice->downPayments()->attach(array_column($data['down_payments'] ?? [], 'amount', 'id'));
+        $salesInvoice->downPayments()->attach(array_column($data['down_payments'] ?? [], null, 'id'));
 
         $form = new Form;
         $form->saveData($data, $salesInvoice);

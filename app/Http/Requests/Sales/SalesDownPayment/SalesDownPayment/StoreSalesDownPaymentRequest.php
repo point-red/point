@@ -3,6 +3,11 @@
 namespace App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ValidationRule;
+use App\Model\Accounting\ChartOfAccount;
+use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\Sales\SalesContract\SalesContract;
+use App\Model\Master\Allocation;
 
 class StoreSalesDownPaymentRequest extends FormRequest
 {
@@ -13,7 +18,7 @@ class StoreSalesDownPaymentRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,8 +28,20 @@ class StoreSalesDownPaymentRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
+        $rulesForm = ValidationRule::form();
+
+        $rulesDownpayment = [
+            'sales_order_id' => ValidationRule::foreignKeyNullable(SalesOrder::getTableName()) . '|required_without:sales_contract_id',
+            'sales_contract_id' => ValidationRule::foreignKeyNullable(SalesContract::getTableName()) . '|required_without:sales_order_id',
+            'amount' => ValidationRule::price(),
         ];
+        
+        $rulesPayment = [
+            'allocation_id' => ValidationRule::foreignKeyNullable(Allocation::getTableName()),
+            'payment_account_id' => ValidationRule::foreignKey(ChartOfAccount::getTableName()),
+            'payment_number' => 'nullable|string',
+        ];
+
+        return array_merge($rulesForm, $rulesDownpayment, $rulesPayment);
     }
 }

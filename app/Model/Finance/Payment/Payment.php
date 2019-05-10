@@ -21,7 +21,6 @@ class Payment extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'payment_type',
         'disbursed',
         'paymentable_type',
         'paymentable_id',
@@ -31,12 +30,6 @@ class Payment extends TransactionModel
 
     protected $casts = [
         'amount' => 'double',
-    ];
-
-    protected $paymentableType = [
-        'customer' => Customer::class,
-        'supplier' => Supplier::class,
-        'employee' => Employee::class,
     ];
 
     public function paymentAccount()
@@ -62,11 +55,6 @@ class Payment extends TransactionModel
         return $this->morphTo();
     }
 
-    public function setPaymentTypeAttribute($value)
-    {
-        $this->attributes['payment_type'] = strtoupper($value);
-    }
-
     public function isAllowedToUpdate()
     {
         // TODO isAllowed to update?
@@ -74,18 +62,19 @@ class Payment extends TransactionModel
 
     public function isAllowedToDelete()
     {
-        // TODO isAllowed to update?
+        // TODO isAllowed to delete?
     }
 
     public static function create($data)
     {
         $payment = new self;
         $payment->fill($data);
+        $payment->payment_type = strtoupper($payment->paymentAccount->type->name);
+        $payment->paymentable_name = $data['paymentable_name'] ?? $payment->paymentable->name;
         
-        $paymentDetails = self::mapPaymentDetails($data['details'] ?? []);
+        $paymentDetails = self::mapPaymentDetails($data['details']);
         
         $payment->amount = self::calculateAmount($paymentDetails);
-        $payment->paymentable_name = $payment->paymentable->name;
         $payment->save();
 
         $payment->details()->saveMany($paymentDetails);
@@ -93,6 +82,7 @@ class Payment extends TransactionModel
         $form = new Form;
         $form->fill($data);
         $form->done = true;
+        $form->approved = true;
 
         $form->formable_id = $payment->id;
         $form->formable_type = self::$morphName;
@@ -145,7 +135,7 @@ class Payment extends TransactionModel
             ->get()
             ->sortByDesc('form.increment')
             ->first();
-            info('last payment ' . json_encode($lastPayment));
+            
             $increment = 1;
 
             if (! empty($lastPayment)) {

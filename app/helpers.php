@@ -253,7 +253,7 @@ if (! function_exists('get_invitation_code')) {
         {
             $settingJournal = SettingJournal::where('feature', $feature)->where('name', $name)->first();
 
-            return $settingJournal->id;
+            return $settingJournal->chart_of_account_id;
         }
     }
 }

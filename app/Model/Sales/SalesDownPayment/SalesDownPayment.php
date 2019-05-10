@@ -3,6 +3,7 @@
 namespace App\Model\Sales\SalesDownPayment;
 
 use App\Model\Form;
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Customer;
 use App\Model\TransactionModel;
 use App\Model\Finance\Payment\Payment;
@@ -95,22 +96,24 @@ class SalesDownPayment extends TransactionModel
         $form = new Form;
         $form->saveData($data, $downPayment);
 
-        // Add Payment Collection
-        self::addPaymentCollection($data, $downPayment);
+        // Add Payment
+        if (!empty($data['payment_account_id'])) {
+            self::addPayment($data, $downPayment);
+        }
 
         return $downPayment;
     }
 
-    private static function addPaymentCollection($data, $downPayment)
+    private static function addPayment($data, $downPayment)
     {
+        $paymentAccount = ChartOfAccount::findOrFail($data['payment_account_id'])->load('type');
         $payment = [
             // payment type should be cash / bank when paid = true
-            'payment_type' => $data['payment_type'] ?? 'payment collection',
+            'payment_type' => $paymentAccount->type->id,
             'payment_account_id' => $data['payment_account_id'],
             'due_date' => $data['due_date'] ?? null,
             'date' => $downPayment->form->date,
             'number' => $data['payment_number'] ?? null,
-            'done' => $data['payment_done'] ?? false,
             'approved' => $data['payment_approved'] ?? false,
             'disbursed' => false,
             'amount' => $downPayment->amount,
@@ -121,7 +124,7 @@ class SalesDownPayment extends TransactionModel
 
             'details' => [
                 [
-                    'chart_of_account_id' => 1,
+                    'chart_of_account_id' => get_setting_journal('sales', 'down payment'),
                     'allocation_id' => null,
                     'amount' => $downPayment->amount,
                     'notes' => $downPayment->form->notes,
@@ -131,9 +134,9 @@ class SalesDownPayment extends TransactionModel
             ],
         ];
 
-        $salePayment = Payment::create($payment);
+        $payment = Payment::create($payment);
 
-        $downPayment->paid_by = $salePayment->id;
+        $downPayment->paid_by = $payment->id;
         $downPayment->save();
     }
 }

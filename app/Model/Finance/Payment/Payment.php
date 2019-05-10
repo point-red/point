@@ -90,6 +90,7 @@ class Payment extends TransactionModel
 
         $form = new Form;
         $form->fill($data);
+        $form->done = true;
 
         $form->formable_id = $payment->id;
         $form->formable_type = self::$morphName;
@@ -98,10 +99,6 @@ class Payment extends TransactionModel
             $data['paymentable_id'],
             $data['paymentable_id']
         );
-
-        if (empty($data['approver_id'])) {
-            $form->done = true;
-        }
 
         $form->save();
 

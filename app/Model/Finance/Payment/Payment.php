@@ -9,6 +9,8 @@ use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
 class Payment extends TransactionModel
 {
@@ -174,9 +176,13 @@ class Payment extends TransactionModel
         foreach ($paymentDetails as $paymentDetail) {
             if ($paymentDetail->referenceable) {
                 $reference = $paymentDetail->referenceable;
-                $reference->remaining -= $paymentDetail->amount;
                 $reference->updateIfDone();
-                $reference->save();
+
+                if ($paymentDetail->referenceable_type !== SalesDownPayment::$morphName
+                 && $paymentDetail->referenceable_type !== PurchaseDownPayment::$morphName) {
+                     $reference->remaining -= $paymentDetail->amount;
+                     $reference->save();
+                }
             }
         }
     }

@@ -62,7 +62,7 @@ return [
             'driver' => 'monolog',
             'handler' => MonologHandler::class,
             'access_token' => env('ROLLBAR_TOKEN'),
-            'level' => 'debug',
+            'level' => 'error',
             'person_fn' => 'Auth::user',
             'capture_email' => true,
             'capture_username' => true

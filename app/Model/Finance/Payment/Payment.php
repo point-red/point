@@ -182,7 +182,7 @@ class Payment extends TransactionModel
                 $reference->updateIfDone();
 
                 if ($paymentDetail->referenceable_type !== SalesDownPayment::$morphName
-                 || $paymentDetail->referenceable_type !== PurchaseDownPayment::$morphName) {
+                 && $paymentDetail->referenceable_type !== PurchaseDownPayment::$morphName) {
                      $reference->remaining -= $paymentDetail->amount;
                      $reference->save();
                 }

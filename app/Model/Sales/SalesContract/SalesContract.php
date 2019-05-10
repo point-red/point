@@ -69,17 +69,12 @@ class SalesContract extends TransactionModel
 
     public function paidDownPayments()
     {
-        return $this->morphMany(SalesDownPayment::class, 'downpaymentable')
-            ->active()
-            ->whereNotNull('paid_by');
+        return $this->downPayments()->whereNotNull('paid_by');
     }
 
     public function remainingDownPayments()
     {
-        return $this->morphMany(SalesDownPayment::class, 'downpaymentable')
-            ->active()
-            ->where('remaining', '>', 0)
-            ->whereNotNull('paid_by');
+        return $this->paidDownPayments()->where('remaining', '>', 0);
     }
 
     public function updateIfDone()

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Accounting\ChartOfAccount;
@@ -37,8 +39,7 @@ class ChartOfAccountController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     *
+     * @param Request  $request
      * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource
      */
     public function store(Request $request)
@@ -57,20 +58,21 @@ class ChartOfAccountController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return ApiResource
      */
     public function show($id)
     {
-        //
+        $chartOfAccount = ChartOfAccount::findOrFail($id)->load(['type', 'group']);
+
+        return new ApiResource($chartOfAccount);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request $request
      * @param  int  $id
-     *
-     * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
@@ -81,7 +83,7 @@ class ChartOfAccountController extends Controller
         $chartOfAccount->alias = $request->get('name');
         $chartOfAccount->save();
 
-        return new ChartOfAccountResource($chartOfAccount);
+        return new ApiResource($chartOfAccount->load(['type', 'group']));
     }
 
     /**

@@ -9,6 +9,8 @@ use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
 class Payment extends TransactionModel
 {

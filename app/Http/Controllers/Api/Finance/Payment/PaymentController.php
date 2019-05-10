@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api\Finance\Payment;
 
 use App\Model\Form;
+use App\Model\HumanResource\Employee\Employee;
+use App\Model\Master\Customer;
+use App\Model\Master\Supplier;
 use Illuminate\Http\Request;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
@@ -26,9 +29,19 @@ class PaymentController extends Controller
             $fields = explode(',', $request->get('join'));
 
             if (in_array('paymentable', $fields)) {
-                $model = $payment->paymentable_type;
-                $payment = $payment->join($model::getTableName(), function ($q) use ($model) {
-                    $q->on($model::getTableName('id'), '=', Payment::getTableName('paymentable_id'));
+                $payment = $payment->leftJoin(Customer::getTableName(), function ($q) {
+                    $q->on(Customer::getTableName('id'), '=', Payment::getTableName('paymentable_id'))
+                        ->where(Payment::getTableName('paymentable_type'), Customer::$morphName);
+                });
+
+                $payment = $payment->leftJoin(Supplier::getTableName(), function ($q) {
+                    $q->on(Supplier::getTableName('id'), '=', Payment::getTableName('paymentable_id'))
+                        ->where(Payment::getTableName('paymentable_type'), Supplier::$morphName);
+                });
+
+                $payment = $payment->leftJoin(Employee::getTableName(), function ($q) {
+                    $q->on(Employee::getTableName('id'), '=', Payment::getTableName('paymentable_id'))
+                        ->where(Payment::getTableName('paymentable_type'), Employee::$morphName);
                 });
             }
 

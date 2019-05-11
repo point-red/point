@@ -65,6 +65,12 @@ class DeliveryOrder extends TransactionModel
         return $this->hasMany(DeliveryNote::class)->active();
     }
 
+    /* Invoice needs DeliveryOrders that is done and has pendingDeliveryNotes*/
+    public function pendingDeliveryNotes()
+    {
+        return $this->deliveryNotes()->notDone();
+    }
+
     public function updateIfDone()
     {
         $done = true;

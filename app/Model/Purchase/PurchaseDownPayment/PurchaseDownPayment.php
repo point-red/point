@@ -19,7 +19,6 @@ class PurchaseDownPayment extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'supplier_name',
         'amount',
     ];
 
@@ -77,9 +76,9 @@ class PurchaseDownPayment extends TransactionModel
             $reference = findOrFail($data['purchase_contract_id']);
         }
 
+        $downPayment->fill($data);
         $downPayment->supplier_id = $reference->supplier_id;
         $downPayment->supplier_name = $reference->supplier_name;
-        $downPayment->fill($data);
         $downPayment->remaining = $data['amount'];
         $downPayment->save();
 

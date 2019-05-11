@@ -3,7 +3,6 @@
 namespace App\Model\Sales\SalesDownPayment;
 
 use App\Model\Form;
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Customer;
 use App\Model\TransactionModel;
 use App\Model\Finance\Payment\Payment;
@@ -20,8 +19,6 @@ class SalesDownPayment extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'customer_id',
-        'customer_name',
         'amount',
     ];
 
@@ -83,13 +80,9 @@ class SalesDownPayment extends TransactionModel
             $reference = SalesContract::findOrFail($data['sales_contract_id']);
         }
 
-        $data['customer_id'] = $reference->customer_id;
-        $data['customer_name'] = $reference->customer_name;
-        if (empty($data['number'])) {
-            $data['number'] = 'DP/{code_customer}/{y}{m}{increment=4}';
-        }
-
         $downPayment->fill($data);
+        $downPayment->customer_id = $reference->customer_id;
+        $downPayment->customer_name = $reference->customer_name;
         $downPayment->remaining = $downPayment->amount;
         $downPayment->save();
 
@@ -97,7 +90,7 @@ class SalesDownPayment extends TransactionModel
         $form->saveData($data, $downPayment);
 
         // Add Payment
-        if (!empty($data['payment_account_id'])) {
+        if (! empty($data['payment_account_id'])) {
             self::addPayment($data, $downPayment);
         }
 
@@ -106,28 +99,23 @@ class SalesDownPayment extends TransactionModel
 
     private static function addPayment($data, $downPayment)
     {
-        $paymentAccount = ChartOfAccount::findOrFail($data['payment_account_id'])->load('type');
         $payment = [
             // payment type should be cash / bank when paid = true
-            'payment_type' => $paymentAccount->type->id,
             'payment_account_id' => $data['payment_account_id'],
-            'due_date' => $data['due_date'] ?? null,
-            'date' => $downPayment->form->date,
+            'date' => $data['date'],
             'number' => $data['payment_number'] ?? null,
-            'approved' => $data['payment_approved'] ?? false,
             'disbursed' => false,
-            'amount' => $downPayment->amount,
             'paymentable_id' => $downPayment->customer_id,
             'paymentable_type' => Customer::$morphName,
-            'paymentable_name' => $downPayment->customer->name,
+            'paymentable_name' => $downPayment->customer_name,
             'increment_group' => $data['increment_group'],
 
             'details' => [
                 [
                     'chart_of_account_id' => get_setting_journal('sales', 'down payment'),
-                    'allocation_id' => null,
+                    'allocation_id' => $data['allocation_id'] ?? null,
                     'amount' => $downPayment->amount,
-                    'notes' => $downPayment->form->notes,
+                    'notes' => $data['notes'] ?? null,
                     'referenceable_type' => SalesDownPayment::$morphName,
                     'referenceable_id' => $downPayment->id,
                 ]

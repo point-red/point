@@ -9,6 +9,7 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
+use App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment\StoreSalesDownPaymentRequest;
 
 class SalesDownPaymentController extends Controller
 {
@@ -50,7 +51,7 @@ class SalesDownPaymentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreSalesDownPaymentRequest $request)
     {
         $result = \DB::connection('tenant')->transaction(function () use ($request) {
             $downPayment = SalesDownPayment::create($request->all());

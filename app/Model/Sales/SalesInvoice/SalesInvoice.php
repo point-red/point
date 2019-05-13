@@ -146,6 +146,9 @@ class SalesInvoice extends TransactionModel
         $form = new Form;
         $form->saveData($data, $salesInvoice);
 
+        // updated to done if the amount is 0 because of down payment
+        $salesInvoice->updateIfDone(); 
+
         self::setDeliveryNotesDone($salesInvoice);
         self::setSalesOrdersDone($salesInvoice);
         self::setDownPaymentsDone($data['down_payments'] ?? []);

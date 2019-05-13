@@ -141,6 +141,9 @@ class PurchaseInvoice extends TransactionModel
         $form = new Form;
         $form->saveData($data, $purchaseInvoice);
 
+        // updated to done if the amount is 0 because of down payment
+        $purchaseInvoice->updateIfDone(); 
+
         self::setPurchaseReceiveDone($purchaseInvoice);
         self::updateInventory($purchaseInvoice);
         self::updateJournal($purchaseInvoice);

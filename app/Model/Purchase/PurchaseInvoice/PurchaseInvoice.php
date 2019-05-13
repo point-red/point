@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseInvoice;
 
+use App\Exceptions\IsReferencedException;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
@@ -110,6 +111,9 @@ class PurchaseInvoice extends TransactionModel
         $this->isNotReferenced();
     }
 
+    /**
+     * @throws IsReferencedException
+     */
     private function isNotReferenced()
     {
         // Check if not referenced by payments

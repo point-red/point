@@ -33,6 +33,11 @@ class TransactionModel extends PointModel
         }
     }
 
+    /**
+     * Cannot update form that already archived
+     *
+     * @throws FormArchivedException
+     */
     public function updatedFormNotArchived()
     {
         if (is_null($this->form->number)) {
@@ -40,6 +45,12 @@ class TransactionModel extends PointModel
         }
     }
 
+    /**
+     * Update form should be in same period
+     *
+     * @param $date
+     * @throws UpdatePeriodNotAllowedException
+     */
     public function updatedFormInSamePeriod($date)
     {
         if (date('Y-m', strtotime($date)) != date('Y-m', strtotime($this->form->date))) {

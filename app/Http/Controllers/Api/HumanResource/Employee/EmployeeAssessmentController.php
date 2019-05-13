@@ -59,26 +59,6 @@ class EmployeeAssessmentController extends Controller
         $kpi_automated_controller = new KpiAutomatedController();
 
         foreach ($kpis as $key => $kpi) {
-            foreach ($kpi->groups as $key => $group) {
-                foreach ($group->indicators as $key => $indicator) {
-                    if ($indicator->automated_id) {
-                        $data = $kpi_automated_controller->getAutomatedData($indicator->automated_id, $kpi->date, $kpi->date, $employeeId);
-
-                        $indicator->target = $data['target'];
-                        $indicator->score = $data['score'];
-                        $indicator->score_percentage = $indicator->target > 0 ? $indicator->score / $indicator->target * $indicator->weight : 0;
-
-                        $group->target += $indicator->target;
-                        $group->score += $indicator->score;
-                        $group->score_percentage += $indicator->score_percentage;
-
-                        $kpi->target += $indicator->target;
-                        $kpi->score += $indicator->score;
-                        $kpi->score_percentage += $indicator->score_percentage;                 
-                    }
-                }
-            }
-
             array_push($dates, date('dMY', strtotime($kpi->date)));
             array_push($scores, number_format($kpi->score_percentage, 2));
         }

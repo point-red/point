@@ -15,21 +15,21 @@ class EmployeeSeeder extends Seeder
         $religions = ['Christian', 'Catholic', 'Islam', 'Buddha', 'Hindu'];
         for ($i = 0; $i < count($religions); $i++) {
             DB::connection('tenant')->table('employee_religions')->insert([
-                'name' => $religions[$i]
+                'name' => $religions[$i],
             ]);
         }
 
         $maritalStatues = ['Single', 'Married'];
         for ($i = 0; $i < count($maritalStatues); $i++) {
             DB::connection('tenant')->table('employee_marital_statuses')->insert([
-                'name' => $maritalStatues[$i]
+                'name' => $maritalStatues[$i],
             ]);
         }
 
         $genders = ['Male', 'Female'];
         for ($i = 0; $i < count($genders); $i++) {
             DB::connection('tenant')->table('employee_genders')->insert([
-                'name' => $genders[$i]
+                'name' => $genders[$i],
             ]);
         }
     }

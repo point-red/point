@@ -20,13 +20,12 @@ class TenantMiddleware
     {
         if ($request->header('Tenant')) {
             // Ignore this, because this subdomain is not allowed
-            if ($request->header('Tenant') === 'cloud' || $request->header('Tenant') === 'localhost:8080') {
+            if ($request->header('Tenant') === 'staging' || $request->header('Tenant') === 'cloud' || $request->header('Tenant') === 'localhost:8080') {
                 return $next($request);
             }
 
             // Permission denied, the project is not owned by that user
             if (auth()->user()) {
-
                 $authUser = auth()->user();
                 $request->merge(compact('authUser'));
 
@@ -40,18 +39,25 @@ class TenantMiddleware
                     return $next($request);
                 }
 
-                config()->set('project.timezone', $project->timezone);
+                $timezone = $request->header('Timezone');
+                if ($request->header('Timezone') && $request->header('Timezone') != null && isset($timezone) && !empty($timezone) && $timezone != 'undefined') {
+                    config()->set('project.timezone', $request->header('Timezone'));
+                } else {
+                    config()->set('project.timezone', $project->timezone);
+                }
 
                 // Update mail configuration on the fly
-                $this->updatePreference('mail.driver', $project->preference, 'mail_driver');
-                $this->updatePreference('mail.host', $project->preference, 'mail_host');
-                $this->updatePreference('mail.username', $project->preference, 'mail_username');
-                $this->updatePreference('mail.password', $project->preference, 'mail_password');
-                $this->updatePreference('mail.from.name', $project->preference, 'mail_from_name');
-                $this->updatePreference('mail.from.address', $project->preference, 'mail_from_address');
-                $this->updatePreference('mail.port', $project->preference, 'mail_port');
-                $this->updatePreference('mail.encryption', $project->preference, 'mail_encryption');
-                $this->updatePreference('mail.secret', $project->preference, 'mail_secret');
+                if ($project->preference) {
+                    config()->set('mail.driver', $project->preference->mail_driver);
+                    config()->set('mail.host', $project->preference->mail_host);
+                    config()->set('mail.username', $project->preference->mail_username);
+                    config()->set('mail.password', $project->preference->mail_password);
+                    config()->set('mail.from.name', $project->preference->mail_from_name);
+                    config()->set('mail.from.address', $project->preference->mail_from_address);
+                    config()->set('mail.port', $project->preference->mail_port);
+                    config()->set('mail.encryption', $project->preference->mail_encryption);
+                    config()->set('mail.secret', $project->preference->mail_secret);
+                }
 
                 $projectUser = ProjectUser::where('project_id', $project->id)->where('user_id', auth()->user()->id);
                 if (! $projectUser) {
@@ -59,17 +65,11 @@ class TenantMiddleware
                 }
             }
 
-            config()->set('database.connections.tenant.database', 'point_'.$request->header('Tenant'));
+            // config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.$request->header('Tenant'));
+            config()->set('database.connections.tenant.database', config('database.connections.mysql.database').'_'.$request->header('Tenant'));
             DB::connection('tenant')->reconnect();
         }
 
         return $next($request);
-    }
-
-    private function updatePreference($config, $preference, $key)
-    {
-        if (optional($preference)->$key !== null) {
-            config()->set($config, $preference->$key);
-        }
     }
 }

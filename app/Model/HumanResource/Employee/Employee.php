@@ -2,14 +2,17 @@
 
 namespace App\Model\HumanResource\Employee;
 
+use App\Model\MasterModel;
+use App\Model\Finance\Payment\Payment;
+use App\Model\HumanResource\Kpi\KpiTemplate;
+use App\Model\HumanResource\Employee\Employee\EmployeePhone;
 use App\Model\HumanResource\Employee\Employee\EmployeeAddress;
 use App\Model\HumanResource\Employee\Employee\EmployeeCompanyEmail;
-use App\Model\HumanResource\Employee\Employee\EmployeePhone;
-use App\Model\HumanResource\Kpi\KpiTemplate;
-use App\Model\MasterModel;
 
 class Employee extends MasterModel
 {
+    public static $morphName = 'Employee';
+
     protected $connection = 'tenant';
 
     /**
@@ -138,5 +141,13 @@ class Employee extends MasterModel
     public function userEmployee()
     {
         return $this->belongsToMany('App\Model\Master\User', 'user_employee', 'employee_id', 'user_id');
+    }
+
+    /**
+     * Get the customer's payment.
+     */
+    public function payments()
+    {
+        return $this->morphMany(Payment::class, 'paymentable');
     }
 }

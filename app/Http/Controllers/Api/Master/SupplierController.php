@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Http\Requests\Master\Supplier\StoreSupplierRequest;
-use App\Http\Requests\Master\Supplier\UpdateSupplierRequest;
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\Address;
 use App\Model\Master\Bank;
-use App\Model\Master\ContactPerson;
-use App\Model\Master\Supplier;
-use App\Http\Controllers\Controller;
 use App\Model\Master\Email;
 use App\Model\Master\Group;
 use App\Model\Master\Phone;
 use Illuminate\Http\Request;
+use App\Model\Master\Address;
+use App\Model\Master\Supplier;
+use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\ContactPerson;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Model\Finance\Payment\Payment;
+use App\Http\Requests\Master\Supplier\StoreSupplierRequest;
+use App\Http\Requests\Master\Supplier\UpdateSupplierRequest;
 
 class SupplierController extends Controller
 {
@@ -27,19 +29,65 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
-        $suppliers = Supplier::leftjoin(Address::getTableName(), function ($q) {
-            $q->on(Address::getTableName('addressable_id'), '=', Supplier::getTableName('id'))
-                ->where(Address::getTableName('addressable_type'), Supplier::class);
-        })->leftjoin(Phone::getTableName(), function ($q) {
-            $q->on(Phone::getTableName('phoneable_id'), '=', Supplier::getTableName('id'))
-                ->where(Phone::getTableName('phoneable_type'), Supplier::class);
-        })->select(Supplier::getTableName('*'))
-            ->eloquentFilter($request);
+        $suppliers = Supplier::eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('addresses', $fields)) {
+                $suppliers = $suppliers->leftjoin(Address::getTableName(), function ($q) {
+                    $q->on(Address::getTableName('addressable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Address::getTableName('addressable_type'), Supplier::$morphName);
+                });
+            }
+
+            if (in_array('phones', $fields)) {
+                $suppliers = $suppliers->leftjoin(Phone::getTableName(), function ($q) {
+                    $q->on(Phone::getTableName('phoneable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Phone::getTableName('phoneable_type'), Supplier::$morphName);
+                });
+            }
+
+            if (in_array('emails', $fields)) {
+                $suppliers = $suppliers->leftjoin(Email::getTableName(), function ($q) {
+                    $q->on(Email::getTableName('emailable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Email::getTableName('emailable_type'), Supplier::$morphName);
+                });
+            }
+
+            if (in_array('contact_persons', $fields)) {
+                $suppliers = $suppliers->leftjoin(ContactPerson::getTableName(), function ($q) {
+                    $q->on(ContactPerson::getTableName('contactable_id'), '=', Supplier::getTableName('id'))
+                        ->where(ContactPerson::getTableName('contactable_type'), Supplier::$morphName);
+                });
+            }
+
+            if (in_array('banks', $fields)) {
+                $suppliers = $suppliers->leftjoin(Bank::getTableName(), function ($q) {
+                    $q->on(Bank::getTableName('bankable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Bank::getTableName('bankable_type'), Supplier::$morphName);
+                });
+            }
+
+            if (in_array('journals', $fields)) {
+                $suppliers = $suppliers->leftjoin(Journal::getTableName(), function ($q) {
+                    $q->on(Journal::getTableName('journalable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Journal::getTableName('journalable_type'), Supplier::$morphName);
+                });
+            }
+
+            if (in_array('payments', $fields)) {
+                $suppliers = $suppliers->leftjoin(Payment::getTableName(), function ($q) {
+                    $q->on(Payment::getTableName('paymentable_id'), '=', Supplier::getTableName('id'))
+                        ->where(Payment::getTableName('paymentable_type'), Supplier::$morphName);
+                });
+            }
+        }
 
         if ($request->get('group_id')) {
             $suppliers = $suppliers->join('groupables', function ($q) use ($request) {
                 $q->on('groupables.groupable_id', '=', 'suppliers.id')
-                    ->where('groupables.groupable_type', Supplier::class)
+                    ->where('groupables.groupable_type', Supplier::$morphName)
                     ->where('groupables.group_id', '=', $request->get('group_id'));
             });
         }
@@ -64,15 +112,21 @@ class SupplierController extends Controller
         $supplier->fill($request->all());
         $supplier->save();
 
-        if ($request->get('group')['name']) {
+        if ($request->has('group')) {
+            $group = null;
+            if (! empty($request->get('group')['id'])) {
+                $group = Group::findOrFail($request->get('group')['id']);
+            } elseif (! empty($request->get('group')['name'])) {
+                $group = Group::where('name', $request->get('group')['name'])
+                    ->where('class_reference', Supplier::class)
+                    ->first();
 
-            $group = Group::find($request->get('group')['id']);
-
-            if (!$group) {
-                $group = new Group;
-                $group->name = $request->get('group')['name'];
-                $group->type = Supplier::class;
-                $group->save();
+                if (! $group) {
+                    $group = new Group;
+                    $group->name = $request->get('group')['name'];
+                    $group->class_reference = 'supplier';
+                    $group->save();
+                }
             }
 
             $group->suppliers()->attach($supplier);
@@ -98,14 +152,7 @@ class SupplierController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $suppliers = Supplier::eloquentFilter($request)
-            ->with('groups')
-            ->with('addresses')
-            ->with('emails')
-            ->with('banks')
-            ->with('phones')
-            ->with('contactPersons')
-            ->findOrFail($id);
+        $suppliers = Supplier::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($suppliers);
     }
@@ -126,15 +173,21 @@ class SupplierController extends Controller
         $supplier->fill($request->all());
         $supplier->save();
 
-        if ($request->get('group')['name']) {
+        if ($request->has('group')) {
+            $group = null;
+            if (! empty($request->get('group')['id'])) {
+                $group = Group::findOrFail($request->get('group')['id']);
+            } elseif (! empty($request->get('group')['name'])) {
+                $group = Group::where('name', $request->get('group')['name'])
+                    ->where('class_reference', Supplier::class)
+                    ->first();
 
-            $group = Group::find($request->get('group')['id']);
-
-            if (!$group) {
-                $group = new Group;
-                $group->name = $request->get('group')['name'];
-                $group->type = Supplier::class;
-                $group->save();
+                if (! $group) {
+                    $group = new Group;
+                    $group->name = $request->get('group')['name'];
+                    $group->class_reference = 'supplier';
+                    $group->save();
+                }
             }
 
             $group->suppliers()->attach($supplier);

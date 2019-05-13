@@ -4,60 +4,104 @@ namespace App\Traits;
 
 trait FormScopes
 {
-    public function scopeJoinForm($query)
+    public function scopeDone($query)
     {
-        $query->join('forms', 'forms.id', '=', $this->table . '.form_id')
-            ->join('form_approvals', 'form_approvals.id', '=', 'forms.form_id')
-            ->join('form_cancellations', 'form_cancellations.id', '=', 'forms.form_id');
+        $query->whereHas('form', function ($q) {
+            $q->where('done', true);
+        });
     }
 
-    public function scopeIsDone($query)
+    public function scopeNotDone($query)
     {
-        $query->where('forms.done', true);
+        $query->whereHas('form', function ($q) {
+            $q->where('done', false);
+        });
     }
 
-    public function scopeIsPending($query)
+    public function scopeApproved($query)
     {
-        $query->where('forms.done', false);
+        $query->whereHas('form', function ($q) {
+            $q->where('approved', true);
+        });
     }
 
-    public function scopeIsApprovalApproved($query)
+    public function scopeApprovalRejected($query)
     {
-        $query->where('forms.approved', true);
+        $query->whereHas('form', function ($q) {
+            $q->where('approved', false);
+        });
     }
 
-    public function scopeIsApprovalRejected($query)
+    public function scopeApprovalPending($query)
     {
-        $query->where('forms.approved', false);
+        $query->whereHas('form', function ($q) {
+            $q->whereNull('approved');
+        });
     }
 
-    public function scopeIsApprovalPending($query)
+    public function scopeNotRejected($query)
     {
-        $query->where('forms.approved', null);
+        $query->whereHas('form', function ($q) {
+            $q->whereNull('approved');
+            $q->orWhere('approved', true);
+        });
     }
 
-    public function scopeIsCancellationApproved($query)
+    public function scopeCancellationApproved($query)
     {
-        $query->where('forms.cancellation', true);
+        $query->whereHas('form', function ($q) {
+            $q->where('canceled', true);
+        });
     }
 
-    public function scopeIsCancellationRejected($query)
+    public function scopeCancellationRejected($query)
     {
-        $query->where('forms.cancellation', false);
+        $query->whereHas('form', function ($q) {
+            $q->where('canceled', false);
+        });
     }
 
-    public function scopeIsCancellationPending($query)
+    public function scopeCancellationPending($query)
     {
-        $query->where('forms.cancellation', null);
+        $query->whereHas('form', function ($q) {
+            $q->whereNull('canceled');
+        });
     }
 
-    public function scopeIsActive($query)
+    public function scopeNotCanceled($query)
     {
-        $query->whereNotNull('forms.number');
+        $query->whereHas('form', function ($q) {
+            $q->whereNull('canceled');
+            $q->orWhere('canceled', false);
+        });
     }
 
-    public function scopeIsNotActive($query)
+    public function scopeNotArchived($query)
     {
-        $query->whereNull('forms.number');
+        $query->whereHas('form', function ($q) {
+            $q->whereNotNull('number');
+        });
+    }
+
+    public function scopeArchived($query)
+    {
+        $query->whereHas('form', function ($q) {
+            $q->whereNull('number');
+        });
+    }
+
+    public function scopeActive($query)
+    {
+        $query->notCanceled()->notRejected()->notArchived();
+    }
+
+    public function scopeActivePending($query)
+    {
+        $query->active()->notDone();
+    }
+
+    public function scopeActiveDone($query)
+    {
+        $query->active()->done();
     }
 }

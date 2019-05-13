@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use App\Http\Resources\ApiResource;
-use App\Model\ProjectPreference;
 use Illuminate\Http\Request;
+use App\Model\ProjectPreference;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 
 class ProjectPreferenceController extends Controller
@@ -33,8 +33,11 @@ class ProjectPreferenceController extends Controller
         $projectPreference = ProjectPreference::where('project_id', $project_id)->first();
         if (! $projectPreference) {
             $projectPreference = new ProjectPreference;
+            $projectPreference->project_id = $project_id;
+            // TODO validate project_id is exist
         }
 
+        $projectPreference->mail_driver = $request->get('mail_driver');
         $projectPreference->mail_host = $request->get('mail_host');
         $projectPreference->mail_username = $request->get('mail_username');
         $projectPreference->mail_password = $request->get('mail_password');

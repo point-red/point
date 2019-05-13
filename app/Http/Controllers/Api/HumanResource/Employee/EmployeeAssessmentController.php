@@ -8,8 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\HumanResource\Kpi\KpiAutomatedController;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
-use App\Model\HumanResource\Kpi\KpiIndicator;
 use App\Model\HumanResource\Kpi\KpiScore;
+use App\Model\HumanResource\Kpi\KpiIndicator;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
 
@@ -35,11 +35,21 @@ class EmployeeAssessmentController extends Controller
             ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
             ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'));
 
-        if ($type === 'all') $kpis = $kpis->groupBy('kpis.id');
-        if ($type === 'daily') $kpis = $kpis->groupBy('kpis.date');
-        if ($type === 'weekly') $kpis = $kpis->groupBy(DB::raw('yearweek(kpis.date)'));
-        if ($type === 'monthly') $kpis = $kpis->groupBy(DB::raw('year(kpis.date)'), DB::raw('month(kpis.date)'));
-        if ($type === 'yearly') $kpis = $kpis->groupBy(DB::raw('year(kpis.date)'));
+        if ($type === 'all') {
+            $kpis = $kpis->groupBy('kpis.id');
+        }
+        if ($type === 'daily') {
+            $kpis = $kpis->groupBy('kpis.date');
+        }
+        if ($type === 'weekly') {
+            $kpis = $kpis->groupBy(DB::raw('yearweek(kpis.date)'));
+        }
+        if ($type === 'monthly') {
+            $kpis = $kpis->groupBy(DB::raw('year(kpis.date)'), DB::raw('month(kpis.date)'));
+        }
+        if ($type === 'yearly') {
+            $kpis = $kpis->groupBy(DB::raw('year(kpis.date)'));
+        }
 
         $kpis = $kpis->where('employee_id', $employeeId)->orderBy('kpis.date', 'asc')->get();
 
@@ -262,7 +272,7 @@ class EmployeeAssessmentController extends Controller
         }
 
         DB::connection('tenant')->commit();
-        
+
         return new KpiResource($kpi);
     }
 

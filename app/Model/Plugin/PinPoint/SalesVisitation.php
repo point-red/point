@@ -4,6 +4,7 @@ namespace App\Model\Plugin\PinPoint;
 
 use App\Model\Form;
 use App\Model\PointModel;
+use App\Model\Master\Customer;
 
 class SalesVisitation extends PointModel
 {
@@ -26,23 +27,33 @@ class SalesVisitation extends PointModel
         return convert_to_local_timezone($value);
     }
 
-    public function form() {
+    public function form()
+    {
         return $this->belongsTo(Form::class);
     }
 
-    public function interestReasons() {
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function interestReasons()
+    {
         return $this->hasMany(SalesVisitationInterestReason::class);
     }
 
-    public function notInterestReasons() {
+    public function notInterestReasons()
+    {
         return $this->hasMany(SalesVisitationNotInterestReason::class);
     }
 
-    public function similarProducts() {
+    public function similarProducts()
+    {
         return $this->hasMany(SalesVisitationSimilarProduct::class);
     }
 
-    public function details() {
+    public function details()
+    {
         return $this->hasMany(SalesVisitationDetail::class);
     }
 }

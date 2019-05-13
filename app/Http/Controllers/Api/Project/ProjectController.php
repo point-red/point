@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use Illuminate\Support\Facades\Artisan;
@@ -53,7 +54,7 @@ class ProjectController extends Controller
         }
 
         // Create new database for tenant project
-        $dbName = 'point_'.strtolower($request->get('code'));
+        $dbName = env('DB_DATABASE').'_'.strtolower($request->get('code'));
         Artisan::call('tenant:database:create', ['db_name' => $dbName]);
 
         // Update tenant database name in configuration
@@ -65,6 +66,7 @@ class ProjectController extends Controller
         $project->owner_id = auth()->user()->id;
         $project->code = $request->get('code');
         $project->name = $request->get('name');
+        $project->group = $request->get('group');
         $project->timezone = $request->get('timezone');
         $project->address = $request->get('address');
         $project->phone = $request->get('phone');
@@ -103,12 +105,17 @@ class ProjectController extends Controller
      * Display the specified resource.
      *
      * @param  int $id
-     *
-     * @return \App\Http\Resources\Project\Project\ProjectResource
+     * @return ApiResource
      */
     public function show($id)
     {
-        return new ProjectResource(Project::findOrFail($id));
+        $project = Project::findOrFail($id)->load('users');
+
+        $dbName = env('DB_DATABASE').'_'.strtolower($project->code);
+
+        $project->db_size = dbm_get_size($dbName, 'tenant');
+
+        return new ApiResource($project);
     }
 
     /**
@@ -124,6 +131,7 @@ class ProjectController extends Controller
         // Update tenant database name in configuration
         $project = Project::findOrFail($id);
         $project->name = $request->get('name');
+        $project->group = $request->get('group');
         $project->address = $request->get('address');
         $project->phone = $request->get('phone');
         $project->vat_id_number = $request->get('vat_id_number');
@@ -150,7 +158,7 @@ class ProjectController extends Controller
 
         // Delete database tenant
         Artisan::call('tenant:database:delete', [
-            'db_name' => 'point_'.strtolower($project->code),
+            'db_name' => env('DB_DATABASE').'_'.strtolower($project->code),
         ]);
 
         return new ProjectResource($project);

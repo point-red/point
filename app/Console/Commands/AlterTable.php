@@ -41,12 +41,12 @@ class AlterTable extends Command
     {
         $projects = Project::all();
         foreach ($projects as $project) {
-            $this->line('Alter ' . $project->code);
-            config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
-            DB::connection('tenant')->reconnect();
+            $db = env('DB_DATABASE').'_'.strtolower($project->code);
+            $this->line('Alter ' . $db);
 
-            DB::statement('ALTER TABLE `projects` ADD COLUMN `group` VARCHAR(255) after `name`');
-            // DB::connection('tenant')->statement('ALTER TABLE `TABLE_NAME` MODIFY COLUMN `date` datetime');
+            config()->set('database.connections.tenant.database', $db);
+            DB::connection('tenant')->reconnect();
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD `is_audit` tinyint(1) default 0 after `need_recalculate`');
         }
     }
 }

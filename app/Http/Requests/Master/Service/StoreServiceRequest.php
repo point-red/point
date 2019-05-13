@@ -24,7 +24,7 @@ class StoreServiceRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:tenant.services'
+            'name' => 'required|unique:tenant.services',
         ];
     }
 }

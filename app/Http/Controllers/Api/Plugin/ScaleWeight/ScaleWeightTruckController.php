@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
-use App\Exports\ScaleWeightTruckExport;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;

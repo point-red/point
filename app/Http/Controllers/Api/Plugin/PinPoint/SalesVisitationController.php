@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
-use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
-use App\Http\Resources\ApiResource;
-use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
 use App\Model\Form;
-use App\Model\Master\Customer;
 use App\Model\Master\Item;
+use Illuminate\Http\Request;
+use App\Model\Master\Customer;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
-use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
+use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
+use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
+use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
 
 class SalesVisitationController extends Controller
 {
@@ -36,8 +36,7 @@ class SalesVisitationController extends Controller
             ->with('notInterestReasons')
             ->with('similarProducts')
             ->with('details.item')
-            ->eloquentFilter($request)
-            ->select('pin_point_sales_visitations.*');
+            ->eloquentFilter($request);
 
         if ($request->get('customer_id')) {
             $salesVisitationForm = $salesVisitationForm->where('customer_id', $request->get('customer_id'));
@@ -48,7 +47,7 @@ class SalesVisitationController extends Controller
 
         $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$dateFrom, $dateTo]);
 
-        if (!tenant()->hasPermissionTo('read pin point sales visitation form')) {
+        if (! tenant()->hasPermissionTo('read pin point sales visitation form')) {
             $salesVisitationForm = $salesVisitationForm->where('forms.created_by', auth()->user()->id);
         }
 
@@ -68,13 +67,13 @@ class SalesVisitationController extends Controller
         DB::connection('tenant')->beginTransaction();
 
         if ($request->get('interest_reason') == '' && $request->get('not_interest_reason') == '') {
-            return response()->json([],422);
+            return response()->json([], 422);
         }
 
         $customer = Customer::where('name', $request->get('customer'))->first();
         $isNewCustomer = false;
 
-        if (!$customer) {
+        if (! $customer) {
             $customer = new Customer;
             $customer->name = $request->get('customer');
             $customer->save();
@@ -145,7 +144,6 @@ class SalesVisitationController extends Controller
             $notInterestReason->save();
         }
 
-
         // Similar Product
         $arraySimilarProduct = explode(',', $request->get('similar_product'));
 
@@ -176,7 +174,7 @@ class SalesVisitationController extends Controller
             for ($i = 0; $i < count($array_item); $i++) {
                 if ($array_item[$i] && $array_price[$i] && $array_quantity[$i]) {
                     $item = Item::where('name', $array_item[$i])->first();
-                    if (!$item) {
+                    if (! $item) {
                         $item = new Item;
                         $item->name = $array_item[$i];
                         $item->save();

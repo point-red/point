@@ -2,9 +2,13 @@
 
 namespace App\Model\Auth;
 
+use App\Traits\EloquentFilters;
+
 class Role extends \Spatie\Permission\Models\Role
 {
     protected $connection = 'tenant';
+
+    use EloquentFilters;
 
     public static function isExists($name)
     {

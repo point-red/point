@@ -4,8 +4,8 @@ namespace App\Console\Commands\Tenant\Database;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class Migrates extends Command
 {
@@ -44,9 +44,9 @@ class Migrates extends Command
 
         foreach ($projects as $project) {
             // Recreate new database for tenant project
-            $databaseName = 'point_'.strtolower($project->code);
+            $databaseName = env('DB_DATABASE').'_'.strtolower($project->code);
 
-            $this->line('Migrate ' . $project->code);
+            $this->line('Migrate '.$project->code);
 
             // Update tenant database name in configuration
             config()->set('database.connections.tenant.database', strtolower($databaseName));

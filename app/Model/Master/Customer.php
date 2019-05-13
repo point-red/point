@@ -2,11 +2,14 @@
 
 namespace App\Model\Master;
 
-use App\Model\Accounting\Journal;
 use App\Model\MasterModel;
+use App\Model\Accounting\Journal;
+use App\Model\Finance\Payment\Payment;
 
 class Customer extends MasterModel
 {
+    public static $morphName = 'Customer';
+
     protected $connection = 'tenant';
 
     protected $casts = ['credit_ceiling' => 'double'];
@@ -72,7 +75,7 @@ class Customer extends MasterModel
     /**
      * Get all of the customer's journals.
      */
-    public function journalable()
+    public function journals()
     {
         return $this->morphMany(Journal::class, 'journalable');
     }
@@ -83,5 +86,13 @@ class Customer extends MasterModel
     public function pricingGroup()
     {
         return $this->belongsTo(PricingGroup::class);
+    }
+
+    /**
+     * Get the customer's payment.
+     */
+    public function payments()
+    {
+        return $this->morphMany(Payment::class, 'paymentable');
     }
 }

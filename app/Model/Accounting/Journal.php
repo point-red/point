@@ -3,13 +3,18 @@
 namespace App\Model\Accounting;
 
 use App\Model\Form;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\PointModel;
 
-class Journal extends Model
+class Journal extends PointModel
 {
     protected $connection = 'tenant';
 
     protected $table = 'journals';
+
+    protected $casts = [
+        'credit' => 'double',
+        'debit' => 'double',
+    ];
 
     /**
      * The form that belong to the journal.
@@ -17,6 +22,14 @@ class Journal extends Model
     public function form()
     {
         return $this->belongsTo(Form::class, 'form_id');
+    }
+
+    /**
+     * The form reference that belong to the journal.
+     */
+    public function formReference()
+    {
+        return $this->belongsTo(Form::class, 'form_reference_id');
     }
 
     /**

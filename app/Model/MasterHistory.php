@@ -20,12 +20,12 @@ class MasterHistory extends Model
 
     public function scopeWhereHistoryable($query, $class, $values)
     {
-        if (!$class) {
+        if (! $class) {
             // TODO: throw exception
             return;
         }
 
-        if (!$values) {
+        if (! $values) {
             // TODO: throw exception
             return;
         }
@@ -37,12 +37,12 @@ class MasterHistory extends Model
 
     public function scopeOrWhereHistoryable($query, $class, $values)
     {
-        if (!$class) {
+        if (! $class) {
             // TODO: throw exception
             return;
         }
 
-        if (!$values) {
+        if (! $values) {
             // TODO: throw exception
             return;
         }

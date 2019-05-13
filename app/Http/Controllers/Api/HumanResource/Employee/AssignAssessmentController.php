@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Http\Resources\ApiResource;
 use Illuminate\Http\Request;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Employee\Employee;
 

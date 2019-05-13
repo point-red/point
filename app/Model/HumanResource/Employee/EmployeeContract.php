@@ -3,7 +3,6 @@
 namespace App\Model\HumanResource\Employee;
 
 use App\Model\MasterModel;
-use Carbon\Carbon;
 
 class EmployeeContract extends MasterModel
 {

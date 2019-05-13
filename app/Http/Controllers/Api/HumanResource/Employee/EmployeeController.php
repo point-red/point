@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
+use App\Model\Master\Customer;
+use App\Model\Master\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\HumanResource\Employee\Employee;
-use App\Model\HumanResource\Employee\EmployeeScorer;
-use App\Model\HumanResource\Employee\EmployeeGroup;
-use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeEmail;
-use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
+use App\Model\HumanResource\Employee\EmployeeGroup;
+use App\Model\HumanResource\Employee\EmployeeScorer;
+use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeSocialMedia;
+use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 use App\Model\HumanResource\Employee\UserEmployee;
 use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
@@ -57,8 +59,7 @@ class EmployeeController extends Controller
             }
         }
 
-        return (new ApiCollection($employees))
-            ->additional(['additional' => $additional]);
+        return (new ApiCollection($employees))->additional(['additional' => $additional]);
     }
 
     /**
@@ -92,6 +93,15 @@ class EmployeeController extends Controller
         $employee->daily_transport_allowance = $request->get('daily_transport_allowance');
         $employee->team_leader_allowance = $request->get('team_leader_allowance');
         $employee->communication_allowance = $request->get('communication_allowance');
+
+        if ($request->get('employee_group_name')) {
+            $group = new EmployeeGroup;
+            $group->name = $request->get('employee_group_name');
+            $group->save();
+
+            $employee->employee_group_id = $group->id;
+        }
+
         $employee->save();
 
         for ($i = 0; $i < count($request->get('addresses')); $i++) {
@@ -182,6 +192,7 @@ class EmployeeController extends Controller
             ->with('jobLocation')
             ->with('userEmployee')
             ->select('employees.*')
+            ->eloquentFilter($request)
             ->first();
 
         return new ApiResource($employee);
@@ -210,7 +221,6 @@ class EmployeeController extends Controller
         $employee->employee_marital_status_id = $request->get('employee_marital_status_id');
         $employee->married_with = $request->get('married_with');
         $employee->employee_religion_id = $request->get('employee_religion_id');
-        $employee->employee_group_id = $request->get('employee_group_id');
         $employee->employee_code = $request->get('employee_code');
         $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
         $employee->job_title = $request->get('job_title');
@@ -219,6 +229,17 @@ class EmployeeController extends Controller
         $employee->daily_transport_allowance = $request->get('daily_transport_allowance');
         $employee->team_leader_allowance = $request->get('team_leader_allowance');
         $employee->communication_allowance = $request->get('communication_allowance');
+
+        if ($request->get('employee_group_name')) {
+            $group = new EmployeeGroup;
+            $group->name = $request->get('employee_group_name');
+            $group->save();
+
+            $employee->employee_group_id = $group->id;
+        } else {
+            $employee->employee_group_id = $request->get('employee_group_id');
+        }
+
         $employee->save();
 
         $deleteAddresses = array_column($request->get('addresses'), 'id');

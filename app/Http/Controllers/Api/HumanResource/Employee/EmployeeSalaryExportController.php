@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use App\Model\HumanResource\Employee\EmployeeSalary;
-use App\Exports\Employee\EmployeeSalaryExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;

@@ -3,8 +3,8 @@
 namespace Tests\Feature\Master;
 
 use Tests\TestCase;
+use Tests\RefreshDatabase;
 use App\Model\Master\Warehouse;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class WarehouseTest extends TestCase
 {
@@ -57,7 +57,7 @@ class WarehouseTest extends TestCase
             $this->assertDatabaseHas('warehouses', [
                 'code' => $warehouse->code,
                 'name' => $warehouse->name,
-            ]);
+            ], 'tenant');
         }
 
         $response->assertStatus(200);
@@ -80,7 +80,7 @@ class WarehouseTest extends TestCase
 
         $response->assertJson(['data' => $data]);
 
-        $this->assertDatabaseHas('warehouses', $data);
+        $this->assertDatabaseHas('warehouses', $data, 'tenant');
 
         $response->assertStatus(200);
     }
@@ -97,6 +97,6 @@ class WarehouseTest extends TestCase
         $this->assertDatabaseMissing('warehouses', [
             'code' => $warehouse->code,
             'name' => $warehouse->name,
-        ]);
+        ], 'tenant');
     }
 }

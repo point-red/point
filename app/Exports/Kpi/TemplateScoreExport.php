@@ -2,20 +2,19 @@
 
 namespace App\Exports\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiTemplate;
-use App\Model\HumanResource\Kpi\KpiTemplateScore;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use App\Model\HumanResource\Kpi\KpiTemplate;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use App\Model\HumanResource\Kpi\KpiTemplateScore;
 
 class TemplateScoreExport implements FromCollection, WithTitle, WithHeadings
 {
-
     private $id;
 
     public function __construct(int $id)
     {
-        $this->id  = $id;
+        $this->id = $id;
     }
 
     public function collection()
@@ -41,7 +40,7 @@ class TemplateScoreExport implements FromCollection, WithTitle, WithHeadings
             'created_by',
             'updated_by',
             'created_at',
-            'updated_at'
+            'updated_at',
         ];
     }
 
@@ -49,5 +48,4 @@ class TemplateScoreExport implements FromCollection, WithTitle, WithHeadings
     {
         return 'Kpi Template Score';
     }
-
 }

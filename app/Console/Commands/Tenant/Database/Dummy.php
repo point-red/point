@@ -3,8 +3,8 @@
 namespace App\Console\Commands\Tenant\Database;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class Dummy extends Command
 {
@@ -48,7 +48,7 @@ class Dummy extends Command
 
         $this->line(Artisan::output());
 
-        $dbName = strtolower($this->argument('dbName'));
+        $dbName = strtolower($this->argument('db_name'));
 
         config()->set('database.connections.tenant.database', $dbName);
         DB::connection('tenant')->reconnect();

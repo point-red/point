@@ -2,15 +2,29 @@
 
 namespace App\Helpers\Inventory;
 
+use App\Exceptions\ItemQuantityInvalidException;
+use App\Exceptions\StockNotEnoughException;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Inventory\Inventory;
 
 class InventoryHelper
 {
+    /**
+     * @param $formId
+     * @param $warehouseId
+     * @param $itemId
+     * @param $quantity
+     * @param $price
+     * @throws StockNotEnoughException
+     * @throws ItemQuantityInvalidException
+     */
     private static function insert($formId, $warehouseId, $itemId, $quantity, $price)
     {
-        // TODO: Check if quantity is 0 then is not allowed
+        if ($quantity == 0) {
+            throw new ItemQuantityInvalidException(Item::findOrFail($itemId));
+        }
+
         $lastInventory = self::getLastReference($itemId, $warehouseId);
 
         $inventory = new Inventory;
@@ -21,18 +35,22 @@ class InventoryHelper
         $inventory->price = $price;
         $inventory->total_quantity = $quantity;
 
+        // check if stock is enough to prevent stock minus
+        if ($quantity < 0 && (!$lastInventory || $lastInventory->total_quantity < $quantity)) {
+            throw new StockNotEnoughException(Item::findOrFail($itemId));
+        }
+
         $lastTotalValue = 0;
         if ($lastInventory) {
             $inventory->total_quantity += $lastInventory->total_quantity;
             $lastTotalValue = $lastInventory->total_value;
         }
-        // increase stock
+
+        // if quantity > increase stock else decrease stock
         if ($quantity > 0) {
-            $inventory->total_value = $quantity * $inventory->price + $lastTotalValue;
-        }
-        // decrease stock
-        else {
-            $inventory->total_value = $inventory->total_quantity * $lastInventory->cogs;
+            $inventory->total_value = $lastTotalValue + ($quantity * $inventory->price);
+        } else {
+            $inventory->total_value = $lastTotalValue - ($quantity * $lastInventory->cogs);
         }
 
         if ($inventory->total_quantity > 0) {
@@ -42,8 +60,6 @@ class InventoryHelper
         }
 
         $inventory->save();
-
-        // TODO: add journal
     }
 
     public static function increase($formId, $warehouseId, $itemId, $quantity, $price)

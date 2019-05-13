@@ -78,6 +78,13 @@ trait ApiExceptionHandler
             ], $exception->getCode());
         }
 
+        if ($exception instanceof StockNotEnoughException || $exception instanceof ItemQuantityInvalidException) {
+            return response()->json([
+                'code' => 422,
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
+
         /* Handle server error or library error */
         if ($exception->getCode() >= 500 || ! $exception->getCode()) {
             return response()->json([

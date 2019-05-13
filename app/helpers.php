@@ -1,8 +1,10 @@
 <?php
 
 use Carbon\Carbon;
+use Illuminate\Support\Str;
+use App\Model\SettingJournal;
 
-if (! function_exists('log_array')) {
+if (! function_exists('log_object')) {
     /**
      * Log an object / array.
      *
@@ -37,7 +39,7 @@ if (! function_exists('get_invitation_code')) {
         $activationCode = null;
 
         do {
-            $random = strtoupper(str_random(12));
+            $random = strtoupper(Str::random(12));
             if (! \App\Model\Project\Project::where('invitation_code', $random)->first()) {
                 $activationCode = $random;
             }
@@ -69,7 +71,7 @@ if (! function_exists('get_invitation_code')) {
          */
         function pagination($query, $limit = null)
         {
-            if (!$limit) {
+            if (! $limit) {
                 return $query->paginate(1000);
             }
 
@@ -79,7 +81,7 @@ if (! function_exists('get_invitation_code')) {
 
     if (! function_exists('date_tz')) {
         /**
-         * Convert hour:minute:second into 00:00:00
+         * Convert hour:minute:second into 00:00:00.
          *
          * @param $datetime
          * @param null $fromTz
@@ -99,13 +101,14 @@ if (! function_exists('get_invitation_code')) {
 
             $date = new DateTime($datetime, new DateTimeZone($fromTz));
             $date->setTimezone(new DateTimeZone($toTz));
+
             return $date->format('Y-m-d H:i:s');
         }
     }
 
     if (! function_exists('date_from')) {
         /**
-         * Convert hour:minute:second into 00:00:00
+         * Convert hour:minute:second into 00:00:00.
          *
          * @param $datetime
          * @param bool $firstDateOfMonth
@@ -135,13 +138,14 @@ if (! function_exists('get_invitation_code')) {
 
             $date = new DateTime($datetime, new DateTimeZone($fromTz));
             $date->setTimezone(new DateTimeZone($toTz));
+
             return $date->format('Y-m-d H:i:s');
         }
     }
 
     if (! function_exists('date_to')) {
         /**
-         * Convert hour:minute:second into 00:00:00
+         * Convert hour:minute:second into 00:00:00.
          *
          * @param $datetime
          * @param bool $lastDateOfMonth
@@ -171,13 +175,14 @@ if (! function_exists('get_invitation_code')) {
 
             $date = new DateTime($datetime, new DateTimeZone($fromTz));
             $date->setTimezone(new DateTimeZone($toTz));
+
             return $date->format('Y-m-d H:i:s');
         }
     }
 
     if (! function_exists('convert_to_local_timezone')) {
         /**
-         * Convert datetime to local timezone
+         * Convert datetime to local timezone.
          *
          * @param $value
          * @param null $fromTz
@@ -200,7 +205,7 @@ if (! function_exists('get_invitation_code')) {
 
     if (! function_exists('convert_to_server_timezone')) {
         /**
-         * Convert datetime to server timezone
+         * Convert datetime to server timezone.
          *
          * @param $value
          * @param null $fromTz
@@ -218,6 +223,37 @@ if (! function_exists('get_invitation_code')) {
             }
 
             return Carbon::parse($value, $fromTz)->timezone($toTz)->toDateTimeString();
+        }
+    }
+
+    if (! function_exists('get_if_set')) {
+        /**
+         * Convert datetime to server timezone.
+         *
+         * @param $var
+         * @return string
+         */
+        function get_if_set(&$var)
+        {
+            if (isset($var)) {
+                return $var;
+            }
+        }
+    }
+
+    if (! function_exists('get_setting_journal')) {
+        /**
+         * Get default journal account for transaction.
+         *
+         * @param $feature
+         * @param $name
+         * @return string
+         */
+        function get_setting_journal($feature, $name)
+        {
+            $settingJournal = SettingJournal::where('feature', $feature)->where('name', $name)->first();
+
+            return $settingJournal->chart_of_account_id;
         }
     }
 }

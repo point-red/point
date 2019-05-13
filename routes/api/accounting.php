@@ -6,6 +6,7 @@ Route::prefix('accounting')->namespace('Accounting')->group(function () {
     Route::apiResource('chart-of-accounts', 'ChartOfAccountController');
     Route::apiResource('cut-offs', 'CutOffController');
     Route::apiResource('balance-sheets', 'BalanceSheetController');
+    Route::apiResource('journals', 'JournalController');
     // Route::apiResource('memo-journals', 'MemoJournalController');
     Route::prefix('ratio-report')->namespace('RatioReport')->group(function () {
         // Liquidity Ratio

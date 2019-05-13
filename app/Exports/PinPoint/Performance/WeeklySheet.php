@@ -4,22 +4,18 @@ namespace App\Exports\PinPoint\Performance;
 
 use App\Model\Master\Item;
 use App\Model\Master\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use App\Model\Plugin\PinPoint\SalesVisitation;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationTarget;
-use Illuminate\Contracts\View\View;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\FromView;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Events\AfterSheet;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnFormatting, WithEvents
 {
@@ -97,7 +93,7 @@ class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnForm
 
     public function queryValue($dateFrom, $dateTo)
     {
-        return SalesVisitation::join('forms', 'forms.id','=',SalesVisitation::getTableName().'.form_id')
+        return SalesVisitation::join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->join(SalesVisitationDetail::getTableName(), SalesVisitationDetail::getTableName().'.sales_visitation_id', '=', SalesVisitation::getTableName().'.id')
             ->groupBy('forms.created_by')
             ->selectRaw('sum(quantity * price) as value')
@@ -107,7 +103,7 @@ class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnForm
 
     public function queryDetails($dateFrom, $dateTo)
     {
-        return SalesVisitation::join('forms', 'forms.id','=',SalesVisitation::getTableName().'.form_id')
+        return SalesVisitation::join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->leftJoin(SalesVisitationDetail::getTableName(), SalesVisitationDetail::getTableName().'.sales_visitation_id', '=', SalesVisitation::getTableName().'.id')
             ->rightJoin('items', 'items.id', '=', SalesVisitationDetail::getTableName().'.item_id')
             ->groupBy(SalesVisitationDetail::getTableName().'.item_id')
@@ -207,14 +203,14 @@ class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnForm
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event) {
+            AfterSheet::class => function (AfterSheet $event) {
                 $event->sheet->getDelegate()->getStyle('A1:K2')->getFont()->setBold(true);
                 $event->sheet->getDelegate()->getStyle('A1:K2')->getFont()->setSize(13);
                 $styleArray = [
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                            'color' => ['argb' => '00000000']
+                            'color' => ['argb' => '00000000'],
                         ],
                     ],
                     'alignment' => [

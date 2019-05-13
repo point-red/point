@@ -2,8 +2,8 @@
 
 namespace App\Model\Plugin\PinPoint;
 
-use App\Model\Master\Item;
 use App\Model\PointModel;
+use App\Model\Master\Item;
 
 class SalesVisitationDetail extends PointModel
 {
@@ -18,7 +18,8 @@ class SalesVisitationDetail extends PointModel
         return $this->belongsTo(SalesVisitation::class, 'sales_visitation_id');
     }
 
-    public function item() {
+    public function item()
+    {
         return $this->belongsTo(Item::class);
     }
 }

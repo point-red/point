@@ -8,16 +8,14 @@ class Group extends MasterModel
 {
     protected $connection = 'tenant';
 
-    protected $fillable = ['name', 'code', 'type'];
-
-    private $masterNamespace = 'App\Model\Master\\';
+    protected $fillable = ['name', 'code', 'type', 'class_reference'];
 
     /**
      * Get all of the suppliers that are assigned this group.
      */
     public function suppliers()
     {
-        return $this->morphedByMany(get_class(new Supplier()), 'groupable');
+        return $this->morphedByMany(Supplier::class, 'groupable');
     }
 
     /**
@@ -25,7 +23,7 @@ class Group extends MasterModel
      */
     public function customers()
     {
-        return $this->morphedByMany(get_class(new Customer()), 'groupable');
+        return $this->morphedByMany(Customer::class, 'groupable');
     }
 
     /**
@@ -33,7 +31,7 @@ class Group extends MasterModel
      */
     public function items()
     {
-        return $this->morphedByMany(get_class(new Item()), 'groupable');
+        return $this->morphedByMany(Item::class, 'groupable');
     }
 
     /**
@@ -41,7 +39,7 @@ class Group extends MasterModel
      */
     public function services()
     {
-        return $this->morphedByMany(get_class(new Service()), 'groupable');
+        return $this->morphedByMany(Service::class, 'groupable');
     }
 
     /**
@@ -49,17 +47,6 @@ class Group extends MasterModel
      */
     public function allocations()
     {
-        return $this->morphedByMany(get_class(new Allocation()), 'groupable');
-    }
-
-    /**
-     * Set the group's type.
-     *
-     * @param  string  $value
-     * @return void
-     */
-    public function setTypeAttribute($value)
-    {
-        $this->attributes['type'] = $this->masterNamespace . capitalize($value);
+        return $this->morphedByMany(Allocation::class, 'groupable');
     }
 }

@@ -24,6 +24,10 @@ class CreateFormsTable extends Migration
             $table->unsignedInteger('updated_by')->index();
             $table->boolean('done')->default(false);
 
+            // Increment
+            $table->unsignedInteger('increment');
+            $table->unsignedMediumInteger('increment_group');
+
             $table->unsignedInteger('formable_id')->index();
             $table->string('formable_type');
 

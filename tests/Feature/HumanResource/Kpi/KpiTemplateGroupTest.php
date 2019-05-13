@@ -3,9 +3,9 @@
 namespace Tests\Feature\Master;
 
 use Tests\TestCase;
+use Tests\RefreshDatabase;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiTemplateGroup;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiTemplateGroupTest extends TestCase
 {
@@ -30,7 +30,7 @@ class KpiTemplateGroupTest extends TestCase
 
         $response->assertStatus(201);
 
-        $this->assertDatabaseHas('kpi_template_groups', $data);
+        $this->assertDatabaseHas('kpi_template_groups', $data, 'tenant');
     }
 
     /** @test */
@@ -56,7 +56,7 @@ class KpiTemplateGroupTest extends TestCase
         foreach ($kpiTemplateGroups as $kpiTemplateGroup) {
             $this->assertDatabaseHas('kpi_template_groups', [
                 'name' => $kpiTemplateGroup->name,
-            ]);
+            ], 'tenant');
         }
 
         $response->assertStatus(200);
@@ -77,7 +77,7 @@ class KpiTemplateGroupTest extends TestCase
 
         $response->assertJson(['data' => $data]);
 
-        $this->assertDatabaseHas('kpi_template_groups', $data);
+        $this->assertDatabaseHas('kpi_template_groups', $data, 'tenant');
 
         $response->assertStatus(200);
     }
@@ -93,6 +93,6 @@ class KpiTemplateGroupTest extends TestCase
 
         $this->assertDatabaseMissing('kpi_template_groups', [
             'id' => $kpiTemplateGroup->id,
-        ]);
+        ], 'tenant');
     }
 }

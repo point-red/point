@@ -1,11 +1,7 @@
 <?php
 
-use App\Model\Master\Person;
 use Illuminate\Database\Seeder;
-use App\Model\Master\PersonEmail;
-use App\Model\Master\PersonPhone;
 use Illuminate\Support\Facades\DB;
-use App\Model\Master\PersonAddress;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\HumanResource\Employee\EmployeeEmail;
 use App\Model\HumanResource\Employee\EmployeeGroup;
@@ -24,44 +20,13 @@ class DummyEmployeeSeeder extends Seeder
     {
         DB::connection('tenant')->beginTransaction();
 
-        $person = new Person;
-        $person->code = null;
-        $person->name = 'John Doe';
-        $person->personal_identity = 'PASSPORT 940001930211FA';
-        $person->save();
-
-        $personAddress = new PersonAddress;
-        $personAddress->person_id = $person->id;
-        $personAddress->address = '21th Street LA';
-        $personAddress->save();
-
-        $personPhone = new PersonPhone;
-        $personPhone->person_id = $person->id;
-        $personPhone->phone = '+1-0123-1234';
-        $personPhone->save();
-
-        $personEmail = new PersonEmail;
-        $personEmail->person_id = $person->id;
-        $personEmail->email = 'john.doe@doe.com';
-        $personEmail->save();
-
         $employeeGroup = new EmployeeGroup;
         $employeeGroup->name = 'Dummy Company';
         $employeeGroup->save();
 
         $employee = new Employee;
-        $employee->person_id = $person->id;
-        $employee->last_education = '';
-        $employee->birth_date = now();
-        $employee->birth_place = '';
-        $employee->gender = 'Male';
-        $employee->marital_status = 'Single';
-        $employee->married_with = null;
-        $employee->religion = 'Christian';
-        $employee->employee_group_id = $employeeGroup->id;
-        $employee->join_date = now();
-        $employee->job_title = 'Manager';
-        $employee->kpi_template_id = 1;
+        $employee->name = 'John Doe';
+        $employee->personal_identity = 'PASSPORT 940001930211FA';
         $employee->save();
 
         $employeeEmails = new EmployeeEmail;

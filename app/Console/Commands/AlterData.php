@@ -2,14 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationDetail;
-use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
-use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
+use App\Model\Accounting\ChartOfAccount;
+use App\Model\Master\Item;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class AlterData extends Command
 {
@@ -48,26 +46,29 @@ class AlterData extends Command
         foreach ($projects as $project) {
             $this->line('Clone ' . $project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
-            $this->line('Alter ' . $project->code);
-            config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
+            $this->line('Alter '.$project->code);
+            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
-            SalesVisitationInterestReason::where('name', '=', '')->delete();
-            SalesVisitationNotInterestReason::where('name', '=', '')->delete();
+            $chartOfAccounts = ChartOfAccount::all();
 
-            // TODO: ADD TAXABLE COLUMN IN ITEMS AND SERVICES
-            // TODO: ADD NOTES IN FORM
-            // TODO: EDIT EDITED NOTES IN FORM (FROM STRING TO TEXT)
-            // TODO: ITEM (CODE & BARCODE UNIQUE)
-            // $table->boolean('unit_default')->default(false);
-            // $table->boolean('unit_default_purchase')->default(false);
-            // $table->boolean('unit_default_sales')->default(false);
-//            ALTER TABLE pin_point_sales_visitations ADD COLUMN is_repeat_order BOOLEAN DEFAULT false
-//            DB::connection('tenant')->statement('ALTER TABLE `groups` ADD COLUMN code varchar(255)');
-//            DB::connection('tenant')->statement('ALTER TABLE `pin_point_sales_visitations` ADD COLUMN is_repeat_order BOOLEAN DEFAULT false AFTER payment_received');
+            if ($chartOfAccounts->count() == 0) {
+                $this->call('tenant:seed', [
+                    'db_name' => env('DB_DATABASE').'_'.strtolower($project->code),
+                    'class' => 'ChartOfAccountSeeder'
+                ]);
+            }
 
-//            $this->line('Migrate ' . $project->code);
-//            Artisan::call('tenant:migrate', ['db_name' => 'point_' . strtolower($project->code)]);
+            $items = Item::all();
+
+            $account = ChartOfAccount::where('name', 'sediaan barang jadi (manufaktur)')->first();
+
+            foreach ($items as $item) {
+                if ($item->chart_of_account_id == null) {
+                    $item->chart_of_account_id = $account->id;
+                    $item->save();
+                }
+            }
         }
     }
 }

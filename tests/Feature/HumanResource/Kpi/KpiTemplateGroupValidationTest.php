@@ -3,8 +3,8 @@
 namespace Tests\Feature\HumanResource\Kpi;
 
 use Tests\TestCase;
+use Tests\RefreshDatabase;
 use App\Model\HumanResource\Kpi\KpiTemplateGroup;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class KpiTemplateGroupValidationTest extends TestCase
 {
@@ -29,9 +29,7 @@ class KpiTemplateGroupValidationTest extends TestCase
         $response = $this->json('POST', 'api/v1/human-resource/kpi/template-groups', $data, [$this->headers]);
 
         $response->assertJsonStructure([
-            'error' => [
-                'errors' => ['kpi_template_id'],
-            ],
+            'errors' => ['kpi_template_id'],
         ]);
 
         $response->assertStatus(422);
@@ -44,9 +42,7 @@ class KpiTemplateGroupValidationTest extends TestCase
         $response = $this->json('PUT', 'api/v1/human-resource/kpi/template-groups/'.$kpiTemplateGroup->id, $data, [$this->headers]);
 
         $response->assertJsonMissing([
-            'error' => [
-                'errors' => ['kpi_template_id'],
-            ],
+            'errors' => ['kpi_template_id'],
         ]);
 
         $response->assertStatus(422);

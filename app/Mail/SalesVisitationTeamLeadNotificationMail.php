@@ -35,7 +35,7 @@ class SalesVisitationTeamLeadNotificationMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Sales Visitation Report - ' . date('d F Y', strtotime($this->date)))
+        return $this->subject('Sales Visitation Report - '.date('d F Y', strtotime($this->date)))
             ->view(['html' => 'emails.plugin.pinpoint.sales-visitation-team-lead-notification'])
             ->with([
                 'projectCode' => $this->projectCode,

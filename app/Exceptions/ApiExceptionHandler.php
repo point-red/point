@@ -69,6 +69,22 @@ trait ApiExceptionHandler
             ], $exception->getCode());
         }
 
+        // handle form rules exception
+        if ($exception instanceof IsReferencedException) {
+            return response()->json([
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
+                'referenced_by' => $exception->getReferenced(),
+            ], $exception->getCode());
+        }
+
+        if ($exception instanceof StockNotEnoughException || $exception instanceof ItemQuantityInvalidException) {
+            return response()->json([
+                'code' => 422,
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
+
         /* Handle server error or library error */
         if ($exception->getCode() >= 500 || ! $exception->getCode()) {
             return response()->json([

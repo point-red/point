@@ -5,9 +5,8 @@ namespace Tests;
 use App\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase extends PointTestCase
 {
     use CreatesApplication;
 
@@ -20,29 +19,23 @@ abstract class TestCase extends BaseTestCase
 
         Artisan::call('config:clear');
 
-        $this->getConnection(DB::getDefaultConnection())->disconnect();
-
-        config()->set('database.connections.tenant.driver', env('DB_TENANT_DRIVER'));
-        config()->set('database.connections.tenant.database', env('DB_TENANT_DATABASE'));
-
-        DB::connection('tenant')->reconnect();
-
-        Artisan::call('migrate:refresh', [
-            '--database' => 'tenant',
-            '--path' => 'database/migrations/tenant',
-            '--force' => true,
-        ]);
+        if (! defined('LARAVEL_START')) {
+            define('LARAVEL_START', microtime(true));
+        }
 
         $this->headers = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
+
+        DB::connection('mysql')->reconnect();
+        DB::connection('tenant')->reconnect();
     }
 
     protected function signIn()
     {
-        $this->user = factory(User::class)->create();
+        $user = User::first();
 
-        $this->actingAs($this->user, 'api');
+        $this->actingAs($user, 'api');
     }
 }

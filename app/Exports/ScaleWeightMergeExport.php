@@ -3,22 +3,21 @@
  * Created by PhpStorm.
  * User: blegoh
  * Date: 14/01/19
- * Time: 8:29
+ * Time: 8:29.
  */
 
 namespace App\Exports;
 
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Query\Builder;
 use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 
 class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, WithColumnFormatting
 {
-
     private $key = [
         'Date In' => 'date_in',
         'Time In' => 'time_in',
@@ -45,10 +44,10 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
         'Item Gross' => 'item_gross_weight',
         'Item Tare' => 'item_tare_weight',
         'Item Net' => 'item_net_weight',
-        'Item User' => 'item_user'
+        'Item User' => 'item_user',
     ];
 
-    public function __construct(string $dateFrom, string $dateTo, Array $headers, Array $cat = [])
+    public function __construct(string $dateFrom, string $dateTo, array $headers, array $cat = [])
     {
         $this->headers = $headers;
         $this->cat = $cat;
@@ -61,9 +60,9 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
      */
     public function query()
     {
-        $from_sub_q = "FROM " . config('database.connections.tenant.database') . ".scale_weight_items 
-                WHERE license_number = t.license_number AND time BETWEEN t.time_in AND t.time_out ) as";
-        $merge = DB::table(config('database.connections.tenant.database') . '.scale_weight_trucks as t')
+        $from_sub_q = 'FROM '.config('database.connections.tenant.database').'.scale_weight_items 
+                WHERE license_number = t.license_number AND time BETWEEN t.time_in AND t.time_out ) as';
+        $merge = DB::table(config('database.connections.tenant.database').'.scale_weight_trucks as t')
             ->whereRaw("time_in >= '$this->dateFrom'")
             ->whereRaw("time_in <= '$this->dateTo'")
             ->select('license_number', DB::raw("DATE_FORMAT(time_in, '%d/%m/%Y') as date_in"),
@@ -89,10 +88,12 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
             ->orderBy('t.time_in');
         //karena jika tidak ada yg dipilih akan ditampilkan semua
         //maka jika tidak ada yg dipilih saya tambahkan ~
-        if (count($this->cat) > 0)
+        if (count($this->cat) > 0) {
             $merge->whereIn('t.item', $this->cat);
-        else
+        } else {
             $merge->whereIn('t.item', ['~']);
+        }
+
         return $merge;
     }
 
@@ -114,11 +115,13 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
         $a = [];
         $x = ['Time In', 'Time Out', 'Time'];
         foreach ($this->headers as $header) {
-            if (in_array($header, $x))
-                $a[] = $row->{$this->key[$header]}." ";
-            else
+            if (in_array($header, $x)) {
+                $a[] = $row->{$this->key[$header]}.' ';
+            } else {
                 $a[] = $row->{$this->key[$header]};
+            }
         }
+
         return $a;
     }
 
@@ -136,6 +139,7 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
             }
             $i++;
         }
+
         return $format;
     }
 }

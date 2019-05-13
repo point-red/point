@@ -5,6 +5,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Item::class, function (Faker $faker) {
     return [
-        'name' => $faker->name
+        'chart_of_account_id' => null,
+        'name' => $faker->name,
     ];
 });

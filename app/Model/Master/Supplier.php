@@ -2,11 +2,15 @@
 
 namespace App\Model\Master;
 
-use App\Model\Accounting\Journal;
 use App\Model\MasterModel;
+use App\Model\Accounting\Journal;
+use App\Model\Finance\Payment\Payment;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 
 class Supplier extends MasterModel
 {
+    public static $morphName = 'Supplier';
+
     protected $connection = 'tenant';
 
     protected $fillable = [
@@ -18,7 +22,7 @@ class Supplier extends MasterModel
     ];
 
     /**
-     * Get all of the groups for the customer.
+     * Get all of the groups for the supplier.
      */
     public function groups()
     {
@@ -26,7 +30,7 @@ class Supplier extends MasterModel
     }
 
     /**
-     * Get all of the customer's contact persons.
+     * Get all of the supplier's contact persons.
      */
     public function contactPersons()
     {
@@ -34,7 +38,7 @@ class Supplier extends MasterModel
     }
 
     /**
-     * Get all of the customer's address.
+     * Get all of the supplier's address.
      */
     public function addresses()
     {
@@ -42,7 +46,7 @@ class Supplier extends MasterModel
     }
 
     /**
-     * Get all of the customer's phones.
+     * Get all of the supplier's phones.
      */
     public function phones()
     {
@@ -50,7 +54,7 @@ class Supplier extends MasterModel
     }
 
     /**
-     * Get all of the customer's emails.
+     * Get all of the supplier's emails.
      */
     public function emails()
     {
@@ -58,7 +62,7 @@ class Supplier extends MasterModel
     }
 
     /**
-     * Get all of the customer's banks.
+     * Get all of the supplier's banks.
      */
     public function banks()
     {
@@ -66,10 +70,23 @@ class Supplier extends MasterModel
     }
 
     /**
-     * Get all of the customer's journals.
+     * Get all of the supplier's journals.
      */
-    public function journalable()
+    public function journals()
     {
         return $this->morphMany(Journal::class, 'journalable');
+    }
+
+    /**
+     * Get the supplier's payment.
+     */
+    public function payments()
+    {
+        return $this->morphMany(Payment::class, 'paymentable');
+    }
+
+    public function purchaseReceives()
+    {
+        return $this->hasMany(PurchaseReceive::class);
     }
 }

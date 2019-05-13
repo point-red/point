@@ -2,6 +2,7 @@
 
 namespace App\Helpers\Journal;
 
+use App\Model\Form;
 use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
 
@@ -9,12 +10,13 @@ class BalanceHelper
 {
     public static function openingBalance($date, $options = [])
     {
-        $journals = Journal::select('chart_of_account_id')
-            ->addSelect(DB::raw('max(date) as date'))
+        $journals = Journal::join(Form::getTableName(), Form::getTableName('id'), '=', Journal::getTableName('form_id'))
+            ->select('chart_of_account_id')
+            ->addSelect(DB::raw('max(forms.date) as date'))
             ->addSelect(DB::raw('sum(debit) as debit'))
             ->addSelect(DB::raw('sum(credit) as credit'))
             ->with('chartOfAccount')
-            ->where('date', '<', date('Y-m-d 00:00:00', strtotime($date)))
+            ->where('forms.date', '<', date('Y-m-d 00:00:00', strtotime($date)))
             ->groupBy('chart_of_account_id');
 
         // Exclude account that doesn't have any value
@@ -27,13 +29,14 @@ class BalanceHelper
 
     public static function rangeBalance($fromDate, $untilDate, $options = [])
     {
-        $journals = Journal::select('chart_of_account_id')
-            ->addSelect(DB::raw('max(date) as date'))
+        $journals = Journal::join(Form::getTableName(), Form::getTableName('id'), '=', Journal::getTableName('form_id'))
+            ->select('chart_of_account_id')
+            ->addSelect(DB::raw('max(forms.date) as date'))
             ->addSelect(DB::raw('sum(debit) as debit'))
             ->addSelect(DB::raw('sum(credit) as credit'))
             ->with('chartOfAccount')
-            ->where('date', '>=', date('Y-m-d 00:00:00', strtotime($fromDate)))
-            ->where('date', '<', date('Y-m-d 00:00:00', strtotime($untilDate)))
+            ->where('forms.date', '>=', date('Y-m-d 00:00:00', strtotime($fromDate)))
+            ->where('forms.date', '<', date('Y-m-d 00:00:00', strtotime($untilDate)))
             ->groupBy('chart_of_account_id');
 
         // Exclude account that doesn't have any value
@@ -46,12 +49,13 @@ class BalanceHelper
 
     public static function endingBalance($date, $options = [])
     {
-        $journals = Journal::select('chart_of_account_id')
-            ->addSelect(DB::raw('max(date) as date'))
+        $journals = Journal::join(Form::getTableName(), Form::getTableName('id'), '=', Journal::getTableName('form_id'))
+            ->select('chart_of_account_id')
+            ->addSelect(DB::raw('max(forms.date) as date'))
             ->addSelect(DB::raw('sum(debit) as debit'))
             ->addSelect(DB::raw('sum(credit) as credit'))
             ->with('chartOfAccount')
-            ->where('date', '<=', date('Y-m-d 23:59:59', strtotime($date)))
+            ->where('forms.date', '<=', date('Y-m-d 23:59:59', strtotime($date)))
             ->groupBy('chart_of_account_id');
 
         // Exclude account that doesn't have any value

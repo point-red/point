@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 use App\Model\HumanResource\Kpi\KpiTemplate;
 use App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateResource;
-use App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateCollection;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplate\StoreKpiTemplateRequest;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplate\UpdateKpiTemplateRequest;
-use Illuminate\Support\Facades\DB;
 
 class KpiTemplateController extends Controller
 {
@@ -26,10 +25,10 @@ class KpiTemplateController extends Controller
     {
         $templates = KpiTemplate::with('groups.indicators.scores')
             ->select('kpi_templates.*')
-            ->withCount(['indicators as target' => function($query) {
+            ->withCount(['indicators as target' => function ($query) {
                 $query->select(DB::raw('sum(target)'));
             }])
-            ->withCount(['indicators as weight' => function($query) {
+            ->withCount(['indicators as weight' => function ($query) {
                 $query->select(DB::raw('sum(weight)'));
             }])
             ->paginate($request->input('limit') ?? 50);
@@ -65,10 +64,10 @@ class KpiTemplateController extends Controller
         $templates = KpiTemplate::with('groups.indicators.scores')
             ->select('kpi_templates.*')
             ->where('kpi_templates.id', $id)
-            ->withCount(['indicators as target' => function($query) {
+            ->withCount(['indicators as target' => function ($query) {
                 $query->select(DB::raw('sum(target)'));
             }])
-            ->withCount(['indicators as weight' => function($query) {
+            ->withCount(['indicators as weight' => function ($query) {
                 $query->select(DB::raw('sum(weight)'));
             }])
             ->first();

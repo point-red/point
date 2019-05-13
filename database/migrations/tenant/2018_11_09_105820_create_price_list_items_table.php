@@ -17,10 +17,10 @@ class CreatePriceListItemsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('pricing_group_id')->index();
             $table->unsignedInteger('item_unit_id')->index();
-            $table->date('date');
-            $table->decimal('price', 65, 30);
-            $table->decimal('discount_percent', 33, 30)->nullable();
-            $table->decimal('discount_value', 65, 30)->default(0);
+            $table->datetime('date');
+            $table->unsignedDecimal('price', 65, 30);
+            $table->unsignedDecimal('discount_percent', 33, 30)->nullable();
+            $table->unsignedDecimal('discount_value', 65, 30)->default(0);
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();

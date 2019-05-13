@@ -21,8 +21,8 @@ class Email extends MasterModel
         if ($emails) {
             // Delete email
             $ids = array_column($emails, 'id');
-            Email::where('emailable_id', $obj->id)
-                ->where('emailable_type', get_class($obj))
+            self::where('emailable_id', $obj->id)
+                ->where('emailable_type', get_class($obj)::$morphName)
                 ->whereNotIn('id', $ids)->delete();
 
             for ($i = 0; $i < count($emails); $i++) {
@@ -32,19 +32,18 @@ class Email extends MasterModel
                 // If email has id then update existing email
                 // If not then create new email
                 if (isset($emails[$i]['id'])) {
-                    $email = Email::findOrFail($emails[$i]['id']);
+                    $email = self::findOrFail($emails[$i]['id']);
                 } else {
-                    $email = new Email;
+                    $email = new self;
                 }
 
                 $email->label = $emails[$i]['label'] ?? null;
                 $email->email = $emails[$i]['email'];
                 $email->is_main = $emails[$i]['is_main'] ?? false;
-                $email->emailable_type = get_class($obj);
+                $email->emailable_type = get_class($obj)::$morphName;
                 $email->emailable_id = $obj->id;
                 $email->save();
             }
         }
-
     }
 }

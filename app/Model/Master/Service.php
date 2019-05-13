@@ -6,6 +6,8 @@ use App\Model\MasterModel;
 
 class Service extends MasterModel
 {
+    public static $morphName = 'Service';
+
     protected $connection = 'tenant';
 
     protected $fillable = [

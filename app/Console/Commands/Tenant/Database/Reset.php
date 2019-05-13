@@ -6,7 +6,6 @@ use App\Model\Master\User;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 
 class Reset extends Command
 {
@@ -41,20 +40,21 @@ class Reset extends Command
      */
     public function handle()
     {
+        $this->line('Start reset database tenant');
         $project = Project::where('code', $this->argument('project_code'))->first();
 
         if (! $project) {
-            $this->line('There is no project "' . strtolower($this->argument('project_code')) . '" in database');
+            $this->line('There is no project "'.strtolower($this->argument('project_code')).'" in database');
+
             return;
         }
 
-        $this->line('Reset project ' . $project->code . ' started');
-
-        DB::connection('tenant')->beginTransaction();
+        $this->line('Reset project '.$project->code.' started');
 
         // Recreate new database for tenant project
-        $dbName = 'point_'.strtolower($project->code);
+        $dbName = env('DB_DATABASE').'_'.strtolower($project->code);
         $this->line('1/4. Recreate database');
+        Artisan::call('tenant:database:delete', ['db_name' => $dbName]);
         Artisan::call('tenant:database:create', ['db_name' => $dbName]);
         $this->line('2/4. Migrate database');
         Artisan::call('tenant:migrate', ['db_name' => $dbName]);
@@ -76,8 +76,6 @@ class Reset extends Command
         $this->line('4/4. Seed required data');
         Artisan::call('tenant:seed:first', ['db_name' => $dbName]);
 
-        DB::connection('tenant')->commit();
-
-        $this->line('Reset project ' . $project->code . ' finished');
+        $this->line('Reset project '.$project->code.' finished');
     }
 }

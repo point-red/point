@@ -3,8 +3,8 @@
 namespace Tests\Feature\Master;
 
 use Tests\TestCase;
+use Tests\RefreshDatabase;
 use App\Model\Master\Warehouse;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class WarehouseValidationTest extends TestCase
 {
@@ -29,9 +29,7 @@ class WarehouseValidationTest extends TestCase
         $response = $this->json('POST', 'api/v1/master/warehouses', $data, [$this->headers]);
 
         $response->assertJsonStructure([
-            'error' => [
-                'errors' => ['code', 'name'],
-            ],
+            'errors' => ['code', 'name'],
         ]);
 
         $response->assertStatus(422);

@@ -2,9 +2,60 @@
 
 namespace App\Model\Purchase\PurchaseOrder;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\Master\Item;
+use App\Model\TransactionModel;
+use App\Model\Master\Allocation;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
 
-class PurchaseOrderItem extends Model
+class PurchaseOrderItem extends TransactionModel
 {
-    //
+    protected $connection = 'tenant';
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'purchase_request_item_id',
+        'item_id',
+        'item_name',
+        'quantity',
+        'price',
+        'discount_percent',
+        'discount_value',
+        'taxable',
+        'unit',
+        'converter',
+        'notes',
+        'allocation_id',
+    ];
+
+    protected $casts = [
+        'quantity' => 'double',
+        'price' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double',
+        'converter' => 'double',
+    ];
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
+
+    public function allocation()
+    {
+        return $this->belongsTo(Allocation::class);
+    }
+
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(PurchaseOrder::class);
+    }
+
+    public function purchaseReceiveItems()
+    {
+        return $this->hasMany(PurchaseReceiveItem::class)
+            ->whereHas('purchaseReceive', function($query) {
+                $query->active();
+            });
+    }
 }

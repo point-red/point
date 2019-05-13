@@ -2,14 +2,16 @@
 
 namespace App\Model\Master;
 
+use App\Model\MasterModel;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class User extends MasterModel
 {
     protected $connection = 'tenant';
 
     protected $guard_name = 'api';
+
+    protected $user_logs = false;
 
     use HasRoles;
 

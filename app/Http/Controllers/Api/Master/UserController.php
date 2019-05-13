@@ -21,7 +21,7 @@ class UserController extends ApiController
      */
     public function index(Request $request)
     {
-        return new UserCollection(TenantUser::with('roles')->paginate($limit ?? 100));
+        return new UserCollection(TenantUser::eloquentFilter($request)->with('roles')->paginate($limit ?? 100));
     }
 
     /**

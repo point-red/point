@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Http\Resources\ApiResource;
-use App\Http\Resources\Master\PriceListCollection;
 use App\Model\Master\Item;
-use App\Model\Master\ItemUnit;
-use App\Model\Master\PriceListItem;
-use App\Model\Master\PricingGroup;
 use Illuminate\Http\Request;
+use App\Model\Master\PricingGroup;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\PriceListItem;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Master\PriceListCollection;
 
 class PriceListItemController extends Controller
 {
@@ -21,28 +20,68 @@ class PriceListItemController extends Controller
      */
     public function index(Request $request)
     {
-        $date = $request->get('date') ?? now();
+        /* Get all available pricing groups */
+        $availablePricingGroups = PricingGroup::select('id', 'label', 'notes')->get()->toArray();
+        $date = $request->get('date') ?? date('Y-m-d H:i:s');
 
-        $pricingGroupId = $request->get('pricing_group_id');
+        $items = Item::eloquentFilter($request)->with('units.prices');
+        $items = pagination($items, $request->get('limit'));
 
-        $priceListItem = ItemUnit::join('items', Item::getTableName().'.id', '=', ItemUnit::getTableName().'.item_id')
-            ->eloquentFilter($request)
-            ->with(['pricing' => function($q) use ($pricingGroupId, $date) {
-                $q->rightJoin(PricingGroup::getTableName(), PricingGroup::getTableName().'.id', '=', PriceListItem::getTableName().'.pricing_group_id');
-                if ($pricingGroupId) {
-                    $q->where(PricingGroup::getTableName().'.id', $pricingGroupId);
+        $items->getCollection()->transform(function ($item) use ($date, $availablePricingGroups) {
+            $units = $item->units->map(function ($unit) use ($date, $availablePricingGroups) {
+                $priceGroups = $unit->prices
+                    ->filter(function ($priceGroup) use ($date) {
+                        /* Filter out price with date greater than $date */
+                        return $priceGroup->pivot->date <= $date;
+                    })
+                    ->sortByDESC(function ($priceGroup) {
+                        /* Sort by date, latest date on top */
+                        return $priceGroup->pivot->date;
+                    })
+                    ->groupBy('id')
+                    ->map(function ($priceGroup) {
+                        /* Latest price group is still on the top */
+                        /* Group them together then select the first price group */
+                        return $priceGroup->first();
+                    })
+                    ->toArray();
+
+                $endResultPriceGroups = [];
+
+                /* Iterate through $availablePricingGroups and set its price */
+                foreach ($availablePricingGroups as $availablePricingGroup) {
+                    $price = 0;
+                    $discount_value = 0;
+                    $discount_percent = null;
+                    foreach ($priceGroups as $priceGroup) {
+                        if ($priceGroup['id'] == $availablePricingGroup['id']) {
+                            $price = floatval($priceGroup['pivot']['price']);
+                            $discount_value = floatval($priceGroup['pivot']['discount_value']);
+                            $discount_percent = $priceGroup['pivot']['discount_percent'];
+                            if (! is_null($discount_percent)) {
+                                $discount_percent = floatval($discount_percent);
+                            }
+                            break;
+                        }
+                    }
+                    $endResultPriceGroups[] = $availablePricingGroup + [
+                        'price' => $price,
+                        'discount_value' => $discount_value,
+                        'discount_percent' => $discount_percent,
+                    ];
                 }
-                $q->where('date', '<=', $date)
-                    ->select(PriceListItem::getTableName().'.price')
-                    ->addSelect(PriceListItem::getTableName().'.discount_percent')
-                    ->addSelect(PriceListItem::getTableName().'.discount_value')
-                    ->addSelect('item_unit_id')
-                    ->addSelect('pricing_group_id');
-            }])->with('item')->select(ItemUnit::getTableName().'.*');
+                $unit = $unit->toArray();
+                $unit['prices'] = $endResultPriceGroups;
 
-        $priceListItem = pagination($priceListItem, $request->get('limit'));
+                return $unit;
+            });
+            $item = $item->toArray();
+            $item['units'] = $units;
 
-        return new PriceListCollection($priceListItem);
+            return $item;
+        });
+
+        return new PriceListCollection($items);
     }
 
     /**

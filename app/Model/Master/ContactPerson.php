@@ -21,17 +21,17 @@ class ContactPerson extends MasterModel
         if ($contactPersons) {
             // Delete contact
             $ids = array_column($contactPersons, 'id');
-            ContactPerson::where('contactable_id', $obj->id)
-                ->where('contactable_type', get_class($obj))
+            self::where('contactable_id', $obj->id)
+                ->where('contactable_type', get_class($obj)::$morphName)
                 ->whereNotIn('id', $ids)->delete();
 
             for ($i = 0; $i < count($contactPersons); $i++) {
                 // If contact has id then update existing contact
                 // If not then create new contact
                 if (isset($contactPersons[$i]['id'])) {
-                    $contactPerson = ContactPerson::findOrFail($contactPersons[$i]['id']);
+                    $contactPerson = self::findOrFail($contactPersons[$i]['id']);
                 } else {
-                    $contactPerson = new ContactPerson;
+                    $contactPerson = new self;
                 }
 
                 $contactPerson->code = $contactPersons[$i]['code'] ?? null;
@@ -40,11 +40,10 @@ class ContactPerson extends MasterModel
                 $contactPerson->name = $contactPersons[$i]['name'];
                 $contactPerson->phone = $contactPersons[$i]['phone'] ?? null;
                 $contactPerson->email = $contactPersons[$i]['email'] ?? null;
-                $contactPerson->contactable_type = get_class($obj);
+                $contactPerson->contactable_type = get_class($obj)::$morphName;
                 $contactPerson->contactable_id = $obj->id;
                 $contactPerson->save();
             }
         }
-
     }
 }

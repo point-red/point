@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Model\Master\Item;
+use Illuminate\Http\Request;
+use App\Model\Master\ItemUnit;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
-use App\Http\Controllers\Controller;
-use App\Model\Master\Group;
-use App\Model\Master\Item;
-use App\Model\Master\ItemUnit;
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {
@@ -25,10 +24,14 @@ class ItemController extends Controller
     {
         $items = Item::eloquentFilter($request);
 
-        if ($request->get('group_id')) {
+        if ($request->has('group_id')) {
             $items = $items->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
                 ->where('groupables.groupable_type', Item::class)
-                ->where('groupables.group_id', '=', 1);
+                ->where('groupables.group_id', '=', $request->get('group_id'));
+        }
+
+        if ($request->get('below_stock_reminder') == true) {
+            $items = $items->whereRaw('items.stock < items.stock_reminder');
         }
 
         $items = pagination($items, $request->get('limit'));
@@ -41,81 +44,56 @@ class ItemController extends Controller
      *
      * @param StoreItemRequest $request
      * @return \App\Http\Resources\ApiResource
+     * @throws \Throwable
      */
     public function store(StoreItemRequest $request)
     {
-        DB::connection('tenant')->beginTransaction();
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+            $item = Item::create($request->all());
+            $item->load('units', 'groups');
 
-        $item = new Item;
-        $item->fill($request->all());
-        $item->save();
+            return new ApiResource($item);
+        });
 
-        $units = $request->get('units');
-        $unitsToBeInserted = [];
-        if ($units) {
-            foreach($units as $unit) {
-                $itemUnit = new ItemUnit();
-                $itemUnit->fill($unit);
-                array_push($unitsToBeInserted, $itemUnit);
-            }
-        }
-        $item->units()->saveMany($unitsToBeInserted);
-
-        $item->groups()->attach($request->get('groups'));
-        
-        DB::connection('tenant')->commit();
-        
-        return new ApiResource($item);
+        return $result;
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreItemRequest $request
+     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
      */
-    public function storeMany(StoreItemRequest $request)
+    public function storeMany(Request $request)
     {
-        DB::connection('tenant')->beginTransaction();
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+            $items = $request->get('items');
+            $collection = [];
 
-        $items = $request->get('items');
+            foreach ($items as $item) {
+                $item = Item::create($item);
+                $item->load('units', 'groups');
 
-        foreach ($items as $item) {
-            $newItem = new Item;
-            $newItem->fill($item);
-            $newItem->save();
-
-            $units = $item['units'];
-            $unitsToBeInserted = [];
-            if ($units) {
-                foreach($units as $unit) {
-                    $itemUnit = new ItemUnit();
-                    $itemUnit->fill($unit);
-                    array_push($unitsToBeInserted, $itemUnit);
-                }
+                array_push($collection, $item);
             }
-            $newItem->units()->saveMany($unitsToBeInserted);
 
-            $newItem->groups()->attach($item['groups']);
-        }
+            return new ApiCollection(collect($collection));
+        });
 
-        DB::connection('tenant')->commit();
-
-        return response()->json([], 201);
+        return $result;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param  int $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $item = Item::eloquentFilter(request())
-            ->with('groups')
-            ->with('units')
-            ->findOrFail($id);
+        $item = Item::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($item);
     }
@@ -137,28 +115,25 @@ class ItemController extends Controller
 
         $units = $request->get('units');
         $unitsToBeInserted = [];
-
-        if ($units) {
-            ItemUnit::where('item_id', $id)->whereNotIn('id', array_column($units, 'id'))->delete();
-            foreach($units as $unit) {
-                if (isset($unit['id'])) {
-                    $itemUnit = ItemUnit::where('id', $unit['id'])->first();
-                } else {
-                    $itemUnit = new ItemUnit();
-                }
-                $itemUnit->fill($unit);
-                array_push($unitsToBeInserted, $itemUnit);
+        ItemUnit::where('item_id', $id)->whereNotIn('id', array_column($units, 'id'))->delete();
+        foreach ($units as $unit) {
+            if (isset($unit['id'])) {
+                $itemUnit = ItemUnit::where('id', $unit['id'])->first();
+            } else {
+                $itemUnit = new ItemUnit();
             }
+            $itemUnit->fill($unit);
+            array_push($unitsToBeInserted, $itemUnit);
         }
         $item->units()->saveMany($unitsToBeInserted);
 
         $groups = $request->get('groups');
-        if (is_array($groups)) {
+        if (isset($groups)) {
             $item->groups()->sync($groups);
         }
-        
+
         DB::connection('tenant')->commit();
-        
+
         return new ApiResource($item);
     }
 
@@ -182,7 +157,7 @@ class ItemController extends Controller
             $units = $item['units'];
             $unitsToBeInserted = [];
             if ($units) {
-                foreach($units as $unit) {
+                foreach ($units as $unit) {
                     $itemUnit = new ItemUnit();
                     $itemUnit->fill($unit);
                     array_push($unitsToBeInserted, $itemUnit);
@@ -206,7 +181,18 @@ class ItemController extends Controller
      */
     public function destroy($id)
     {
+        $relationMethods = ['inventories'];
+
         $item = Item::findOrFail($id);
+
+        foreach ($relationMethods as $relationMethod) {
+            if ($item->$relationMethod()->count() > 0) {
+                return response()->json([
+                    'message' => 'Relation "'.$relationMethod.'" exists',
+                ], 422);
+            }
+        }
+
         $item->delete();
 
         return response()->json([], 204);

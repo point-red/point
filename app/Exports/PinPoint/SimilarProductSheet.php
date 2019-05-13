@@ -2,16 +2,16 @@
 
 namespace App\Exports\PinPoint;
 
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
-use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\BeforeExport;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use App\Model\Plugin\PinPoint\SalesVisitation;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
 
 class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize
 {
@@ -28,13 +28,13 @@ class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithT
     }
 
     /**
-    * @return \Illuminate\Database\Eloquent\Builder
-    */
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function query()
     {
         return SalesVisitationSimilarProduct::query()
-            ->join(SalesVisitation::getTableName(),SalesVisitation::getTableName() . '.id', '=', SalesVisitationSimilarProduct::getTableName() . '.sales_visitation_id')
-            ->join('forms', 'forms.id', '=', SalesVisitation::getTableName() . '.form_id')
+            ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationSimilarProduct::getTableName().'.sales_visitation_id')
+            ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
             ->select(SalesVisitationSimilarProduct::getTableName().'.*')
             ->addSelect(SalesVisitation::getTableName().'.name as customerName');
@@ -63,7 +63,7 @@ class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithT
         return [
             date('Y-m-d', strtotime($row->salesVisitation->form->date)),
             date('H:i', strtotime($row->salesVisitation->form->date)),
-            $row->salesVisitation->form->createdBy->first_name . ' ' . $row->salesVisitation->form->createdBy->last_name,
+            $row->salesVisitation->form->createdBy->first_name.' '.$row->salesVisitation->form->createdBy->last_name,
             $row->customerName,
             $row->name,
         ];
@@ -83,10 +83,10 @@ class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithT
     public function registerEvents(): array
     {
         return [
-            BeforeExport::class  => function(BeforeExport $event) {
+            BeforeExport::class  => function (BeforeExport $event) {
                 $event->writer->setCreator('Point');
             },
-            AfterSheet::class => function(AfterSheet $event) {
+            AfterSheet::class => function (AfterSheet $event) {
                 $event->sheet->getDelegate()->getStyle('A1:E1')->getFont()->setBold(true);
                 $styleArray = [
                     'borders' => [

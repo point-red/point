@@ -22,6 +22,4 @@ class PriceListCollection extends ResourceCollection
             ],
         ];
     }
-
-
 }

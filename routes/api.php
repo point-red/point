@@ -23,14 +23,22 @@ Route::prefix('v1')->namespace('Api')->group(function () {
 
     // This routes below require authentication
     Route::middleware('auth:api')->group(function () {
+        Route::post('send-email', 'EmailServiceController@send');
         Route::post('auth-user', 'AuthUserController@show');
         require base_path('routes/api/account.php');
         require base_path('routes/api/project.php');
 
+        // Global Transaction
+        Route::resource('transactions', 'TransactionController');
+
         // Tenant
         require base_path('routes/api/master.php');
+        require base_path('routes/api/purchase.php');
+        require base_path('routes/api/sales.php');
+        require base_path('routes/api/finance.php');
         require base_path('routes/api/accounting.php');
         require base_path('routes/api/human-resource.php');
+        require base_path('routes/api/inventory.php');
 
         // Plugin
         require base_path('routes/api/plugin/scale-weight.php');

@@ -2,21 +2,26 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
+use App\Http\Resources\ApiCollection;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Accounting\ChartOfAccountType;
-use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountTypeCollection;
 
 class ChartOfAccountTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountTypeCollection
+     * @param Request $request
+     * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new ChartOfAccountTypeCollection(ChartOfAccountType::all());
+        $types = ChartOfAccountType::eloquentFilter($request);
+
+        $types = pagination($types, $request->get('limit'));
+
+        return new ApiCollection($types);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use Illuminate\Support\Str;
 use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
@@ -18,7 +19,7 @@ class LoginController extends Controller
     public function index(LoginRequest $request)
     {
         // check username for login is name or email
-        $usernameLabel = str_contains($request->username, '@') ? 'email' : 'name';
+        $usernameLabel = Str::contains($request->username, '@') ? 'email' : 'name';
 
         $attempt = auth()->guard('web')->attempt([
             $usernameLabel => $request->username,

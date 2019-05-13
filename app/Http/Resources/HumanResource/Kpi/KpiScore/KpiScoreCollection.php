@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources\HumanResource\Kpi\KpiScore;
 
 use App\Model\HumanResource\Kpi\KpiScore;
@@ -17,7 +18,7 @@ class KpiScoreCollection extends ResourceCollection
         $this->collection->transform(function (KpiScore $kpiScore) {
             return new KpiScoreResource($kpiScore);
         });
-        
+
         return parent::toArray($request);
     }
 }

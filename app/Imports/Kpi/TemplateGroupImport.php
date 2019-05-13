@@ -2,10 +2,9 @@
 
 namespace App\Imports\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiTemplateGroup;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\ToModel;
+use App\Model\HumanResource\Kpi\KpiTemplateGroup;
 
 class TemplateGroupImport implements ToCollection
 {
@@ -22,7 +21,7 @@ class TemplateGroupImport implements ToCollection
                 $kpiTemplateGroup->save();
 
                 array_push($templateGroupId, [
-                    $row[0] => $kpiTemplateGroup->id
+                    $row[0] => $kpiTemplateGroup->id,
                 ]);
             }
             $i = $i + 1;

@@ -2,6 +2,7 @@
 
 namespace App\Model\Inventory\InventoryAudit;
 
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
@@ -42,7 +43,6 @@ class InventoryAudit extends TransactionModel
         $items = $data['items'];
         $inventoryAuditItems = [];
         foreach ($items as $key => $item) {
-            // TODO validation $item
             $inventoryAuditItem = new InventoryAuditItem;
             $inventoryAuditItem->fill($item);
 
@@ -51,19 +51,19 @@ class InventoryAudit extends TransactionModel
 
         $inventoryAudit->items()->saveMany($inventoryAuditItems);
 
-        self::updateStock($data);
+        self::updateStock($inventoryAudit);
 
         return $inventoryAudit;
     }
 
-    private static function updateStock($data)
+    private static function updateStock($inventoryAudit)
     {
-        $itemIds = array_column($data['items'], 'item_id');
-        $items = Item::whereIn('id', $itemIds)->get();
-
-        foreach ($items as $key => $item) {
-            $item->stock = $data['items'][$key]['quantity'];
-            $item->save();
+        foreach ($inventoryAudit->items as $inventoryAuditItem) {
+            InventoryHelper::audit($inventoryAudit->form->id,
+                $inventoryAudit->warehouse_id,
+                $inventoryAuditItem->item_id,
+                $inventoryAuditItem->quantity,
+                $inventoryAuditItem->price);
         }
     }
 }

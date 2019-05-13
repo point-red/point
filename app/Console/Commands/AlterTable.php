@@ -46,44 +46,7 @@ class AlterTable extends Command
 
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-
-            DB::connection('tenant')->statement('ALTER TABLE `chart_of_account_types` ADD CONSTRAINT `chart_of_account_type_name_unique` UNIQUE (`name`)');
-            DB::connection('tenant')->statement('ALTER TABLE `chart_of_account_groups` ADD CONSTRAINT `chart_of_account_group_name_unique` UNIQUE (`name`)');
-            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD CONSTRAINT `chart_of_accounts_number_name_unique` UNIQUE (`number`,`name`)');
-            DB::connection('tenant')->statement('ALTER TABLE `item_units` MODIFY `label` varchar(5)');
-            DB::connection('tenant')->statement('ALTER TABLE `items` MODIFY `stock_reminder` decimal(65,30) unsigned NOT NULL default 0');
-            DB::connection('tenant')->statement('ALTER TABLE `items` ADD `stock` decimal(65,30) unsigned NOT NULL default 0 after `disabled`');
-            DB::connection('tenant')->statement('ALTER TABLE `groups` ADD `class_reference` varchar(255) not null after `type`');
-            DB::connection('tenant')->statement('ALTER TABLE `groups` MODIFY `type` varchar(255) null');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD `increment` integer(10) unsigned not null after `done`');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD `increment_group` mediumint(8) unsigned not null after `increment`');
-            DB::connection('tenant')->statement('ALTER TABLE `form_approvals` MODIFY `expired_at` datetime not null');
-            DB::connection('tenant')->statement('ALTER TABLE `form_approvals` MODIFY `approval_at` datetime null');
-            DB::connection('tenant')->statement('ALTER TABLE `form_approvals` ADD `approved` tinyint(1) default null after `approval_at`');
-            DB::connection('tenant')->statement('ALTER TABLE `form_cancellations` MODIFY `expired_at` datetime not null');
-            DB::connection('tenant')->statement('ALTER TABLE `form_cancellations` MODIFY `approval_at` datetime null');
-            DB::connection('tenant')->statement('ALTER TABLE `form_cancellations` ADD `approved` tinyint(1) default null after `approval_at`');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD `form_id` integer(10) unsigned not null after `id`');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD `form_id_reference` integer(10) unsigned after `form_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` MODIFY `journalable_id` integer(10) unsigned');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` DROP FOREIGN KEY `journals_form_number_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` DROP INDEX `journals_form_number_index`');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` DROP FOREIGN KEY `journals_form_number_reference_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` DROP INDEX `journals_form_number_reference_index`');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` DROP COLUMN `form_number`');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` DROP COLUMN `form_number_reference`');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD CONSTRAINT `journals_form_id_foreign` FOREIGN KEY (`form_id`) references forms (`id`)');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD INDEX `journals_form_id_index` (`form_id`)');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD CONSTRAINT `journals_form_id_reference_foreign` FOREIGN KEY (`form_id_reference`) references forms (`id`)');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD INDEX `journals_form_id_reference_index` (`form_id_reference`)');
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN `date`');
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP FOREIGN KEY `inventories_form_number_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN `form_number`');
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD `form_id` integer(10) unsigned not null after `id`');
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD CONSTRAINT `inventories_form_id_foreign` FOREIGN KEY (`form_id`) references forms (`id`)');
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD INDEX `inventories_form_id_index` (`form_id`)');
-            DB::connection('tenant')->statement('ALTER TABLE `price_list_items` MODIFY `date` datetime not null');
-            DB::connection('tenant')->statement('ALTER TABLE `price_list_services` MODIFY `date` datetime not null');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD `is_audit` tinyint(1) default 0 after `need_recalculate`');
         }
     }
 }

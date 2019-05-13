@@ -76,6 +76,25 @@ class InventoryHelper
         self::insert($formId, $warehouseId, $itemId, -abs($quantity), 0);
     }
 
+    public static function audit($formId, $warehouseId, $itemId, $quantity, $price)
+    {
+        Item::where('id', $itemId)->update([
+            'stock' => $quantity
+        ]);
+
+        $inventory = new Inventory;
+        $inventory->form_id = $formId;
+        $inventory->warehouse_id = $warehouseId;
+        $inventory->item_id = $itemId;
+        $inventory->quantity = 0;
+        $inventory->price = 0;
+        $inventory->cogs = $price;
+        $inventory->total_quantity = $quantity;
+        $inventory->total_value = $quantity * $price;
+        $inventory->is_audit = true;
+        $inventory->save();
+    }
+
     /**
      * Get last reference from inventory
      * Usually we will used it for get last stock or value of some item in warehouse.

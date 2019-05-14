@@ -3,10 +3,7 @@
 namespace App\Model\Finance\Payment;
 
 use App\Model\Accounting\ChartOfAccount;
-use App\Model\HumanResource\Employee\Employee;
 use App\Model\Form;
-use App\Model\Master\Customer;
-use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
@@ -86,12 +83,12 @@ class Payment extends TransactionModel
 
         $form->formable_id = $payment->id;
         $form->formable_type = self::$morphName;
+        $form->increment = self::getLastPaymentIncrement($payment, $data['increment_group']);
         $form->generateFormNumber(
-            self::generateFormNumber($payment, $data['number'] ?? null, $data['increment_group']),
+            self::generateFormNumber($payment, $data['number'] ?? null, $form->increment),
             $data['paymentable_id'],
             $data['paymentable_id']
         );
-
         $form->save();
 
         self::updateReferenceDone($paymentDetails);
@@ -117,36 +114,16 @@ class Payment extends TransactionModel
         }, 0);
     }
 
-    private static function generateFormNumber($payment, $number, $incrementGroup)
+    private static function generateFormNumber($payment, $number, $increment)
     {
         $defaultFormat = '{payment_type}-{disbursed}{y}{m}{increment=4}';
         $formNumber = $number ?? $defaultFormat;
 
-        // Different method to get increment because payment number is considering payment_type
         preg_match_all('/{increment=(\d)}/', $formNumber, $regexResult);
-        if (! empty($regexResult)) {
-            $lastPayment = Self::whereHas('form', function ($query) use ($incrementGroup) {
-                $query->where('increment_group', $incrementGroup);
-            })
-            ->notArchived()
-            ->where('payment_type', $payment->payment_type)
-            ->where('disbursed', $payment->disbursed)
-            ->with('form')
-            ->get()
-            ->sortByDesc('form.increment')
-            ->first();
-            
-            $increment = 1;
-
-            if (! empty($lastPayment)) {
-                $increment += $lastPayment->form->increment;
-            }
-
-            foreach ($regexResult[0] as $key => $value) {
-                $padUntil = $regexResult[1][$key];
-                $result = str_pad($increment, $padUntil, '0', STR_PAD_LEFT);
-                $formNumber = str_replace($value, $result, $formNumber);
-            }
+        foreach ($regexResult[0] as $key => $value) {
+            $padUntil = $regexResult[1][$key];
+            $result = str_pad($increment, $padUntil, '0', STR_PAD_LEFT);
+            $formNumber = str_replace($value, $result, $formNumber);
         }
 
         // Additional template for payment_type and disbursed
@@ -159,6 +136,31 @@ class Payment extends TransactionModel
         }
 
         return $formNumber;
+    }
+    /**
+     * Different method to get increment
+     * because payment number is
+     * considering payment_type and disbursed
+     */
+    private static function getLastPaymentIncrement($payment, $incrementGroup)
+    {
+        $lastPayment = Self::whereHas('form', function ($query) use ($incrementGroup) {
+            $query->where('increment_group', $incrementGroup);
+        })
+        ->notArchived()
+        ->where('payment_type', $payment->payment_type)
+        ->where('disbursed', $payment->disbursed)
+        ->with('form')
+        ->get()
+        ->sortByDesc('form.increment')
+        ->first();
+        
+        $increment = 1;
+        if (! empty($lastPayment)) {
+            $increment += $lastPayment->form->increment;
+        }
+
+        return $increment;
     }
 
     private static function updateReferenceDone($paymentDetails)

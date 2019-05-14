@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Model\Project;
+namespace App\Model;
 
 use App\User;
+use App\Model\Project\Project;
 use Illuminate\Database\Eloquent\Model;
 
-class ProjectUser extends Model
+class FirebaseToken extends Model
 {
     protected $connection = 'mysql';
-
-    protected $table = 'project_user';
 
     /**
      * Get the user that invited to the project.

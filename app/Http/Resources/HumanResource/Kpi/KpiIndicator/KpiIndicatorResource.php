@@ -24,7 +24,8 @@ class KpiIndicatorResource extends JsonResource
             'score' => $this->score,
             'score_percentage' => $this->score_percentage,
             'score_description' => $this->score_description,
-            'scores' => KpiScoreResource::collection($this->scores),
+            'automated_id' => $this->automated_id,
+            'scores' => KpiScoreResource::collection($this->scores->sortBy('score')),
         ];
     }
 }

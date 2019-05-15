@@ -16,6 +16,7 @@ use App\Model\HumanResource\Employee\EmployeeScorer;
 use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeSocialMedia;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
+use App\Model\HumanResource\Employee\UserEmployee;
 use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
 
@@ -44,6 +45,9 @@ class EmployeeController extends Controller
             ->with('emails')
             ->with('addresses')
             ->with('phones')
+            ->with('status')
+            ->with('jobLocation')
+            ->with('userEmployee')
             ->select('employees.*');
 
         $employees = pagination($employees, $request->get('limit'));
@@ -81,8 +85,14 @@ class EmployeeController extends Controller
         $employee->married_with = $request->get('married_with');
         $employee->employee_religion_id = $request->get('employee_religion_id');
         $employee->employee_group_id = $request->get('employee_group_id');
+        $employee->employee_code = $request->get('employee_code');
         $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
         $employee->job_title = $request->get('job_title');
+        $employee->employee_status_id = $request->get('employee_status_id');
+        $employee->employee_job_location_id = $request->get('employee_job_location_id');
+        $employee->daily_transport_allowance = $request->get('daily_transport_allowance');
+        $employee->team_leader_allowance = $request->get('team_leader_allowance');
+        $employee->communication_allowance = $request->get('communication_allowance');
 
         if ($request->get('employee_group_name')) {
             $group = new EmployeeGroup;
@@ -178,6 +188,9 @@ class EmployeeController extends Controller
             ->with('emails')
             ->with('addresses')
             ->with('phones')
+            ->with('status')
+            ->with('jobLocation')
+            ->with('userEmployee')
             ->select('employees.*')
             ->eloquentFilter($request)
             ->first();
@@ -189,7 +202,7 @@ class EmployeeController extends Controller
      * Update the specified resource in storage.
      *
      * @param \App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest $request
-     * @param  int                                                                     $id
+     * @param  int $id
      *
      * @return \App\Http\Resources\ApiResource
      */
@@ -208,8 +221,14 @@ class EmployeeController extends Controller
         $employee->employee_marital_status_id = $request->get('employee_marital_status_id');
         $employee->married_with = $request->get('married_with');
         $employee->employee_religion_id = $request->get('employee_religion_id');
+        $employee->employee_code = $request->get('employee_code');
         $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
         $employee->job_title = $request->get('job_title');
+        $employee->employee_status_id = $request->get('employee_status_id');
+        $employee->employee_job_location_id = $request->get('employee_job_location_id');
+        $employee->daily_transport_allowance = $request->get('daily_transport_allowance');
+        $employee->team_leader_allowance = $request->get('team_leader_allowance');
+        $employee->communication_allowance = $request->get('communication_allowance');
 
         if ($request->get('employee_group_name')) {
             $group = new EmployeeGroup;
@@ -321,6 +340,18 @@ class EmployeeController extends Controller
                 $employee->scorers()->attach($scorer['id']);
             }
         }
+
+        $user_employee = $request->get('user_employee');
+        $deleted = array_column($request->get('user_employee'), 'id');
+        UserEmployee::where('employee_id', $employee->id)->delete();
+        foreach ($user_employee as $data) {
+            $userEmployee = new UserEmployee;
+            $userEmployee->employee_id = $employee->id;
+            $userEmployee->user_id = $data['id'];
+            $userEmployee->save();
+            break;
+        }
+
         DB::connection('tenant')->commit();
 
         return new ApiResource($employee);

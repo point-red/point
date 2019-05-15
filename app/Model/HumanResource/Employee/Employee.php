@@ -48,6 +48,22 @@ class Employee extends MasterModel
     }
 
     /**
+     * Get the status that owns the employee.
+     */
+    public function status()
+    {
+        return $this->belongsTo(get_class(new EmployeeStatus()), 'employee_status_id');
+    }
+
+    /**
+     * Get the job location that owns the employee.
+     */
+    public function jobLocation()
+    {
+        return $this->belongsTo(get_class(new EmployeeJobLocation()), 'employee_job_location_id');
+    }
+
+    /**
      * Get the phones for the employee.
      */
     public function phones()
@@ -117,6 +133,14 @@ class Employee extends MasterModel
     public function scorers()
     {
         return $this->belongsToMany('App\Model\Master\User', 'employee_scorer', 'employee_id', 'user_id');
+    }
+
+    /**
+     * The user that is connected to the employee.
+     */
+    public function userEmployee()
+    {
+        return $this->belongsToMany('App\Model\Master\User', 'user_employee', 'employee_id', 'user_id');
     }
 
     /**

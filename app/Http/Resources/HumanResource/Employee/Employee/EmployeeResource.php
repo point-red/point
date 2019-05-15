@@ -42,6 +42,15 @@ class EmployeeResource extends JsonResource
             'salary_histories' => $this->salaryHistories,
             'scorers' => $this->scorers,
             'kpi_template_id' => $this->kpi_template_id,
+            'employee_code' => $this->employee_code,
+            'employee_status_id' => $this->employee_status_id,
+            'status' => $this->status, // relationship with EmployeeStatus
+            'employee_job_location_id' => $this->employee_job_location_id,
+            'job_location' => $this->jobLocation, // relationship with EmployeeJobLocation
+            'daily_transport_allowance' => $this->daily_transport_allowance,
+            'team_leader_allowance' => $this->team_leader_allowance,
+            'communication_allowance' => $this->communication_allowance,
+            'user_employee' => $this->userEmployee
         ];
     }
 }

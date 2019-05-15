@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
+use DateInterval;
+use DatePeriod;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -75,10 +78,10 @@ class EmployeeAssessmentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param Request $request
      * @param                           $employeeId
-     *
      * @return void
+     * @throws \Exception
      */
     public function store(Request $request, $employeeId)
     {
@@ -90,11 +93,11 @@ class EmployeeAssessmentController extends Controller
 
             $date = $request->get('date');
 
-            $dateFrom = new \DateTime($date['start']);
-            $dateTo = new \DateTime($date['end']);
+            $dateFrom = new DateTime($date['start']);
+            $dateTo = new DateTime($date['end']);
 
-            $interval = \DateInterval::createFromDateString('1 day');
-            $period = new \DatePeriod($dateFrom, $interval, $dateTo);
+            $interval = DateInterval::createFromDateString('1 day');
+            $period = new DatePeriod($dateFrom, $interval, $dateTo);
 
             foreach ($period as $dateTime)
             {
@@ -211,7 +214,7 @@ class EmployeeAssessmentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

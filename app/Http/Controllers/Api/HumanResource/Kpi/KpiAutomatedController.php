@@ -102,12 +102,8 @@ class KpiAutomatedController extends Controller
 
     public function getAutomatedData($automated_id, $dateFrom, $dateTo, $employeeId)
     {
-        $dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
-        $dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
-
         $employee = Employee::findOrFail($employeeId);
         $userId = $employee->userEmployee->first()->id ?? 0;
-        $user = User::findOrFail($userId);
 
         $target = 0;
         $score = 0;

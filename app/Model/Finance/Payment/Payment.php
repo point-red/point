@@ -154,7 +154,7 @@ class Payment extends TransactionModel
             $formNumber = str_replace('{payment_type}', $payment->payment_type, $formNumber);
         }
         if (strpos($formNumber, '{disbursed}') !== false) {
-            $replacement = $payment->disbursed === false ? 'IN' : 'OUT';
+            $replacement = $payment->disbursed ? 'OUT' : 'IN';
             $formNumber = str_replace('{disbursed}', $replacement, $formNumber);
         }
 
@@ -166,13 +166,14 @@ class Payment extends TransactionModel
         foreach ($paymentDetails as $paymentDetail) {
             if ($paymentDetail->referenceable) {
                 $reference = $paymentDetail->referenceable;
-                $reference->updateIfDone();
 
                 if ($paymentDetail->referenceable_type !== SalesDownPayment::$morphName
                  && $paymentDetail->referenceable_type !== PurchaseDownPayment::$morphName) {
                      $reference->remaining -= $paymentDetail->amount;
                      $reference->save();
                 }
+
+                $reference->updateIfDone();
             }
         }
     }

@@ -2,6 +2,8 @@
 
 namespace App\Model\Master;
 
+use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\ChartOfAccountType;
 use App\Model\MasterModel;
 use App\Model\Accounting\Journal;
 use App\Model\Finance\Payment\Payment;
@@ -94,5 +96,47 @@ class Customer extends MasterModel
     public function payments()
     {
         return $this->morphMany(Payment::class, 'paymentable');
+    }
+
+    public function totalAccountPayable()
+    {
+        $totalCredit = $this->morphMany(Journal::class, 'journalable')
+            ->join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
+            ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
+            ->where(function ($query) {
+                $query->where(ChartOfAccountType::getTableName('name'), '=', 'current liability')
+                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'long term liability')
+                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other current liability');
+            })->sum('credit');
+        $totalDebit = $this->morphMany(Journal::class, 'journalable')
+            ->join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
+            ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
+            ->where(function ($query) {
+                $query->where(ChartOfAccountType::getTableName('name'), '=', 'current liability')
+                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'long term liability')
+                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other current liability');
+            })->sum('debit');
+
+        return $totalCredit - $totalDebit;
+    }
+
+    public function totalAccountReceivable()
+    {
+        $totalCredit = $this->morphMany(Journal::class, 'journalable')
+            ->join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
+            ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
+            ->where(function ($query) {
+                $query->where(ChartOfAccountType::getTableName('name'), '=', 'account receivable')
+                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other account receivable');
+            })->sum('credit');
+        $totalDebit = $this->morphMany(Journal::class, 'journalable')
+            ->join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
+            ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
+            ->where(function ($query) {
+                $query->where(ChartOfAccountType::getTableName('name'), '=', 'account receivable')
+                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other account receivable');
+            })->sum('debit');
+
+        return $totalDebit - $totalCredit;
     }
 }

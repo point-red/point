@@ -166,16 +166,11 @@ class Payment extends TransactionModel
     private static function updateReferenceDone($paymentDetails)
     {
         foreach ($paymentDetails as $paymentDetail) {
-            if ($paymentDetail->referenceable) {
+            if (! $paymentDetail->isDownPayment()) {
                 $reference = $paymentDetail->referenceable;
-
-                if ($paymentDetail->referenceable_type !== SalesDownPayment::$morphName
-                 && $paymentDetail->referenceable_type !== PurchaseDownPayment::$morphName) {
-                     $reference->remaining -= $paymentDetail->amount;
-                     $reference->save();
-                }
-
-                $reference->updateIfDone();
+                    $reference->remaining -= $paymentDetail->amount;
+                    $reference->save();
+                    $reference->updateIfDone();
             }
         }
     }

@@ -12,6 +12,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Finance\Payment\Payment;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Finance\Payment\Payment\StorePaymentRequest;
+use App\Http\Requests\Finance\Payment\Payment\UpdatePaymentRequest;
 
 class PaymentController extends Controller
 {
@@ -75,7 +77,7 @@ class PaymentController extends Controller
      * @return \Illuminate\Http\Response
      * @throws \Throwable
      */
-    public function store(Request $request)
+    public function store(StorePaymentRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $payment = Payment::create($request->all());
@@ -114,12 +116,21 @@ class PaymentController extends Controller
      * @return \Illuminate\Http\Response
      * @throws \Throwable
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePaymentRequest $request, $id)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
             $payment = Payment::findOrFail($id);
 
             $payment->form->archive();
+
+            foreach ($payment->details as $paymentDetail) {
+                if (! $paymentDetail->isDownPayment()) {
+                    $reference = $paymentDetail->referenceable;
+                    $reference->remaining += $paymentDetail->amount;
+                    $reference->save();
+                    $reference->updateIfDone();
+                }
+            }
 
             $payment = Payment::create($request->all());
 
@@ -149,11 +160,13 @@ class PaymentController extends Controller
 
         $response = $payment->requestCancel($request);
 
-        if (!$response) {
+        if (! $response) {
             foreach ($payment->details as $paymentDetail) {
-                if ($paymentDetail->referenceable) {
-                    $paymentDetail->referenceable->form->done = false;
-                    $paymentDetail->referenceable->form->save();
+                if (! $paymentDetail->isDownPayment) {
+                    $reference = $paymentDetail->referenceable;
+                    $reference->remaining += $payment->amount;
+                    $reference->form->done = false;
+                    $reference->form->save();
                 }
             }
         }

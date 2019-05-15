@@ -22,7 +22,7 @@ class KpiTemplateIndicatorResource extends JsonResource
             'name' => $this->name,
             'weight' => $this->weight,
             'target' => $this->target,
-            'automated_id' => $this->automated_id,
+            'automated_code' => $this->automated_code,
             'scores' => KpiTemplateScoreResource::collection($this->scores),
             'group' => KpiTemplateGroup::findOrFail($this->kpi_template_group_id)->toArray(),
         ];

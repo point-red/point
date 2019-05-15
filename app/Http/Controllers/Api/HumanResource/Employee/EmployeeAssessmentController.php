@@ -114,10 +114,10 @@ class EmployeeAssessmentController extends Controller
                     $kpiIndicator->name = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
                     $kpiIndicator->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
 
-                    if ($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_id']) {
-                        $kpiIndicator->automated_id = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_id'];
+                    if ($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code']) {
+                        $kpiIndicator->automated_code = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code'];
 
-                        $data = Automated::getData($kpiIndicator->automated_id, $assessmentDateFrom, $assessmentDateTo, $employeeId);
+                        $data = Automated::getData($kpiIndicator->automated_code, $assessmentDateFrom, $assessmentDateTo, $employeeId);
 
                         $kpiIndicator->target = $data['target'];
                         $kpiIndicator->score = $data['score'];
@@ -144,7 +144,7 @@ class EmployeeAssessmentController extends Controller
 
                     $kpiIndicator->save();
 
-                    if (!$template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_id']) {
+                    if (!$template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code']) {
                         for ($scoreIndex = 0; $scoreIndex < count($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores']); $scoreIndex++) {
                             $kpiScore = new KpiScore();
                             $kpiScore->kpi_indicator_id = $kpiIndicator->id;
@@ -209,7 +209,7 @@ class EmployeeAssessmentController extends Controller
             for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
                 $kpiIndicator = KpiIndicator::findOrFail($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['id']);
 
-                if (!$kpiIndicator->automated_id) {
+                if (!$kpiIndicator->automated_code) {
                     $kpiIndicator->kpi_group_id = $kpiGroup->id;
                     $kpiIndicator->name = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
                     $kpiIndicator->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];

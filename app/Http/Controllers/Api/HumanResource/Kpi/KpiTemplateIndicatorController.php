@@ -45,7 +45,7 @@ class KpiTemplateIndicatorController extends Controller
         $kpiTemplateIndicator->target = $request->input('target');
 
         if ($request->input('automated_indicator')) {
-            $kpiTemplateIndicator->automated_id = $request->input('automated_indicator')['indicator'] ?? '';
+            $kpiTemplateIndicator->automated_code = $request->input('automated_indicator')['indicator'] ?? '';
         }
 
         $kpiTemplateIndicator->save();

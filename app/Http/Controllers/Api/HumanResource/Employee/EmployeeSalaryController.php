@@ -390,8 +390,8 @@ class EmployeeSalaryController extends Controller
                         $indicator_data['target'][$kpi->week_of_month] = $indicator->target;
                         $indicator_data['score'][$kpi->week_of_month] = $indicator->score;
 
-                        if ($indicator->automated_id) {
-                            $indicator_data['automated_id'] = $indicator->automated_id;
+                        if ($indicator->automated_code) {
+                            $indicator_data['automated_code'] = $indicator->automated_code;
                             $indicator_data['employee_id'] = $kpi->employee_id;
                         }
 
@@ -567,8 +567,8 @@ class EmployeeSalaryController extends Controller
                 $assessmentData = $assessmentData['data']['indicators'];
 
                 foreach ($assessmentData as $assessment) {
-                    if (array_key_exists('automated_id', $assessment)) {
-                        if ($assessment['automated_id'] === 'C') {
+                    if (array_key_exists('automated_code', $assessment)) {
+                        if ($assessment['automated_code'] === 'C') {
                             if ($project->code === $project_code) {
                                 foreach ($employee_achievements['automated']['achievement_area_call'] as $week => &$data) {
                                     if ($week !== 'weight') {
@@ -591,7 +591,7 @@ class EmployeeSalaryController extends Controller
                                 }
                             }
                         }
-                        else if ($assessment['automated_id'] === 'EC') {
+                        else if ($assessment['automated_code'] === 'EC') {
                             if ($project->code === $project_code) {
                                 foreach ($employee_achievements['automated']['achievement_area_effective_call'] as $week => &$data) {
                                     if ($week !== 'weight') {
@@ -614,7 +614,7 @@ class EmployeeSalaryController extends Controller
                                 }
                             }
                         }
-                        else if ($assessment['automated_id'] === 'V') {
+                        else if ($assessment['automated_code'] === 'V') {
                             if ($project->code === $project_code) {
                                 foreach ($employee_achievements['automated']['achievement_area_value'] as $week => &$data) {
                                     if ($week !== 'weight') {

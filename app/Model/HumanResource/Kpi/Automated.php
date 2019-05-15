@@ -18,7 +18,7 @@ class Automated extends TransactionModel
     /**
      * Get the automated data based on indicator.
      */
-    public static function getData($automated_id, $dateFrom, $dateTo, $employeeId)
+    public static function getData($automated_code, $dateFrom, $dateTo, $employeeId)
     {
         $dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
@@ -31,17 +31,17 @@ class Automated extends TransactionModel
 
         $numberOfDays = self::getDays($dateFrom, $dateTo);
 
-        if ($automated_id === 'C') {
+        if ($automated_code === 'C') {
             $target = SalesVisitationTarget::target($dateTo, $userId);
             $target = $target['call'] * $numberOfDays;
             $score = SalesVisitation::call($dateFrom, $dateTo, $userId);
         }
-        else if ($automated_id === 'EC') {
+        else if ($automated_code === 'EC') {
             $target = SalesVisitationTarget::target($dateTo, $userId);
             $target = $target['effective_call'] * $numberOfDays;
             $score = SalesVisitation::effectiveCall($dateFrom, $dateTo, $userId);
         }
-        else if ($automated_id === 'V') {
+        else if ($automated_code === 'V') {
             $target = SalesVisitationTarget::target($dateTo, $userId);
             $target = $target['value'] * $numberOfDays;
             $score = SalesVisitation::value($dateFrom, $dateTo, $userId);

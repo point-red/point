@@ -14,11 +14,8 @@ class UpdateKpiIndicatorsTable extends Migration
     public function up()
     {
         Schema::table('kpi_indicators', function (Blueprint $table) {
-            $table->string('automated_id');
+            $table->string('automated_code')->after('score_description');
         });
-
-        // Rearrange
-        DB::statement('ALTER TABLE kpi_indicators MODIFY COLUMN automated_id TEXT AFTER score_description');
     }
 
     /**
@@ -29,7 +26,7 @@ class UpdateKpiIndicatorsTable extends Migration
     public function down()
     {
         Schema::table('kpi_indicators', function (Blueprint $table) {
-            $table->dropColumn('automated_id');
+            $table->dropColumn('automated_code');
         });
     }
 }

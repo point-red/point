@@ -165,6 +165,7 @@ class PaymentController extends Controller
                 if (! $paymentDetail->isDownPayment()) {
                     $reference = $paymentDetail->referenceable;
                     $reference->remaining += $payment->amount;
+                    $reference->save();
                     $reference->form->done = false;
                     $reference->form->save();
                 }

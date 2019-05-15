@@ -226,7 +226,8 @@ class Form extends PointModel
     private function convertTemplateIncrement()
     {
         preg_match_all('/{increment=(\d)}/', $this->number, $regexResult);
-        if (! empty($regexResult)) {
+        
+        if (! empty($regexResult[0])) {
             $lastForm = self::where('formable_type', $this->formable_type)
                 ->whereNotNull('number')
                 ->where('increment_group', $this->increment_group)

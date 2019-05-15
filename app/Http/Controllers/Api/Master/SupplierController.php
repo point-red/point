@@ -152,9 +152,16 @@ class SupplierController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $suppliers = Supplier::eloquentFilter($request)->findOrFail($id);
+        $supplier = Supplier::eloquentFilter($request)->findOrFail($id);
 
-        return new ApiResource($suppliers);
+        if ($request->get('total_payable')) {
+            $supplier->total_payable = $supplier->totalAccountPayable();
+        }
+        if ($request->get('total_receivable')) {
+            $supplier->total_payable = $supplier->totalAccountPayable();
+        }
+
+        return new ApiResource($supplier);
     }
 
     /**

@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Finance\Payment\Payment;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Model\Master\Allocation;
 use App\Http\Requests\ValidationRule;
 use App\Model\Accounting\ChartOfAccount;
+use Illuminate\Foundation\Http\FormRequest;
+use App\Model\Finance\Payment\PaymentDetail;
 
 class StorePaymentRequest extends FormRequest
 {
@@ -40,6 +42,15 @@ class StorePaymentRequest extends FormRequest
         $rulesPaymentDetail = [
             'details.*.chart_of_account_id' => ValidationRule::foreignKey(ChartOfAccount::getTableName()),
             'details.*.amount' => ValidationRule::price(),
+            'details.*.allocation_id' => ValidationRule::foreignKeyNullable(Allocation::getTableName()),
+            'details.*.referenceable_type' => [
+                'required',
+                function($attribute, $value, $fail) {
+                    if (! PaymentDetail::referenceableIsValid($value)) {
+                        $fail($attribute. ' is invalid');
+                    }
+                }
+            ],
         ];
 
         return array_merge($rulesForm, $rulesPayment, $rulesPaymentDetail);

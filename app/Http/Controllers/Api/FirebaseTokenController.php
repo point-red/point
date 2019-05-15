@@ -33,11 +33,11 @@ class FirebaseTokenController extends Controller
         $firebaseToken = new FirebaseToken;
 
         if (!FirebaseToken::where('user_id', auth()->user()->id)
-            ->where('project_id', $project->id)
+            ->where('project_id', optional($project)->id)
             ->where('token', $request->get('token'))
             ->first()) {
             $firebaseToken->user_id = auth()->user()->id;
-            $firebaseToken->project_id = $project->id;
+            $firebaseToken->project_id = optional($project)->id;
             $firebaseToken->token = $request->get('token');
             $firebaseToken->save();
         }

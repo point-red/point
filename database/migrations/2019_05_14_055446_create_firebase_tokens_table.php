@@ -17,7 +17,7 @@ class CreateFirebaseTokensTable extends Migration
             $table->increments('id');
             $table->string('token');
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('project_id');
+            $table->unsignedInteger('project_id')->nullable();
             $table->timestamps();
 
 

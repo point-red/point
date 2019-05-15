@@ -6,6 +6,7 @@ use App\Model\Master\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Model\HumanResource\Kpi\Automated;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationTarget;
@@ -17,7 +18,9 @@ class PerformanceReportController extends Controller
     {
         $dateFrom = date('Y-m-d 00:00:00', strtotime($request->get('date_from')));
         $dateTo = date('Y-m-d 23:59:59', strtotime($request->get('date_to')));
-        $queryTarget = $this->queryTarget($dateTo);
+        $numberOfDays = Automated::getDays($dateFrom, $dateTo);
+
+        $queryTarget = $this->queryTarget($dateFrom, $dateTo);
         $queryCall = $this->queryCall($dateFrom, $dateTo);
         $queryEffectiveCall = $this->queryEffectiveCall($dateFrom, $dateTo);
         $queryValue = $this->queryValue($dateFrom, $dateTo);
@@ -55,12 +58,16 @@ class PerformanceReportController extends Controller
             }
 
             $user->items = $values;
+
+            $user->target_call = $user->target_call * $numberOfDays;
+            $user->target_effective_call = $user->target_effective_call * $numberOfDays;
+            $user->target_value = $user->target_value * $numberOfDays;
         }
 
         return new PerformanceCollection($result);
     }
 
-    public function queryTarget($dateTo)
+    public function queryTarget($dateFrom, $dateTo)
     {
         $query = SalesVisitationTarget::whereIn('date', function ($query) use ($dateTo) {
             $query->selectRaw('max(date)')->from(SalesVisitationTarget::getTableName())->where('date', '<=', $dateTo)->groupBy('user_id');

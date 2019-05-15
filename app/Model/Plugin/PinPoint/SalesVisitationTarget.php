@@ -21,4 +21,17 @@ class SalesVisitationTarget extends MasterModel
     {
         return $this->belongsTo(User::class);
     }
+
+    public static function target($dateTo, $userId)
+    {
+        $query = self::whereIn('date', function ($query) use ($dateTo, $userId) {
+            $query->selectRaw('max(date)')->from(self::getTableName())->where('date', '<=', $dateTo)->where('user_id', $userId);
+        })->first();
+
+        return [
+            'call' => $query ? $query->call : 0,
+            'effective_call' => $query ? $query->effective_call : 0,
+            'value' => $query ? $query->value : 0
+        ];
+    }
 }

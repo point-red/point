@@ -156,6 +156,13 @@ class CustomerController extends Controller
     {
         $customer = Customer::eloquentFilter($request)->findOrFail($id);
 
+        if ($request->get('total_payable')) {
+            $customer->total_payable = $customer->totalAccountPayable();
+        }
+        if ($request->get('total_receivable')) {
+            $customer->total_payable = $customer->totalAccountPayable();
+        }
+        
         return new ApiResource($customer);
     }
 

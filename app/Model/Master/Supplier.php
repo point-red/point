@@ -87,50 +87,48 @@ class Supplier extends MasterModel
         return $this->morphMany(Payment::class, 'paymentable');
     }
 
+    /**
+     * Get the supplier's purchase receives.
+     */
     public function purchaseReceives()
     {
         return $this->hasMany(PurchaseReceive::class);
     }
 
+    /**
+     * Get the supplier's total payable.
+     */
     public function totalAccountPayable()
     {
-        $totalCredit = $this->morphMany(Journal::class, 'journalable')
+        $payables = $this->journals()
             ->join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
             ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
             ->where(function ($query) {
                 $query->where(ChartOfAccountType::getTableName('name'), '=', 'current liability')
                     ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'long term liability')
                     ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other current liability');
-            })->sum('credit');
-        $totalDebit = $this->morphMany(Journal::class, 'journalable')
-            ->join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
-            ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
-            ->where(function ($query) {
-                $query->where(ChartOfAccountType::getTableName('name'), '=', 'current liability')
-                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'long term liability')
-                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other current liability');
-            })->sum('debit');
+            })
+            ->selectRaw('SUM(`credit`) AS credit, SUM(`debit`) AS debit')
+            ->first();
 
-        return $totalCredit - $totalDebit;
+        return $payables->credit - $payables->debit;
     }
 
+    /**
+     * Get the supplier's total receivable.
+     */
     public function totalAccountReceivable()
     {
-        $totalCredit = $this->morphMany(Journal::class, 'journalable')
+        $receivables = $this->journals()
             ->join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
             ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
             ->where(function ($query) {
                 $query->where(ChartOfAccountType::getTableName('name'), '=', 'account receivable')
                     ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other account receivable');
-            })->sum('credit');
-        $totalDebit = $this->morphMany(Journal::class, 'journalable')
-            ->join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
-            ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
-            ->where(function ($query) {
-                $query->where(ChartOfAccountType::getTableName('name'), '=', 'account receivable')
-                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other account receivable');
-            })->sum('debit');
+            })
+            ->selectRaw('SUM(`credit`) AS credit, SUM(`debit`) AS debit')
+            ->first();
 
-        return $totalDebit - $totalCredit;
+        return $receivables->debit - $receivables->credit;
     }
 }

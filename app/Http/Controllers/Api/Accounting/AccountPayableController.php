@@ -51,7 +51,9 @@ class AccountPayableController extends Controller
             $journals = $this->filterForm($journals, $request->get('form_number'));
         }
 
-        return new ApiCollection($journals->get());
+        $journals = pagination($journals, $request->get('limit'));
+
+        return new ApiCollection($journals);
     }
 
     private function filterStatus($journals, $option)

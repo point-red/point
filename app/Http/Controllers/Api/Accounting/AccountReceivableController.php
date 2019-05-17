@@ -44,7 +44,9 @@ class AccountReceivableController extends Controller
         // Filter Specific invoice
         $journals = $this->filterForm($journals, $request->get('form_number'));
 
-        return new ApiCollection($journals->get());
+        $journals = pagination($journals, $request->get('limit'));
+
+        return new ApiCollection($journals);
     }
 
     private function filterStatus($journals, $option)

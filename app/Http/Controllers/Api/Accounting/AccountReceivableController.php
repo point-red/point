@@ -44,7 +44,7 @@ class AccountReceivableController extends Controller
         // Filter Specific invoice
         $journals = $this->filterForm($journals, $request->get('form_number'));
 
-        return new ApiCollection($journals);
+        return new ApiCollection($journals->get());
     }
 
     private function filterStatus($journals, $option)
@@ -54,6 +54,8 @@ class AccountReceivableController extends Controller
         } elseif ($option === 'unsettled') {
             return $journals->havingRaw('debit - credit > 0');
         }
+
+        return $journals;
     }
 
     private function filterAging($journals, $age)

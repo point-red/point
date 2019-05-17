@@ -61,6 +61,8 @@ class AccountPayableController extends Controller
         } elseif ($option === 'unsettled') {
             return $journals->havingRaw('credit - debit > 0');
         }
+        
+        return $journals;
     }
 
     private function filterAging($journals, $age)

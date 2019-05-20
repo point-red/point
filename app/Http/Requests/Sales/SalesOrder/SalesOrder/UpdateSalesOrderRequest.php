@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Sales\SalesOrder\SalesOrder;
 
+use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateSalesOrderRequest extends FormRequest

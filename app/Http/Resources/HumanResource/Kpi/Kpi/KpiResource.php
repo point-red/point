@@ -26,7 +26,7 @@ class KpiResource extends JsonResource
             'score' => $this->score,
             'score_percentage' => $this->score_percentage,
             'scorer' => new ApiResource($this->scorer),
-            'groups' => KpiGroupResource::collection($this->groups),
+            'groups' => KpiGroupResource::collection($this->groups)
         ];
     }
 }

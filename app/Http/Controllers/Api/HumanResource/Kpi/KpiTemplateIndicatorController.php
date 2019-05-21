@@ -43,6 +43,11 @@ class KpiTemplateIndicatorController extends Controller
         $kpiTemplateIndicator->name = $request->input('name');
         $kpiTemplateIndicator->weight = $request->input('weight');
         $kpiTemplateIndicator->target = $request->input('target');
+
+        if ($request->input('automated_indicator')) {
+            $kpiTemplateIndicator->automated_code = $request->input('automated_indicator')['indicator'] ?? '';
+        }
+
         $kpiTemplateIndicator->save();
 
         DB::commit();

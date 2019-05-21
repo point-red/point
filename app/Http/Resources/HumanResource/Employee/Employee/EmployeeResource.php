@@ -18,7 +18,7 @@ class EmployeeResource extends JsonResource
             'id' => $this->id,
             'employee_group_id' => $this->employee_group_id,
             'group' => $this->group, // relationship with EmployeeGroup
-            'code' => $this->person->code,
+            'code' => $this->code,
             'name' => $this->name,
             'addresses' => $this->person->addresses,
             'emails' => $this->person->emails,
@@ -42,6 +42,14 @@ class EmployeeResource extends JsonResource
             'salary_histories' => $this->salaryHistories,
             'scorers' => $this->scorers,
             'kpi_template_id' => $this->kpi_template_id,
+            'employee_status_id' => $this->employee_status_id,
+            'status' => $this->status, // relationship with EmployeeStatus
+            'employee_job_location_id' => $this->employee_job_location_id,
+            'job_location' => $this->jobLocation, // relationship with EmployeeJobLocation
+            'daily_transport_allowance' => $this->daily_transport_allowance,
+            'functional_allowance' => $this->functional_allowance,
+            'communication_allowance' => $this->communication_allowance,
+            'user_id' => $this->user_id
         ];
     }
 }

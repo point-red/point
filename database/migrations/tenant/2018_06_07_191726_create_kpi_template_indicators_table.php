@@ -19,6 +19,7 @@ class CreateKpiTemplateIndicatorsTable extends Migration
             $table->string('name');
             $table->unsignedDecimal('weight', 5, 2);
             $table->unsignedInteger('target');
+            $table->string('automated_code')->unique()->nullable();
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();

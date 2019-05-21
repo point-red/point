@@ -2,6 +2,7 @@
 
 namespace App\Model\HumanResource\Employee;
 
+use App\Model\Master\User;
 use App\Model\MasterModel;
 use App\Model\Finance\Payment\Payment;
 use App\Model\HumanResource\Kpi\KpiTemplate;
@@ -14,6 +15,12 @@ class Employee extends MasterModel
     public static $morphName = 'Employee';
 
     protected $connection = 'tenant';
+
+    protected $casts = [
+        'daily_transport_allowance' => 'double',
+        'functional_allowance' => 'double',
+        'communication_allowance' => 'double',
+    ];
 
     /**
      * Get the group that owns the employee.
@@ -45,6 +52,22 @@ class Employee extends MasterModel
     public function maritalStatus()
     {
         return $this->belongsTo(get_class(new EmployeeMaritalStatus()), 'employee_marital_status_id');
+    }
+
+    /**
+     * Get the status that owns the employee.
+     */
+    public function status()
+    {
+        return $this->belongsTo(get_class(new EmployeeStatus()), 'employee_status_id');
+    }
+
+    /**
+     * Get the job location that owns the employee.
+     */
+    public function jobLocation()
+    {
+        return $this->belongsTo(get_class(new EmployeeJobLocation()), 'employee_job_location_id');
     }
 
     /**
@@ -117,6 +140,14 @@ class Employee extends MasterModel
     public function scorers()
     {
         return $this->belongsToMany('App\Model\Master\User', 'employee_scorer', 'employee_id', 'user_id');
+    }
+
+    /**
+     * The user that is connected to the employee.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

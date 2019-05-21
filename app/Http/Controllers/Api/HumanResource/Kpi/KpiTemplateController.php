@@ -61,7 +61,7 @@ class KpiTemplateController extends Controller
      */
     public function show($id)
     {
-        $templates = KpiTemplate::with('groups.indicators.scores')
+        $template = KpiTemplate::with('groups.indicators.scores')
             ->select('kpi_templates.*')
             ->where('kpi_templates.id', $id)
             ->withCount(['indicators as target' => function ($query) {
@@ -72,7 +72,9 @@ class KpiTemplateController extends Controller
             }])
             ->first();
 
-        return new ApiResource($templates);
+        $template->target = (double) $template->target;
+
+        return new ApiResource($template);
     }
 
     /**

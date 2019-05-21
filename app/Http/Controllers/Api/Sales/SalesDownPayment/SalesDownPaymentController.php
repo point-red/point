@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Sales\SalesDownPayment;
 
 use App\Model\Form;
-use App\Model\Master\Customer;
 use Illuminate\Http\Request;
+use App\Model\Master\Customer;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
@@ -39,7 +39,7 @@ class SalesDownPaymentController extends Controller
                 });
             }
         }
-        
+
         $downPayment = pagination($downPayment, $request->get('limit'));
 
         return new ApiCollection($downPayment);

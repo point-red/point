@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Log;
 use Laravel\Horizon\Horizon;
-use Illuminate\Support\ServiceProvider;
 use Psr\Log\LoggerInterface;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

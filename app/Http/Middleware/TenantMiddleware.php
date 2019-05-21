@@ -40,7 +40,7 @@ class TenantMiddleware
                 }
 
                 $timezone = $request->header('Timezone');
-                if ($request->header('Timezone') && $request->header('Timezone') != null && isset($timezone) && !empty($timezone) && $timezone != 'undefined') {
+                if ($request->header('Timezone') && $request->header('Timezone') != null && isset($timezone) && ! empty($timezone) && $timezone != 'undefined') {
                     config()->set('project.timezone', $request->header('Timezone'));
                 } else {
                     config()->set('project.timezone', $project->timezone);

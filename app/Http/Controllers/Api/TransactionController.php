@@ -11,10 +11,10 @@ use App\Http\Controllers\Controller;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Http\Requests\Transaction\StoreTransactionRequest;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 
 class TransactionController extends Controller
 {
@@ -55,7 +55,7 @@ class TransactionController extends Controller
                 $requestData['number'] = $request->get('purchase_invoice_number');
             }
 
-            $requestData['items'] = array_map(function($item) use ($purchaseReceive) {
+            $requestData['items'] = array_map(function ($item) use ($purchaseReceive) {
                 $purchaseReceiveItems = $purchaseReceive->items;
                 $purchaseReceiveItem = $purchaseReceiveItems->firstWhere('item_id', $item['item_id']);
 
@@ -99,13 +99,13 @@ class TransactionController extends Controller
                 $requestData['number'] = $request->get('delivery_order_number');
             }
             $deliveryOrder = DeliveryOrder::create($requestData);
-            
+
             /* DELIVERY NOTE */
             if ($request->has('delivery_note_number')) {
                 $requestData['number'] = $request->get('delivery_note_number');
                 $requestData['delivery_order_id'] = $deliveryOrder->id;
             }
-            $requestData['items'] = array_map(function($item) use ($deliveryOrder) {
+            $requestData['items'] = array_map(function ($item) use ($deliveryOrder) {
                 $deliveryOrderItems = $deliveryOrder->items;
                 $deliveryOrderItem = $deliveryOrderItems->firstWhere('item_id', $item['item_id']);
 
@@ -122,7 +122,7 @@ class TransactionController extends Controller
             if ($request->has('sales_invoice_number')) {
                 $requestData['number'] = $request->get('sales_invoice_number');
             }
-            $requestData['items'] = array_map(function($item) use ($deliveryNote) {
+            $requestData['items'] = array_map(function ($item) use ($deliveryNote) {
                 $deliveryNoteItems = $deliveryNote->items;
                 $deliveryNoteItem = $deliveryNoteItems->firstWhere('item_id', $item['item_id']);
 

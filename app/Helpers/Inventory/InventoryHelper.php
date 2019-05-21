@@ -2,11 +2,11 @@
 
 namespace App\Helpers\Inventory;
 
-use App\Exceptions\ItemQuantityInvalidException;
-use App\Exceptions\StockNotEnoughException;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Inventory\Inventory;
+use App\Exceptions\StockNotEnoughException;
+use App\Exceptions\ItemQuantityInvalidException;
 
 class InventoryHelper
 {
@@ -36,7 +36,7 @@ class InventoryHelper
         $inventory->total_quantity = $quantity;
 
         // check if stock is enough to prevent stock minus
-        if ($quantity < 0 && (!$lastInventory || $lastInventory->total_quantity < $quantity)) {
+        if ($quantity < 0 && (! $lastInventory || $lastInventory->total_quantity < $quantity)) {
             throw new StockNotEnoughException(Item::findOrFail($itemId));
         }
 
@@ -79,7 +79,7 @@ class InventoryHelper
     public static function audit($formId, $warehouseId, $itemId, $quantity, $price)
     {
         Item::where('id', $itemId)->update([
-            'stock' => $quantity
+            'stock' => $quantity,
         ]);
 
         $inventory = new Inventory;

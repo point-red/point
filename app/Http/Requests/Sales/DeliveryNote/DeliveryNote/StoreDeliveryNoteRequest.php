@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Sales\DeliveryNote\DeliveryNote;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDeliveryNoteRequest extends FormRequest
 {
@@ -25,7 +25,7 @@ class StoreDeliveryNoteRequest extends FormRequest
     public function rules()
     {
         $rulesForm = ValidationRule::form();
-        
+
         $rulesDeliveryNote = [
             'delivery_order_id' => ValidationRule::foreignKey('delivery_orders'),
             'warehouse_id' => ValidationRule::foreignKey('warehouses'),

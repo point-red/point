@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseDownPayment;
 
-use App\Http\Requests\Purchase\PurchaseDownPayment\PurchaseDownPayment\StorePurchaseDownPaymentRequest;
-use App\Http\Requests\Purchase\PurchaseDownPayment\PurchaseDownPayment\UpdatePurchaseDownPaymentRequest;
 use App\Model\Form;
-use App\Model\Master\Supplier;
 use Illuminate\Http\Request;
+use App\Model\Master\Supplier;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
+use App\Http\Requests\Purchase\PurchaseDownPayment\PurchaseDownPayment\StorePurchaseDownPaymentRequest;
+use App\Http\Requests\Purchase\PurchaseDownPayment\PurchaseDownPayment\UpdatePurchaseDownPaymentRequest;
 
 class PurchaseDownPaymentController extends Controller
 {

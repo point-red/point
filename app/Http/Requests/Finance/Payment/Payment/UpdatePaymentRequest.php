@@ -45,11 +45,11 @@ class UpdatePaymentRequest extends FormRequest
             'details.*.allocation_id' => ValidationRule::foreignKeyNullable(Allocation::getTableName()),
             'details.*.referenceable_type' => [
                 'required',
-                function($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) {
                     if (! PaymentDetail::referenceableIsValid($value)) {
-                        $fail($attribute. ' is invalid');
+                        $fail($attribute.' is invalid');
                     }
-                }
+                },
             ],
         ];
 

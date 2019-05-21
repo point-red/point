@@ -24,7 +24,7 @@ class CreateEmployeeSalariesTable extends Migration
             $table->double('daily_transport_allowance');
             $table->double('functional_allowance');
             $table->double('communication_allowance');
-            
+
             $table->unsignedInteger('active_days_in_month')->index()->default(0);
 
             $table->unsignedInteger('active_days_week1')->index()->default(0);

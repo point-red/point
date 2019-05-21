@@ -4,14 +4,12 @@ namespace App\Model\Sales\SalesOrder;
 
 use Carbon\Carbon;
 use App\Model\Form;
-use App\Model\Master\Item;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\SalesContract\SalesContract;
 use App\Model\Sales\SalesQuotation\SalesQuotation;
-use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesOrder extends TransactionModel

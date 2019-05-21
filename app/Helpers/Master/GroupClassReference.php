@@ -15,7 +15,7 @@ class GroupClassReference
             Customer::$morphName,
             Supplier::$morphName,
         ];
-        
+
         return in_array($groupType, $classReference);
     }
 }

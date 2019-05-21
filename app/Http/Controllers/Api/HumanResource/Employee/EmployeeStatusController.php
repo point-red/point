@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\HumanResource\Employee\EmployeeStatus;
 use App\Http\Resources\HumanResource\Employee\EmployeeStatus\EmployeeStatusResource;
-use App\Http\Resources\HumanResource\Employee\EmployeeStatus\EmployeeStatusCollection;
 use App\Http\Requests\HumanResource\Employee\EmployeeStatus\StoreEmployeeStatusRequest;
 use App\Http\Requests\HumanResource\Employee\EmployeeStatus\UpdateEmployeeStatusRequest;
 

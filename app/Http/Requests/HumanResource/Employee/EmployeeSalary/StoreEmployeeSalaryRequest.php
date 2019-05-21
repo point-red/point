@@ -31,7 +31,7 @@ class StoreEmployeeSalaryRequest extends FormRequest
             'daily_transport_allowance' => 'required',
             'functional_allowance' => 'required',
             'communication_allowance' => 'required',
-            'active_days_in_month' => 'required'
+            'active_days_in_month' => 'required',
         ];
     }
 }

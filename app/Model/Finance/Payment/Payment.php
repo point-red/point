@@ -2,12 +2,10 @@
 
 namespace App\Model\Finance\Payment;
 
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\Form;
 use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
-use App\Model\Sales\SalesDownPayment\SalesDownPayment;
-use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
+use App\Model\Accounting\ChartOfAccount;
 
 class Payment extends TransactionModel
 {
@@ -68,9 +66,9 @@ class Payment extends TransactionModel
         $payment->fill($data);
         $payment->payment_type = strtoupper($payment->paymentAccount->type->name);
         $payment->paymentable_name = $data['paymentable_name'] ?? $payment->paymentable->name;
-        
+
         $paymentDetails = self::mapPaymentDetails($data['details']);
-        
+
         $payment->amount = self::calculateAmount($paymentDetails);
         $payment->save();
 
@@ -137,10 +135,11 @@ class Payment extends TransactionModel
 
         return $formNumber;
     }
+
     /**
      * Different method to get increment
      * because payment number is
-     * considering payment_type and disbursed
+     * considering payment_type and disbursed.
      */
     private static function getLastPaymentIncrement($payment, $incrementGroup)
     {
@@ -154,7 +153,7 @@ class Payment extends TransactionModel
         ->get()
         ->sortByDesc('form.increment')
         ->first();
-        
+
         $increment = 1;
         if (! empty($lastPayment)) {
             $increment += $lastPayment->form->increment;
@@ -168,9 +167,9 @@ class Payment extends TransactionModel
         foreach ($paymentDetails as $paymentDetail) {
             if (! $paymentDetail->isDownPayment()) {
                 $reference = $paymentDetail->referenceable;
-                    $reference->remaining -= $paymentDetail->amount;
-                    $reference->save();
-                    $reference->updateIfDone();
+                $reference->remaining -= $paymentDetail->amount;
+                $reference->save();
+                $reference->updateIfDone();
             }
         }
     }

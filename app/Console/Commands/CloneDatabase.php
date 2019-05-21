@@ -41,7 +41,7 @@ class CloneDatabase extends Command
     {
         $projects = Project::all();
         foreach ($projects as $project) {
-            $this->line('Clone ' . $project->code);
+            $this->line('Clone '.$project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
         }
     }

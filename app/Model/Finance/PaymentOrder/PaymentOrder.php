@@ -2,11 +2,11 @@
 
 namespace App\Model\Finance\PaymentOrder;
 
-use App\Exceptions\IsReferencedException;
-use App\Model\Finance\Payment\Payment;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\TransactionModel;
+use App\Model\Finance\Payment\Payment;
+use App\Exceptions\IsReferencedException;
 
 class PaymentOrder extends TransactionModel
 {

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
 use App\Model\HumanResource\Kpi\Automated;
 
 class KpiAutomatedController extends Controller

@@ -23,7 +23,7 @@ class EmployeeSalaryAchievementResource extends JsonResource
             'week2' => $this->week2,
             'week3' => $this->week3,
             'week4' => $this->week4,
-            'week5' => $this->week5
+            'week5' => $this->week5,
         ];
     }
 }

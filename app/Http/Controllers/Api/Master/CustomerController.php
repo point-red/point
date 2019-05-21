@@ -162,7 +162,7 @@ class CustomerController extends Controller
         if ($request->get('total_receivable')) {
             $customer->total_payable = $customer->totalAccountPayable();
         }
-        
+
         return new ApiResource($customer);
     }
 

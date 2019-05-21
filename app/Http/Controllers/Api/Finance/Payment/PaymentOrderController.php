@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Finance\Payment;
 
-use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\Finance\PaymentOrder\PaymentOrder;
 
 class PaymentOrderController extends Controller
 {
@@ -130,7 +130,7 @@ class PaymentOrderController extends Controller
 
         $response = $payment->requestCancel($request);
 
-        if (!$response) {
+        if (! $response) {
             foreach ($payment->details as $paymentDetail) {
                 if ($paymentDetail->referenceable) {
                     $paymentDetail->referenceable->form->done = false;

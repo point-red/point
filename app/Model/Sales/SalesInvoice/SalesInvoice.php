@@ -2,7 +2,6 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
-use App\Exceptions\IsReferencedException;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
@@ -11,9 +10,10 @@ use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
 use App\Model\Finance\Payment\Payment;
+use App\Exceptions\IsReferencedException;
 use App\Model\Sales\SalesOrder\SalesOrder;
-use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 
 class SalesInvoice extends TransactionModel
 {
@@ -147,7 +147,7 @@ class SalesInvoice extends TransactionModel
         $form->saveData($data, $salesInvoice);
 
         // updated to done if the amount is 0 because of down payment
-        $salesInvoice->updateIfDone(); 
+        $salesInvoice->updateIfDone();
 
         self::setDeliveryNotesDone($salesInvoice);
         self::setSalesOrdersDone($salesInvoice);
@@ -156,10 +156,10 @@ class SalesInvoice extends TransactionModel
 
         return $salesInvoice;
     }
-    
+
     private static function mapItems($items)
     {
-        return array_map(function($item) {
+        return array_map(function ($item) {
             $salesInvoiceItem = new SalesInvoiceItem;
             $salesInvoiceItem->fill($item);
 
@@ -169,7 +169,7 @@ class SalesInvoice extends TransactionModel
 
     private static function mapServices($services)
     {
-        return array_map(function($service){
+        return array_map(function ($service) {
             $salesInvoiceService = new SalesInvoiceService;
             $salesInvoiceService->fill($service);
 
@@ -205,7 +205,7 @@ class SalesInvoice extends TransactionModel
     {
         if ($salesInvoice->items->count()) {
             $deliveryNoteIds = $salesInvoice->items()->groupBy('delivery_note_id')->pluck('delivery_note_id');
-            
+
             $affectedRows = Form::where('formable_type', DeliveryNote::$morphName)
                 ->whereIn('formable_id', $deliveryNoteIds)
                 ->update(['done' => true]);
@@ -217,7 +217,7 @@ class SalesInvoice extends TransactionModel
     {
         if ($salesInvoice->services->count()) {
             $salesOrderIds = $salesInvoice->services()->groupBy('sales_order_id')->pluck('sales_order_id');
-            
+
             $affectedRows = Form::where('formable_type', SalesOrder::$morphName)
                 ->whereIn('formable_id', $salesOrderIds)
                 ->update(['done' => true]);

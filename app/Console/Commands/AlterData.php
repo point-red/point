@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Item;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use App\Model\Accounting\ChartOfAccount;
 
 class AlterData extends Command
 {
@@ -44,7 +44,7 @@ class AlterData extends Command
     {
         $projects = Project::all();
         foreach ($projects as $project) {
-            $this->line('Clone ' . $project->code);
+            $this->line('Clone '.$project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
             $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
@@ -55,7 +55,7 @@ class AlterData extends Command
             if ($chartOfAccounts->count() == 0) {
                 $this->call('tenant:seed', [
                     'db_name' => env('DB_DATABASE').'_'.strtolower($project->code),
-                    'class' => 'ChartOfAccountSeeder'
+                    'class' => 'ChartOfAccountSeeder',
                 ]);
             }
 

@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Sales\SalesContract\SalesContract;
 
 use Illuminate\Http\Request;
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateSalesContractRequest extends FormRequest
 {

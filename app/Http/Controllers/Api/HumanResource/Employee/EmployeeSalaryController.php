@@ -3,29 +3,24 @@
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use Illuminate\Http\Request;
+use App\Model\Project\Project;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Model\Project\Project;
-use App\Model\Master\User;
+use App\Model\HumanResource\Kpi\Kpi;
+use App\Model\HumanResource\Kpi\Automated;
 use App\Model\HumanResource\Employee\Employee;
+use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\HumanResource\Employee\EmployeeSalary;
+use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessment;
+use App\Model\HumanResource\Employee\EmployeeSalaryAchievement;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentScore;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentTarget;
-use App\Model\HumanResource\Employee\EmployeeSalaryAchievement;
-use App\Model\HumanResource\Kpi\Automated;
-use App\Model\HumanResource\Kpi\Kpi;
-use App\Model\HumanResource\Kpi\KpiGroup;
-use App\Model\HumanResource\Kpi\KpiIndicator;
-use App\Model\HumanResource\Kpi\KpiScore;
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationDetail;
-use App\Model\Plugin\PinPoint\SalesVisitationTarget;
-use App\Http\Requests\HumanResource\Employee\EmployeeSalary\StoreEmployeeSalaryRequest;
-use App\Http\Requests\HumanResource\Employee\EmployeeSalary\UpdateEmployeeSalaryRequest;
 use App\Http\Resources\HumanResource\Employee\EmployeeSalary\EmployeeSalaryResource;
 use App\Http\Resources\HumanResource\Employee\EmployeeSalary\EmployeeSalaryCollection;
+use App\Http\Requests\HumanResource\Employee\EmployeeSalary\StoreEmployeeSalaryRequest;
+use App\Http\Requests\HumanResource\Employee\EmployeeSalary\UpdateEmployeeSalaryRequest;
 
 class EmployeeSalaryController extends Controller
 {
@@ -56,18 +51,18 @@ class EmployeeSalaryController extends Controller
             $base_salary_week_3 = $additionalData['score_percentages_assessments'][0]['week3'] ? $baseSalaryPerWeek * $employee_salary->active_days_week3 * ($additionalData['score_percentages_assessments'][0]['week3'] / 100) : 0;
             $base_salary_week_4 = $additionalData['score_percentages_assessments'][0]['week4'] ? $baseSalaryPerWeek * $employee_salary->active_days_week4 * ($additionalData['score_percentages_assessments'][0]['week4'] / 100) : 0;
             $base_salary_week_5 = $additionalData['score_percentages_assessments'][0]['week5'] ? $baseSalaryPerWeek * $employee_salary->active_days_week5 * ($additionalData['score_percentages_assessments'][0]['week5'] / 100) : 0;
-            
+
             $real_transport_allowance_week_1 = $additionalData['score_percentages_assessments'][0]['week1'] ? $employee_salary->daily_transport_allowance * $employee_salary->active_days_week1 * ($additionalData['score_percentages_assessments'][0]['week1'] / 100) : 0;
             $real_transport_allowance_week_2 = $additionalData['score_percentages_assessments'][0]['week2'] ? $employee_salary->daily_transport_allowance * $employee_salary->active_days_week2 * ($additionalData['score_percentages_assessments'][0]['week2'] / 100) : 0;
             $real_transport_allowance_week_3 = $additionalData['score_percentages_assessments'][0]['week3'] ? $employee_salary->daily_transport_allowance * $employee_salary->active_days_week3 * ($additionalData['score_percentages_assessments'][0]['week3'] / 100) : 0;
             $real_transport_allowance_week_4 = $additionalData['score_percentages_assessments'][0]['week4'] ? $employee_salary->daily_transport_allowance * $employee_salary->active_days_week4 * ($additionalData['score_percentages_assessments'][0]['week4'] / 100) : 0;
             $real_transport_allowance_week_5 = $additionalData['score_percentages_assessments'][0]['week5'] ? $employee_salary->daily_transport_allowance * $employee_salary->active_days_week5 * ($additionalData['score_percentages_assessments'][0]['week5'] / 100) : 0;
 
-            $minimum_component_amount_week_1 = (double)$additionalData['total_assessments']['week1'] * $base_salary_week_1 / 100;
-            $minimum_component_amount_week_2 = (double)$additionalData['total_assessments']['week2'] * $base_salary_week_2 / 100;
-            $minimum_component_amount_week_3 = (double)$additionalData['total_assessments']['week3'] * $base_salary_week_3 / 100;
-            $minimum_component_amount_week_4 = (double)$additionalData['total_assessments']['week4'] * $base_salary_week_4 / 100;
-            $minimum_component_amount_week_5 = (double)$additionalData['total_assessments']['week5'] * $base_salary_week_5 / 100;
+            $minimum_component_amount_week_1 = (float) $additionalData['total_assessments']['week1'] * $base_salary_week_1 / 100;
+            $minimum_component_amount_week_2 = (float) $additionalData['total_assessments']['week2'] * $base_salary_week_2 / 100;
+            $minimum_component_amount_week_3 = (float) $additionalData['total_assessments']['week3'] * $base_salary_week_3 / 100;
+            $minimum_component_amount_week_4 = (float) $additionalData['total_assessments']['week4'] * $base_salary_week_4 / 100;
+            $minimum_component_amount_week_5 = (float) $additionalData['total_assessments']['week5'] * $base_salary_week_5 / 100;
 
             $multiplier_kpi_week_1 = $employee_salary->active_days_in_month > 0 && $additionalData['score_percentages_assessments'][0]['week1'] ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week1 * ($additionalData['score_percentages_assessments'][0]['week1'] / 100) / $employee_salary->active_days_in_month : 0;
             $multiplier_kpi_week_2 = $employee_salary->active_days_in_month > 0 && $additionalData['score_percentages_assessments'][0]['week2'] ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week2 * ($additionalData['score_percentages_assessments'][0]['week2'] / 100) / $employee_salary->active_days_in_month : 0;
@@ -75,11 +70,11 @@ class EmployeeSalaryController extends Controller
             $multiplier_kpi_week_4 = $employee_salary->active_days_in_month > 0 && $additionalData['score_percentages_assessments'][0]['week4'] ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week4 * ($additionalData['score_percentages_assessments'][0]['week4'] / 100) / $employee_salary->active_days_in_month : 0;
             $multiplier_kpi_week_5 = $employee_salary->active_days_in_month > 0 && $additionalData['score_percentages_assessments'][0]['week5'] ? $employee_salary->multiplier_kpi * $employee_salary->active_days_week5 * ($additionalData['score_percentages_assessments'][0]['week5'] / 100) / $employee_salary->active_days_in_month : 0;
 
-            $additional_component_point_week_1 = (double)$additionalData['total_achievements']['week1'] * $multiplier_kpi_week_1 / 100;
-            $additional_component_point_week_2 = (double)$additionalData['total_achievements']['week2'] * $multiplier_kpi_week_2 / 100;
-            $additional_component_point_week_3 = (double)$additionalData['total_achievements']['week3'] * $multiplier_kpi_week_3 / 100;
-            $additional_component_point_week_4 = (double)$additionalData['total_achievements']['week4'] * $multiplier_kpi_week_4 / 100;
-            $additional_component_point_week_5 = (double)$additionalData['total_achievements']['week5'] * $multiplier_kpi_week_5 / 100;
+            $additional_component_point_week_1 = (float) $additionalData['total_achievements']['week1'] * $multiplier_kpi_week_1 / 100;
+            $additional_component_point_week_2 = (float) $additionalData['total_achievements']['week2'] * $multiplier_kpi_week_2 / 100;
+            $additional_component_point_week_3 = (float) $additionalData['total_achievements']['week3'] * $multiplier_kpi_week_3 / 100;
+            $additional_component_point_week_4 = (float) $additionalData['total_achievements']['week4'] * $multiplier_kpi_week_4 / 100;
+            $additional_component_point_week_5 = (float) $additionalData['total_achievements']['week5'] * $multiplier_kpi_week_5 / 100;
 
             $additional_component_amount_week_1 = $additional_component_point_week_1 * 1000;
             $additional_component_amount_week_2 = $additional_component_point_week_2 * 1000;
@@ -99,7 +94,7 @@ class EmployeeSalaryController extends Controller
             $total_amount_week_4 = $total_component_amount_week_4 + $real_transport_allowance_week_4;
             $total_amount_week_5 = $total_component_amount_week_5 + $real_transport_allowance_week_5;
 
-            $total_amount_received_week_1 = $total_amount_week_1  + $employee_salary->communication_allowance + $employee_salary->functional_allowance;
+            $total_amount_received_week_1 = $total_amount_week_1 + $employee_salary->communication_allowance + $employee_salary->functional_allowance;
             $total_amount_received_week_2 = $total_amount_week_2;
             $total_amount_received_week_3 = $total_amount_week_3;
             $total_amount_received_week_4 = $total_amount_week_4;
@@ -131,8 +126,7 @@ class EmployeeSalaryController extends Controller
      */
     public function store(StoreEmployeeSalaryRequest $request, $employeeId)
     {
-        if ($request->get('date') && count($request->get('date')) == 2)
-        {
+        if ($request->get('date') && count($request->get('date')) == 2) {
             $date = $request->get('date');
 
             $startDate = date('Y-m-d', strtotime($date['start']));
@@ -144,7 +138,7 @@ class EmployeeSalaryController extends Controller
             if (count($assessments['indicators']) == 0) {
                 return response()->json([
                     'code' => 422,
-                    'message' => 'Assessment is required'
+                    'message' => 'Assessment is required',
                 ], 422);
             }
 
@@ -211,23 +205,23 @@ class EmployeeSalaryController extends Controller
                 $salaryAssessment = new EmployeeSalaryAssessment;
                 $salaryAssessment->employee_salary_id = $employee_salary->id;
                 $salaryAssessment->name = $assessment['name'];
-                $salaryAssessment->weight = (double)$assessment['weight'];
+                $salaryAssessment->weight = (float) $assessment['weight'];
                 $salaryAssessment->save();
 
                 foreach ($assessment['score'] as $key => $score) {
-                  $assessmentScore = new EmployeeSalaryAssessmentScore;
-                  $assessmentScore->assessment_id = $salaryAssessment->id;
-                  $assessmentScore->week_of_month = $key;
-                  $assessmentScore->score = $score;
-                  $assessmentScore->save();
+                    $assessmentScore = new EmployeeSalaryAssessmentScore;
+                    $assessmentScore->assessment_id = $salaryAssessment->id;
+                    $assessmentScore->week_of_month = $key;
+                    $assessmentScore->score = $score;
+                    $assessmentScore->save();
                 }
 
                 foreach ($assessment['target'] as $key => $target) {
-                  $assessmentTarget = new EmployeeSalaryAssessmentTarget;
-                  $assessmentTarget->assessment_id = $salaryAssessment->id;
-                  $assessmentTarget->week_of_month = $key;
-                  $assessmentTarget->target = $target;
-                  $assessmentTarget->save();
+                    $assessmentTarget = new EmployeeSalaryAssessmentTarget;
+                    $assessmentTarget->assessment_id = $salaryAssessment->id;
+                    $assessmentTarget->week_of_month = $key;
+                    $assessmentTarget->target = $target;
+                    $assessmentTarget->save();
                 }
             }
 
@@ -235,12 +229,12 @@ class EmployeeSalaryController extends Controller
                 $salaryAchievement = new EmployeeSalaryAchievement;
                 $salaryAchievement->employee_salary_id = $employee_salary->id;
                 $salaryAchievement->name = $key;
-                $salaryAchievement->weight = (double)$achievement['weight'];
-                $salaryAchievement->week1 = array_key_exists('week1', $achievement) ? (double)$achievement['week1'] : 0;
-                $salaryAchievement->week2 = array_key_exists('week2', $achievement) ? (double)$achievement['week2'] : 0;
-                $salaryAchievement->week3 = array_key_exists('week3', $achievement) ? (double)$achievement['week3'] : 0;
-                $salaryAchievement->week4 = array_key_exists('week4', $achievement) ? (double)$achievement['week4'] : 0;
-                $salaryAchievement->week5 = array_key_exists('week5', $achievement) ? (double)$achievement['week5'] : 0;
+                $salaryAchievement->weight = (float) $achievement['weight'];
+                $salaryAchievement->week1 = array_key_exists('week1', $achievement) ? (float) $achievement['week1'] : 0;
+                $salaryAchievement->week2 = array_key_exists('week2', $achievement) ? (float) $achievement['week2'] : 0;
+                $salaryAchievement->week3 = array_key_exists('week3', $achievement) ? (float) $achievement['week3'] : 0;
+                $salaryAchievement->week4 = array_key_exists('week4', $achievement) ? (float) $achievement['week4'] : 0;
+                $salaryAchievement->week5 = array_key_exists('week5', $achievement) ? (float) $achievement['week5'] : 0;
                 $salaryAchievement->save();
             }
 
@@ -327,13 +321,13 @@ class EmployeeSalaryController extends Controller
 
         foreach ($salary['assessments'] as $key => $assessment) {
             $salaryAssessment = EmployeeSalaryAssessment::findOrFail($assessment['id']);
-            $salaryAssessment->weight = (double)$assessment['weight'];
+            $salaryAssessment->weight = (float) $assessment['weight'];
             $salaryAssessment->save();
         }
 
         foreach ($salary['achievements'] as $key => $achievement) {
             $salaryAchievement = EmployeeSalaryAchievement::findOrFail($achievement['id']);
-            $salaryAchievement->weight = (double)$achievement['weight'];
+            $salaryAchievement->weight = (float) $achievement['weight'];
             $salaryAchievement->save();
         }
 
@@ -380,7 +374,7 @@ class EmployeeSalaryController extends Controller
         $kpis = $kpis->where('employee_id', $employeeId)->orderBy('kpis.date', 'asc')->get();
 
         $employee_assessment = [
-            'indicators' => []
+            'indicators' => [],
         ];
 
         $indicatorIndex = 0;
@@ -388,7 +382,7 @@ class EmployeeSalaryController extends Controller
         foreach ($kpis as $key => $kpi) {
             foreach ($kpi->groups as $key => $group) {
                 foreach ($group->indicators as $key => $indicator) {
-                    if (!array_key_exists($indicator->name, $employee_assessment['indicators'])) {
+                    if (! array_key_exists($indicator->name, $employee_assessment['indicators'])) {
                         $indicator_data = [];
                         $indicator_data['id'] = ++$indicatorIndex;
                         $indicator_data['name'] = $indicator->name;
@@ -402,21 +396,18 @@ class EmployeeSalaryController extends Controller
                         }
 
                         $employee_assessment['indicators'][$indicator->name] = $indicator_data;
-                    }
-                    else {
+                    } else {
                         $indicator_data = $employee_assessment['indicators'][$indicator->name];
 
-                        if (!array_key_exists($kpi->week_of_month, $indicator_data['target'])) {
+                        if (! array_key_exists($kpi->week_of_month, $indicator_data['target'])) {
                             $indicator_data['target'][$kpi->week_of_month] = $indicator->target;
-                        }
-                        else {
+                        } else {
                             $indicator_data['target'][$kpi->week_of_month] += $indicator->target;
                         }
 
-                        if (!array_key_exists($kpi->week_of_month, $indicator_data['score'])) {
+                        if (! array_key_exists($kpi->week_of_month, $indicator_data['score'])) {
                             $indicator_data['score'][$kpi->week_of_month] = $indicator->score;
-                        }
-                        else {
+                        } else {
                             $indicator_data['score'][$kpi->week_of_month] += $indicator->score;
                         }
 
@@ -434,8 +425,8 @@ class EmployeeSalaryController extends Controller
                 'week3' => 0,
                 'week4' => 0,
                 'week5' => 0,
-                'weight' => 0
-            ]
+                'weight' => 0,
+            ],
         ];
 
         foreach ($employee_assessment['indicators'] as $key => $assessment) {
@@ -443,7 +434,7 @@ class EmployeeSalaryController extends Controller
                 $target = $employee_assessment['indicators'][$key]['target'][$week];
                 $score = $employee_assessment['indicators'][$key]['score'][$week];
 
-                $score_percentage = $target > 0 ? $score / $target * 100 : 0; 
+                $score_percentage = $target > 0 ? $score / $target * 100 : 0;
 
                 if ($score_percentage > 100 && stripos($key, 'value') === false) {
                     $score_percentage = 100;
@@ -454,18 +445,17 @@ class EmployeeSalaryController extends Controller
         }
 
         foreach ($employee_assessment['indicators'] as $key => $assessment) {
-            $assessment['weight'] = (double)$assessment['weight'];
+            $assessment['weight'] = (float) $assessment['weight'];
             array_push($returnable_array['indicators'], $assessment);
-            $returnable_array['total']['weight'] += (double)$assessment['weight'];
+            $returnable_array['total']['weight'] += (float) $assessment['weight'];
         }
 
         foreach ($returnable_array['indicators'] as $assessment) {
             foreach ($assessment['score_percentage'] as $key => $score_percentage) {
-                if (!array_key_exists($key, $returnable_array['total'])) {
-                    $returnable_array['total'][$key] = (double)$score_percentage * $assessment['weight'] / 100;
-                }
-                else {
-                    $returnable_array['total'][$key] += (double)$score_percentage * $assessment['weight'] / 100;
+                if (! array_key_exists($key, $returnable_array['total'])) {
+                    $returnable_array['total'][$key] = (float) $score_percentage * $assessment['weight'] / 100;
+                } else {
+                    $returnable_array['total'][$key] += (float) $score_percentage * $assessment['weight'] / 100;
                 }
             }
         }
@@ -487,7 +477,7 @@ class EmployeeSalaryController extends Controller
         $project_code = $request->header('Tenant');
         $current_project = Project::where('code', $project_code)->first();
 
-        if (!$project_code || !$current_project) {
+        if (! $project_code || ! $current_project) {
             return response()->json([
                 'code' => 422,
                 'message' => 'Project not found',
@@ -502,25 +492,25 @@ class EmployeeSalaryController extends Controller
         $employee_achievements = [
             'automated' => [
                 'balance' => [
-                    'weight' => 0
+                    'weight' => 0,
                 ],
                 'achievement_national_call' => [
-                    'weight' => 0
+                    'weight' => 0,
                 ],
                 'achievement_national_effective_call' => [
-                    'weight' => 0
-                ], 
+                    'weight' => 0,
+                ],
                 'achievement_national_value' => [
-                    'weight' => 0
+                    'weight' => 0,
                 ],
                 'achievement_area_call' => [
-                    'weight' => 0
+                    'weight' => 0,
                 ],
                 'achievement_area_effective_call' => [
-                    'weight' => 0
-                ], 
+                    'weight' => 0,
+                ],
                 'achievement_area_value' => [
-                    'weight' => 0
+                    'weight' => 0,
                 ],
             ],
             'cash_payment' => [
@@ -528,7 +518,7 @@ class EmployeeSalaryController extends Controller
                 'week2' => 0,
                 'week3' => 0,
                 'week4' => 0,
-                'week5' => 0
+                'week5' => 0,
             ],
             'total' => [
                 'weight' => 0,
@@ -536,16 +526,15 @@ class EmployeeSalaryController extends Controller
                 'week2' => 0,
                 'week3' => 0,
                 'week4' => 0,
-                'week5' => 0
-            ]
+                'week5' => 0,
+            ],
         ];
-
 
         foreach ($employee_achievements['automated'] as $key => &$achievement) {
             if ($key !== 'balance') {
                 $data = [
                     'score' => 0,
-                    'target' => 0
+                    'target' => 0,
                 ];
 
                 $achievement['week1'] = $data;
@@ -556,10 +545,9 @@ class EmployeeSalaryController extends Controller
             }
         }
 
-
         // Area & National Call, Effective Call & Value
         foreach ($group_of_projects as $project) {
-            config()->set('database.connections.tenant.database', 'point_' . strtolower($project->code));
+            config()->set('database.connections.tenant.database', 'point_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
             $employees = Employee::all();
@@ -592,8 +580,7 @@ class EmployeeSalaryController extends Controller
                                     $data['target'] += $target;
                                 }
                             }
-                        }
-                        else if ($assessment['automated_code'] === 'EC') {
+                        } elseif ($assessment['automated_code'] === 'EC') {
                             if ($project->code === $project_code) {
                                 foreach ($employee_achievements['automated']['achievement_area_effective_call'] as $week => &$data) {
                                     if ($week !== 'weight') {
@@ -615,8 +602,7 @@ class EmployeeSalaryController extends Controller
                                     $data['target'] += $target;
                                 }
                             }
-                        }
-                        else if ($assessment['automated_code'] === 'V') {
+                        } elseif ($assessment['automated_code'] === 'V') {
                             if ($project->code === $project_code) {
                                 foreach ($employee_achievements['automated']['achievement_area_value'] as $week => &$data) {
                                     if ($week !== 'weight') {
@@ -657,7 +643,7 @@ class EmployeeSalaryController extends Controller
                 foreach ($queryValueCashCredit as $value) {
                     if (isset($value['week_of_month'])) {
                         if ($value['payment_method'] === 'cash') {
-                            $employee_achievements['cash_payment'][$value['week_of_month']] += (double)$value['value'];
+                            $employee_achievements['cash_payment'][$value['week_of_month']] += (float) $value['value'];
                         }
                     }
                 }
@@ -668,7 +654,7 @@ class EmployeeSalaryController extends Controller
             if (stripos($key, 'area') !== false || stripos($key, 'national') !== false) {
                 foreach ($achievement as $week => $score) {
                     if ($week !== 'weight') {
-                        $achievement[$week] = $achievement[$week]['target'] ? $achievement[$week]['score'] / $achievement[$week]['target'] * 100: 0;
+                        $achievement[$week] = $achievement[$week]['target'] ? $achievement[$week]['score'] / $achievement[$week]['target'] * 100 : 0;
 
                         if ($achievement[$week] > 100 && stripos($key, 'value') === false) {
                             $achievement[$week] = 100;
@@ -678,7 +664,7 @@ class EmployeeSalaryController extends Controller
             }
         }
 
-        config()->set('database.connections.tenant.database', 'point_' . strtolower($project_code));
+        config()->set('database.connections.tenant.database', 'point_'.strtolower($project_code));
         DB::connection('tenant')->reconnect();
 
         return ['data' => $employee_achievements];
@@ -686,7 +672,7 @@ class EmployeeSalaryController extends Controller
 
     private function queryValueCashCredit($dateFrom, $dateTo, $userId)
     {
-        return SalesVisitation::join('forms', 'forms.id','=',SalesVisitation::getTableName().'.form_id')
+        return SalesVisitation::join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->join(SalesVisitationDetail::getTableName(), SalesVisitationDetail::getTableName().'.sales_visitation_id', '=', SalesVisitation::getTableName().'.id')
             ->selectRaw('(quantity * price) as value')
             ->whereBetween('forms.date', [$dateFrom, $dateTo])
@@ -706,7 +692,7 @@ class EmployeeSalaryController extends Controller
             'week2' => 0,
             'week3' => 0,
             'week4' => 0,
-            'week5' => 0
+            'week5' => 0,
         ];
 
         $total_achievements = [
@@ -715,7 +701,7 @@ class EmployeeSalaryController extends Controller
             'week2' => 0,
             'week3' => 0,
             'week4' => 0,
-            'week5' => 0
+            'week5' => 0,
         ];
 
         foreach ($employee_salary->assessments as $index => $indicator) {
@@ -724,7 +710,7 @@ class EmployeeSalaryController extends Controller
                 'week2' => 0,
                 'week3' => 0,
                 'week4' => 0,
-                'week5' => 0
+                'week5' => 0,
             ];
 
             foreach ($indicator->targets as $target) {
@@ -746,25 +732,25 @@ class EmployeeSalaryController extends Controller
 
         foreach ($employee_salary->assessments as $index => $indicator) {
             foreach ($score_percentages_assessments[$index] as $week_of_month => $score_percentage) {
-                $total_assessments[$week_of_month] += (double)$score_percentage * $indicator['weight'] / 100;
+                $total_assessments[$week_of_month] += (float) $score_percentage * $indicator['weight'] / 100;
             }
         }
 
         foreach ($employee_salary->achievements as $achievement) {
-            $total_achievements['week1'] += (double)$achievement->week1 * $achievement->weight / 100;
-            $total_achievements['week2'] += (double)$achievement->week2 * $achievement->weight / 100;
-            $total_achievements['week3'] += (double)$achievement->week3 * $achievement->weight / 100;
-            $total_achievements['week4'] += (double)$achievement->week4 * $achievement->weight / 100;
-            $total_achievements['week5'] += (double)$achievement->week5 * $achievement->weight / 100;
-            $total_achievements['weight'] += $achievement->weight;            
+            $total_achievements['week1'] += (float) $achievement->week1 * $achievement->weight / 100;
+            $total_achievements['week2'] += (float) $achievement->week2 * $achievement->weight / 100;
+            $total_achievements['week3'] += (float) $achievement->week3 * $achievement->weight / 100;
+            $total_achievements['week4'] += (float) $achievement->week4 * $achievement->weight / 100;
+            $total_achievements['week5'] += (float) $achievement->week5 * $achievement->weight / 100;
+            $total_achievements['weight'] += $achievement->weight;
         }
 
         return [
             'additional' => [
                 'score_percentages_assessments' => $score_percentages_assessments,
                 'total_assessments' => $total_assessments,
-                'total_achievements' => $total_achievements
-            ]
+                'total_achievements' => $total_achievements,
+            ],
         ];
     }
 }

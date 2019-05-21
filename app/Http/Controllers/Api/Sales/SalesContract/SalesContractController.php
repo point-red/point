@@ -92,7 +92,7 @@ class SalesContractController extends Controller
                     }
                 }
             }
-            
+
             foreach ($salesContract->groupItems as $contractGroupItem) {
                 $contractGroupItem->quantity_pending = $contractGroupItem->quantity;
 
@@ -104,7 +104,7 @@ class SalesContractController extends Controller
                 }
             }
         }
-        
+
         return new ApiResource($salesContract);
     }
 

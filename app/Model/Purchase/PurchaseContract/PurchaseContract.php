@@ -2,9 +2,9 @@
 
 namespace App\Model\Purchase\PurchaseContract;
 
-use App\Exceptions\IsReferencedException;
 use App\Model\Master\Supplier;
 use App\Model\TransactionModel;
+use App\Exceptions\IsReferencedException;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 
 class PurchaseContract extends TransactionModel

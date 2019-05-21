@@ -39,7 +39,7 @@ class PushNotification extends Command
     {
         $tokens = [];
         array_push($tokens, $this->argument('token'));
-        PushNotification::send($tokens);
+        self::send($tokens);
     }
 
     private static function send($tokens)

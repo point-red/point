@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\ApiResource;
 use App\Model\FirebaseToken;
-use App\Model\Project\Project;
 use Illuminate\Http\Request;
+use App\Model\Project\Project;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 
 class FirebaseTokenController extends Controller
@@ -32,7 +32,7 @@ class FirebaseTokenController extends Controller
 
         $firebaseToken = new FirebaseToken;
 
-        if (!FirebaseToken::where('user_id', auth()->user()->id)
+        if (! FirebaseToken::where('user_id', auth()->user()->id)
             ->where('project_id', optional($project)->id)
             ->where('token', $request->get('token'))
             ->first()) {

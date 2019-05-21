@@ -42,7 +42,7 @@ class AlterTable extends Command
         $projects = Project::all();
         foreach ($projects as $project) {
             $db = env('DB_DATABASE').'_'.strtolower($project->code);
-            $this->line('Alter ' . $db);
+            $this->line('Alter '.$db);
 
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();

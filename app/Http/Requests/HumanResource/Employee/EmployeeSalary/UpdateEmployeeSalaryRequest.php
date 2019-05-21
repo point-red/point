@@ -24,7 +24,7 @@ class UpdateEmployeeSalaryRequest extends FormRequest
     public function rules()
     {
         return [
-            'active_days_in_month' => 'required'
+            'active_days_in_month' => 'required',
         ];
     }
 }

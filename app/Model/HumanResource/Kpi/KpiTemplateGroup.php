@@ -25,7 +25,7 @@ class KpiTemplateGroup extends MasterModel
      */
     public function template()
     {
-        return $this->belongsTo(get_class(new KpiTemplate()));
+        return $this->belongsTo(KpiTemplate::class);
     }
 
     /**
@@ -33,6 +33,6 @@ class KpiTemplateGroup extends MasterModel
      */
     public function indicators()
     {
-        return $this->hasMany(get_class(new KpiTemplateIndicator()));
+        return $this->hasMany(KpiTemplateIndicator::class);
     }
 }

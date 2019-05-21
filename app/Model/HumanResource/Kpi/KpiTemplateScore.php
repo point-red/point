@@ -13,6 +13,6 @@ class KpiTemplateScore extends MasterModel
      */
     public function indicator()
     {
-        return $this->belongsTo(get_class(new KpiTemplateIndicator()));
+        return $this->belongsTo(KpiTemplateIndicator::class);
     }
 }

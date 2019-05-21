@@ -65,7 +65,7 @@ class MasterModel extends PointModel
      */
     public function histories()
     {
-        return $this->morphMany(get_class(new MasterHistory()), 'historyable');
+        return $this->morphMany(MasterHistory::class, 'historyable');
     }
 
     /**

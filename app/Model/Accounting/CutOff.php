@@ -17,6 +17,6 @@ class CutOff extends TransactionModel
      */
     public function details()
     {
-        return $this->hasMany(get_class(new CutOffDetail()), 'cut_off_id');
+        return $this->hasMany(CutOffDetail::class, 'cut_off_id');
     }
 }

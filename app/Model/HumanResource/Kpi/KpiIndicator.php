@@ -13,7 +13,7 @@ class KpiIndicator extends Model
      */
     public function group()
     {
-        return $this->belongsTo(get_class(new KpiGroup()));
+        return $this->belongsTo(KpiGroup::class);
     }
 
     /**
@@ -21,6 +21,6 @@ class KpiIndicator extends Model
      */
     public function scores()
     {
-        return $this->hasMany(get_class(new KpiScore()));
+        return $this->hasMany(KpiScore::class);
     }
 }

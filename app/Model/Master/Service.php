@@ -22,6 +22,6 @@ class Service extends MasterModel
      */
     public function groups()
     {
-        return $this->morphToMany(get_class(new Group()), 'groupable');
+        return $this->morphToMany(Group::class, 'groupable');
     }
 }

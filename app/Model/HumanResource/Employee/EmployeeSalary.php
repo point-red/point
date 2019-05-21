@@ -3,10 +3,6 @@
 namespace App\Model\HumanResource\Employee;
 
 use App\Model\TransactionModel;
-use Illuminate\Database\Eloquent\Model;
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\HumanResource\Employee\EmployeeSalaryAssessment;
-use App\Model\HumanResource\Employee\EmployeeSalaryAchievement;
 
 class EmployeeSalary extends TransactionModel
 {
@@ -17,7 +13,7 @@ class EmployeeSalary extends TransactionModel
      */
     public function assessments()
     {
-        return $this->hasMany(get_class(new EmployeeSalaryAssessment()));
+        return $this->hasMany(EmployeeSalaryAssessment::class);
     }
 
     /**
@@ -25,7 +21,7 @@ class EmployeeSalary extends TransactionModel
      */
     public function achievements()
     {
-        return $this->hasMany(get_class(new EmployeeSalaryAchievement()));
+        return $this->hasMany(EmployeeSalaryAchievement::class);
     }
 
     /**
@@ -33,6 +29,6 @@ class EmployeeSalary extends TransactionModel
      */
     public function employee()
     {
-        return $this->belongsTo(get_class(new Employee()));
+        return $this->belongsTo(Employee::class);
     }
 }

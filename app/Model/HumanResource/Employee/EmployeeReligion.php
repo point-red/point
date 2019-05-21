@@ -13,6 +13,6 @@ class EmployeeReligion extends MasterModel
      */
     public function employees()
     {
-        return $this->hasMany(get_class(new Employee()), 'employee_religion_id');
+        return $this->hasMany(Employee::class, 'employee_religion_id');
     }
 }

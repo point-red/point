@@ -3,7 +3,6 @@
 namespace App\Model\HumanResource\Employee;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Model\HumanResource\Employee\EmployeeSalary;
 
 class EmployeeSalaryAchievement extends Model
 {
@@ -14,6 +13,6 @@ class EmployeeSalaryAchievement extends Model
      */
     public function salary()
     {
-        return $this->belongsTo(get_class(new EmployeeSalary()));
+        return $this->belongsTo(EmployeeSalary::class);
     }
 }

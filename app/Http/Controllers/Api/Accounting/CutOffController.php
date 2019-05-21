@@ -109,7 +109,7 @@ class CutOffController extends Controller
 
         $cutOff->delete();
 
-        Journal::where('journalable_type', get_class($cutOff))->where('journalable_id', $id)->delete();
+        Journal::where('journalable_type', CutOff::class)->where('journalable_id', $id)->delete();
 
         DB::connection('tenant')->commit();
 

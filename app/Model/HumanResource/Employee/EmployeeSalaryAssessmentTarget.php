@@ -15,6 +15,6 @@ class EmployeeSalaryAssessmentTarget extends Model
      */
     public function assessment()
     {
-        return $this->belongsTo(get_class(new EmployeeSalaryAssessment()), 'assessment_id');
+        return $this->belongsTo(EmployeeSalaryAssessment::class, 'assessment_id');
     }
 }

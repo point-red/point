@@ -27,7 +27,7 @@ class Employee extends MasterModel
      */
     public function group()
     {
-        return $this->belongsTo(get_class(new EmployeeGroup()), 'employee_group_id');
+        return $this->belongsTo(EmployeeGroup::class, 'employee_group_id');
     }
 
     /**
@@ -35,7 +35,7 @@ class Employee extends MasterModel
      */
     public function gender()
     {
-        return $this->belongsTo(get_class(new EmployeeGender()), 'employee_gender_id');
+        return $this->belongsTo(EmployeeGender::class, 'employee_gender_id');
     }
 
     /**
@@ -43,7 +43,7 @@ class Employee extends MasterModel
      */
     public function religion()
     {
-        return $this->belongsTo(get_class(new EmployeeReligion()), 'employee_religion_id');
+        return $this->belongsTo(EmployeeReligion::class, 'employee_religion_id');
     }
 
     /**
@@ -51,7 +51,7 @@ class Employee extends MasterModel
      */
     public function maritalStatus()
     {
-        return $this->belongsTo(get_class(new EmployeeMaritalStatus()), 'employee_marital_status_id');
+        return $this->belongsTo(EmployeeMaritalStatus::class, 'employee_marital_status_id');
     }
 
     /**
@@ -59,7 +59,7 @@ class Employee extends MasterModel
      */
     public function status()
     {
-        return $this->belongsTo(get_class(new EmployeeStatus()), 'employee_status_id');
+        return $this->belongsTo(EmployeeStatus::class, 'employee_status_id');
     }
 
     /**
@@ -67,7 +67,7 @@ class Employee extends MasterModel
      */
     public function jobLocation()
     {
-        return $this->belongsTo(get_class(new EmployeeJobLocation()), 'employee_job_location_id');
+        return $this->belongsTo(EmployeeJobLocation::class, 'employee_job_location_id');
     }
 
     /**
@@ -75,7 +75,7 @@ class Employee extends MasterModel
      */
     public function phones()
     {
-        return $this->hasMany(get_class(new EmployeePhone()));
+        return $this->hasMany(EmployeePhone::class);
     }
 
     /**
@@ -83,7 +83,7 @@ class Employee extends MasterModel
      */
     public function addresses()
     {
-        return $this->hasMany(get_class(new EmployeeAddress()));
+        return $this->hasMany(EmployeeAddress::class);
     }
 
     /**
@@ -91,7 +91,7 @@ class Employee extends MasterModel
      */
     public function emails()
     {
-        return $this->hasMany(get_class(new EmployeeEmail()));
+        return $this->hasMany(EmployeeEmail::class);
     }
 
     /**
@@ -99,7 +99,7 @@ class Employee extends MasterModel
      */
     public function companyEmails()
     {
-        return $this->hasMany(get_class(new EmployeeCompanyEmail()));
+        return $this->hasMany(EmployeeCompanyEmail::class);
     }
 
     /**
@@ -107,7 +107,7 @@ class Employee extends MasterModel
      */
     public function socialMedia()
     {
-        return $this->hasMany(get_class(new EmployeeSocialMedia()));
+        return $this->hasMany(EmployeeSocialMedia::class);
     }
 
     /**
@@ -115,7 +115,7 @@ class Employee extends MasterModel
      */
     public function contracts()
     {
-        return $this->hasMany(get_class(new EmployeeContract()));
+        return $this->hasMany(EmployeeContract::class);
     }
 
     /**
@@ -123,7 +123,7 @@ class Employee extends MasterModel
      */
     public function salaryHistories()
     {
-        return $this->hasMany(get_class(new EmployeeSalaryHistory()));
+        return $this->hasMany(EmployeeSalaryHistory::class);
     }
 
     /**
@@ -131,7 +131,7 @@ class Employee extends MasterModel
      */
     public function kpiTemplate()
     {
-        return $this->belongsTo(get_class(new KpiTemplate()));
+        return $this->belongsTo(KpiTemplate::class);
     }
 
     /**

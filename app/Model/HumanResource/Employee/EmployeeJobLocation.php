@@ -13,6 +13,6 @@ class EmployeeJobLocation extends MasterModel
      */
     public function employees()
     {
-        return $this->hasMany(get_class(new Employee()), 'employee_job_location_id');
+        return $this->hasMany(Employee::class, 'employee_job_location_id');
     }
 }

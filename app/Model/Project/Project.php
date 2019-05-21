@@ -15,7 +15,7 @@ class Project extends Model
      */
     public function owner()
     {
-        return $this->belongsTo(get_class(new User()), 'owner_id');
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
     /**
@@ -23,7 +23,7 @@ class Project extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(new User());
+        return $this->belongsToMany(User::class);
     }
 
     /**

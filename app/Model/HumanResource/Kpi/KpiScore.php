@@ -13,6 +13,6 @@ class KpiScore extends Model
      */
     public function indicator()
     {
-        return $this->belongsTo(get_class(new KpiIndicator()));
+        return $this->belongsTo(KpiIndicator::class);
     }
 }

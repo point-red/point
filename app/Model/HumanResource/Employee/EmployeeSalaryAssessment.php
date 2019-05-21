@@ -3,9 +3,6 @@
 namespace App\Model\HumanResource\Employee;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Model\HumanResource\Employee\EmployeeSalary;
-use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentScore;
-use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentTarget;
 
 class EmployeeSalaryAssessment extends Model
 {
@@ -16,7 +13,7 @@ class EmployeeSalaryAssessment extends Model
      */
     public function salary()
     {
-        return $this->belongsTo(get_class(new EmployeeSalary()));
+        return $this->belongsTo(EmployeeSalary::class);
     }
 
     /**
@@ -24,7 +21,7 @@ class EmployeeSalaryAssessment extends Model
      */
     public function scores()
     {
-        return $this->hasMany(get_class(new EmployeeSalaryAssessmentScore()), 'assessment_id');
+        return $this->hasMany(EmployeeSalaryAssessmentScore::class, 'assessment_id');
     }
 
     /**
@@ -32,6 +29,6 @@ class EmployeeSalaryAssessment extends Model
      */
     public function targets()
     {
-        return $this->hasMany(get_class(new EmployeeSalaryAssessmentTarget()), 'assessment_id');
+        return $this->hasMany(EmployeeSalaryAssessmentTarget::class, 'assessment_id');
     }
 }

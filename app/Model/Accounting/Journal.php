@@ -37,7 +37,7 @@ class Journal extends PointModel
      */
     public function chartOfAccount()
     {
-        return $this->belongsTo(get_class(new ChartOfAccount()), 'chart_of_account_id');
+        return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
     }
 
     public function scopeHasValue($query)

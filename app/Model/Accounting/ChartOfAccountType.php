@@ -12,7 +12,7 @@ class ChartOfAccountType extends MasterModel
 
     public function accounts()
     {
-        return $this->hasMany(get_class(new ChartOfAccount()), 'type_id');
+        return $this->hasMany(ChartOfAccount::class, 'type_id');
     }
 
     public function totalDebit()

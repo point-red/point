@@ -14,6 +14,6 @@ class EmployeeAddress extends MasterModel
      */
     public function employee()
     {
-        return $this->belongsTo(get_class(new Employee()), 'employee_id');
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 }

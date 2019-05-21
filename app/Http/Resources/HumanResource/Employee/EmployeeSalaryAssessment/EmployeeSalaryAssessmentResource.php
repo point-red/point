@@ -22,7 +22,7 @@ class EmployeeSalaryAssessmentResource extends JsonResource
             'name' => $this->name,
             'weight' => $this->weight,
             'scores' => EmployeeSalaryAssessmentScoreResource::collection($this->scores),
-            'targets' => EmployeeSalaryAssessmentTargetResource::collection($this->targets)
+            'targets' => EmployeeSalaryAssessmentTargetResource::collection($this->targets),
         ];
     }
 }

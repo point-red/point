@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Sales\SalesInvoice;
 
 use App\Model\Form;
 use Illuminate\Http\Request;
+use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
@@ -11,7 +12,6 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\StoreSalesInvoiceRequest;
 use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\UpdateSalesInvoiceRequest;
-use App\Model\Master\Customer;
 
 class SalesInvoiceController extends Controller
 {
@@ -132,7 +132,7 @@ class SalesInvoiceController extends Controller
             $salesInvoice->detachDownPayments();
             $response = $salesInvoice->requestCancel($request);
 
-            if (!$response) {
+            if (! $response) {
                 foreach ($salesInvoice->items as $salesInvoiceItem) {
                     if ($salesInvoiceItem->deliveryNote) {
                         $salesInvoiceItem->deliveryNote->form->done = false;

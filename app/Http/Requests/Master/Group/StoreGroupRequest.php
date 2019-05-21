@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests\Master\Group;
 
-use App\Model\Master\Group;
+use Illuminate\Validation\Rule;
 use App\Helpers\Master\GroupClassReference;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreGroupRequest extends FormRequest
 {
@@ -29,16 +28,15 @@ class StoreGroupRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                Rule::unique('tenant.groups')->where(function($query) {
+                Rule::unique('tenant.groups')->where(function ($query) {
                     return $query->where('name', $this->name)->where('class_reference', $this->class_reference);
                 }),
             ],
-            'class_reference' => 
-            function ($attribute, $value, $fail) {
+            'class_reference' => function ($attribute, $value, $fail) {
                 if (! GroupClassReference::isAvailable($this->class_reference)) {
                     $fail($attribute.' is not valid');
                 }
-            }
+            },
         ];
     }
 }

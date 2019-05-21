@@ -28,7 +28,7 @@ class EmployeeSalaryResource extends JsonResource
             'daily_transport_allowance' => $this->daily_transport_allowance,
             'functional_allowance' => $this->functional_allowance,
             'communication_allowance' => $this->communication_allowance,
-            
+
             'active_days_in_month' => $this->active_days_in_month,
 
             'active_days_week1' => $this->active_days_week1,
@@ -74,7 +74,7 @@ class EmployeeSalaryResource extends JsonResource
             'cash_payment_week5' => $this->cash_payment_week5,
 
             'assessments' => EmployeeSalaryAssessmentResource::collection($this->assessments),
-            'achievements' => EmployeeSalaryAchievementResource::collection($this->achievements)
+            'achievements' => EmployeeSalaryAchievementResource::collection($this->achievements),
         ];
     }
 }

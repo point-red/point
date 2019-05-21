@@ -1,8 +1,9 @@
 <?php
+
 namespace App\Http\Resources\HumanResource\Employee\EmployeeSalaryAssessmentScore;
 
-use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentScore;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentScore;
 
 class EmployeeSalaryAssessmentScoreCollection extends ResourceCollection
 {
@@ -17,7 +18,7 @@ class EmployeeSalaryAssessmentScoreCollection extends ResourceCollection
         $this->collection->transform(function (EmployeeSalaryAssessmentScore $salaryAssessmentScore) {
             return new EmployeeSalaryAssessmentScoreResource($salaryAssessmentScore);
         });
-        
+
         return parent::toArray($request);
     }
 }

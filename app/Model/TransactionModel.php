@@ -34,7 +34,7 @@ class TransactionModel extends PointModel
     }
 
     /**
-     * Cannot update form that already archived
+     * Cannot update form that already archived.
      *
      * @throws FormArchivedException
      */
@@ -46,7 +46,7 @@ class TransactionModel extends PointModel
     }
 
     /**
-     * Update form should be in same period
+     * Update form should be in same period.
      *
      * @param $date
      * @throws UpdatePeriodNotAllowedException

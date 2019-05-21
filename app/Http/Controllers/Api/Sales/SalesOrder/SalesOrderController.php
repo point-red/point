@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesOrder;
 
+use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +12,6 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Http\Requests\Sales\SalesOrder\SalesOrder\StoreSalesOrderRequest;
 use App\Http\Requests\Sales\SalesOrder\SalesOrder\UpdateSalesOrderRequest;
-use App\Model\Form;
 
 class SalesOrderController extends Controller
 {
@@ -143,7 +143,7 @@ class SalesOrderController extends Controller
 
         $response = $salesOrder->requestCancel($request);
 
-        if (!$response) {
+        if (! $response) {
             if ($salesOrder->salesQuotation) {
                 $salesOrder->salesQuotation->form->done = false;
                 $salesOrder->salesQuotation->form->save();

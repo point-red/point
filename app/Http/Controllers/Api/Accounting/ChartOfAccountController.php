@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
 use Illuminate\Http\Request;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Model\Accounting\ChartOfAccount;
 use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource;

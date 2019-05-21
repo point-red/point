@@ -186,7 +186,7 @@ class PurchaseOrderController extends Controller
 
         $response = $purchaseOrder->requestCancel($request);
 
-        if (!$response) {
+        if (! $response) {
             if ($purchaseOrder->purchaseRequest) {
                 $purchaseOrder->purchaseRequest->form->done = false;
                 $purchaseOrder->purchaseRequest->form->save();

@@ -60,7 +60,7 @@ class UpdateSalesInvoiceRequest extends FormRequest
             'services.*.discount_percent' => ValidationRule::discountPercent(),
             'services.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
         ];
-        
+
         // TODO validation for downpayment
 
         return array_merge($rulesForm, $rulesSalesInvoice, $rulesSalesInvoiceItems, $rulesSalesInvoiceServices);

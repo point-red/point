@@ -2,7 +2,6 @@
 
 namespace App\Model\Purchase\PurchaseInvoice;
 
-use App\Exceptions\IsReferencedException;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
@@ -11,6 +10,7 @@ use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
 use App\Model\Finance\Payment\Payment;
+use App\Exceptions\IsReferencedException;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
@@ -142,7 +142,7 @@ class PurchaseInvoice extends TransactionModel
         $form->saveData($data, $purchaseInvoice);
 
         // updated to done if the amount is 0 because of down payment
-        $purchaseInvoice->updateIfDone(); 
+        $purchaseInvoice->updateIfDone();
 
         self::setPurchaseReceiveDone($purchaseInvoice);
         self::updateInventory($purchaseInvoice);

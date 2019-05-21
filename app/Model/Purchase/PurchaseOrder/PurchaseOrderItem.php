@@ -54,7 +54,7 @@ class PurchaseOrderItem extends TransactionModel
     public function purchaseReceiveItems()
     {
         return $this->hasMany(PurchaseReceiveItem::class)
-            ->whereHas('purchaseReceive', function($query) {
+            ->whereHas('purchaseReceive', function ($query) {
                 $query->active();
             });
     }

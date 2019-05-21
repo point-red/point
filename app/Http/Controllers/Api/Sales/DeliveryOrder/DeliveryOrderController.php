@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\Api\Sales\DeliveryOrder;
 
+use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
-use App\Model\Form;
 
 class DeliveryOrderController extends Controller
 {
@@ -133,7 +131,7 @@ class DeliveryOrderController extends Controller
 
         $response = $deliveryOrder->requestCancel($request);
 
-        if (!$response) {
+        if (! $response) {
             if ($deliveryOrder->salesOrder) {
                 $deliveryOrder->salesOrder->form->done = false;
                 $deliveryOrder->salesOrder->form->save();

@@ -24,9 +24,9 @@ class EmployeeJobLocationController extends Controller
     {
         $job_locations = EmployeeJobLocation::eloquentFilter($request)
             ->select('employee_job_locations.*');
-            
+
         $job_locations = pagination($job_locations, $request->get('limit'));
-        
+
         return new ApiCollection($job_locations);
     }
 

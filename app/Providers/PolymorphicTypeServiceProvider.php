@@ -2,33 +2,33 @@
 
 namespace App\Providers;
 
-use App\Model\Accounting\CutOff;
-use App\Model\Finance\Payment\Payment;
-use App\Model\Finance\PaymentOrder\PaymentOrder;
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\Inventory\InventoryAudit\InventoryAudit;
-use App\Model\Inventory\OpeningStock\OpeningStock;
-use App\Model\Master\Customer;
 use App\Model\Master\Item;
 use App\Model\Master\Service;
+use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseContract\PurchaseContract;
-use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
-use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Accounting\CutOff;
+use App\Model\Finance\Payment\Payment;
+use Illuminate\Support\ServiceProvider;
+use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\Sales\SalesReturn\SalesReturn;
+use App\Model\HumanResource\Employee\Employee;
+use App\Model\Sales\DeliveryNote\DeliveryNote;
+use App\Model\Sales\SalesInvoice\SalesInvoice;
+use App\Model\Finance\PaymentOrder\PaymentOrder;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\SalesContract\SalesContract;
+use App\Model\Inventory\OpeningStock\OpeningStock;
+use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Model\Purchase\PurchaseReturn\PurchaseReturn;
+use App\Model\Inventory\InventoryAudit\InventoryAudit;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
-use App\Model\Purchase\PurchaseReturn\PurchaseReturn;
-use App\Model\Sales\SalesContract\SalesContract;
-use App\Model\Sales\SalesDownPayment\SalesDownPayment;
-use App\Model\Sales\SalesInvoice\SalesInvoice;
-use App\Model\Sales\SalesOrder\SalesOrder;
-use App\Model\Sales\SalesQuotation\SalesQuotation;
-use App\Model\Sales\SalesReturn\SalesReturn;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Support\ServiceProvider;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use App\Model\Sales\DeliveryNote\DeliveryNote;
+use App\Model\Purchase\PurchaseContract\PurchaseContract;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 
 class PolymorphicTypeServiceProvider extends ServiceProvider
 {

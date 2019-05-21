@@ -3,8 +3,6 @@
 namespace App\Model\HumanResource\Employee;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Model\HumanResource\Employee\EmployeeSalary;
-use App\Model\HumanResource\Employee\EmployeeSalaryAssessment;
 
 class EmployeeSalaryAssessmentTarget extends Model
 {

@@ -6,9 +6,9 @@ use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
+use App\Exceptions\IsReferencedException;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
-use App\Exceptions\IsReferencedException;
 
 class DeliveryOrder extends TransactionModel
 {
@@ -107,10 +107,10 @@ class DeliveryOrder extends TransactionModel
         $deliveryOrder->fill($data);
 
         $deliveryOrder->save();
-        
+
         $items = self::mapItems($data['items']);
         $deliveryOrder->items()->saveMany($items);
-        
+
         $form = new Form;
         $form->saveData($data, $deliveryOrder);
 
@@ -126,7 +126,7 @@ class DeliveryOrder extends TransactionModel
         return array_map(function ($item) {
             $deliveryOrderItem = new DeliveryOrderItem;
             $deliveryOrderItem->fill($item);
-            
+
             return $deliveryOrderItem;
         }, $items);
     }

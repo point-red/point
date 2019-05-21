@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseReceive;
 
-use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseReceiveRequest;
 use App\Model\Form;
-use App\Model\Inventory\Inventory;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
+use App\Model\Inventory\Inventory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseReceiveRequest;
 
 class PurchaseReceiveController extends Controller
 {
@@ -84,7 +84,7 @@ class PurchaseReceiveController extends Controller
      *      - discount_value (Decimal, Optional)
      *      - taxable (Boolean, Optional)
      *      - description (String)
-     *      - allocation_id (Int, Optional)
+     *      - allocation_id (Int, Optional).
      *
      * @param StorePurchaseReceiveRequest $request
      * @return ApiResource
@@ -140,7 +140,7 @@ class PurchaseReceiveController extends Controller
             $orderItem->quantity = 0;
             foreach ($purchaseReceive->purchaseOrder->purchaseReceives as $receive) {
                 $receiveItem = $receive->items->firstWhere('purchase_order_item_id', $orderItem->id);
-                if (!$receiveItem) {
+                if (! $receiveItem) {
                     continue;
                 }
 
@@ -206,7 +206,7 @@ class PurchaseReceiveController extends Controller
 
         $response = $purchaseReceive->requestCancel($request);
 
-        if (!$response) {
+        if (! $response) {
             $purchaseReceive->purchaseOrder->form->done = false;
             $purchaseReceive->purchaseOrder->form->save();
         }

@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Api\HumanResource\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Model\HumanResource\Kpi\Automated;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
 use App\Model\HumanResource\Kpi\KpiScore;
+use App\Model\HumanResource\Kpi\Automated;
 use App\Model\HumanResource\Kpi\KpiIndicator;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
@@ -125,8 +125,7 @@ class EmployeeAssessmentController extends Controller
                         }
 
                         $kpiIndicator->score_description = '';
-                    }
-                    else if (array_key_exists('selected', $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex])) {
+                    } elseif (array_key_exists('selected', $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex])) {
                         $kpiIndicator->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
                         $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
                         $kpiIndicator->score_percentage = $kpiIndicator->target > 0 ? $kpiIndicator->score / $kpiIndicator->target * $kpiIndicator->weight : 0;
@@ -135,7 +134,7 @@ class EmployeeAssessmentController extends Controller
 
                     $kpiIndicator->save();
 
-                    if (!$template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code']) {
+                    if (! $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code']) {
                         for ($scoreIndex = 0; $scoreIndex < count($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores']); $scoreIndex++) {
                             $kpiScore = new KpiScore();
                             $kpiScore->kpi_indicator_id = $kpiIndicator->id;
@@ -172,8 +171,8 @@ class EmployeeAssessmentController extends Controller
             ->where('kpis.id', $id)
             ->first();
 
-        $kpis->score = (double)$kpis->score;
-        $kpis->target = (double)$kpis->target;
+        $kpis->score = (float) $kpis->score;
+        $kpis->target = (float) $kpis->target;
 
         return new KpiResource($kpis);
     }
@@ -200,7 +199,7 @@ class EmployeeAssessmentController extends Controller
             for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
                 $kpiIndicator = KpiIndicator::findOrFail($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['id']);
 
-                if (!$kpiIndicator->automated_code) {
+                if (! $kpiIndicator->automated_code) {
                     $kpiIndicator->kpi_group_id = $kpiGroup->id;
                     $kpiIndicator->name = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
                     $kpiIndicator->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];

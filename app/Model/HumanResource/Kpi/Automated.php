@@ -2,14 +2,13 @@
 
 namespace App\Model\HumanResource\Kpi;
 
+use DateTime;
+use DatePeriod;
+use DateInterval;
 use App\Model\TransactionModel;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationTarget;
-
-use DateInterval;
-use DatePeriod;
-use DateTime;
 
 class Automated extends TransactionModel
 {
@@ -22,7 +21,7 @@ class Automated extends TransactionModel
     {
         $dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
-        
+
         $employee = Employee::findOrFail($employeeId);
         $userId = $employee->user_id ?? 0;
 
@@ -35,13 +34,11 @@ class Automated extends TransactionModel
             $target = SalesVisitationTarget::target($dateTo, $userId);
             $target = $target['call'] * $numberOfDays;
             $score = SalesVisitation::call($dateFrom, $dateTo, $userId);
-        }
-        else if ($automated_code === 'EC') {
+        } elseif ($automated_code === 'EC') {
             $target = SalesVisitationTarget::target($dateTo, $userId);
             $target = $target['effective_call'] * $numberOfDays;
             $score = SalesVisitation::effectiveCall($dateFrom, $dateTo, $userId);
-        }
-        else if ($automated_code === 'V') {
+        } elseif ($automated_code === 'V') {
             $target = SalesVisitationTarget::target($dateTo, $userId);
             $target = $target['value'] * $numberOfDays;
             $score = SalesVisitation::value($dateFrom, $dateTo, $userId);
@@ -64,13 +61,12 @@ class Automated extends TransactionModel
 
         $holidays = [];
 
-        foreach($period as $dt) {
+        foreach ($period as $dt) {
             $currentDay = $dt->format('D');
 
             if ($currentDay == 'Sun') {
                 $numberOfDays--;
-            }
-            else if (in_array($dt->format('Y-m-d'), $holidays)) {
+            } elseif (in_array($dt->format('Y-m-d'), $holidays)) {
                 $numberOfDays--;
             }
         }

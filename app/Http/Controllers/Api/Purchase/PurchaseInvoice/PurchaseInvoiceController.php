@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 
 use App\Model\Form;
-use App\Model\Master\Supplier;
 use Illuminate\Http\Request;
+use App\Model\Master\Supplier;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
@@ -111,7 +111,7 @@ class PurchaseInvoiceController extends Controller
                 'items.item',
                 'items.allocation',
                 'services.service',
-                'services.allocation'
+                'services.allocation',
             ]);
 
             return new ApiResource($purchaseInvoice);
@@ -134,7 +134,7 @@ class PurchaseInvoiceController extends Controller
 
         $response = $purchaseInvoice->requestCancel($request);
 
-        if (!$response) {
+        if (! $response) {
             foreach ($purchaseInvoice->purchaseReceives as $purchaseReceive) {
                 $purchaseReceive->form->done = false;
                 $purchaseReceive->form->save();

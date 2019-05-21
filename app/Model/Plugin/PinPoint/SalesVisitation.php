@@ -2,11 +2,10 @@
 
 namespace App\Model\Plugin\PinPoint;
 
-use Illuminate\Support\Facades\DB;
-
 use App\Model\Form;
 use App\Model\PointModel;
 use App\Model\Master\Customer;
+use Illuminate\Support\Facades\DB;
 
 class SalesVisitation extends PointModel
 {
@@ -16,7 +15,7 @@ class SalesVisitation extends PointModel
 
     protected $casts = [
         'total' => 'double',
-        'value' => 'double'
+        'value' => 'double',
     ];
 
     public function setDueDateAttribute($value)
@@ -95,7 +94,7 @@ class SalesVisitation extends PointModel
 
     public static function value($dateFrom, $dateTo, $userId)
     {
-        $query = self::join('forms', 'forms.id','=',self::getTableName().'.form_id')
+        $query = self::join('forms', 'forms.id', '=', self::getTableName().'.form_id')
             ->join(SalesVisitationDetail::getTableName(), SalesVisitationDetail::getTableName().'.sales_visitation_id', '=', self::getTableName().'.id')
             ->groupBy('forms.created_by')
             ->selectRaw('sum(quantity * price) as value')

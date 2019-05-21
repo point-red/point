@@ -2,7 +2,6 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
-use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\FormApproval;
@@ -11,7 +10,6 @@ use App\Model\TransactionModel;
 use App\Exceptions\IsReferencedException;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use Illuminate\Support\Facades\DB;
 
 class PurchaseRequest extends TransactionModel
 {

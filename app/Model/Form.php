@@ -7,7 +7,6 @@ use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
-use ReflectionClass;
 
 class Form extends PointModel
 {
@@ -226,7 +225,7 @@ class Form extends PointModel
     private function convertTemplateIncrement()
     {
         preg_match_all('/{increment=(\d)}/', $this->number, $regexResult);
-        
+
         if (! empty($regexResult[0])) {
             $lastForm = self::where('formable_type', $this->formable_type)
                 ->whereNotNull('number')

@@ -7,8 +7,8 @@ use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 use App\Helpers\Inventory\InventoryHelper;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 
 class DeliveryNote extends TransactionModel
 {
@@ -87,14 +87,14 @@ class DeliveryNote extends TransactionModel
         $deliveryNote->save();
 
         $items = self::mapItems($data['items'] ?? [], $deliveryOrder);
-        
+
         $deliveryNote->items()->saveMany($items);
-        
+
         $form = new Form;
         $form->saveData($data, $deliveryNote);
-        
+
         $deliveryOrder->updateIfDone();
-        
+
         foreach ($items as $item) {
             InventoryHelper::decrease($form->id, $deliveryNote->warehouse_id, $item->item_id, $item->quantity);
         }
@@ -102,20 +102,21 @@ class DeliveryNote extends TransactionModel
         return $deliveryNote;
     }
 
-    private static function mapItems($items, $deliveryOrder) {
+    private static function mapItems($items, $deliveryOrder)
+    {
         $deliveryOrderItems = $deliveryOrder->items;
-        
-        return array_map(function($item) use ($deliveryOrderItems) {
+
+        return array_map(function ($item) use ($deliveryOrderItems) {
             $deliveryOrderItem = $deliveryOrderItems->firstWhere('id', $item['delivery_order_item_id']);
 
             $deliveryNoteItem = new DeliveryNoteItem;
             $deliveryNoteItem->fill($item);
             $deliveryNoteItem = self::setDeliveryNoteItem($deliveryNoteItem, $deliveryOrderItem);
-            
+
             return $deliveryNoteItem;
         }, $items);
     }
-    
+
     private static function setDeliveryNoteItem($deliveryNoteItem, $deliveryOrderItem)
     {
         $deliveryNoteItem->item_id = $deliveryOrderItem->item_id;

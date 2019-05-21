@@ -164,7 +164,7 @@ class PermissionSeeder extends Seeder
         Permission::createIfNotExists('menu human resource');
 
         $allPermission = [
-            'employee', 'employee kpi', 'employee assessment', 'employee salary'
+            'employee', 'employee kpi', 'employee assessment', 'employee salary',
         ];
 
         foreach ($allPermission as $permission) {

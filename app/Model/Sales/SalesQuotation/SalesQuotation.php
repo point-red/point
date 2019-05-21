@@ -5,8 +5,8 @@ namespace App\Model\Sales\SalesQuotation;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\TransactionModel;
-use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Exceptions\IsReferencedException;
+use App\Model\Sales\SalesOrder\SalesOrder;
 
 class SalesQuotation extends TransactionModel
 {

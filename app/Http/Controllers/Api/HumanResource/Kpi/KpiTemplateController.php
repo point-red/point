@@ -72,7 +72,7 @@ class KpiTemplateController extends Controller
             }])
             ->first();
 
-        $template->target = (double) $template->target;
+        $template->target = (float) $template->target;
 
         return new ApiResource($template);
     }

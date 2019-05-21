@@ -56,7 +56,7 @@ class SalesOrderItem extends PointModel
     public function deliveryOrderItems()
     {
         return $this->hasMany(DeliveryOrderItem::class)
-            ->whereHas('deliveryOrder', function($query) {
+            ->whereHas('deliveryOrder', function ($query) {
                 $query->active();
             });
     }

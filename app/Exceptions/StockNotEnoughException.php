@@ -8,6 +8,6 @@ class StockNotEnoughException extends Exception
 {
     public function __construct($item)
     {
-        parent::__construct('Stock ' . $item->code . '-' . $item->name . ' not enough', 422);
+        parent::__construct('Stock '.$item->code.'-'.$item->name.' not enough', 422);
     }
 }

@@ -49,7 +49,7 @@ class DeliveryOrderItem extends TransactionModel
     public function deliveryNoteItems()
     {
         return $this->hasMany(DeliveryNoteItem::class)
-            ->whereHas('deliveryNote', function($query) {
+            ->whereHas('deliveryNote', function ($query) {
                 $query->active();
             });
     }

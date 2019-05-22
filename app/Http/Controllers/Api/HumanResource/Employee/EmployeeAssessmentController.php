@@ -104,14 +104,12 @@ class EmployeeAssessmentController extends Controller
                 $kpiGroup->kpi_id = $kpi->id;
                 $kpiGroup->name = $template['groups'][$groupIndex]['name'];
                 $kpiGroup->save();
-
                 for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
                     $kpiIndicator = new KpiIndicator;
                     $kpiIndicator->kpi_group_id = $kpiGroup->id;
                     $kpiIndicator->name = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
                     $kpiIndicator->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
-
-                    if ($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code']) {
+                    if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code'])) {
                         $kpiIndicator->automated_code = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code'];
 
                         $data = Automated::getData($kpiIndicator->automated_code, $assessmentDateFrom, $assessmentDateTo, $employeeId);
@@ -125,7 +123,7 @@ class EmployeeAssessmentController extends Controller
                         }
 
                         $kpiIndicator->score_description = '';
-                    } elseif (array_key_exists('selected', $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex])) {
+                    } else {
                         $kpiIndicator->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
                         $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
                         $kpiIndicator->score_percentage = $kpiIndicator->target > 0 ? $kpiIndicator->score / $kpiIndicator->target * $kpiIndicator->weight : 0;

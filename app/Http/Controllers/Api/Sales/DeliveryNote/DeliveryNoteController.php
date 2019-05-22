@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Http\Requests\Sales\DeliveryNote\DeliveryNote\StoreDeliveryNoteRequest;
+use App\Http\Requests\Sales\DeliveryNote\DeliveryNote\UpdateDeliveryNoteRequest;
 
 class DeliveryNoteController extends Controller
 {
@@ -97,15 +98,20 @@ class DeliveryNoteController extends Controller
      * @return ApiResource
      * @throws \Throwable
      */
-    public function update(Request $request, $id)
+    public function update(UpdateDeliveryNoteRequest $request, $id)
     {
-        // TODO prevent delete if referenced by sales invoice
-        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-            $salesInvoice = SalesInvoice::findOrFail($id);
+        $deliveryNote = DeliveryNote::with('form')->findOrFail($id);
 
-            $newSalesInvoice = $salesInvoice->edit($request->all());
+        $deliveryNote->isAllowedToUpdate();
 
-            return new ApiResource($newSalesInvoice);
+        $result = DB::connection('tenant')->transaction(function () use ($request, $deliveryNote) {
+            $deliveryNote->form->archive();
+            $request['number'] = $deliveryNote->form->edited_number;
+
+            $deliveryNote = DeliveryNote::create($request->all());
+            $deliveryNote->load(['form', 'customer', 'items']);
+
+            return new ApiResource($deliveryNote);
         });
 
         return $result;

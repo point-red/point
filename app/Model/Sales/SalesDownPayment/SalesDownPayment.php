@@ -53,6 +53,26 @@ class SalesDownPayment extends TransactionModel
             ->withPivot('amount');
     }
 
+    public function isAllowedToUpdate()
+    {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    public function isAllowedToDelete()
+    {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    private function isNotReferenced()
+    {
+        // Check if not referenced by purchase order
+        if ($this->invoices->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by sales invoice(s)', $this->invoices);
+        }
+    }
+
     public function updateIfDone()
     {
         $used = $this->invoices->sum(function ($invoice) {

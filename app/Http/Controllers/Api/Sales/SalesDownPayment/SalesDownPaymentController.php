@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Api\Sales\SalesDownPayment;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment\StoreSalesDownPaymentRequest;
+use App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment\UpdateSalesDownPaymentRequest;
 
 class SalesDownPaymentController extends Controller
 {
@@ -86,9 +88,23 @@ class SalesDownPaymentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateSalesDownPaymentRequest $request, $id)
     {
-        //
+        $salesDownPayment = SalesDownPayment::with('form')->findOrFail($id);
+
+        $salesDownPayment->isAllowedToUpdate();
+
+        $result = DB::connection('tenant')->transaction(function () use ($request, $salesDownPayment) {
+            $salesDownPayment->form->archive();
+            $request['number'] = $salesDownPayment->form->edited_number;
+
+            $salesDownPayment = SalesDownPayment::create($request->all());
+            $salesDownPayment->load(['form', 'customer', 'downpaymentable']);
+
+            return new ApiResource($salesDownPayment);
+        });
+
+        return $result;
     }
 
     /**

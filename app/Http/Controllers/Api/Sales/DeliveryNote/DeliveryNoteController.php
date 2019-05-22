@@ -78,14 +78,7 @@ class DeliveryNoteController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $deliveryNote = DeliveryNote::eloquentFilter($request)
-            ->with('form')
-            ->with('deliveryOrder.form')
-            ->with('warehouse')
-            ->with('customer')
-            ->with('items.item')
-            ->with('items.allocation')
-            ->findOrFail($id);
+        $deliveryNote = DeliveryNote::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($deliveryNote);
     }

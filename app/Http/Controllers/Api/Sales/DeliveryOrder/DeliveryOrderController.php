@@ -10,6 +10,7 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder\UpdateDeliveryOrderRequest;
 
 class DeliveryOrderController extends Controller
 {
@@ -103,15 +104,21 @@ class DeliveryOrderController extends Controller
      * @param int  $id
      * @return ApiResource
      */
-    public function update(Request $request, $id)
+    public function update(UpdateDeliveryOrderRequest $request, $id)
     {
-        // TODO prevent delete if referenced by delivery notes
-        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-            $deliveryOrder = DeliveryOrder::findOrFail($id);
+        // TODO prevent delete if referenced by delivery order
+        $deliveryOrder = DeliveryOrder::with('form')->findOrFail($id);
 
-            $newDeliveryOrder = $deliveryOrder->edit($request->all());
+        $deliveryOrder->isAllowedToUpdate();
 
-            return new ApiResource($newDeliveryOrder);
+        $result = DB::connection('tenant')->transaction(function () use ($request, $deliveryOrder) {
+            $deliveryOrder->form->archive();
+            $request['number'] = $deliveryOrder->form->edited_number;
+
+            $deliveryOrder = DeliveryOrder::create($request->all());
+            $deliveryOrder->load(['form', 'customer', 'items']);
+
+            return new ApiResource($deliveryOrder);
         });
 
         return $result;

@@ -87,17 +87,21 @@ class DeliveryOrder extends TransactionModel
 
     public function isAllowedToUpdate()
     {
-        // Check if not referenced by purchase order
-        if ($this->deliveryNotes->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by delivery note', $this->deliveryNotes);
-        }
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
     }
 
     public function isAllowedToDelete()
     {
-        // Check if not referenced by purchase order
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    private function isNotReferenced()
+    {
+        // Check if not referenced by delivery notes
         if ($this->deliveryNotes->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by delivery note', $this->deliveryNotes);
+            throw new IsReferencedException('Cannot edit form because referenced by delivery note(s)', $this->deliveryNotes);
         }
     }
 

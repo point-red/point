@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Sales\SalesInvoice\SalesInvoice;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\ValidationRule;
 
 class UpdateSalesInvoiceRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class UpdateSalesInvoiceRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**

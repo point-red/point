@@ -95,8 +95,8 @@ class SalesInvoice extends TransactionModel
 
         $downPayments = $this->downPayments;
         $downPaymentIds = $downPayments->pluck('id');
-        Form::whereIn('referenceable_id', $downPaymentIds)
-            ->where('referenceable_type', SalesDownPayment::$morphName)
+        Form::whereIn('formable_id', $downPaymentIds)
+            ->where('formable_type', SalesDownPayment::$morphName)
             ->update(['done' => false]);
     }
 

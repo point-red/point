@@ -253,6 +253,10 @@ if (! function_exists('get_invitation_code')) {
         {
             $settingJournal = SettingJournal::where('feature', $feature)->where('name', $name)->first();
 
+            if (!$settingJournal->chart_of_account_id) {
+                throw new \App\Exceptions\PostingJournalAccountNotFound($feature, $name);
+            }
+
             return $settingJournal->chart_of_account_id;
         }
     }

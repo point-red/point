@@ -67,6 +67,26 @@ class DeliveryNote extends TransactionModel
         return $this->belongsToMany(SalesInvoice::class, 'sales_invoice_items')->active();
     }
 
+    public function isAllowedToUpdate()
+    {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    public function isAllowedToDelete()
+    {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    private function isNotReferenced()
+    {
+        // Check if not referenced by sales invoice
+        if ($this->salesInvoices->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by sales invoice(s)', $this->salesInvoices);
+        }
+    }
+
     public static function create($data)
     {
         $deliveryNote = new self;

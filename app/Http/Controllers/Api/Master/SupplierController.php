@@ -220,7 +220,13 @@ class SupplierController extends Controller
     public function destroy($id)
     {
         $supplier = Supplier::findOrFail($id);
-        $supplier->delete();
+
+        try {
+            $supplier->delete();
+        } catch (\ErrorException $e) {
+            $supplier->disabled = true;
+            $supplier->save();
+        }
 
         return response()->json([], 204);
     }

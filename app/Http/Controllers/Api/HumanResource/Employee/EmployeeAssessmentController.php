@@ -82,70 +82,68 @@ class EmployeeAssessmentController extends Controller
     {
         $template = $request->get('template');
 
-        if ($request->get('date') && count($request->get('date')) == 2) {
-            $date = $request->get('date');
-            $dateFrom = $date['start'];
-            $dateTo = $date['end'];
+        $date = $request->get('date');
+        $dateFrom = $date['start'];
+        $dateTo = $date['end'];
 
-            $assessmentDateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
-            $assessmentDateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
+        $assessmentDateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
+        $assessmentDateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
 
-            DB::connection('tenant')->beginTransaction();
+        DB::connection('tenant')->beginTransaction();
 
-            $kpi = new Kpi;
-            $kpi->name = $template['name'];
-            $kpi->date = date('Y-m-d', strtotime($dateTo));
-            $kpi->employee_id = $employeeId;
-            $kpi->scorer_id = auth()->user()->id;
-            $kpi->save();
+        $kpi = new Kpi;
+        $kpi->name = $template['name'];
+        $kpi->date = date('Y-m-d', strtotime($dateTo));
+        $kpi->employee_id = $employeeId;
+        $kpi->scorer_id = auth()->user()->id;
+        $kpi->save();
 
-            for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
-                $kpiGroup = new KpiGroup;
-                $kpiGroup->kpi_id = $kpi->id;
-                $kpiGroup->name = $template['groups'][$groupIndex]['name'];
-                $kpiGroup->save();
-                for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
-                    $kpiIndicator = new KpiIndicator;
-                    $kpiIndicator->kpi_group_id = $kpiGroup->id;
-                    $kpiIndicator->name = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
-                    $kpiIndicator->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
-                    if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code'])) {
-                        $kpiIndicator->automated_code = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code'];
+        for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
+            $kpiGroup = new KpiGroup;
+            $kpiGroup->kpi_id = $kpi->id;
+            $kpiGroup->name = $template['groups'][$groupIndex]['name'];
+            $kpiGroup->save();
+            for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
+                $kpiIndicator = new KpiIndicator;
+                $kpiIndicator->kpi_group_id = $kpiGroup->id;
+                $kpiIndicator->name = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
+                $kpiIndicator->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code'])) {
+                    $kpiIndicator->automated_code = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code'];
 
-                        $data = Automated::getData($kpiIndicator->automated_code, $assessmentDateFrom, $assessmentDateTo, $employeeId);
+                    $data = Automated::getData($kpiIndicator->automated_code, $assessmentDateFrom, $assessmentDateTo, $employeeId);
 
-                        $kpiIndicator->target = $data['target'];
-                        $kpiIndicator->score = $data['score'];
-                        $kpiIndicator->score_percentage = $kpiIndicator->target > 0 ? $kpiIndicator->score / $kpiIndicator->target * $kpiIndicator->weight : 0;
+                    $kpiIndicator->target = $data['target'];
+                    $kpiIndicator->score = $data['score'];
+                    $kpiIndicator->score_percentage = $kpiIndicator->target > 0 ? $kpiIndicator->score / $kpiIndicator->target * $kpiIndicator->weight : 0;
 
-                        if ($kpiIndicator->score_percentage > $kpiIndicator->weight) {
-                            $kpiIndicator->score_percentage = $kpiIndicator->weight;
-                        }
-
-                        $kpiIndicator->score_description = '';
-                    } else {
-                        $kpiIndicator->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
-                        $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
-                        $kpiIndicator->score_percentage = $kpiIndicator->target > 0 ? $kpiIndicator->score / $kpiIndicator->target * $kpiIndicator->weight : 0;
-                        $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+                    if ($kpiIndicator->score_percentage > $kpiIndicator->weight) {
+                        $kpiIndicator->score_percentage = $kpiIndicator->weight;
                     }
 
-                    $kpiIndicator->save();
+                    $kpiIndicator->score_description = '';
+                } else {
+                    $kpiIndicator->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
+                    $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
+                    $kpiIndicator->score_percentage = $kpiIndicator->target > 0 ? $kpiIndicator->score / $kpiIndicator->target * $kpiIndicator->weight : 0;
+                    $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+                }
 
-                    if (! $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code']) {
-                        for ($scoreIndex = 0; $scoreIndex < count($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores']); $scoreIndex++) {
-                            $kpiScore = new KpiScore();
-                            $kpiScore->kpi_indicator_id = $kpiIndicator->id;
-                            $kpiScore->description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['description'];
-                            $kpiScore->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['score'];
-                            $kpiScore->save();
-                        }
+                $kpiIndicator->save();
+
+                if (! $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code']) {
+                    for ($scoreIndex = 0; $scoreIndex < count($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores']); $scoreIndex++) {
+                        $kpiScore = new KpiScore();
+                        $kpiScore->kpi_indicator_id = $kpiIndicator->id;
+                        $kpiScore->description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['description'];
+                        $kpiScore->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['score'];
+                        $kpiScore->save();
                     }
                 }
             }
-
-            DB::connection('tenant')->commit();
         }
+
+        DB::connection('tenant')->commit();
     }
 
     /**

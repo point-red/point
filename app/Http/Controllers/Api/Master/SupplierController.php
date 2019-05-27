@@ -18,6 +18,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Finance\Payment\Payment;
 use App\Http\Requests\Master\Supplier\StoreSupplierRequest;
 use App\Http\Requests\Master\Supplier\UpdateSupplierRequest;
+use Illuminate\Database\QueryException;
 
 class SupplierController extends Controller
 {
@@ -223,7 +224,7 @@ class SupplierController extends Controller
 
         try {
             $supplier->delete();
-        } catch (\ErrorException $e) {
+        } catch (QueryException $e) {
             $supplier->disabled = true;
             $supplier->save();
         }

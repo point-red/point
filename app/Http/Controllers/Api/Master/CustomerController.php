@@ -18,6 +18,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Finance\Payment\Payment;
 use App\Http\Requests\Master\Customer\StoreCustomerRequest;
 use App\Http\Requests\Master\Customer\UpdateCustomerRequest;
+use Illuminate\Database\QueryException;
 
 class CustomerController extends Controller
 {
@@ -160,7 +161,7 @@ class CustomerController extends Controller
             $customer->total_payable = $customer->totalAccountPayable();
         }
         if ($request->get('total_receivable')) {
-            $customer->total_payable = $customer->totalAccountPayable();
+            $customer->total_receivable = $customer->totalAccountReceivable();
         }
 
         return new ApiResource($customer);
@@ -225,7 +226,12 @@ class CustomerController extends Controller
     {
         $customer = Customer::findOrFail($id);
 
-        $customer->delete();
+        try {
+            $customer->delete();
+        } catch (QueryException $e) {
+            $customer->disabled = true;
+            $customer->save();
+        }
 
         return response()->json([], 204);
     }

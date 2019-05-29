@@ -188,6 +188,8 @@ class EmployeeAssessmentController extends Controller
         DB::connection('tenant')->beginTransaction();
 
         $kpi = Kpi::findOrFail($id);
+        $kpi->date = date('Y-m-d', strtotime($request->get('date')));
+        $kpi->save();
 
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
             $kpiGroup = KpiGroup::findOrFail($template['groups'][$groupIndex]['id']);

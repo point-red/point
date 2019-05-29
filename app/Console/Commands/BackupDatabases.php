@@ -129,7 +129,7 @@ class BackupDatabases extends Command
             $cloudStorage->key = $key;
             $cloudStorage->path = $backupPath;
             $cloudStorage->disk = env('STORAGE_DISK');
-            $cloudStorage->project_id = null;
+            $cloudStorage->project_id = $project->id;
             $cloudStorage->owner_id = null;
             $cloudStorage->expired_at = Carbon::now()->addDay(1);
             $cloudStorage->download_url = env('API_URL').'/download?key='.$key;

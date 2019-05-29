@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use App\Model\Project\Project;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,5 +19,15 @@ class CloudStorage extends Model
     public function setExpiredAtAttribute($value)
     {
         $this->attributes['expired_at'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class);
     }
 }

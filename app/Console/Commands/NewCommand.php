@@ -63,6 +63,7 @@ class NewCommand extends Command
         $project->owner_id = $user->id;
         $project->code = 'dev';
         $project->name = 'development';
+        $project->invitation_code = get_invitation_code();
         $project->save();
 
         $this->line('link owner project');

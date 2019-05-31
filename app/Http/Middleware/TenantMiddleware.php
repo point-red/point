@@ -51,12 +51,17 @@ class TenantMiddleware
                     config()->set('mail.driver', $project->preference->mail_driver);
                     config()->set('mail.host', $project->preference->mail_host);
                     config()->set('mail.username', $project->preference->mail_username);
-                    config()->set('mail.password', $project->preference->mail_password);
+                    config()->set('mail.password', decrypt($project->preference->mail_password));
                     config()->set('mail.from.name', $project->preference->mail_from_name);
                     config()->set('mail.from.address', $project->preference->mail_from_address);
                     config()->set('mail.port', $project->preference->mail_port);
                     config()->set('mail.encryption', $project->preference->mail_encryption);
-                    config()->set('mail.secret', $project->preference->mail_secret);
+                    config()->set('mail.secret', decrypt($project->preference->mail_secret));
+                    // Mailgun
+                    config()->set('services.mailgun.domain', decrypt($project->preference->mail_domain));
+                    config()->set('services.mailgun.secret', decrypt($project->preference->mail_secret));
+                    // Sparkpost
+                    config()->set('services.sparkpost.secret', decrypt($project->preference->mail_secret));
                 }
 
                 $projectUser = ProjectUser::where('project_id', $project->id)->where('user_id', auth()->user()->id);

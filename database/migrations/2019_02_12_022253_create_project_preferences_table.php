@@ -25,6 +25,7 @@ class CreateProjectPreferencesTable extends Migration
             $table->string('mail_port')->nullable();
             $table->string('mail_encryption')->nullable();
             $table->string('mail_secret')->nullable();
+            $table->string('mail_domain')->nullable();
             $table->timestamps();
 
             $table->foreign('project_id')

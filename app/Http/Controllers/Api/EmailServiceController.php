@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\SendEmailRequest;
 
 class EmailServiceController extends Controller
 {
@@ -15,7 +15,7 @@ class EmailServiceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function send(Request $request)
+    public function send(SendEmailRequest $request)
     {
         $project = Project::join('project_preferences', 'project_preferences.project_id', '=', 'projects.id')
             ->where('code', $request->header('Tenant'))
@@ -39,32 +39,32 @@ class EmailServiceController extends Controller
                 $message->bcc($request->get('bcc'));
             }
             if ($request->has('reply_to')) {
-                $message->replyTo($request->get('reply_to'));
+                $message->replyTo($request->get('reply_to'), $request->get('reply_to_name'));
             }
             $message->subject($request->get('subject'));
             $message->setBody($request->get('body'), 'text/html');
 
             $attachments = $request->get('attachments') ?? [];
 
-            foreach ($attachments as $key => $attachment) {
-                // TODO validation attachment attributes
-                // type = ['pdf', 'xls']
-                // orientation = ['portrait', 'landscape']
+            foreach ($attachments as $attachment) {
                 if ($attachment['type'] === 'pdf') {
-                    $message->attachData($this->attachPDF($attachment), $attachment['filename'] ?? 'untitled.pdf');
+                    $filename = $attachment['filename'] ?? 'untitled.pdf';
+                    $file = $this->createPDF($attachment);
+
+                    $message->attachData($file, $filename);
                 }
                 // TODO excel attachment
             }
         });
     }
 
-    private function attachPDF($config)
+    private function createPDF($config)
     {
         // $pdf = PDF::loadHTML($config['html']) don't know why doesn't work
         // https://github.com/barryvdh/laravel-dompdf#using
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = app()->make('dompdf.wrapper');
         $pdf->loadHTML($config['html'])
-            ->setPaper($config->paper ?? 'a4', $config->orientation ?? 'portrait')
+            ->setPaper($config['paper'] ?? 'a4', $config['orientation'] ?? 'portrait')
             ->setWarnings(false);
 
         return $pdf->output();

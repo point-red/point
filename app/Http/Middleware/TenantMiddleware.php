@@ -50,7 +50,7 @@ class TenantMiddleware
                 if ($project->preference) {
                     config()->set('mail.driver', $project->preference->mail_driver);
                     config()->set('mail.host', $project->preference->mail_host);
-                    config()->set('mail.username', $project->preference->mail_username);
+                    config()->set('mail.username', empty($project->preference->mail_username) ? null : decrypt($project->preference->mail_username));
                     config()->set('mail.password', empty($project->preference->mail_password) ? null : decrypt($project->preference->mail_password));
                     config()->set('mail.from.name', $project->preference->mail_from_name);
                     config()->set('mail.from.address', $project->preference->mail_from_address);
@@ -61,7 +61,7 @@ class TenantMiddleware
                     
                     // Mailgun
                     if ($project->preference->mail_driver === 'mailgun') {
-                        config()->set('services.mailgun.domain', $project->preference->mail_domain);
+                        config()->set('services.mailgun.domain', decrypt($project->preference->mail_domain));
                         config()->set('services.mailgun.secret', $mailSecret);
                     }
                     

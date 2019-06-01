@@ -47,7 +47,7 @@ class ProjectPreferenceController extends Controller
         $projectPreference->mail_from_address = $request->get('mail_from_address');
         $projectPreference->mail_port = $request->get('mail_port');
         $projectPreference->mail_encryption = $request->get('mail_encryption');
-        $projectPreference->mail_domain = empty($request->get('mail_domain')) ? null : encrpt($request->get('mail_domain'));
+        $projectPreference->mail_domain = empty($request->get('mail_domain')) ? null : encrypt($request->get('mail_domain'));
         $projectPreference->mail_secret = empty($request->get('mail_secret')) ? null : encrypt($request->get('mail_secret'));
         
         $projectPreference->save();

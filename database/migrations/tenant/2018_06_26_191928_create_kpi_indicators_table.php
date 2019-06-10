@@ -19,7 +19,7 @@ class CreateKpiIndicatorsTable extends Migration
             $table->string('name');
             $table->unsignedDecimal('weight', 5, 2);
             $table->unsignedInteger('target');
-            $table->string('automated_code')->unique()->nullable();
+            $table->string('automated_code')->nullable();
             $table->unsignedInteger('score');
             $table->float('score_percentage');
             $table->text('score_description');

@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Model\SettingJournal;
 
@@ -238,6 +239,21 @@ if (! function_exists('get_invitation_code')) {
             if (isset($var)) {
                 return $var;
             }
+        }
+    }
+
+    if (! function_exists('get_tenant_db_name')) {
+        /**
+         * Get database name for this tenant.
+         *
+         * @param $tenantCode
+         * @return string
+         */
+        function get_tenant_db_name($tenantCode)
+        {
+            $project = \App\Model\Project\Project::where('code', $tenantCode)->first();
+
+            return env('DB_DATABASE') . '_' . strtolower($project->code);
         }
     }
 

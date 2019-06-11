@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Project;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
@@ -11,28 +11,25 @@ use Illuminate\Support\Facades\Artisan;
 
 class DatabaseBackupController extends Controller
 {
-    public function index(Request $request)
+    public function index($id)
     {
-        $project = Project::where('code', $request->get('code'))->first();
-
         $backups = CloudStorage::where('feature', 'backup database')
-            ->where('project_id', $project->id)
+            ->where('project_id', $id)
             ->get();
 
         return new ApiCollection($backups);
     }
 
-    public function store(Request $request)
+    public function store($id)
     {
-        $project = Project::where('code', $request->get('code'))->first();
+        $project = Project::findOrFail($id);
 
         $backups = CloudStorage::where('feature', 'backup database')
-            ->where('project_id', $project->id)
+            ->where('project_id', $id)
             ->whereBetween('created_at', [
                 date('Y-m-d 00:00:00', strtotime(now())),
                 date('Y-m-d 23:59:59', strtotime(now()))
-            ])
-            ->get();
+            ])->get();
 
         if ($backups->count() > 5) {
             return response()->json([
@@ -40,7 +37,7 @@ class DatabaseBackupController extends Controller
             ], 422);
         }
 
-        Artisan::call('db:backup', ['project_code' => $request->get('code')]);
+        Artisan::call('db:backup', ['project_code' => $project->code]);
 
         return response()->json([], 201);
     }

@@ -25,8 +25,6 @@ Route::prefix('v1')->namespace('Api')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::post('send-email', 'EmailServiceController@send');
         Route::post('auth-user', 'AuthUserController@show');
-        Route::get('database/tables', 'DatabaseController@index');
-        Route::get('database/tables/{table_name}', 'DatabaseController@show');
         require base_path('routes/api/account.php');
         require base_path('routes/api/project.php');
 

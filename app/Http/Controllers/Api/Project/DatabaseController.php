@@ -4,20 +4,24 @@ namespace App\Http\Controllers\Api\Project;
 
 use App\Http\Requests\Database\ViewTableRequest;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Model\Project\Project;
 
 class DatabaseController extends Controller
 {
-    public function index(ViewTableRequest $request)
+    public function index(ViewTableRequest $request, $id)
     {
+        $project = Project::findOrFail($id);
+
         return response()->json([
-            'data' => dbm_get_tables(get_tenant_db_name($request->get('project_code')), 'tenant')
+            'data' => dbm_get_tables(get_tenant_db_name($project->code), 'tenant')
         ]);
     }
 
-    public function show(Request $request, $tableName)
+    public function show($id, $tableName)
     {
-        $result = dbm_get_data(get_tenant_db_name($request->get('project_code')), $tableName, 'tenant');
+        $project = Project::findOrFail($id);
+
+        $result = dbm_get_data(get_tenant_db_name($project->code), $tableName, 'tenant');
 
         return $result;
     }

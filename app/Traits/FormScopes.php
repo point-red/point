@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use App\Model\Form;
+
 trait FormScopes
 {
     public function scopeDone($query)
@@ -103,5 +105,14 @@ trait FormScopes
     public function scopeActiveDone($query)
     {
         $query->active()->done();
+    }
+
+    public function scopeJoinForm($query) {
+        $caller = get_class($this);
+        log_object($caller);
+        $query->join(Form::getTableName(), function ($q) use ($caller) {
+            $q->on(Form::getTableName('formable_id'), '=', $caller::getTableName('id'))
+                ->where(Form::getTableName('formable_type'), $caller::$morphName);
+        });
     }
 }

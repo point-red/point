@@ -4,12 +4,13 @@ namespace App\Model;
 
 use App\Traits\FormScopes;
 use Illuminate\Http\Request;
+use App\Traits\DashboardChartPeriod;
 use App\Exceptions\FormArchivedException;
 use App\Exceptions\UpdatePeriodNotAllowedException;
 
 class TransactionModel extends PointModel
 {
-    use FormScopes;
+    use FormScopes, DashboardChartPeriod;
 
     public function requestCancel(Request $request)
     {

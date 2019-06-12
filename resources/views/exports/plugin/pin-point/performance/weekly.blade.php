@@ -29,35 +29,55 @@
     </tr>
     </thead>
     <tbody>
+    <?php
+        $currentRow = 2; // Header
+
+        $totalUsers = count($users);
+        $totalUsersWithHeader = 2 + $totalUsers;
+
+        $totalRows = 2; // Header
+        $totalRows += $totalUsers;
+        $totalRows += 3; // Footer
+    ?>
     @foreach($users as $user)
         <?php
-            $weeklyTargetCall = $user->target_call * $totalDay;
-            $weeklyTargetEffectiveCall = $user->target_effective_call * $totalDay;
-            $weeklyTargetCallPercentage = $weeklyTargetCall > 0 ? $user->actual_call / $weeklyTargetCall : 0;
-            $weeklyTargetEffectiveCallPercentage = $weeklyTargetEffectiveCall > 0 ? $user->actual_effective_call / $weeklyTargetEffectiveCall : 0;
+            $currentRow++;
 
-            $targetCall += $user->target_call * $totalDay;
-            $targetEffectiveCall += $user->target_effective_call * $totalDay;
-            $targetValue += $user->target_value * $totalDay;
-            $actualCall += $user->actual_call;
-            $actualEffectiveCall += $user->actual_effective_call;
-            $actualValue += $user->actual_value;
-            $actualCallPercentage += $weeklyTargetCallPercentage < 1 ? $weeklyTargetCallPercentage : 1;
-            $actualEffectiveCallPercentage += $weeklyTargetEffectiveCallPercentage < 1 ? $weeklyTargetEffectiveCallPercentage : 1;
-            $actualValuePercentage += $user->target_value > 0 ? $user->actual_value / $user->target_value : 0;
+            $weeklyTargetCall = '=PRODUCT(' . $user->target_call . ',D' . $totalRows . ')';
+            $weeklyTargetEffectiveCall = '=PRODUCT(' . $user->target_effective_call . ',D' . $totalRows . ')';
+            $weeklyTargetValue = '=PRODUCT(' . $user->target_value . ',D' . $totalRows . ')';
+
+            $weeklyTargetCallPercentageCondition = 'IF(C' . $currentRow . ' > 0, F' . $currentRow . '/' . 'C' . $currentRow . ', 0)';
+            $weeklyTargetEffectiveCallPercentageCondition = 'IF(D' . $currentRow . ' > 0, G' . $currentRow . '/' . 'D' . $currentRow . ', 0)';
+
+            $weeklyTargetCallPercentage = '=IF(' . $weeklyTargetCallPercentageCondition . ' < 1, ' . $weeklyTargetCallPercentageCondition . ', 1)';
+            $weeklyTargetEffectiveCallPercentage = '=IF(' . $weeklyTargetEffectiveCallPercentageCondition . ' < 1, ' . $weeklyTargetEffectiveCallPercentageCondition . ', 1)';
+            $weeklyTargetValuePercentage = '=IF(E' . $currentRow . ' > 0, H' . $currentRow . '/' . 'E' . $currentRow . ', 0)';
+
+            $targetCall = '=SUM(C3:C' . $totalUsersWithHeader . ')';
+            $targetEffectiveCall = '=SUM(D3:D' . $totalUsersWithHeader . ')';
+            $targetValue = '=SUM(E3:E' . $totalUsersWithHeader . ')';
+
+            $actualCall = '=SUM(F3:F' . $totalUsersWithHeader . ')';
+            $actualEffectiveCall = '=SUM(G3:G' . $totalUsersWithHeader . ')';
+            $actualValue = '=SUM(H3:H' . $totalUsersWithHeader . ')';
+
+            $averageActualCallPercentage = '=SUM(I3:I' . $totalUsersWithHeader . ') / ' . $totalUsers;
+            $averageActualEffectiveCallPercentage = '=SUM(J3:J' . $totalUsersWithHeader . ') / ' . $totalUsers;
+            $averageActualValuePercentage = '=SUM(K3:K' . $totalUsersWithHeader . ') / ' . $totalUsers;
         ?>
         <tr>
             <td>{{ $loop->iteration }}</td>
-            <td>{{ $user->name  }}</td>
+            <td>{{ $user->name }}</td>
             <td>{{ $weeklyTargetCall }}</td>
             <td>{{ $weeklyTargetEffectiveCall }}</td>
-            <td>{{ $user->target_value * $totalDay }}</td>
+            <td>{{ $weeklyTargetValue }}</td>
             <td>{{ $user->actual_call ?? 0 }}</td>
             <td>{{ $user->actual_effective_call ?? 0 }}</td>
             <td>{{ $user->actual_value ?? 0 }}</td>
-            <td>{{ $weeklyTargetCallPercentage < 1 ? $weeklyTargetCallPercentage : 1 }}</td>
-            <td>{{ $weeklyTargetEffectiveCallPercentage < 1 ? $weeklyTargetEffectiveCallPercentage : 1 }}</td>
-            <td>{{ $user->target_value > 0 ? $user->actual_value / $user->target_value : 0 }}</td>
+            <td>{{ $weeklyTargetCallPercentage }}</td>
+            <td>{{ $weeklyTargetEffectiveCallPercentage }}</td>
+            <td>{{ $weeklyTargetValuePercentage }}</td>
 
             @foreach ($items as $item)
                 @foreach ($user->items as $itemSold)
@@ -87,12 +107,17 @@
             <td>{{ $actualCall }}</td>
             <td>{{ $actualEffectiveCall }}</td>
             <td>{{ $actualValue }}</td>
-            <td>{{ $actualCallPercentage / count($users) }}</td>
-            <td>{{ $actualEffectiveCallPercentage / count($users) }}</td>
-            <td>{{ $actualValuePercentage / count($users) }}</td>
+            <td>{{ $averageActualCallPercentage }}</td>
+            <td>{{ $averageActualEffectiveCallPercentage }}</td>
+            <td>{{ $averageActualValuePercentage }}</td>
             @for($i = 0; $i < count($totalItemSold); $i++)
                 <td>{{ $totalItemSold[$i] }}</td>
             @endfor
+        </tr>
+        <tr/>
+        <tr>
+            <td colspan="3" style="text-align:right"><b>Total Days</b></td>
+            <td>{{ $totalDay }}</td>
         </tr>
     </tfoot>
     @endif

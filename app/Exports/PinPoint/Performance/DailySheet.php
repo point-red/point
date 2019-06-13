@@ -120,7 +120,7 @@ class DailySheet implements FromView, WithTitle, ShouldAutoSize, WithEvents, Wit
      */
     public function view(): View
     {
-        $queryTarget = $this->queryTarget($this->dateFrom);
+        $queryTarget = $this->queryTarget($this->dateTo);
         $queryCall = $this->queryCall($this->dateFrom, $this->dateTo);
         $queryEffectiveCall = $this->queryEffectiveCall($this->dateFrom, $this->dateTo);
         $queryValue = $this->queryValue($this->dateFrom, $this->dateTo);

@@ -2,32 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
-use App\Model\Sales\SalesInvoice\SalesInvoice;
 use Illuminate\Http\Request;
+use App\Model\Accounting\Journal;
+use App\Http\Controllers\Controller;
+use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\ChartOfAccountType;
+use App\Model\Sales\SalesInvoice\SalesInvoice;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 
 class DashboardController extends Controller
 {
-    /**
-     * TODO
-     * 01. Chart Profit
-     * 02. Chart Revenue
-     * 03. Chart Sales counter
-     * 04. Chart Purchases counter
-     * 05. Chart Sales value
-     * 06. Chart Purchase value
-     *
-     *
-     * Validation of group_by query params accepted value is (daily, weekly, monthly, quarterly, yearly)
-     *
-     */
-
     public function chartSalesValue(Request $request)
     {
         $salesInvoices = SalesInvoice::active()
             ->joinForm()
-            ->selectRaw('CAST(SUM(' . SalesInvoice::getTableName('amount') . ') AS UNSIGNED) AS total_amount')
+            ->selectRaw('CAST(SUM(' . SalesInvoice::getTableName('amount') . ') AS UNSIGNED) AS value')
             ->periodic($request->get('period'))
             ->get();
 
@@ -49,7 +38,8 @@ class DashboardController extends Controller
     {
         $purchaseInvoices = PurchaseInvoice::active()
             ->joinForm()
-            ->selectRaw('CAST(SUM(' . PurchaseInvoice::getTableName('amount') . ') AS UNSIGNED) AS total_amount')
+            ->selectRaw('CAST(SUM(' . PurchaseInvoice::getTableName('amount') . ') AS UNSIGNED) AS value')
+            ->periodic($request->get('period'))
             ->get();
 
         return $purchaseInvoices;
@@ -64,5 +54,34 @@ class DashboardController extends Controller
             ->get();
 
         return $purchaseInvoices;
+    }
+
+    public function statTotalReceivable()
+    {
+        $receivables = Journal::join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
+            ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
+            ->where(function ($query) {
+                $query->where(ChartOfAccountType::getTableName('name'), '=', 'account receivable')
+                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other account receivable');
+            })
+            ->selectRaw('SUM(`credit`) AS credit, SUM(`debit`) AS debit')
+            ->first();
+
+        return $receivables->debit - $receivables->credit;
+    }
+
+    public function statTotalPayable()
+    {
+        $payables = Journal::join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
+            ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
+            ->where(function ($query) {
+                $query->where(ChartOfAccountType::getTableName('name'), '=', 'current liability')
+                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'long term liability')
+                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other current liability');
+            })
+            ->selectRaw('SUM(`credit`) AS credit, SUM(`debit`) AS debit')
+            ->first();
+
+        return $payables->credit - $payables->debit;
     }
 }

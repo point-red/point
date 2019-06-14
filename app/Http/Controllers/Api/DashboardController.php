@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Model\Accounting\Journal;
 use App\Http\Controllers\Controller;
+use App\Model\Finance\Payment\Payment;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
@@ -56,32 +57,27 @@ class DashboardController extends Controller
         return $purchaseInvoices;
     }
 
-    public function statTotalReceivable()
+    public function chartPaymentReceived(Request $request)
     {
-        $receivables = Journal::join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
-            ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
-            ->where(function ($query) {
-                $query->where(ChartOfAccountType::getTableName('name'), '=', 'account receivable')
-                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other account receivable');
-            })
-            ->selectRaw('SUM(`credit`) AS credit, SUM(`debit`) AS debit')
-            ->first();
+        $paymentReceived = Payment::activeDone()
+            ->joinForm()
+            ->where('disbursed', false)
+            ->selectRaw('SUM(`amount`) AS amount')
+            ->periodic($request->get('period'))
+            ->get();
 
-        return $receivables->debit - $receivables->credit;
+        return $paymentReceived;
     }
 
-    public function statTotalPayable()
+    public function chartPaymentSent(Request $request)
     {
-        $payables = Journal::join(ChartOfAccount::getTableName(), ChartOfAccount::getTableName('id'), '=', Journal::getTableName('chart_of_account_id'))
-            ->join(ChartOfAccountType::getTableName(), ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'))
-            ->where(function ($query) {
-                $query->where(ChartOfAccountType::getTableName('name'), '=', 'current liability')
-                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'long term liability')
-                    ->orWhere(ChartOfAccountType::getTableName('name'), '=', 'other current liability');
-            })
-            ->selectRaw('SUM(`credit`) AS credit, SUM(`debit`) AS debit')
-            ->first();
+        $paymentSent = Payment::activeDone()
+            ->joinForm()
+            ->where('disbursed', true)
+            ->selectRaw('SUM(`amount`) AS amount')
+            ->periodic($request->get('period'))
+            ->get();
 
-        return $payables->credit - $payables->debit;
+    return $paymentSent;
     }
 }

@@ -26,7 +26,8 @@ class AccountReceivableController extends Controller
         $journals = Journal::join(Form::getTableName(), Form::getTableName('id'), '=', Journal::getTableName('form_id'))
             ->leftJoinSub($journalPayments, 'journal_payment', function ($join) {
                 $join->on('journals.form_id', '=', 'journal_payment.form_id_reference');
-            })->selectRaw('SUM(debit) as debit')
+            })
+            ->selectRaw('SUM(debit) as debit')
             ->addSelect('forms.date', 'journals.form_id', 'journal_payment.credit')
             ->whereIn('chart_of_account_id', $accounts)
             ->where('debit', '>', 0)
@@ -35,14 +36,20 @@ class AccountReceivableController extends Controller
         // Filter Status | null = all / settled / unsettled
         $journals = $this->filterStatus($journals, $request->get('status'));
 
-        // Filter Account Receivable aging (days)
-        $journals = $this->filterAging($journals, $request->get('age'));
+        // Filter Account Payable aging (days)
+        if ($request->has('age')) {
+            $journals = $this->filterAging($journals, $request->get('age'));
+        }
 
         // Filter Debt owner
-        $journals = $this->filterOwner($journals, $request->get('owner_id'));
+        if ($request->has('owner_id')) {
+            $journals = $this->filterOwner($journals, $request->get('owner_id'));
+        }
 
         // Filter Specific invoice
-        $journals = $this->filterForm($journals, $request->get('form_number'));
+        if ($request->has('form_number')) {
+            $journals = $this->filterForm($journals, $request->get('form_number'));
+        }
 
         $journals = pagination($journals, $request->get('limit'));
 
@@ -72,7 +79,7 @@ class AccountReceivableController extends Controller
 
     private function filterForm($journals, $formNumber)
     {
-        return $journals->where('form_number', $formNumber);
+        return $journals->where('forms.number', $formNumber);
     }
 
     private function getJournalPayments($accounts)

@@ -19,6 +19,11 @@ class ProjectPreferenceController extends Controller
     {
         $projectPreference = ProjectPreference::where('project_id', $project_id)->first();
 
+        $projectPreference->mail_username = $projectPreference->mail_username ? decrypt($projectPreference->mail_username) : null;
+        $projectPreference->mail_password = $projectPreference->mail_password ? decrypt($projectPreference->mail_password) : null;
+        $projectPreference->mail_domain = $projectPreference->mail_domain ? decrypt($projectPreference->mail_domain) : null;
+        $projectPreference->mail_secret = $projectPreference->mail_secret ? decrypt($projectPreference->mail_secret) : null;
+
         return new ApiResource($projectPreference);
     }
 

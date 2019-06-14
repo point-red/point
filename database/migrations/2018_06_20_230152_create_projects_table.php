@@ -21,6 +21,9 @@ class CreateProjectsTable extends Migration
             $table->string('timezone')->default('UTC');
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
+            $table->string('whatsapp')->nullable();
+            $table->string('website')->nullable();
+            $table->text('marketplace_notes')->nullable();
             $table->string('vat_id_number')->nullable();
             $table->unsignedInteger('owner_id')->index();
             $table->string('invitation_code', 20)->nullable()->unique();

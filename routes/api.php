@@ -40,9 +40,11 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         require base_path('routes/api/accounting.php');
         require base_path('routes/api/human-resource.php');
         require base_path('routes/api/inventory.php');
+        require base_path('routes/api/dashboard.php');
 
         // Plugin
         require base_path('routes/api/plugin/scale-weight.php');
         require base_path('routes/api/plugin/pin-point.php');
+
     });
 });

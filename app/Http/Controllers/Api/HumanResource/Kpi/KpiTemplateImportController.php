@@ -70,7 +70,7 @@ class KpiTemplateImportController extends Controller
         $fileExt = 'xlsx';
         $path = 'tmp/'.$tenant.'/import';
 
-        $save = Storage::disk(env('STORAGE_DISK'))->put($path, $file);
+        $save = Storage::disk('local')->put($path, $file);
 
         $cloudStorage = new CloudStorage();
         $cloudStorage->file_name = $fileName;
@@ -78,7 +78,7 @@ class KpiTemplateImportController extends Controller
         $cloudStorage->feature = 'kpi template import';
         $cloudStorage->key = $key;
         $cloudStorage->path = $save;
-        $cloudStorage->disk = env('STORAGE_DISK');
+        $cloudStorage->disk = 'local';
         $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
         $cloudStorage->owner_id = 1;
         $cloudStorage->expired_at = Carbon::now()->addDay(1);

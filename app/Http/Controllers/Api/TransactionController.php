@@ -87,7 +87,7 @@ class TransactionController extends Controller
                     $purchasePaymentRequest['number'] = $request->get('purchase_payment_number');
                 }
                 $purchasePayment = Payment::create($purchasePaymentRequest);
-                $request->purchase_payment = $purchasePayment;
+                $result->purchase_payment = $purchasePayment;
             }
         }
 
@@ -115,6 +115,7 @@ class TransactionController extends Controller
                 return $item;
             }, $requestData['items']);
             $deliveryNote = DeliveryNote::create($requestData);
+            $deliveryNote->load('form', 'items');
             $result->delivery_note = new ApiResource($deliveryNote);
 
             /* SALES INVOICE */
@@ -132,6 +133,7 @@ class TransactionController extends Controller
                 return $item;
             }, $requestData['items']);
             $salesInvoice = SalesInvoice::create($requestData);
+            $salesInvoice->load('form', 'items');
             $result->sales_invoice = new ApiResource($salesInvoice);
 
             /* SALES PAYMENT */
@@ -154,7 +156,7 @@ class TransactionController extends Controller
                 }
 
                 $salesPayment = Payment::create($salesPaymentRequest);
-                $request->sales_payment = $salesPayment;
+                $result->sales_payment = $salesPayment;
             }
         }
 

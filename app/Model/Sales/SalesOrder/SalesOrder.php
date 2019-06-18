@@ -11,6 +11,7 @@ use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\SalesContract\SalesContract;
 use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
+use App\Model\Master\Allocation;
 
 class SalesOrder extends TransactionModel
 {
@@ -173,6 +174,13 @@ class SalesOrder extends TransactionModel
         return array_map(function ($item) {
             $salesOrderItem = new SalesOrderItem;
             $salesOrderItem->fill($item);
+
+            if ($item['allocation_name']) {
+                $salesOrderItem['allocation_id'] = Allocation::firstOrCreate([
+                   'code' => $item['allocation_code'],
+                   'name' => $item['allocation_name'],
+                ])->id;
+            }
 
             return $salesOrderItem;
         }, $items);

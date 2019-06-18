@@ -8,6 +8,11 @@ use App\Model\Master\Supplier;
 
 class GroupClassReference
 {
+    public static $isNotAvailableResponse = [
+        'code' => 422,
+        'message' => 'class reference invalid'
+    ];
+
     public static function isAvailable($groupType)
     {
         $classReference = [

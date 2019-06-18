@@ -2,6 +2,8 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
+use App\Model\AllocationReport;
+use App\Model\Master\Allocation;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
@@ -153,8 +155,36 @@ class SalesInvoice extends TransactionModel
         self::setSalesOrdersDone($salesInvoice);
         self::setDownPaymentsDone($data['down_payments'] ?? []);
         self::updateJournal($salesInvoice);
+        self::setAllocationReport($salesInvoice);
 
         return $salesInvoice;
+    }
+
+    private static function setAllocationReport($salesInvoice)
+    {
+        foreach ($salesInvoice->items as $salesInvoiceItem) {
+            if ($salesInvoiceItem->allocation_id != null) {
+                $allocationReport = new AllocationReport;
+                $allocationReport->allocation_id = $salesInvoiceItem->allocation_id;
+                $allocationReport->allocationable_id= $salesInvoiceItem->id;
+                $allocationReport->allocationable_type = SalesInvoiceItem::class;
+                $allocationReport->notes = $salesInvoiceItem->notes;
+                $allocationReport->form_id = $salesInvoiceItem->salesInvoice->form->id;
+                $allocationReport->save();
+            }
+        }
+
+        foreach ($salesInvoice->services as $salesInvoiceService) {
+            if ($salesInvoiceService->allocation_id != null) {
+                $allocationReport = new AllocationReport;
+                $allocationReport->allocation_id = $salesInvoiceService->allocation_id;
+                $allocationReport->allocationable_id= $salesInvoiceService->id;
+                $allocationReport->allocationable_type = SalesInvoiceService::class;
+                $allocationReport->notes = $salesInvoiceService->notes;
+                $allocationReport->form_id = $salesInvoiceService->salesInvoice->form->id;
+                $allocationReport->save();
+            }
+        }
     }
 
     private static function mapItems($items)
@@ -162,6 +192,13 @@ class SalesInvoice extends TransactionModel
         return array_map(function ($item) {
             $salesInvoiceItem = new SalesInvoiceItem;
             $salesInvoiceItem->fill($item);
+
+            if ($item->allocation_name) {
+                $salesInvoiceItem->allocation_id = Allocation::firstOrCreate([
+                   'code' => $item->allocation_code,
+                   'name' => $item->allocation_name,
+                ])->id;
+            }
 
             return $salesInvoiceItem;
         }, $items);
@@ -172,6 +209,13 @@ class SalesInvoice extends TransactionModel
         return array_map(function ($service) {
             $salesInvoiceService = new SalesInvoiceService;
             $salesInvoiceService->fill($service);
+
+            if ($service->allocation_name) {
+                $salesInvoiceService->allocation_id = Allocation::firstOrCreate([
+                    'code' => $service->allocation_code,
+                    'name' => $service->allocation_name,
+                ])->id;
+            }
 
             return $salesInvoiceService;
         }, $services);

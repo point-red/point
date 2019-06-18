@@ -33,6 +33,11 @@ class SalesInvoiceService extends Model
         'discount_percent' => 'double',
     ];
 
+    public function salesInvoice()
+    {
+        return $this->belongsTo(SalesInvoice::class);
+    }
+
     public function service()
     {
         return $this->belongsTo(Service::class);

@@ -38,6 +38,11 @@ class SalesInvoiceItem extends TransactionModel
         'discount_value' => 'double',
     ];
 
+    public function salesInvoice()
+    {
+        return $this->belongsTo(SalesInvoice::class);
+    }
+
     public function item()
     {
         return $this->belongsTo(Item::class);

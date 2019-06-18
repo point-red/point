@@ -3,6 +3,7 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Model\AllocationReport;
 
 class Allocation extends MasterModel
 {
@@ -21,5 +22,10 @@ class Allocation extends MasterModel
     public function groups()
     {
         return $this->morphToMany(Group::class, 'groupable');
+    }
+
+    public function reports ()
+    {
+        return $this->hasMany(AllocationReport::class);
     }
 }

@@ -70,16 +70,23 @@ class SalesVisitationController extends Controller
             return response()->json([], 422);
         }
 
-        $customer = Customer::where('name', $request->get('customer'))->first();
-        $isNewCustomer = false;
-
-        if (! $customer) {
-            $customer = new Customer;
-            $customer->name = $request->get('customer');
-            $customer->save();
-
-            $isNewCustomer = true;
+        if ($request->get('group_id')) {
+            $group = Customer::findOrFail($request->get('group_id'));
+        } else {
+            $group = Customer::firstOrCreate([
+                'name' => $request->get('group')
+            ]);
         }
+
+        if ($request->get('customer_id')) {
+            $customer = Customer::findOrFail($request->get('customer_id'));
+        } else {
+            $customer = Customer::firstOrCreate([
+                'name' => $request->get('customer_name')
+            ]);
+        }
+
+        $customer->groups()->attach($group);
 
         $form = new Form;
         $form->date = date('Y-m-d H:i:s', strtotime($request->get('date')));
@@ -88,14 +95,14 @@ class SalesVisitationController extends Controller
         $salesVisitation = new SalesVisitation;
         $salesVisitation->form_id = $form->id;
         $salesVisitation->customer_id = $customer->id;
-        $salesVisitation->name = $request->get('customer');
+        $salesVisitation->name = $request->get('customer_name');
         $salesVisitation->phone = $request->get('phone');
         $salesVisitation->address = $request->get('address');
         $salesVisitation->sub_district = $request->get('sub_district');
         $salesVisitation->district = $request->get('district');
         $salesVisitation->latitude = $request->get('latitude');
         $salesVisitation->longitude = $request->get('longitude');
-        $salesVisitation->group = $request->get('group');
+        $salesVisitation->group = $request->get('group_name');
         $salesVisitation->notes = $request->get('notes');
         $salesVisitation->payment_method = $request->get('payment_method');
         $salesVisitation->payment_received = $request->get('payment_received');
@@ -170,6 +177,10 @@ class SalesVisitationController extends Controller
         $array_price = $request->get('price');
         $array_quantity = $request->get('quantity');
 
+        $totalVisitation = SalesVisitation::rightJoin(SalesVisitationDetail::getTableName(),
+            SalesVisitationDetail::getTableName('sales_visitation_id'), '=', SalesVisitation::getTableName('id'))
+            ->where(SalesVisitation::getTableName('name'), $customer->name)->get()->count();
+
         if ($array_item) {
             for ($i = 0; $i < count($array_item); $i++) {
                 if ($array_item[$i] && $array_price[$i] && $array_quantity[$i]) {
@@ -186,7 +197,7 @@ class SalesVisitationController extends Controller
                     $detail->quantity = $array_quantity[$i];
                     $detail->save();
 
-                    if ($i == 0 && $isNewCustomer == false) {
+                    if ($i == 0 && $totalVisitation > 0) {
                         $salesVisitation->is_repeat_order = true;
                         $salesVisitation->save();
                     }

@@ -24,8 +24,8 @@ class StoreSalesVisitationRequest extends FormRequest
     public function rules()
     {
         return [
-            'customer' => 'required',
-            'group' => 'required',
+            'customer_name' => 'required_without:customer_id',
+            'group_name' => 'required',
             'address' => 'required',
             'phone' => 'required',
             'similar_product' => 'required',

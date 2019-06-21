@@ -31,6 +31,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         // Global Transaction
         Route::resource('transactions', 'TransactionController');
         Route::apiResource('firebase-token', 'FirebaseTokenController');
+        Route::apiResource('storage', 'StorageController');
 
         // Tenant
         require base_path('routes/api/master.php');

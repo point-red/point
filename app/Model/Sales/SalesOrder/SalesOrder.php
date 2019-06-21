@@ -175,7 +175,7 @@ class SalesOrder extends TransactionModel
             $salesOrderItem = new SalesOrderItem;
             $salesOrderItem->fill($item);
 
-            if ($item['allocation_name']) {
+            if (isset($item['allocation_name'])) {
                 $salesOrderItem['allocation_id'] = Allocation::firstOrCreate([
                    'code' => $item['allocation_code'],
                    'name' => $item['allocation_name'],

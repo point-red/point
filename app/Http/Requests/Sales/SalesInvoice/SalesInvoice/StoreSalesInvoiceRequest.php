@@ -49,6 +49,7 @@ class StoreSalesInvoiceRequest extends FormRequest
             'items.*.discount_value' => ValidationRule::discountValue(),
             'items.*.discount_percent' => ValidationRule::discountPercent(),
             'items.*.taxable' => 'boolean',
+            'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
             'items.*.allocation_code' => 'required_with:items.*.allocation_name|string|nullable',
             'items.*.allocation_name' => 'required_with:items.*.allocation_code|string',
         ];
@@ -60,6 +61,7 @@ class StoreSalesInvoiceRequest extends FormRequest
             'services.*.price' => ValidationRule::price(),
             'services.*.discount_value' => ValidationRule::discountValue(),
             'services.*.discount_percent' => ValidationRule::discountPercent(),
+            'services.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
             'services.*.allocation_code' => 'required_with:services.*.allocation_name|string|nullable',
             'services.*.allocation_name' => 'required_with:services.*.allocation_code|string',
         ];

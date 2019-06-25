@@ -36,7 +36,7 @@ class InventoryHelper
         $inventory->total_quantity = $quantity;
 
         // check if stock is enough to prevent stock minus
-        if ($quantity < 0 && (! $lastInventory || $lastInventory->total_quantity < $quantity)) {
+        if ($quantity < 0 && (!$lastInventory || $lastInventory->total_quantity < $quantity)) {
             throw new StockNotEnoughException(Item::findOrFail($itemId));
         }
 
@@ -50,10 +50,10 @@ class InventoryHelper
         if ($quantity > 0) {
             $inventory->total_value = $lastTotalValue + ($quantity * $inventory->price);
         } else {
-            $inventory->total_value = $lastTotalValue - ($quantity * $lastInventory->cogs);
+            $inventory->total_value = $inventory->total_quantity * $lastInventory->cogs;
         }
 
-        if ($inventory->total_quantity > 0) {
+        if ($inventory->quantity > 0) {
             $inventory->cogs = $inventory->total_value / $inventory->total_quantity;
         } else {
             $inventory->cogs = $lastInventory->cogs;
@@ -82,15 +82,18 @@ class InventoryHelper
             'stock' => $quantity,
         ]);
 
+        $lastInventory = self::getLastReference($itemId, $warehouseId);
+        $cogs = $price ?? $lastInventory->cogs;
+
         $inventory = new Inventory;
         $inventory->form_id = $formId;
         $inventory->warehouse_id = $warehouseId;
         $inventory->item_id = $itemId;
-        $inventory->quantity = 0;
+        $inventory->quantity = $quantity;
         $inventory->price = 0;
-        $inventory->cogs = $price;
+        $inventory->cogs = $cogs;
         $inventory->total_quantity = $quantity;
-        $inventory->total_value = $quantity * $price;
+        $inventory->total_value = $quantity * $cogs;
         $inventory->is_audit = true;
         $inventory->save();
     }

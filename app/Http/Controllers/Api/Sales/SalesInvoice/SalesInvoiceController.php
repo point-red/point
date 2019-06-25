@@ -108,6 +108,13 @@ class SalesInvoiceController extends Controller
             $request['number'] = $salesInvoice->form->edited_number;
 
             $salesInvoice = SalesInvoice::create($request->all());
+            $salesInvoice
+                ->load('form')
+                ->load('customer')
+                ->load('items.item')
+                ->load('items.allocation')
+                ->load('services.service')
+                ->load('services.allocation');
 
             return new ApiResource($salesInvoice);
         });

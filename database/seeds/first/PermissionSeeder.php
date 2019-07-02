@@ -162,6 +162,7 @@ class PermissionSeeder extends Seeder
     private function setHumanResourcePermission()
     {
         Permission::createIfNotExists('menu human resource');
+        Permission::createIfNotExists('manage employee contract');
 
         $allPermission = [
             'employee', 'employee kpi', 'employee assessment', 'employee salary',

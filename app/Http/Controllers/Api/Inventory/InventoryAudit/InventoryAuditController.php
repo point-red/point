@@ -8,6 +8,7 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Inventory\InventoryAudit\InventoryAudit;
+use App\Model\Form;
 
 class InventoryAuditController extends Controller
 {
@@ -20,6 +21,17 @@ class InventoryAuditController extends Controller
     public function index(Request $request)
     {
         $inventoryAudits = InventoryAudit::eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('form', $fields)) {
+                $inventoryAudits->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', InventoryAudit::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), InventoryAudit::$morphName);
+                });
+            }
+        }
 
         $inventoryAudits = pagination($inventoryAudits, $request->get('limit'));
 

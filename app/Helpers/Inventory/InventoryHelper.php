@@ -90,7 +90,7 @@ class InventoryHelper
 
         $lastInventory = self::getLastReference($itemId, $warehouseId);
 
-        if (!$lastInventory) {
+        if (!$lastInventory && !$price) {
             throw new ItemQuantityInvalidException($item);
         }
 

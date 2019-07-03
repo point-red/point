@@ -156,6 +156,7 @@ class PurchaseOrderController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseOrder) {
             $purchaseOrder->form->archive();
             $request['number'] = $purchaseOrder->form->edited_number;
+            $request['old_increment'] = $purchaseOrder->form->increment;
 
             $purchaseOrder = PurchaseOrder::create($request->all());
             $purchaseOrder

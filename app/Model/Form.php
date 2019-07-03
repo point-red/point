@@ -91,6 +91,11 @@ class Form extends PointModel
             $transaction->customer_id,
             $transaction->supplier_id
         );
+
+        if(isset($data['old_increment'])) {
+            $this->increment = $data['old_increment'];
+        }
+
         $this->setApproval($data['approver_id'] ?? null);
     }
 

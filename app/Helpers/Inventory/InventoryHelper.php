@@ -76,13 +76,27 @@ class InventoryHelper
         self::insert($formId, $warehouseId, $itemId, -abs($quantity), 0);
     }
 
+    /**
+     * @param $formId
+     * @param $warehouseId
+     * @param $itemId
+     * @param $quantity
+     * @param $price
+     * @throws ItemQuantityInvalidException
+     */
     public static function audit($formId, $warehouseId, $itemId, $quantity, $price)
     {
-        Item::where('id', $itemId)->update([
-            'stock' => $quantity,
-        ]);
+        $item = Item::where('id', $itemId)->first();
 
         $lastInventory = self::getLastReference($itemId, $warehouseId);
+
+        if (!$lastInventory) {
+            throw new ItemQuantityInvalidException($item);
+        }
+
+        $item->stock = $quantity;
+        $item->save();
+
         $cogs = $price ?? $lastInventory->cogs;
 
         $inventory = new Inventory;

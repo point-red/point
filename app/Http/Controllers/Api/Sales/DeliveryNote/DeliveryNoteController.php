@@ -100,6 +100,7 @@ class DeliveryNoteController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request, $deliveryNote) {
             $deliveryNote->form->archive();
             $request['number'] = $deliveryNote->form->edited_number;
+            $request['old_increment'] = $deliveryNote->form->increment;
 
             $deliveryNote = DeliveryNote::create($request->all());
             $deliveryNote->load(['form', 'customer', 'items']);

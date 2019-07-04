@@ -113,6 +113,7 @@ class SalesOrderController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request, $salesOrder) {
             $salesOrder->form->archive();
             $request['number'] = $salesOrder->form->edited_number;
+            $request['old_increment'] = $salesOrder->form->increment;
 
             $salesOrder = SalesOrder::create($request->all());
             $salesOrder

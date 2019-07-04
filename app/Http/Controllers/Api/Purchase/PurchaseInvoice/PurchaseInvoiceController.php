@@ -103,6 +103,7 @@ class PurchaseInvoiceController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseInvoice) {
             $purchaseInvoice->form->archive();
             $request['number'] = $purchaseInvoice->form->edited_number;
+            $request['old_increment'] = $purchaseInvoice->form->increment;
 
             $purchaseInvoice = PurchaseInvoice::create($request->all());
             $purchaseInvoice->load([

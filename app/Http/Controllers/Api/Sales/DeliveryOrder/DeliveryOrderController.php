@@ -114,6 +114,7 @@ class DeliveryOrderController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request, $deliveryOrder) {
             $deliveryOrder->form->archive();
             $request['number'] = $deliveryOrder->form->edited_number;
+            $request['old_increment'] = $deliveryOrder->form->increment;
 
             $deliveryOrder = DeliveryOrder::create($request->all());
             $deliveryOrder->load(['form', 'customer', 'items']);

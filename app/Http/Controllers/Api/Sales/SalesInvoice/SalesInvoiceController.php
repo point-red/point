@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Sales\SalesInvoice;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
@@ -12,13 +13,14 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\StoreSalesInvoiceRequest;
 use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\UpdateSalesInvoiceRequest;
+use Throwable;
 
 class SalesInvoiceController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @return ApiCollection
      */
     public function index(Request $request)
@@ -50,8 +52,9 @@ class SalesInvoiceController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param StoreSalesInvoiceRequest $request
+     * @return Response
+     * @throws Throwable
      */
     public function store(StoreSalesInvoiceRequest $request)
     {
@@ -75,7 +78,7 @@ class SalesInvoiceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
      * @return ApiResource
      */
@@ -92,7 +95,7 @@ class SalesInvoiceController extends Controller
      * @param Request $request
      * @param int $id
      * @return ApiResource
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function update(UpdateSalesInvoiceRequest $request, $id)
     {
@@ -104,8 +107,8 @@ class SalesInvoiceController extends Controller
             $salesInvoice->detachDownPayments();
 
             $salesInvoice->form->archive();
-
             $request['number'] = $salesInvoice->form->edited_number;
+            $request['old_increment'] = $salesInvoice->form->increment;
 
             $salesInvoice = SalesInvoice::create($request->all());
             $salesInvoice
@@ -127,8 +130,8 @@ class SalesInvoiceController extends Controller
      *
      * @param Request $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
-     * @throws \Throwable
+     * @return Response
+     * @throws Throwable
      */
     public function destroy(Request $request, $id)
     {

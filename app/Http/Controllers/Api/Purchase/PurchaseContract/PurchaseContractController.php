@@ -78,6 +78,7 @@ class PurchaseContractController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseContract) {
             $purchaseContract->form->archive();
             $request['number'] = $purchaseContract->form->edited_number;
+            $request['old_increment'] = $purchaseContract->form->increment;
 
             $purchaseContract = PurchaseContract::create($request->all());
             $purchaseContract

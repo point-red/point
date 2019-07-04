@@ -124,6 +124,7 @@ class SalesContractController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request, $salesContract) {
             $salesContract->form->archive();
             $request['number'] = $salesContract->form->edited_number;
+            $request['old_increment'] = $salesContract->form->increment;
 
             $salesContract = SalesContract::create($request->all());
             $salesContract->load('form');

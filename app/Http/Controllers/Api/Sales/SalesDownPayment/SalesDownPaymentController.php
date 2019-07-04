@@ -97,6 +97,7 @@ class SalesDownPaymentController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request, $salesDownPayment) {
             $salesDownPayment->form->archive();
             $request['number'] = $salesDownPayment->form->edited_number;
+            $request['old_increment'] = $salesDownPayment->form->increment;
 
             $salesDownPayment = SalesDownPayment::create($request->all());
             $salesDownPayment->load(['form', 'customer', 'downpaymentable']);

@@ -139,8 +139,7 @@ class PurchaseRequestController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseRequest) {
             $purchaseRequest->form->archive();
             $request['number'] = $purchaseRequest->form->edited_number;
-            $request['increment'] = $purchaseRequest->form->increment;
-            $request['increment_group'] = $purchaseRequest->form->increment_group;
+            $request['old_increment'] = $purchaseRequest->form->increment;
 
             $purchaseRequest = PurchaseRequest::create($request->all());
             $purchaseRequest

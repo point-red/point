@@ -176,6 +176,7 @@ class PurchaseReceiveController extends Controller
             Inventory::where('form_id', $purchaseReceive->form->id)->delete();
 
             $request['number'] = $purchaseReceive->form->edited_number;
+            $request['old_increment'] = $purchaseReceive->form->increment;
 
             $purchaseReceive = PurchaseReceive::create($request->all());
             $purchaseReceive

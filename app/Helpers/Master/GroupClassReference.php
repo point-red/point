@@ -10,7 +10,7 @@ class GroupClassReference
 {
     public static $isNotAvailableResponse = [
         'code' => 422,
-        'message' => 'class reference invalid'
+        'message' => 'class reference invalid',
     ];
 
     public static function isAvailable($groupType)

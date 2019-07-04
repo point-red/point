@@ -56,15 +56,15 @@ class TenantMiddleware
                     config()->set('mail.from.address', $project->preference->mail_from_address);
                     config()->set('mail.port', $project->preference->mail_port);
                     config()->set('mail.encryption', $project->preference->mail_encryption);
-                    
+
                     $mailSecret = empty($project->preference->mail_secret) ? null : decrypt($project->preference->mail_secret);
-                    
+
                     // Mailgun
                     if ($project->preference->mail_driver === 'mailgun') {
                         config()->set('services.mailgun.domain', decrypt($project->preference->mail_domain));
                         config()->set('services.mailgun.secret', $mailSecret);
                     }
-                    
+
                     // Sparkpost
                     if ($project->preference->mail_driver === 'sparkpost') {
                         config()->set('services.sparkpost.secret', $mailSecret);

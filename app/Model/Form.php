@@ -92,7 +92,7 @@ class Form extends PointModel
             $transaction->supplier_id
         );
 
-        if(isset($data['old_increment'])) {
+        if (isset($data['old_increment'])) {
             $this->increment = $data['old_increment'];
         }
 

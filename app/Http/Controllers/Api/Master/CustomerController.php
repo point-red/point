@@ -16,9 +16,9 @@ use App\Model\Master\ContactPerson;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Finance\Payment\Payment;
+use Illuminate\Database\QueryException;
 use App\Http\Requests\Master\Customer\StoreCustomerRequest;
 use App\Http\Requests\Master\Customer\UpdateCustomerRequest;
-use Illuminate\Database\QueryException;
 
 class CustomerController extends Controller
 {

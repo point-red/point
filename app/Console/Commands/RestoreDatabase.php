@@ -4,9 +4,8 @@ namespace App\Console\Commands;
 
 use App\Model\CloudStorage;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class RestoreDatabase extends Command
 {
@@ -43,19 +42,19 @@ class RestoreDatabase extends Command
     {
         $cloudStorage = CloudStorage::where('key', $this->argument('key'))->first();
 
-        $dbName = env('DB_DATABASE') . '_' . $cloudStorage->project->code;
+        $dbName = env('DB_DATABASE').'_'.$cloudStorage->project->code;
 
-        $mySqlDump = 'curl "' . $cloudStorage->download_url . '" | gunzip | mysql -u ' . env('DB_USERNAME') . ' -p' . env('DB_PASSWORD');
+        $mySqlDump = 'curl "'.$cloudStorage->download_url.'" | gunzip | mysql -u '.env('DB_USERNAME').' -p'.env('DB_PASSWORD');
 
         $this->line($mySqlDump);
 
-        $process = new Process($mySqlDump . ' ' . $dbName);
+        $process = new Process($mySqlDump.' '.$dbName);
 
         $process->setPTY(true);
         $process->run();
 
         // executes after the command finishes
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
     }

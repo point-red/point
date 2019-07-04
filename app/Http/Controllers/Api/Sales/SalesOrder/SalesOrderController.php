@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesOrder;
 
+use Throwable;
 use App\Model\Form;
 use Illuminate\Http\Request;
-use App\Model\Master\Customer;
 use Illuminate\Http\Response;
+use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
@@ -13,7 +14,6 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Http\Requests\Sales\SalesOrder\SalesOrder\StoreSalesOrderRequest;
 use App\Http\Requests\Sales\SalesOrder\SalesOrder\UpdateSalesOrderRequest;
-use Throwable;
 
 class SalesOrderController extends Controller
 {

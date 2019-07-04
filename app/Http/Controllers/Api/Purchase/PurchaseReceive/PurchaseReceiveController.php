@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseReceive;
 
+use Throwable;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
@@ -12,7 +13,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseReceiveRequest;
-use Throwable;
 
 class PurchaseReceiveController extends Controller
 {

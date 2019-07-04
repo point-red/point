@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 
+use Throwable;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Supplier;
@@ -12,7 +13,6 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\StorePurchaseInvoiceRequest;
 use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\UpdatePurchaseInvoiceRequest;
-use Throwable;
 
 class PurchaseInvoiceController extends Controller
 {

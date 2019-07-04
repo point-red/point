@@ -24,7 +24,7 @@ class Allocation extends MasterModel
         return $this->morphToMany(Group::class, 'groupable');
     }
 
-    public function reports ()
+    public function reports()
     {
         return $this->hasMany(AllocationReport::class);
     }

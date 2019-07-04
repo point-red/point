@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Model\Accounting\Journal;
 use App\Http\Controllers\Controller;
 use App\Model\Finance\Payment\Payment;
-use App\Model\Accounting\ChartOfAccount;
-use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 
@@ -17,7 +14,7 @@ class DashboardController extends Controller
     {
         $salesInvoices = SalesInvoice::active()
             ->joinForm()
-            ->selectRaw('CAST(SUM(' . SalesInvoice::getTableName('amount') . ') AS UNSIGNED) AS value')
+            ->selectRaw('CAST(SUM('.SalesInvoice::getTableName('amount').') AS UNSIGNED) AS value')
             ->periodic($request->get('period'))
             ->get();
 
@@ -28,7 +25,7 @@ class DashboardController extends Controller
     {
         $salesInvoices = SalesInvoice::active()
             ->joinForm()
-            ->selectRaw('COUNT(' . SalesInvoice::getTableName('id') . ') AS count')
+            ->selectRaw('COUNT('.SalesInvoice::getTableName('id').') AS count')
             ->periodic($request->get('period'))
             ->get();
 
@@ -39,7 +36,7 @@ class DashboardController extends Controller
     {
         $purchaseInvoices = PurchaseInvoice::active()
             ->joinForm()
-            ->selectRaw('CAST(SUM(' . PurchaseInvoice::getTableName('amount') . ') AS UNSIGNED) AS value')
+            ->selectRaw('CAST(SUM('.PurchaseInvoice::getTableName('amount').') AS UNSIGNED) AS value')
             ->periodic($request->get('period'))
             ->get();
 
@@ -50,7 +47,7 @@ class DashboardController extends Controller
     {
         $purchaseInvoices = PurchaseInvoice::active()
             ->joinForm()
-            ->selectRaw('COUNT(' . PurchaseInvoice::getTableName('id') . ') AS count')
+            ->selectRaw('COUNT('.PurchaseInvoice::getTableName('id').') AS count')
             ->periodic($request->get('period'))
             ->get();
 
@@ -78,6 +75,6 @@ class DashboardController extends Controller
             ->periodic($request->get('period'))
             ->get();
 
-    return $paymentSent;
+        return $paymentSent;
     }
 }

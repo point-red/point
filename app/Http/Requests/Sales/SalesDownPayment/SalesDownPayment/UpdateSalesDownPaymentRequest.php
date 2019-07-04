@@ -31,11 +31,11 @@ class UpdateSalesDownPaymentRequest extends FormRequest
         $rulesForm = ValidationRule::form();
 
         $rulesDownpayment = [
-            'sales_order_id' => ValidationRule::foreignKeyNullable(SalesOrder::getTableName()) . '|required_without:sales_contract_id',
-            'sales_contract_id' => ValidationRule::foreignKeyNullable(SalesContract::getTableName()) . '|required_without:sales_order_id',
+            'sales_order_id' => ValidationRule::foreignKeyNullable(SalesOrder::getTableName()).'|required_without:sales_contract_id',
+            'sales_contract_id' => ValidationRule::foreignKeyNullable(SalesContract::getTableName()).'|required_without:sales_order_id',
             'amount' => ValidationRule::price(),
         ];
-        
+
         $rulesPayment = [
             'allocation_id' => ValidationRule::foreignKeyNullable(Allocation::getTableName()),
             'payment_account_id' => ValidationRule::foreignKey(ChartOfAccount::getTableName()),

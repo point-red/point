@@ -37,17 +37,14 @@ class AlterTable extends Command
      */
     public function handle()
     {
-        DB::connection('mysql')->statement('ALTER TABLE `projects` ADD `whatsapp` VARCHAR(255) null after `phone`');
-        DB::connection('mysql')->statement('ALTER TABLE `projects` ADD `website` VARCHAR(255) null after `whatsapp`');
-        DB::connection('mysql')->statement('ALTER TABLE `projects` ADD `marketplace_notes` TEXT null after `website`');
-//        $projects = Project::all();
-//        foreach ($projects as $project) {
-//            $db = env('DB_DATABASE').'_'.strtolower($project->code);
-//            $this->line('Alter '.$db);
-//
-//            config()->set('database.connections.tenant.database', $db);
-//            DB::connection('tenant')->reconnect();
-//            DB::connection('tenant')->statement('ALTER TABLE `kpi_template_indicators` DROP INDEX `kpi_template_indicators_automated_code_unique`');
-//        }
+        $projects = Project::all();
+        foreach ($projects as $project) {
+            $db = env('DB_DATABASE').'_'.strtolower($project->code);
+            $this->line('Alter '.$db);
+
+            config()->set('database.connections.tenant.database', $db);
+            DB::connection('tenant')->reconnect();
+            DB::connection('tenant')->statement('ALTER TABLE `inventory_audit_items` ADD `price` decimal(65, 30) unsigned after `quantity`');
+        }
     }
 }

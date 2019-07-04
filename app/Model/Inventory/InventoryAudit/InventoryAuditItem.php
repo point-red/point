@@ -19,6 +19,7 @@ class InventoryAuditItem extends TransactionModel
     protected $fillable = [
         'item_id',
         'quantity',
+        'price',
         'unit',
         'notes',
     ];

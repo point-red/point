@@ -212,12 +212,12 @@ class PurchaseInvoice extends TransactionModel
             $total = $purchaseInvoice->amount - $additionalFee - $purchaseInvoice->tax;
             $price = self::calculatePrice($item, $total, $additionalFee);
 
-            Inventory::where('form_id', $formId)
-                ->where('item_id', $itemId)
-                ->update([
-                    'price' => $price,
-                    // TODO calculate COGS
-                ]);
+            $inventory = Inventory::where('form_id', $formId)->where('item_id', $itemId)->first();
+
+            $inventory->price = $price;
+            $inventory->total_value = $price * $inventory->quantity;
+            $inventory->cogs = $inventory->total_value / $inventory->total_quantity;
+            $inventory->save();
         }
     }
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDeliveryOrderRequest extends FormRequest
 {

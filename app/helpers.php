@@ -1,7 +1,6 @@
 <?php
 
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Model\SettingJournal;
 
@@ -253,7 +252,7 @@ if (! function_exists('get_invitation_code')) {
         {
             $project = \App\Model\Project\Project::where('code', $tenantCode)->first();
 
-            return env('DB_DATABASE') . '_' . strtolower($project->code);
+            return env('DB_DATABASE').'_'.strtolower($project->code);
         }
     }
 
@@ -269,7 +268,7 @@ if (! function_exists('get_invitation_code')) {
         {
             $settingJournal = SettingJournal::where('feature', $feature)->where('name', $name)->first();
 
-            if (!$settingJournal->chart_of_account_id) {
+            if (! $settingJournal->chart_of_account_id) {
                 throw new \App\Exceptions\PostingJournalAccountNotFound($feature, $name);
             }
 

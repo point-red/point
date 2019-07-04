@@ -107,7 +107,8 @@ trait FormScopes
         $query->active()->done();
     }
 
-    public function scopeJoinForm($query) {
+    public function scopeJoinForm($query)
+    {
         $caller = get_class($this);
         $query->join(Form::getTableName(), function ($q) use ($caller) {
             $q->on(Form::getTableName('formable_id'), '=', $caller::getTableName('id'))

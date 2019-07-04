@@ -36,7 +36,7 @@ class InventoryHelper
         $inventory->total_quantity = $quantity;
 
         // check if stock is enough to prevent stock minus
-        if ($quantity < 0 && (!$lastInventory || $lastInventory->total_quantity < $quantity)) {
+        if ($quantity < 0 && (! $lastInventory || $lastInventory->total_quantity < $quantity)) {
             throw new StockNotEnoughException(Item::findOrFail($itemId));
         }
 
@@ -90,7 +90,7 @@ class InventoryHelper
 
         $lastInventory = self::getLastReference($itemId, $warehouseId);
 
-        if (!$lastInventory && !$price) {
+        if (! $lastInventory && ! $price) {
             throw new ItemQuantityInvalidException($item);
         }
 

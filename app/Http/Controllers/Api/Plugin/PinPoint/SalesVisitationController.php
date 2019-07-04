@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
 use App\Model\Form;
-use App\Model\Master\Group;
 use App\Model\Master\Item;
+use App\Model\Master\Group;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
@@ -75,7 +75,7 @@ class SalesVisitationController extends Controller
             $group = Group::findOrFail($request->get('group_id'));
         } else {
             $group = Group::firstOrCreate([
-                'name' => $request->get('group')
+                'name' => $request->get('group'),
             ]);
         }
 
@@ -83,7 +83,7 @@ class SalesVisitationController extends Controller
             $customer = Customer::findOrFail($request->get('customer_id'));
         } else {
             $customer = Customer::firstOrCreate([
-                'name' => $request->get('customer_name')
+                'name' => $request->get('customer_name'),
             ]);
         }
 

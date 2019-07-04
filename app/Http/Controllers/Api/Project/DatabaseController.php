@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use App\Http\Requests\Database\ViewTableRequest;
-use App\Http\Controllers\Controller;
 use App\Model\Project\Project;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Database\ViewTableRequest;
 
 class DatabaseController extends Controller
 {
@@ -13,7 +13,7 @@ class DatabaseController extends Controller
         $project = Project::findOrFail($id);
 
         return response()->json([
-            'data' => dbm_get_tables(get_tenant_db_name($project->code), 'tenant')
+            'data' => dbm_get_tables(get_tenant_db_name($project->code), 'tenant'),
         ]);
     }
 

@@ -2,13 +2,13 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
-use App\Model\AllocationReport;
-use App\Model\Master\Allocation;
 use Carbon\Carbon;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Customer;
+use App\Model\AllocationReport;
 use App\Model\TransactionModel;
+use App\Model\Master\Allocation;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
 use App\Model\Finance\Payment\Payment;
@@ -166,7 +166,7 @@ class SalesInvoice extends TransactionModel
             if ($salesInvoiceItem->allocation_id != null) {
                 $allocationReport = new AllocationReport;
                 $allocationReport->allocation_id = $salesInvoiceItem->allocation_id;
-                $allocationReport->allocationable_id= $salesInvoiceItem->id;
+                $allocationReport->allocationable_id = $salesInvoiceItem->id;
                 $allocationReport->allocationable_type = SalesInvoiceItem::class;
                 $allocationReport->notes = $salesInvoiceItem->notes;
                 $allocationReport->form_id = $salesInvoiceItem->salesInvoice->form->id;
@@ -178,7 +178,7 @@ class SalesInvoice extends TransactionModel
             if ($salesInvoiceService->allocation_id != null) {
                 $allocationReport = new AllocationReport;
                 $allocationReport->allocation_id = $salesInvoiceService->allocation_id;
-                $allocationReport->allocationable_id= $salesInvoiceService->id;
+                $allocationReport->allocationable_id = $salesInvoiceService->id;
                 $allocationReport->allocationable_type = SalesInvoiceService::class;
                 $allocationReport->notes = $salesInvoiceService->notes;
                 $allocationReport->form_id = $salesInvoiceService->salesInvoice->form->id;

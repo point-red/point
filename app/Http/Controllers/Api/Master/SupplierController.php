@@ -16,9 +16,9 @@ use App\Model\Master\ContactPerson;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Finance\Payment\Payment;
+use Illuminate\Database\QueryException;
 use App\Http\Requests\Master\Supplier\StoreSupplierRequest;
 use App\Http\Requests\Master\Supplier\UpdateSupplierRequest;
-use Illuminate\Database\QueryException;
 
 class SupplierController extends Controller
 {

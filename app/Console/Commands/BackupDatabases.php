@@ -2,14 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Model\CloudStorage;
-use App\Model\Project\Project;
 use Carbon\Carbon;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
+use App\Model\CloudStorage;
 use Illuminate\Support\Str;
-use Symfony\Component\Process\Exception\ProcessFailedException;
+use App\Model\Project\Project;
+use Illuminate\Console\Command;
 use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class BackupDatabases extends Command
 {
@@ -55,20 +55,21 @@ class BackupDatabases extends Command
 
         $dbName = 'point';
         $projectCode = 'point';
-        $fileName = $dbName . '_' . date('Y-m-d_His');
+        $fileName = $dbName.'_'.date('Y-m-d_His');
         $fileExt = 'sql.gz';
-        $file = $fileName . '.' . $fileExt;
-        $temporaryFolder = 'tmp/' . $projectCode;
-        $temporaryPath = $temporaryFolder . '/' . $file;
-        $backupFolder = 'backup/database/' . $projectCode;
-        $backupPath = $backupFolder . '/' . $file;
+        $file = $fileName.'.'.$fileExt;
+        $temporaryFolder = 'tmp/'.$projectCode;
+        $temporaryPath = $temporaryFolder.'/'.$file;
+        $backupFolder = 'backup/database/'.$projectCode;
+        $backupPath = $backupFolder.'/'.$file;
 
         $this->mySqlDump($dbName, $temporaryFolder, $file);
 
         $isFileExists = Storage::disk('local')->exists($temporaryPath);
 
-        if (!$isFileExists) {
+        if (! $isFileExists) {
             $this->line('file not exists');
+
             return;
         }
 
@@ -96,23 +97,24 @@ class BackupDatabases extends Command
     {
         $projects = Project::all();
         foreach ($projects as $project) {
-            $this->line('backup database "' . $project->code . '"');
-            $dbName = env('DB_DATABASE', 'point') . '_' . strtolower($project->code);
+            $this->line('backup database "'.$project->code.'"');
+            $dbName = env('DB_DATABASE', 'point').'_'.strtolower($project->code);
             $projectCode = $project->code;
-            $fileName = $dbName . '_' . date('Y-m-d_His');
+            $fileName = $dbName.'_'.date('Y-m-d_His');
             $fileExt = 'sql.gz';
-            $file = $fileName . '.' . $fileExt;
-            $temporaryFolder = 'tmp/' . $projectCode;
-            $temporaryPath = $temporaryFolder . '/' . $file;
-            $backupFolder = 'backup/database/' . $projectCode;
-            $backupPath = $backupFolder . '/' . $file;
+            $file = $fileName.'.'.$fileExt;
+            $temporaryFolder = 'tmp/'.$projectCode;
+            $temporaryPath = $temporaryFolder.'/'.$file;
+            $backupFolder = 'backup/database/'.$projectCode;
+            $backupPath = $backupFolder.'/'.$file;
 
             $this->mySqlDump($dbName, $temporaryFolder, $file);
 
             $isFileExists = Storage::disk('local')->exists($temporaryPath);
 
-            if (!$isFileExists) {
+            if (! $isFileExists) {
                 $this->line('file not exists');
+
                 return;
             }
 
@@ -139,21 +141,21 @@ class BackupDatabases extends Command
 
     private function mySqlDump($dbName, $temporaryFolder, $file)
     {
-        $path = storage_path('app/' . $temporaryFolder);
+        $path = storage_path('app/'.$temporaryFolder);
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             mkdir($path, 0700, true);
         }
 
-        $mySqlDump = 'mysqldump -u ' . env('DB_USERNAME') . ' -p' . env('DB_PASSWORD');
+        $mySqlDump = 'mysqldump -u '.env('DB_USERNAME').' -p'.env('DB_PASSWORD');
 
-        $process = new Process($mySqlDump . ' ' . $dbName . ' --quick | gzip > "' . $path . '/' . $file . '"');
+        $process = new Process($mySqlDump.' '.$dbName.' --quick | gzip > "'.$path.'/'.$file.'"');
 
         $process->setPTY(true);
         $process->run();
 
         // executes after the command finishes
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
 

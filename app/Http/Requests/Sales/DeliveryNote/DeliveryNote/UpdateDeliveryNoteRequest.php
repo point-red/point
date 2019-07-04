@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Sales\DeliveryNote\DeliveryNote;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDeliveryNoteRequest extends FormRequest
 {

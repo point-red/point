@@ -31,7 +31,7 @@ class ValidationRule
      * @param string $column
      * @return string
      */
-    public static function foreignKey(String $table, String $column = 'id')
+    public static function foreignKey(string $table, string $column = 'id')
     {
         return "bail|required|integer|min:0|exists:tenant.$table,$column";
     }
@@ -43,7 +43,7 @@ class ValidationRule
      * @param string $column
      * @return string
      */
-    public static function foreignKeyNullable(String $table, String $column = 'id')
+    public static function foreignKeyNullable(string $table, string $column = 'id')
     {
         return "bail|nullable|integer|min:0|exists:tenant.$table,$column";
     }
@@ -56,7 +56,7 @@ class ValidationRule
      * @param string $column
      * @return string
      */
-    public static function foreignKeyOptional(String $table, String $column = 'id')
+    public static function foreignKeyOptional(string $table, string $column = 'id')
     {
         return "bail|integer|min:0|exists:tenant.$table,$column";
     }

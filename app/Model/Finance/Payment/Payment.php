@@ -143,7 +143,7 @@ class Payment extends TransactionModel
      */
     private static function getLastPaymentIncrement($payment, $incrementGroup)
     {
-        $lastPayment = Self::whereHas('form', function ($query) use ($incrementGroup) {
+        $lastPayment = self::whereHas('form', function ($query) use ($incrementGroup) {
             $query->where('increment_group', $incrementGroup);
         })
         ->notArchived()

@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Model\HumanResource\Kpi\Kpi;
-use App\Model\HumanResource\Kpi\Automated;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\HumanResource\Employee\EmployeeSalary;

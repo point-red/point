@@ -18,6 +18,7 @@ class CreateInventoryAuditItemsTable extends Migration
             $table->unsignedInteger('inventory_audit_id')->index();
             $table->unsignedInteger('item_id')->index();
             $table->unsignedDecimal('quantity', 65, 30);
+            $table->unsignedDecimal('price', 65, 30);
             $table->string('unit');
             $table->decimal('converter', 65, 30);
             $table->string('notes')->nullable();

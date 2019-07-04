@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseReceiveRequest;
+use Throwable;
 
 class PurchaseReceiveController extends Controller
 {
@@ -88,7 +89,7 @@ class PurchaseReceiveController extends Controller
      *
      * @param StorePurchaseReceiveRequest $request
      * @return ApiResource
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function store(StorePurchaseReceiveRequest $request)
     {
@@ -163,7 +164,7 @@ class PurchaseReceiveController extends Controller
      * @param Request $request
      * @param int $id
      * @return ApiResource
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function update(Request $request, $id)
     {

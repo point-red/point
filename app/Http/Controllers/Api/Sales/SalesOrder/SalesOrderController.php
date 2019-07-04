@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Sales\SalesOrder;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
@@ -12,6 +13,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Http\Requests\Sales\SalesOrder\SalesOrder\StoreSalesOrderRequest;
 use App\Http\Requests\Sales\SalesOrder\SalesOrder\UpdateSalesOrderRequest;
+use Throwable;
 
 class SalesOrderController extends Controller
 {
@@ -49,8 +51,9 @@ class SalesOrderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param StoreSalesOrderRequest $request
+     * @return Response
+     * @throws Throwable
      */
     public function store(StoreSalesOrderRequest $request)
     {
@@ -99,9 +102,10 @@ class SalesOrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param int  $id
+     * @param UpdateSalesOrderRequest $request
+     * @param int $id
      * @return ApiResource
+     * @throws Throwable
      */
     public function update(UpdateSalesOrderRequest $request, $id)
     {
@@ -135,7 +139,7 @@ class SalesOrderController extends Controller
      *
      * @param Request $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Request $request, $id)
     {

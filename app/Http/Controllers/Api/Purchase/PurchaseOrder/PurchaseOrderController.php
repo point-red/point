@@ -12,6 +12,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder\StorePurchaseOrderRequest;
 use App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder\UpdatePurchaseOrderRequest;
+use Throwable;
 
 class PurchaseOrderController extends Controller
 {
@@ -88,7 +89,7 @@ class PurchaseOrderController extends Controller
      *
      * @param StorePurchaseOrderRequest $request
      * @return ApiResource
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function store(StorePurchaseOrderRequest $request)
     {
@@ -146,7 +147,7 @@ class PurchaseOrderController extends Controller
      * @param UpdatePurchaseOrderRequest $request
      * @param int $id
      * @return ApiResource
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function update(UpdatePurchaseOrderRequest $request, $id)
     {

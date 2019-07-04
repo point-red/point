@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api\Sales\DeliveryOrder;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder\UpdateDeliveryOrderRequest;
+use Throwable;
 
 class DeliveryOrderController extends Controller
 {
@@ -49,9 +51,9 @@ class DeliveryOrderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     * @throws \Throwable
+     * @param Request $request
+     * @return Response
+     * @throws Throwable
      */
     public function store(Request $request)
     {
@@ -100,9 +102,10 @@ class DeliveryOrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param int  $id
+     * @param UpdateDeliveryOrderRequest $request
+     * @param int $id
      * @return ApiResource
+     * @throws Throwable
      */
     public function update(UpdateDeliveryOrderRequest $request, $id)
     {
@@ -130,7 +133,7 @@ class DeliveryOrderController extends Controller
      *
      * @param Request $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Request $request, $id)
     {

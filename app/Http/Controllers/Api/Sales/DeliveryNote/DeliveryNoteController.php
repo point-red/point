@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Sales\DeliveryNote;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
@@ -12,6 +13,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Http\Requests\Sales\DeliveryNote\DeliveryNote\StoreDeliveryNoteRequest;
 use App\Http\Requests\Sales\DeliveryNote\DeliveryNote\UpdateDeliveryNoteRequest;
+use Throwable;
 
 class DeliveryNoteController extends Controller
 {
@@ -49,9 +51,9 @@ class DeliveryNoteController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     * @throws \Throwable
+     * @param StoreDeliveryNoteRequest $request
+     * @return Response
+     * @throws Throwable
      */
     public function store(StoreDeliveryNoteRequest $request)
     {
@@ -86,10 +88,10 @@ class DeliveryNoteController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param UpdateDeliveryNoteRequest $request
      * @param int $id
      * @return ApiResource
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function update(UpdateDeliveryNoteRequest $request, $id)
     {
@@ -116,7 +118,7 @@ class DeliveryNoteController extends Controller
      *
      * @param Request $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Request $request, $id)
     {

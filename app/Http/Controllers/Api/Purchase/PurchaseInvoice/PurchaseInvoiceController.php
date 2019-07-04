@@ -12,6 +12,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\StorePurchaseInvoiceRequest;
 use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\UpdatePurchaseInvoiceRequest;
+use Throwable;
 
 class PurchaseInvoiceController extends Controller
 {
@@ -50,9 +51,9 @@ class PurchaseInvoiceController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @throws \Throwable
+     * @param StorePurchaseInvoiceRequest $request
      * @return ApiResource
+     * @throws Throwable
      */
     public function store(StorePurchaseInvoiceRequest $request)
     {
@@ -93,7 +94,7 @@ class PurchaseInvoiceController extends Controller
      * @param UpdatePurchaseInvoiceRequest $request
      * @param int $id
      * @return ApiResource
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function update(UpdatePurchaseInvoiceRequest $request, $id)
     {

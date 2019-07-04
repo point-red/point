@@ -92,7 +92,7 @@ class SalesInvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param UpdateSalesInvoiceRequest $request
      * @param int $id
      * @return ApiResource
      * @throws Throwable

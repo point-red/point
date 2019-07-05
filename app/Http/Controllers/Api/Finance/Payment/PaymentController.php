@@ -85,8 +85,8 @@ class PaymentController extends Controller
             $payment
                 ->load('form')
                 ->load('paymentable')
-                ->load('details.referenceable')
-                ->load('details.allocation');
+                ->load('details.allocation')
+                ->load('details.referenceable.form');
 
             return new ApiResource($payment);
         });

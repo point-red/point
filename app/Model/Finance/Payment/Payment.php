@@ -189,11 +189,10 @@ class Payment extends TransactionModel
         $journal->save();
 
         foreach ($payment->details as $paymentDetail) {
-            $paymentableType = $payment->paymentable_type;
             $journal = new Journal;
             $journal->form_id = $payment->form->id;
             $journal->form_id_reference = optional(optional($paymentDetail->referenceable)->form)->id;
-            $journal->journalable_type = $paymentableType::$morphName;
+            $journal->journalable_type = $payment->paymentable_type;
             $journal->journalable_id = $payment->paymentable_id;
             $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
             if (! $payment->disbursed) {

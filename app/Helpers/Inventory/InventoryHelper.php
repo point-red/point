@@ -126,6 +126,7 @@ class InventoryHelper
             ->where('item_id', $itemId)
             ->where('warehouse_id', $warehouseId)
             ->orderBy('date', 'DESC')
+            ->orderBy('form_id', 'DESC')
             ->first();
     }
 }

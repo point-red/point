@@ -11,7 +11,7 @@ class PushNotification extends Command
      *
      * @var string
      */
-    protected $signature = 'push-notification {token}';
+    protected $signature = 'push-notification {title} {body} {token*}';
 
     /**
      * The console command description.
@@ -38,15 +38,17 @@ class PushNotification extends Command
     public function handle()
     {
         $tokens = [];
+        $title = $this->argument('title');
+        $body = $this->argument('body');
         array_push($tokens, $this->argument('token'));
-        self::send($tokens);
+        self::send($tokens, $title, $body);
     }
 
-    private static function send($tokens)
+    private static function send($tokens, $title, $body)
     {
         $msg = [
-            'title'     => 'Test Notification',
-            'body'      => 'this is only notification testing',
+            'title'     => $title,
+            'body'      => $body,
             'sound'     => 'default',
         ];
 

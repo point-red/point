@@ -85,9 +85,9 @@ class EmployeeController extends Controller
         $employee->job_title = $request->get('job_title');
         $employee->employee_status_id = $request->get('employee_status_id');
         $employee->employee_job_location_id = $request->get('employee_job_location_id');
-        $employee->daily_transport_allowance = $request->get('daily_transport_allowance');
-        $employee->functional_allowance = $request->get('functional_allowance');
-        $employee->communication_allowance = $request->get('communication_allowance');
+        $employee->daily_transport_allowance = $request->get('daily_transport_allowance') ?? 0;
+        $employee->functional_allowance = $request->get('functional_allowance') ?? 0;
+        $employee->communication_allowance = $request->get('communication_allowance') ?? 0;
 
         if ($request->get('employee_group_name')) {
             $group = new EmployeeGroup;

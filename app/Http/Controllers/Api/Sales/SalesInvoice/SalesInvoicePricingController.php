@@ -28,7 +28,7 @@ class SalesInvoicePricingController extends Controller
                 SalesInvoice::getTableName('id'),
                 SalesInvoiceItem::getTableName('price'),
                 SalesInvoiceItem::getTableName('discount_percent'),
-                SalesInvoiceItem::getTableName('discount_value'),
+                SalesInvoiceItem::getTableName('discount_value')
             )
             ->first();
 

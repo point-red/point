@@ -297,7 +297,7 @@ class SalesInvoice extends TransactionModel
         $journal->journalable_type = Customer::$morphName;
         $journal->journalable_id = $salesInvoice->customer_id;
         $journal->chart_of_account_id = get_setting_journal('sales', 'account receivable');
-        $journal->debit = $salesInvoice->amount;
+        $journal->debit = $salesInvoice->remaining;
         $journal->save();
 
         // 2. Sales Income

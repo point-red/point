@@ -11,7 +11,7 @@ class ResetDatabaseController extends Controller
     public function index(Request $request)
     {
         Artisan::call('tenant:database:reset', [
-            'project_code' => 'dev'
+            'project_code' => strtolower($request->get('Tenant'))
         ]);
     }
 }

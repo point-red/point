@@ -41,6 +41,14 @@ class PurchaseDownPayment extends TransactionModel
         return $this->morphTo();
     }
 
+    /**
+     * Get the invoice's payment.
+     */
+    public function payments()
+    {
+        return $this->morphToMany(Payment::class, 'referenceable', 'payment_details')->active();
+    }
+
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
@@ -53,9 +61,15 @@ class PurchaseDownPayment extends TransactionModel
 
     public function isAllowedToDelete()
     {
-        // Check if not referenced by purchase invoice
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
+    private function isNotReferenced()
+    {
+        // Check if not referenced by purchase order
         if ($this->invoices->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by invoice', $this->invoices);
+            throw new IsReferencedException('Cannot edit form because referenced by purchase invoice(s)', $this->invoices);
         }
     }
 

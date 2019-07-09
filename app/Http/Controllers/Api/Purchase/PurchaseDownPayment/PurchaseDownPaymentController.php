@@ -106,6 +106,18 @@ class PurchaseDownPaymentController extends Controller
         $downPayment = PurchaseDownPayment::findOrFail($id);
         $downPayment->isAllowedToDelete();
 
+        $hasPayment = $downPayment->payments()->exists();
+
+        if ($hasPayment && ! $request->get('force')) {
+            // Throw error referenced by payment, need parameter force (and maybe need extra permission role)
+            throw new IsReferencedException('Cannot delete because referenced by payment.', $downPayment->payments->first());
+            return;
+        }
+
+        $payment = $downPayment->payments->first();
+        $payment->isAllowedToDelete();
+        $payment->requestCancel($request);
+        
         $downPayment->requestCancel($request);
 
         return response()->json([], 204);

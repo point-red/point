@@ -12,6 +12,7 @@ use App\Http\Resources\ApiCollection;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment\StoreSalesDownPaymentRequest;
 use App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment\UpdateSalesDownPaymentRequest;
+use App\Exceptions\IsReferencedException;
 
 class SalesDownPaymentController extends Controller
 {
@@ -120,6 +121,18 @@ class SalesDownPaymentController extends Controller
         $downPayment = SalesDownPayment::findOrFail($id);
         $downPayment->isAllowedToDelete();
 
+        $hasPayment = $downPayment->payments()->exists();
+
+        if ($hasPayment && ! $request->get('force')) {
+            // Throw error referenced by payment, need parameter force (and maybe need extra permission role)
+            throw new IsReferencedException('Cannot delete because referenced by payment.', $downPayment->payments->first());
+            return;
+        }
+
+        $payment = $downPayment->payments->first();
+        $payment->isAllowedToDelete();
+        $payment->requestCancel($request);
+        
         $downPayment->requestCancel($request);
 
         return response()->json([], 204);

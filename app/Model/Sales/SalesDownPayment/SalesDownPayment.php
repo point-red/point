@@ -53,6 +53,14 @@ class SalesDownPayment extends TransactionModel
             ->withPivot('amount');
     }
 
+    /**
+     * Get the invoice's payment.
+     */
+    public function payments()
+    {
+        return $this->morphToMany(Payment::class, 'referenceable', 'payment_details')->active();
+    }
+
     public function isAllowedToUpdate()
     {
         $this->updatedFormNotArchived();

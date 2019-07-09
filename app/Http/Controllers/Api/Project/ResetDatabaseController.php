@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use Illuminate\Http\Request;
+use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 
 class ResetDatabaseController extends Controller
 {
-    public function index(Request $request)
+    public function index($id)
     {
-        Artisan::call('tenant:database:reset', [
-            'project_code' => strtolower($request->get('Tenant'))
-        ]);
+        $project = Project::find($id);
+
+        if (auth()->user()->id == $project->owner_id) {
+            Artisan::call('tenant:database:reset', [
+                'project_code' => $project->code
+            ]);
+        }
     }
 }

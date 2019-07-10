@@ -51,6 +51,8 @@ class StorePurchaseInvoiceRequest extends FormRequest
             'items.*.discount_percent' => ValidationRule::discountPercent(),
             'items.*.taxable' => 'boolean',
             'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
+            'items.*.purchase_receive_id' => ValidationRule::foreignKey('purchase_receives'),
+            'items.*.purchase_receive_item_id' => ValidationRule::foreignKey('purchase_receive_items')
         ];
 
         $rulesPurchaseInvoiceServices = [

@@ -13,8 +13,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\Event' => [
-            'App\Listeners\EventListener',
+        'App\Events\Plugin\PinPoint\SalesVisitationCreated' => [
+            'App\Listeners\Reward\GiftNewPoint'
         ],
     ];
 

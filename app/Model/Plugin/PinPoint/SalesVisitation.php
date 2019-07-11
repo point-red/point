@@ -6,6 +6,7 @@ use App\Model\Form;
 use App\Model\PointModel;
 use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
+use App\Model\Reward\Point;
 
 class SalesVisitation extends PointModel
 {
@@ -56,6 +57,11 @@ class SalesVisitation extends PointModel
     public function details()
     {
         return $this->hasMany(SalesVisitationDetail::class);
+    }
+
+    public function reward()
+    {
+        return $this->morphOne(Point::class, 'rewardable');
     }
 
     public static function call($dateFrom, $dateTo, $userId)

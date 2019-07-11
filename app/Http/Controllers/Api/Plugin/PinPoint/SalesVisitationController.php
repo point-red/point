@@ -17,6 +17,7 @@ use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
 use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
 use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
 use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
+use App\Events\Plugin\PinPoint\SalesVisitationCreated;
 
 class SalesVisitationController extends Controller
 {
@@ -207,6 +208,8 @@ class SalesVisitationController extends Controller
         }
 
         DB::connection('tenant')->commit();
+
+        event(new SalesVisitationCreated($salesVisitation, $request->user()));
 
         return new ApiResource($salesVisitation);
     }

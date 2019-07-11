@@ -7,6 +7,7 @@ use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Model\Reward\Point;
 
 class User extends Authenticatable
 {
@@ -46,5 +47,10 @@ class User extends Authenticatable
             ? 'email' : 'name';
 
         return $this->where($field, $username)->first();
+    }
+
+    public function points()
+    {
+        return $this->hasMany(Point::class);
     }
 }

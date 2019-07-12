@@ -7,6 +7,7 @@ use App\Model\Rewardable;
 
 interface RewardableEvent
 {
-  public function getUser() : User;
-  public function getRewardableModel() : Rewardable;
+	public function getUser() : User;
+
+	public function getRewardableModel() : Rewardable;
 }

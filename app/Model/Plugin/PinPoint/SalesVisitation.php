@@ -7,8 +7,9 @@ use App\Model\PointModel;
 use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
 use App\Model\Reward\Point;
+use App\Model\Rewardable;
 
-class SalesVisitation extends PointModel
+class SalesVisitation extends PointModel implements Rewardable
 {
     protected $connection = 'tenant';
 
@@ -109,5 +110,14 @@ class SalesVisitation extends PointModel
             ->first();
 
         return $query ? $query->value : 0;
+    }
+
+    /**
+     * Here we can define the amount of point the user will get
+     */
+    public function getPointAmount() : int
+    {
+        # we can easly get it from database
+        return 100;
     }
 }

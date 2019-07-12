@@ -10,7 +10,7 @@ class Point extends PointModel
     
     protected $fillable = [
         'user_id',
-        'redeemed_at'
+        'amount'
     ];
 
     public function rewardable()

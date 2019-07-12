@@ -28,7 +28,8 @@ class GiftNewPoint
     public function handle(RewardableEvent $event)
     {
         $point = new Point([
-            'user_id' => $event->getUser()->id
+            'user_id' => $event->getUser()->id,
+            'amount' => $event->getRewardableModel()->getPointAmount()
         ]);
         $rewardable = $event->getRewardableModel();
         $rewardable->reward()->save($point);

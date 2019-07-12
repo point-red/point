@@ -11,6 +11,8 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Events\RewardableEvent;
 use App\Model\Plugin\PinPoint\SalesVisitation;
+use App\User;
+use App\Model\Rewardable;
 
 class SalesVisitationCreated implements RewardableEvent
 {
@@ -40,12 +42,12 @@ class SalesVisitationCreated implements RewardableEvent
         return new PrivateChannel('channel-name');
     }
 
-    public function getRewardableModel()
+    public function getRewardableModel() : Rewardable
     {
         return $this->salesVisitation;
     }
 
-    public function getUser()
+    public function getUser() : User
     {
         return $this->user;
     }

@@ -18,7 +18,7 @@ class CreatePointsTable extends Migration
             $table->unsignedInteger('user_id');
             $table->integer('rewardable_id');
             $table->string('rewardable_type');
-            $table->timestamp('redeemed_at')->nullable();
+            $table->integer('amount')->default(0);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');

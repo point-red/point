@@ -2,12 +2,12 @@
 
 namespace App;
 
+use App\Model\Reward\Point;
 use App\Model\Project\Project;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Model\Reward\Point;
 
 class User extends Authenticatable
 {

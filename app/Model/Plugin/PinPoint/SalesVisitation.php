@@ -4,10 +4,10 @@ namespace App\Model\Plugin\PinPoint;
 
 use App\Model\Form;
 use App\Model\PointModel;
+use App\Model\Rewardable;
+use App\Model\Reward\Point;
 use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
-use App\Model\Reward\Point;
-use App\Model\Rewardable;
 
 class SalesVisitation extends PointModel implements Rewardable
 {
@@ -113,11 +113,11 @@ class SalesVisitation extends PointModel implements Rewardable
     }
 
     /**
-     * Here we can define the amount of point the user will get
+     * Here we can define the amount of point the user will get.
      */
     public function getPointAmount() : int
     {
-        # we can easly get it from database
+        // we can easly get it from database
         return 100;
     }
 }

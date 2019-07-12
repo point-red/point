@@ -14,7 +14,7 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'App\Events\Plugin\PinPoint\SalesVisitationCreated' => [
-            'App\Listeners\Reward\GiftNewPoint'
+            'App\Listeners\Reward\GiftNewPoint',
         ],
     ];
 

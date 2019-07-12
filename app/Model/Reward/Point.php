@@ -7,14 +7,14 @@ use App\Model\PointModel;
 class Point extends PointModel
 {
     protected $connection = 'tenant';
-    
+
     protected $fillable = [
         'user_id',
-        'amount'
+        'amount',
     ];
 
     protected $appends = [
-        'action_str'
+        'action_str',
     ];
 
     public function rewardable()
@@ -27,6 +27,6 @@ class Point extends PointModel
         $namesInPath = explode('\\', $this->rewardable_type);
         $lastNameInPath = @$namesInPath[count($namesInPath) - 1];
 
-        return ucwords(join(" ", explode("_", snake_case($lastNameInPath))));
+        return ucwords(implode(" ", explode("_", snake_case($lastNameInPath))));
     }
 }

@@ -1,11 +1,13 @@
 <?php
+
 namespace App\Events;
 
-use App\Model\Rewardable;
 use App\User;
+use App\Model\Rewardable;
 
 interface RewardableEvent {
 
-  public function getRewardableModel() : Rewardable;
   public function getUser() : User;
+  
+  public function getRewardableModel() : Rewardable;
 }

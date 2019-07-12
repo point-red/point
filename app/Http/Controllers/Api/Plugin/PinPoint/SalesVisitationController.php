@@ -12,12 +12,12 @@ use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
+use App\Events\Plugin\PinPoint\SalesVisitationCreated;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
 use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
 use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
 use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
-use App\Events\Plugin\PinPoint\SalesVisitationCreated;
 
 class SalesVisitationController extends Controller
 {

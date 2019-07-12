@@ -27,6 +27,6 @@ class Point extends PointModel
         $namesInPath = explode('\\', $this->rewardable_type);
         $lastNameInPath = @$namesInPath[count($namesInPath) - 1];
 
-        return ucwords(implode(" ", explode("_", snake_case($lastNameInPath))));
+        return ucwords(implode(' ', explode('_', snake_case($lastNameInPath))));
     }
 }

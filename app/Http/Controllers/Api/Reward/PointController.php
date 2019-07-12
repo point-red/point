@@ -28,4 +28,3 @@ class PointController extends Controller
         return new ApiCollection($points);
     }
 }
-

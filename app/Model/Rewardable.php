@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-interface Rewardable {
-
+interface Rewardable
+{
   public function getPointAmount() : int;
 }

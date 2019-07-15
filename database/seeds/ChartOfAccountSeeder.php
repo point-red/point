@@ -23,13 +23,14 @@ class ChartOfAccountSeeder extends Seeder
             'cash',
             'bank',
             'note receivable',
-            'inventory',
             'account receivable',
             'other account receivable',
+            'inventory',
             'fixed asset',
             'fixed asset depreciation',
             'other asset',
             'other asset amortization',
+            'sales down payment',
         ];
 
         $assetsAlias = [
@@ -43,6 +44,7 @@ class ChartOfAccountSeeder extends Seeder
             'penyusutan aset tetap',
             'aset lain lain',
             'amortisasi aset lain',
+            'uang muka penjualan',
         ];
 
         $liabilities = [
@@ -50,6 +52,7 @@ class ChartOfAccountSeeder extends Seeder
             'note payable',
             'other current liability',
             'long term liability',
+            'purchase down payment',
         ];
 
         $liabilitiesAlias = [
@@ -57,6 +60,7 @@ class ChartOfAccountSeeder extends Seeder
             'wesel bayar',
             'utang lain lain',
             'utang jangka panjang',
+            'uang muka pembelian',
         ];
 
         $equities = [
@@ -136,6 +140,7 @@ class ChartOfAccountSeeder extends Seeder
 
     private function chartOfAccount()
     {
+        // ASSETS
         $cash = ['kas besar', 'kas kecil', 'pos silang'];
         $cashNumber = ['10101', '10102', '10199'];
 
@@ -145,14 +150,14 @@ class ChartOfAccountSeeder extends Seeder
         $noteReceivable = ['wesel tagih'];
         $noteReceivableNumber = ['10301'];
 
-        $inventory = ['sediaan bahan baku', 'sediaan bahan pembantu', 'sediaan barang dalam proses', 'sediaan barang jadi (manufaktur)', 'sediaan dalam perjalanan', 'sediaan lain-lain'];
-        $inventoryNumber = ['10601', '10602', '10603', '10604', '10605', '10699'];
-
         $accountReceivable = ['piutang usaha', 'uang muka penjualan'];
         $accountReceivableNumber = ['10401', '10402'];
 
         $otherAccountReceivable = ['piutang direksi', 'piutang karyawan', 'ppn masukan'];
         $otherAccountReceivableNumber = ['10501', '10502', '10503'];
+
+        $inventory = ['sediaan bahan baku', 'sediaan bahan pembantu', 'sediaan barang dalam proses', 'sediaan barang jadi (manufaktur)', 'sediaan dalam perjalanan', 'sediaan lain-lain'];
+        $inventoryNumber = ['10601', '10602', '10603', '10604', '10605', '10699'];
 
         $fixedAsset = ['tanah lokasi kota surabaya', 'bangunan pabrik', 'bangunan kantor', 'mesin', 'peralatan', 'instalasi listrik', 'inventaris pabrik', 'inventaris kantor', 'kendaraan pabrik', 'kendaraan kantor', 'kendaraan penjualan'];
         $fixedAssetNumber = ['11101', '11102', '11201', '11202', '11301', '11302', '11303', '11401', '11402', '11501', '11502', '11503'];
@@ -166,6 +171,10 @@ class ChartOfAccountSeeder extends Seeder
         $otherAssetDepreciation = ['akumulasi amortisasi aktiva tak berwujud'];
         $otherAssetDepreciationNumber = ['12103'];
 
+        $salesDownPayment = ['uang muka penjualan'];
+        $salesDownPaymentNumber = ['13101'];
+
+        // LIABILITIES
         $currentLiability = ['wesel bayar ', 'utang usaha', 'uang muka pembelian', 'utang bank bca', 'utang bank mandiri'];
         $currentLiabilityNumber = ['20101', '20201', '20301', '20302', '20303', '20401', '20402', '20403', '20499'];
 
@@ -175,6 +184,10 @@ class ChartOfAccountSeeder extends Seeder
         $longTermLiability = ['gaji ymh dibayar', 'sewa ymh dibayar', 'listrik, air & telpon ymh dibayar', 'asuransi ymh dibayar', 'lain-lain ymh dibayar', 'utang bank jangka panjang'];
         $longTermLiabilityNumber = ['20501', '20502', '20503', '20504', '20505', '21001'];
 
+        $purchaseDownPayment = ['uang muka pembelian'];
+        $purchaseDownPaymentNumber = ['20601'];
+
+        // Equity
         $ownerEquity = ['modal disetor'];
         $ownerEquityNumber = ['30101'];
 
@@ -184,12 +197,14 @@ class ChartOfAccountSeeder extends Seeder
         $retainedEarning = ['laba rugi', 'laba rugi s/d tahun lalu', 'laba rugi s/d bulan lalu', 'laba rugi bulan berjalan'];
         $retainedEarningNumber = ['30103', '30104', '30105', '30106'];
 
+        // Income
         $salesIncome = ['penjualan', 'pendapatan lain', 'retur penjualan', 'potongan penjualan', 'pendapatan (beban) selisih kas'];
         $salesIncomeNumber = ['40101', '40102', '40103', '40104', '40105'];
 
         $otherIncome = ['pendapatan bunga', 'pendapatan selisih pembayaran', 'pendapatan selisih kurs', 'pendapatan atas penjualan aktiva', 'potongan pembelian', 'pendapatan non operasional lain-lain'];
         $otherIncomeNumber = ['41101', '41102', '41103', '41104', '41105', '41199'];
 
+        // Expense
         $costOfSales = ['beban pokok penjualan', 'angkutan'];
         $costOfSalesNumber = ['50101', '50102'];
 
@@ -307,12 +322,30 @@ class ChartOfAccountSeeder extends Seeder
             $chartOfAccount->save();
         }
 
+        for ($i = 0; $i < count($salesDownPayment); $i++) {
+            $chartOfAccount = new ChartOfAccount;
+            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'sales down payment')->first()->id;
+            $chartOfAccount->number = $salesDownPaymentNumber[$i];
+            $chartOfAccount->name = $salesDownPayment[$i];
+            $chartOfAccount->alias = $salesDownPayment[$i];
+            $chartOfAccount->save();
+        }
+
         for ($i = 0; $i < count($longTermLiability); $i++) {
             $chartOfAccount = new ChartOfAccount;
             $chartOfAccount->type_id = ChartOfAccountType::where('name', 'long term liability')->first()->id;
             $chartOfAccount->number = $longTermLiabilityNumber[$i];
             $chartOfAccount->name = $longTermLiability[$i];
             $chartOfAccount->alias = $longTermLiability[$i];
+            $chartOfAccount->save();
+        }
+
+        for ($i = 0; $i < count($purchaseDownPayment); $i++) {
+            $chartOfAccount = new ChartOfAccount;
+            $chartOfAccount->type_id = ChartOfAccountType::where('name', 'purchase down payment')->first()->id;
+            $chartOfAccount->number = $purchaseDownPaymentNumber[$i];
+            $chartOfAccount->name = $purchaseDownPayment[$i];
+            $chartOfAccount->alias = $purchaseDownPayment[$i];
             $chartOfAccount->save();
         }
 

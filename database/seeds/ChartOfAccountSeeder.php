@@ -150,8 +150,8 @@ class ChartOfAccountSeeder extends Seeder
         $noteReceivable = ['wesel tagih'];
         $noteReceivableNumber = ['10301'];
 
-        $accountReceivable = ['piutang usaha', 'uang muka penjualan'];
-        $accountReceivableNumber = ['10401', '10402'];
+        $accountReceivable = ['piutang usaha'];
+        $accountReceivableNumber = ['10401'];
 
         $otherAccountReceivable = ['piutang direksi', 'piutang karyawan', 'ppn masukan'];
         $otherAccountReceivableNumber = ['10501', '10502', '10503'];

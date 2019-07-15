@@ -175,8 +175,8 @@ class ChartOfAccountSeeder extends Seeder
         $salesDownPaymentNumber = ['13101'];
 
         // LIABILITIES
-        $currentLiability = ['wesel bayar ', 'utang usaha', 'uang muka pembelian', 'utang bank bca', 'utang bank mandiri'];
-        $currentLiabilityNumber = ['20101', '20201', '20301', '20302', '20303', '20401', '20402', '20403', '20499'];
+        $currentLiability = ['wesel bayar ', 'utang usaha', 'utang bank bca', 'utang bank mandiri'];
+        $currentLiabilityNumber = ['20101', '20201', '20301', '20302'];
 
         $otherCurrentLiability = ['utang pihak ketiga', 'utang pembelian aktiva', 'utang ppn', 'ppn keluaran', 'utang lain-lain'];
         $otherCurrentLiabilityNumber = ['20401', '20402', '20403', '20404', '20499'];

@@ -1,5 +1,4 @@
 <?php
-use App\Model\Rewardable;
 
 Route::prefix('setting')->namespace('Setting')->as('setting.')->group(function() {
   Route::get('reward/point', 'Reward\PointController@index');

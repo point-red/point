@@ -6,9 +6,9 @@ use App\Model\Form;
 use App\Model\PointModel;
 use App\Model\Rewardable;
 use App\Model\Reward\Point;
+use App\Model\SettingReward;
 use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
-use App\Model\SettingReward;
 
 class SalesVisitation extends PointModel implements Rewardable
 {

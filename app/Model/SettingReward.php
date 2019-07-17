@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SettingReward extends Model
 {
     public static $settings;
-    
+
     protected $connection = 'tenant';
 
     protected $fillable = [
@@ -27,7 +27,7 @@ class SettingReward extends Model
         // read from db
         if (! $setting) {
             $setting = static::whereModel($className)->first();
-            if (!$setting) {
+            if (! $setting) {
                 $setting = static::create([
                     'model' => $className,
                     'amount' => 0,

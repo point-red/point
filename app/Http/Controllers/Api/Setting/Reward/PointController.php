@@ -10,7 +10,6 @@ use App\Http\Controllers\Controller;
 
 class PointController extends Controller
 {
-
     public function index(Request $request)
     {
         $rewardableModels = $this->getRewardableModels();

@@ -24,9 +24,6 @@ class Point extends PointModel
 
     public function getActionStrAttribute()
     {
-        $namesInPath = explode('\\', $this->rewardable_type);
-        $lastNameInPath = @$namesInPath[count($namesInPath) - 1];
-
-        return ucwords(implode(' ', explode('_', snake_case($lastNameInPath))));
+        return $this->rewardable->getActionName();
     }
 }

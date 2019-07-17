@@ -4,5 +4,7 @@ namespace App\Model;
 
 interface Rewardable
 {
-    public function getPointAmount() : int;
+    public static function getPointAmount() : int;
+    public static function getActionName() : string;
+    public static function isRewardableActive() : bool;
 }

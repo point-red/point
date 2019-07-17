@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -47,5 +46,10 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         // Plugin
         require base_path('routes/api/plugin/scale-weight.php');
         require base_path('routes/api/plugin/pin-point.php');
+    });
+
+    // These routes below using client_credentials tokens for the authentication
+    Route::middleware('client')->group(function () {
+        require base_path('routes/api/setting.php');
     });
 });

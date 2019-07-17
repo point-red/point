@@ -8,6 +8,7 @@ use App\Model\Rewardable;
 use App\Model\Reward\Point;
 use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
+use App\Model\SettingReward;
 
 class SalesVisitation extends PointModel implements Rewardable
 {
@@ -115,9 +116,19 @@ class SalesVisitation extends PointModel implements Rewardable
     /**
      * Here we can define the amount of point the user will get.
      */
-    public function getPointAmount() : int
+    public static function getPointAmount() : int
     {
         // we can easly get it from database
-        return 100;
+        return SettingReward::getSettingByModel(static::class)->amount;
+    }
+
+    public static function getActionName() : string
+    {
+        return 'Sales Visitation';
+    }
+
+    public static function isRewardableActive() : bool
+    {
+        return SettingReward::getSettingByModel(static::class)->is_rewardable_active;
     }
 }

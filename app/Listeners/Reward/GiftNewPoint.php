@@ -25,11 +25,13 @@ class GiftNewPoint
      */
     public function handle(RewardableEvent $event)
     {
-        $point = new Point([
-            'user_id' => $event->getUser()->id,
-            'amount' => $event->getRewardableModel()->getPointAmount(),
-        ]);
-        $rewardable = $event->getRewardableModel();
-        $rewardable->reward()->save($point);
+        if ($event->getRewardableModel()->isRewardableActive()) {
+            $point = new Point([
+                'user_id' => $event->getUser()->id,
+                'amount' => $event->getRewardableModel()->getPointAmount(),
+            ]);
+            $rewardable = $event->getRewardableModel();
+            $rewardable->reward()->save($point);
+        }
     }
 }

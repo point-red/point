@@ -1,31 +1,34 @@
 <?php
-
+// Firestore documentation
+// https://firebase.google.com/docs/firestore/quickstart
+// You need to install gRPC to use firestore
+// https://cloud.google.com/php/grpc
 namespace App\Helpers\Firebase;
 
 use Google\Cloud\Core\Exception\GoogleException;
 use Google\Cloud\Firestore\FirestoreClient;
 
-class Firebase
+class Firestore
 {
-    var $firestore;
+    var $db;
 
     /**
      * Firebase constructor.
      *
      * @throws GoogleException
      */
-    function __construct()
+    public function __construct()
     {
-        $this->firestore = new FirestoreClient([
-            'keyFilePath' => storage_path('red-point-firebase.json')
+        // To use firebase, you need to create service account
+        // https://cloud.google.com/docs/authentication/getting-started
+        $this->db = new FirestoreClient([
+            'keyFilePath' => storage_path('firebase-service-account.json')
         ]);
+    }
 
-//    $docRef = $db->collection('users')->document('lovelace');
-//    $docRef->set([
-//        'first' => 'Ada',
-//        'last' => 'Lovelace',
-//        'born' => 1815
-//    ]);
-//    printf('Added data to the lovelace document in the users collection.' . PHP_EOL);
+    public function set($collection, $document, $data)
+    {
+        $docRef = $this->db->collection($collection)->document($document);
+        $docRef->set($data);
     }
 }

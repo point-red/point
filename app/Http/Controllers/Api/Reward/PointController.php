@@ -22,7 +22,7 @@ class PointController extends Controller
 
         $points = pagination(
             $query,
-            $request->limit
+            $request->limit ?: 10
         );
 
         return new ApiCollection($points);

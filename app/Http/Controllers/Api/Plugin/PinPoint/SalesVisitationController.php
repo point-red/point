@@ -211,7 +211,16 @@ class SalesVisitationController extends Controller
 
         event(new SalesVisitationCreated($salesVisitation, $request->user()));
 
-        return new ApiResource($salesVisitation);
+        if (SalesVisitation::isRewardableActive()) {
+            $pointResponse = [
+                'amount' => SalesVisitation::getPointAmount()
+            ];
+        }
+
+        return new ApiResource([
+            'salesVisitation' => $salesVisitation,
+            'point' => @$pointResponse
+        ]);
     }
 
     /**

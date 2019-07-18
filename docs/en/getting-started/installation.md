@@ -13,6 +13,8 @@ However, if you are not using Homestead, you will need to make sure your server 
 - Tokenizer PHP Extension
 - XML PHP Extension
 
+Since Point using Firestore you should install and enable *grpc*. For more detailed guide please check [https://cloud.google.com/php/grpc](https://cloud.google.com/php/grpc)  
+
 ## Download
 
 Point utilizes Composer to manage its dependencies. So, before using Laravel, make sure you have Composer installed on your machine.

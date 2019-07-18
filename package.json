@@ -20,7 +20,7 @@
         "vue": "^2.5.7"
     },
     "dependencies": {
-        "docsify-cli": "^4.2.1",
+        "docsify-cli": "^4.3.0",
         "to": "^0.2.9",
         "update": "^0.7.4"
     }

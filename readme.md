@@ -31,6 +31,8 @@ cd point
 composer install
 ```
 
+Since Point using Firestore you should install and enable *grpc*. For more detailed guide please check [https://cloud.google.com/php/grpc](https://cloud.google.com/php/grpc)
+
 You are ready to go, please refer to our documentation below for any guide and instruction.
 
 ## Documentation

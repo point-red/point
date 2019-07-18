@@ -213,13 +213,13 @@ class SalesVisitationController extends Controller
 
         if (SalesVisitation::isRewardableActive()) {
             $pointResponse = [
-                'amount' => SalesVisitation::getPointAmount()
+                'amount' => SalesVisitation::getPointAmount(),
             ];
         }
 
         return new ApiResource([
             'salesVisitation' => $salesVisitation,
-            'point' => @$pointResponse
+            'point' => @$pointResponse,
         ]);
     }
 

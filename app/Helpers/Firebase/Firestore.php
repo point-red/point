@@ -28,7 +28,13 @@ class Firestore
 
     public function set($collection, $document, $data)
     {
-        $docRef = $this->db->collection($collection)->document($document);
-        $docRef->set($data);
+        $docRef = $this->db->collection($collection);
+        if ($document) {
+            $docRef = $docRef->document($document);
+            $docRef->set($data);
+        } else {
+            // document will be random unique
+            $docRef->add($data);
+        }
     }
 }

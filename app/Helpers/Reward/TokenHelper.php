@@ -11,14 +11,18 @@ class TokenHelper
     {
         $tokenGenerator = TokenGenerator::where('source', $source)->first();
 
-        $token = new Token([
-            'user_id' => auth()->user()->id,
-            'source' => $tokenGenerator->source,
-            'amount' => $tokenGenerator->amount,
-        ]);
+        if ($tokenGenerator->is_active) {
+            $token = new Token([
+                'user_id' => auth()->user()->id,
+                'source' => $tokenGenerator->source,
+                'amount' => $tokenGenerator->amount,
+            ]);
 
-        $token->save();
+            $token->save();
 
-        return $token;
+            return $token;
+        }
+
+        return null;
     }
 }

@@ -205,9 +205,12 @@ class SalesVisitationController extends Controller
                     }
                 }
             }
+            TokenHelper::add('sales visitation effective call');
+        } else {
+            TokenHelper::add('sales visitation call');
         }
 
-        TokenHelper::add('sales visitation call');
+
 
         DB::connection('tenant')->commit();
 

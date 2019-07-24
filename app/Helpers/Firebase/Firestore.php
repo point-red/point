@@ -1,16 +1,18 @@
 <?php
+
 // Firestore documentation
 // https://firebase.google.com/docs/firestore/quickstart
 // You need to install gRPC to use firestore
 // https://cloud.google.com/php/grpc
+
 namespace App\Helpers\Firebase;
 
-use Google\Cloud\Core\Exception\GoogleException;
 use Google\Cloud\Firestore\FirestoreClient;
+use Google\Cloud\Core\Exception\GoogleException;
 
 class Firestore
 {
-    var $db;
+    public $db;
 
     /**
      * Firebase constructor.
@@ -22,7 +24,7 @@ class Firestore
         // To use firebase, you need to create service account
         // https://cloud.google.com/docs/authentication/getting-started
         $this->db = new FirestoreClient([
-            'keyFilePath' => storage_path('firebase-service-account.json')
+            'keyFilePath' => storage_path('firebase-service-account.json'),
         ]);
     }
 

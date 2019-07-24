@@ -3,12 +3,12 @@
 namespace App\Console\Commands\Notification;
 
 use App\Model\FirebaseToken;
-use App\Model\HumanResource\Employee\EmployeeContract;
-use App\Model\Master\User as TenantUser;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
+use App\Model\Master\User as TenantUser;
+use App\Model\HumanResource\Employee\EmployeeContract;
 
 class EndContractNotificationCommand extends Command
 {
@@ -63,7 +63,7 @@ class EndContractNotificationCommand extends Command
                 Artisan::call('notification:end-contract', [
                     'token' => $userTokens,
                     'title' => 'Employee Contract',
-                    'body' => 'Some of your employee contract will end soon'
+                    'body' => 'Some of your employee contract will end soon',
                 ]);
             }
         }

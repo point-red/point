@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\Reward;
 
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
-use App\Model\Reward\TokenGenerator;
 use Illuminate\Http\Request;
+use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Model\Reward\TokenGenerator;
+use App\Http\Resources\ApiCollection;
 
 class TokenGeneratorController extends Controller
 {
@@ -28,6 +28,7 @@ class TokenGeneratorController extends Controller
     {
         $tokenGenerator = TokenGenerator::first();
         $tokenGenerator->update($request->all());
+
         return $tokenGenerator;
     }
 }

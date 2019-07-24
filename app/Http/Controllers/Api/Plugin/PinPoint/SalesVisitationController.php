@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
+use App\Helper\Reward\TokenHelper;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Group;
@@ -205,6 +206,8 @@ class SalesVisitationController extends Controller
                 }
             }
         }
+
+        TokenHelper::add('sales visitation call');
 
         DB::connection('tenant')->commit();
 

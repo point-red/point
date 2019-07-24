@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -42,9 +41,15 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         require base_path('routes/api/human-resource.php');
         require base_path('routes/api/inventory.php');
         require base_path('routes/api/dashboard.php');
+        require base_path('routes/api/reward.php');
 
         // Plugin
         require base_path('routes/api/plugin/scale-weight.php');
         require base_path('routes/api/plugin/pin-point.php');
+    });
+
+    // These routes below using client_credentials tokens for the authentication
+    Route::middleware('client')->group(function () {
+        require base_path('routes/api/reward.php');
     });
 });

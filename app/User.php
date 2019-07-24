@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Model\Reward\Token;
 use App\Model\Project\Project;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
@@ -46,5 +47,10 @@ class User extends Authenticatable
             ? 'email' : 'name';
 
         return $this->where($field, $username)->first();
+    }
+
+    public function rewardTokens()
+    {
+        return $this->hasMany(Token::class);
     }
 }

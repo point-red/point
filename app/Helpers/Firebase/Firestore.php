@@ -12,25 +12,21 @@ use Google\Cloud\Core\Exception\GoogleException;
 
 class Firestore
 {
-    public $db;
-
-    /**
-     * Firebase constructor.
-     *
-     * @throws GoogleException
-     */
-    public function __construct()
+    private static function db()
     {
         // To use firebase, you need to create service account
         // https://cloud.google.com/docs/authentication/getting-started
-        $this->db = new FirestoreClient([
-            'keyFilePath' => storage_path('firebase-service-account.json'),
-        ]);
+        try {
+            return new FirestoreClient([
+                'keyFilePath' => storage_path('firebase-service-account.json'),
+            ]);
+        } catch (GoogleException $e) {
+        }
     }
 
-    public function set($collection, $document, $data)
+    public static function set($collection, $document, $data)
     {
-        $docRef = $this->db->collection($collection);
+        $docRef = self::db()->collection($collection);
         if ($document) {
             $docRef = $docRef->document($document);
             $docRef->set($data);

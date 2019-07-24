@@ -18,8 +18,8 @@ class CreateNotificationsTable extends Migration
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('project_id');
             $table->text('message');
+            $table->text('link');
             $table->string('status');
-            $table->text('message');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');

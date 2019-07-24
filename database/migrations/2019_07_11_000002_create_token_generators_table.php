@@ -14,7 +14,7 @@ class CreateTokenGeneratorsTable extends Migration
     public function up()
     {
         Schema::create('token_generators', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('source');
             $table->unsignedInteger('amount');
             $table->boolean('is_active')->default(false);

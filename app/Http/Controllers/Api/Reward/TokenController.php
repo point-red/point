@@ -19,8 +19,8 @@ class TokenController extends Controller
     {
         $query = Token::where('user_id', auth()->user()->id);
 
-        $points = pagination($query, $request->get('limit'));
+        $tokens = pagination($query, $request->get('limit'));
 
-        return new ApiCollection($points);
+        return new ApiCollection($tokens);
     }
 }

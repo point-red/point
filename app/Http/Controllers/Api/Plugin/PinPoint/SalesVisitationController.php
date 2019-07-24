@@ -205,12 +205,13 @@ class SalesVisitationController extends Controller
                     }
                 }
             }
+        }
+
+        if ($salesVisitation->details->count() > 0) {
             TokenHelper::add('sales visitation effective call');
         } else {
             TokenHelper::add('sales visitation call');
         }
-
-
 
         DB::connection('tenant')->commit();
 

@@ -2,8 +2,8 @@
 
 namespace App\Model\HumanResource\Employee\Employee;
 
-use App\Model\HumanResource\Employee\Employee;
 use Illuminate\Database\Eloquent\Model;
+use App\Model\HumanResource\Employee\Employee;
 
 class EmployeePhone extends Model
 {

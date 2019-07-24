@@ -2,13 +2,13 @@
 
 namespace App\Model\HumanResource\Employee;
 
-use App\Model\HumanResource\Employee\Employee\EmployeeAddress;
-use App\Model\HumanResource\Employee\Employee\EmployeeCompanyEmail;
-use App\Model\HumanResource\Employee\Employee\EmployeePhone;
-use App\Model\HumanResource\Kpi\KpiTemplate;
 use App\Model\Master\Person;
 use App\Traits\EloquentFilters;
 use Illuminate\Database\Eloquent\Model;
+use App\Model\HumanResource\Kpi\KpiTemplate;
+use App\Model\HumanResource\Employee\Employee\EmployeePhone;
+use App\Model\HumanResource\Employee\Employee\EmployeeAddress;
+use App\Model\HumanResource\Employee\Employee\EmployeeCompanyEmail;
 
 class Employee extends Model
 {

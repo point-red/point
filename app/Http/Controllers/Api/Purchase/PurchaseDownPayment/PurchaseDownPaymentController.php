@@ -98,13 +98,14 @@ class PurchaseDownPaymentController extends Controller
         if ($hasPayment && ! $request->get('force')) {
             // Throw error referenced by payment, need parameter force (and maybe need extra permission role)
             throw new IsReferencedException('Cannot delete because referenced by payment.', $downPayment->payments->first());
+
             return;
         }
         $result = DB::connection('tenant')->transaction(function () use ($request, $downPayment) {
             $payment = $downPayment->payments->first();
             $payment->isAllowedToUpdate();
             $payment->form->archive();
-            
+
             $downPayment->form->archive();
             $request['number'] = $downPayment->form->edited_number;
             $request['old_increment'] = $downPayment->form->increment;
@@ -135,13 +136,14 @@ class PurchaseDownPaymentController extends Controller
         if ($hasPayment && ! $request->get('force')) {
             // Throw error referenced by payment, need parameter force (and maybe need extra permission role)
             throw new IsReferencedException('Cannot delete because referenced by payment.', $downPayment->payments->first());
+
             return;
         }
 
         $payment = $downPayment->payments->first();
         $payment->isAllowedToDelete();
         $payment->requestCancel($request);
-        
+
         $downPayment->requestCancel($request);
 
         return response()->json([], 204);

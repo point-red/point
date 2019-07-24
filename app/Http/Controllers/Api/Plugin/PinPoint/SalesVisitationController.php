@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
-use App\Helper\Reward\TokenHelper;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Group;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
+use App\Helper\Reward\TokenHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;

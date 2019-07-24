@@ -52,7 +52,7 @@ class UpdatePurchaseInvoiceRequest extends FormRequest
             'items.*.taxable' => 'boolean',
             'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),
             'items.*.purchase_receive_id' => ValidationRule::foreignKey('purchase_receives'),
-            'items.*.purchase_receive_item_id' => ValidationRule::foreignKey('purchase_receive_items')
+            'items.*.purchase_receive_item_id' => ValidationRule::foreignKey('purchase_receive_items'),
         ];
 
         $rulesPurchaseInvoiceServices = [

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Requests\Sales\SalesInvoice\SalesInvoice;
+namespace App\Http\Requests\Pos\PosBill;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePosBillRequest extends FormRequest
 {

@@ -18,6 +18,7 @@ class PermissionSeeder extends Seeder
         $this->setMasterPermission();
         $this->setPurchasePermission();
         $this->setSalesPermission();
+        $this->setPosPermission();
         $this->setInventoryPermission();
         $this->setAccountingPermission();
         $this->setFinancePermission();
@@ -82,6 +83,24 @@ class PermissionSeeder extends Seeder
             'sales invoice',
             'sales down payment',
             'sales return',
+        ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
+    private function setPosPermission()
+    {
+        Permission::createIfNotExists('menu pos');
+
+        $allPermission = [
+            'pos bill',
+            'pos open bill',
+            'pos closed bill',
         ];
 
         foreach ($allPermission as $permission) {

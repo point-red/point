@@ -53,11 +53,13 @@ class PriceListItemController extends Controller
                     $price = 0;
                     $discount_value = 0;
                     $discount_percent = null;
+                    $pricing_group_id = null;
                     foreach ($priceGroups as $priceGroup) {
                         if ($priceGroup['id'] == $availablePricingGroup['id']) {
                             $price = floatval($priceGroup['pivot']['price']);
                             $discount_value = floatval($priceGroup['pivot']['discount_value']);
                             $discount_percent = $priceGroup['pivot']['discount_percent'];
+                            $pricing_group_id = $priceGroup['pivot']['pricing_group_id'];
                             if (! is_null($discount_percent)) {
                                 $discount_percent = floatval($discount_percent);
                             }
@@ -68,6 +70,7 @@ class PriceListItemController extends Controller
                         'price' => $price,
                         'discount_value' => $discount_value,
                         'discount_percent' => $discount_percent,
+                        'pricing_group_id' => $pricing_group_id,
                     ];
                 }
                 $unit = $unit->toArray();

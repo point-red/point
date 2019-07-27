@@ -27,8 +27,8 @@ class StorePosBillRequest extends FormRequest
         $rulesForm = ValidationRule::form();
 
         $rulesPosBill = [
-            'customer_id' => ValidationRule::foreignKey('customers'),
-            'customer_name' => 'required|string',
+            'customer_id' => ValidationRule::foreignKeyNullable('customers'),
+            'customer_name' => 'string',
             'discount_value' => ValidationRule::discountValue(),
             'discount_percent' => ValidationRule::discountPercent(),
             'tax' => ValidationRule::tax(),

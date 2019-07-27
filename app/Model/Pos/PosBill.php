@@ -18,7 +18,6 @@ class PosBill extends TransactionModel
     protected $fillable = [
         'customer_id',
         'customer_name',
-        'invoice_number',
         'discount_percent',
         'discount_value',
         'type_of_tax',
@@ -34,7 +33,6 @@ class PosBill extends TransactionModel
         'tax' => 'double',
         'amount' => 'double',
         'paid' => 'double',
-        'remaining' => 'double',
     ];
 
     public $defaultNumberPrefix = 'BI';
@@ -55,12 +53,6 @@ class PosBill extends TransactionModel
     }
 
     // public function bill
-
-    public function updateIfDone()
-    {
-        $done = $this->remaining <= 0;
-        $this->form()->update(['done' => $done]);
-    }
 
     public function isAllowedToUpdate()
     {
@@ -89,9 +81,6 @@ class PosBill extends TransactionModel
 
         $form = new Form;
         $form->saveData($data, $bill);
-
-        // updated to done if the remaining is 0
-        $bill->updateIfDone();
 
         return $bill;
     }

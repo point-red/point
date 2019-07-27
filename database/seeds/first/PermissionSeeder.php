@@ -98,7 +98,6 @@ class PermissionSeeder extends Seeder
         Permission::createIfNotExists('menu pos');
 
         $allPermission = [
-            'pos bill',
             'pos open bill',
             'pos closed bill',
         ];

@@ -62,7 +62,7 @@ class EndContractNotificationCommand extends Command
             $userTokens = FirebaseToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
 
             if ($employeeContracts->count() > 0) {
-                Artisan::call('notification:end-contract', [
+                Artisan::call('push-notification', [
                     'token' => $userTokens,
                     'title' => 'Employee Contract',
                     'body' => 'Some of your employee contract will end soon',

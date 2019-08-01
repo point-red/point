@@ -4,6 +4,7 @@ namespace App\Helpers\Master;
 
 use App\Model\Master\Item;
 use App\Model\Master\Customer;
+use App\Model\Master\Service;
 use App\Model\Master\Supplier;
 
 class GroupClassReference
@@ -17,6 +18,7 @@ class GroupClassReference
     {
         $classReference = [
             Item::$morphName,
+            Service::$morphName,
             Customer::$morphName,
             Supplier::$morphName,
         ];

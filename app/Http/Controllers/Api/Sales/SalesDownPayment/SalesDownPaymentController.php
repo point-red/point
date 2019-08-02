@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Exceptions\IsReferencedException;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment\StoreSalesDownPaymentRequest;
 use App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment\UpdateSalesDownPaymentRequest;
-use App\Exceptions\IsReferencedException;
 
 class SalesDownPaymentController extends Controller
 {
@@ -98,13 +98,14 @@ class SalesDownPaymentController extends Controller
         if ($hasPayment && ! $request->get('force')) {
             // Throw error referenced by payment, need parameter force (and maybe need extra permission role)
             throw new IsReferencedException('Cannot delete because referenced by payment.', $salesDownPayment->payments->first());
+
             return;
         }
         $result = DB::connection('tenant')->transaction(function () use ($request, $salesDownPayment) {
             $payment = $salesDownPayment->payments->first();
             $payment->isAllowedToUpdate();
             $payment->form->archive();
-            
+
             $salesDownPayment->form->archive();
             $request['number'] = $salesDownPayment->form->edited_number;
             $request['old_increment'] = $salesDownPayment->form->increment;
@@ -135,13 +136,14 @@ class SalesDownPaymentController extends Controller
         if ($hasPayment && ! $request->get('force')) {
             // Throw error referenced by payment, need parameter force (and maybe need extra permission role)
             throw new IsReferencedException('Cannot delete because referenced by payment.', $salesDownPayment->payments->first());
+
             return;
         }
 
         $payment = $salesDownPayment->payments->first();
         $payment->isAllowedToDelete();
         $payment->requestCancel($request);
-        
+
         $salesDownPayment->requestCancel($request);
 
         return response()->json([], 204);

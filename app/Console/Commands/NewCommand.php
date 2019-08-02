@@ -48,6 +48,10 @@ class NewCommand extends Command
         Artisan::call('tenant:database:create', ['db_name' => $dbName]);
         Artisan::call('migrate');
         Artisan::call('passport:install');
+        Artisan::call('passport:client', [
+            '--client' => 'client',
+            '--name' => 'Website'
+        ]);
 
         $this->line('setup new user "admin" and password "admin"');
         $user = new User;

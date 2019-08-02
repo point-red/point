@@ -28,6 +28,11 @@ class GroupController extends Controller
         }
 
         $groups = Group::where('class_reference', $groupClassReference)->eloquentFilter($request);
+
+        if ($request->get('type')) {
+            $groups = $groups->where('type', $request->get('type'));
+        }
+
         $groups = pagination($groups, $request->get('limit'));
 
         return new ApiCollection($groups);

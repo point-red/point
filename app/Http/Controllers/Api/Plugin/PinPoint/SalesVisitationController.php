@@ -7,6 +7,7 @@ use App\Model\Master\Item;
 use App\Model\Master\Group;
 use Illuminate\Http\Request;
 use App\Model\Master\Customer;
+use App\Helper\Reward\TokenHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
@@ -204,6 +205,12 @@ class SalesVisitationController extends Controller
                     }
                 }
             }
+        }
+
+        if ($salesVisitation->details->count() > 0) {
+            TokenHelper::add('sales visitation effective call');
+        } else {
+            TokenHelper::add('sales visitation call');
         }
 
         DB::connection('tenant')->commit();

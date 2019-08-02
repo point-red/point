@@ -2,13 +2,15 @@
 
 namespace App\Console\Commands\Notification;
 
+use App\Helpers\Firebase\Firestore;
 use App\Model\FirebaseToken;
-use App\Model\HumanResource\Employee\EmployeeContract;
-use App\Model\Master\User as TenantUser;
 use App\Model\Project\Project;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
+use App\Model\Master\User as TenantUser;
+use App\Model\HumanResource\Employee\EmployeeContract;
 
 class EndContractNotificationCommand extends Command
 {
@@ -49,7 +51,7 @@ class EndContractNotificationCommand extends Command
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
-            $nextMonth = \Carbon\Carbon::now()->addMonth(1);
+            $nextMonth = Carbon::now()->addMonth(1);
 
             $employeeContracts = EmployeeContract::where('contract_end', '>', now())
                 ->where('contract_end', '>', $nextMonth)
@@ -60,10 +62,17 @@ class EndContractNotificationCommand extends Command
             $userTokens = FirebaseToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
 
             if ($employeeContracts->count() > 0) {
-                Artisan::call('notification:end-contract', [
+                Artisan::call('push-notification', [
                     'token' => $userTokens,
                     'title' => 'Employee Contract',
-                    'body' => 'Some of your employee contract will end soon'
+                    'body' => 'Some of your employee contract will end soon',
+                ]);
+
+                Firestore::set('notifications', null, [
+                    'userId' => $project->owner->id,
+                    'projectId' => $project->id,
+                    'message' => 'Some of your employee contract will end soon',
+                    'createdAt' => date('Y-m-d H:i:s')
                 ]);
             }
         }

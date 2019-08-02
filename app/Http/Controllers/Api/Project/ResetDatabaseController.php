@@ -14,7 +14,7 @@ class ResetDatabaseController extends Controller
 
         if (auth()->user()->id == $project->owner_id) {
             Artisan::call('tenant:database:reset', [
-                'project_code' => $project->code
+                'project_code' => $project->code,
             ]);
         }
     }

@@ -22,7 +22,6 @@ class PosBill extends TransactionModel
         'discount_value',
         'type_of_tax',
         'tax',
-        'amount',
         'paid',
         'notes',
     ];
@@ -45,6 +44,11 @@ class PosBill extends TransactionModel
     public function items()
     {
         return $this->hasMany(PosBillItem::class);
+    }
+
+    public function services()
+    {
+        return $this->hasMany(PosBillService::class);
     }
 
     public function customer()
@@ -70,14 +74,13 @@ class PosBill extends TransactionModel
         $bill->fill($data);
 
         $items = self::mapItems($data['items'] ?? []);
+        $services = self::mapServices($data['services'] ?? []);
 
-        $bill->amount = self::calculateAmount($bill, $items);
-        $bill->paid = $bill->paid;
-        $bill->remaining = $bill->paid >= $bill->amount ? 0 : $bill->amount - $bill->paid;
-
+        $bill->amount = self::calculateAmount($bill, $items, $services);
         $bill->save();
 
         $bill->items()->saveMany($items);
+        $bill->services()->saveMany($services);
 
         $form = new Form;
         $form->saveData($data, $bill);
@@ -95,10 +98,24 @@ class PosBill extends TransactionModel
         }, $items);
     }
 
-    private static function calculateAmount($bill, $items)
+    private static function mapServices($services)
+    {
+        return array_map(function ($service) {
+            $billService = new PosBillService;
+            $billService->fill($service);
+
+            return $billService;
+        }, $services);
+    }
+
+    private static function calculateAmount($bill, $items, $services)
     {
         $amount = array_reduce($items, function ($carry, $item) {
             return $carry + $item->quantity * $item->converter * ($item->price - $item->discount_value);
+        }, 0);
+
+        $amount += array_reduce($services, function ($carry, $service) {
+            return $carry + $service->quantity * ($service->price - $service->discount_value);
         }, 0);
 
         $amount -= $bill->discount_value;

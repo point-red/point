@@ -25,7 +25,7 @@ class CreatePosBillsTable extends Migration
             $table->decimal('paid', 65, 30);
             $table->text('notes')->nullable();
 
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('restrict');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');
         });
     }
 

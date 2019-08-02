@@ -33,10 +33,10 @@ class UpdatePosBillRequest extends FormRequest
             'discount_percent' => ValidationRule::discountPercent(),
             'tax' => ValidationRule::tax(),
             'type_of_tax' => ValidationRule::typeOfTax(),
-            'amount' => ValidationRule::price(),
             'paid' => ValidationRule::price(),
 
             'items' => 'required_without:services|array',
+            'services' => 'required_without:items|array',
         ];
 
         $rulesPosBillItems = [
@@ -51,6 +51,16 @@ class UpdatePosBillRequest extends FormRequest
             'items.*.taxable' => 'boolean',
         ];
 
-        return array_merge($rulesForm, $rulesPosBill, $rulesPosBillItems);
+        $rulesPosBillServices = [
+            'services.*.service_id' => ValidationRule::foreignKey('services'),
+            'services.*.service_name' => 'required|string',
+            'services.*.quantity' => ValidationRule::quantity(),
+            'services.*.price' => ValidationRule::price(),
+            'services.*.discount_value' => ValidationRule::discountValue(),
+            'services.*.discount_percent' => ValidationRule::discountPercent(),
+            'services.*.taxable' => 'boolean',
+        ];
+
+        return array_merge($rulesForm, $rulesPosBill, $rulesPosBillItems, $rulesPosBillServices);
     }
 }

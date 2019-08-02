@@ -85,6 +85,8 @@ class PosBill extends TransactionModel
         $form = new Form;
         $form->saveData($data, $bill);
 
+        $bill->form()->update(['done' => $data['is_done']]);        
+
         return $bill;
     }
 

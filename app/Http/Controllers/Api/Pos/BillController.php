@@ -30,7 +30,7 @@ class BillController extends Controller
             $fields = explode(',', $request->get('join'));
 
             if (in_array('customer', $fields)) {
-                $bills = $bills->join(Customer::getTableName(), function ($q) {
+                $bills = $bills->leftJoin(Customer::getTableName(), function ($q) {
                     $q->on(Customer::getTableName('id'), '=', PosBill::getTableName('customer_id'));
                 });
             }

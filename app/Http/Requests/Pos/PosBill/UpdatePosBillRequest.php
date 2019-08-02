@@ -37,6 +37,8 @@ class UpdatePosBillRequest extends FormRequest
 
             'items' => 'required_without:services|array',
             'services' => 'required_without:items|array',
+
+            'is_done' => 'integer',
         ];
 
         $rulesPosBillItems = [

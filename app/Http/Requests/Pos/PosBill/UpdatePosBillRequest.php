@@ -28,7 +28,7 @@ class UpdatePosBillRequest extends FormRequest
 
         $rulesPosBill = [
             'customer_id' => ValidationRule::foreignKeyNullable('customers'),
-            'customer_name' => 'string',
+            'customer_name' => 'string|nullable',
             'discount_value' => ValidationRule::discountValue(),
             'discount_percent' => ValidationRule::discountPercent(),
             'tax' => ValidationRule::tax(),

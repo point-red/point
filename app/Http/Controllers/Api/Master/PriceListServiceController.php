@@ -27,7 +27,20 @@ class PriceListServiceController extends Controller
         $services = Service::eloquentFilter($request)->with('prices');
         $services = pagination($services, $request->get('limit'));
 
-        $services->getCollection()->transform(function ($service) use ($date, $availablePricingGroups) {
+        $pricingGroupId = null;
+
+        if ($request->get('pricing_group_id')) {
+            $pricingGroupId = $request->get('pricing_group_id');
+            if ($pricingGroupId == -1) {
+                if (count($availablePricingGroups) > 0) {
+                    $pricingGroupId = $availablePricingGroups[0]['id'];
+                } else {
+                    $pricingGroupId = null;
+                }
+            }
+        }
+
+        $services->getCollection()->transform(function ($service) use ($date, $availablePricingGroups, $pricingGroupId) {
             $priceGroups = $service->prices
                 ->filter(function ($priceGroup) use ($date) {
                     /* Filter out price with date greater than $date */
@@ -54,7 +67,17 @@ class PriceListServiceController extends Controller
                 $discount_percent = null;
                 $pricing_group_id = null;
                 foreach ($priceGroups as $priceGroup) {
-                    if ($priceGroup['id'] == $availablePricingGroup['id']) {
+                    $shouldSetPrice = false;
+                    if (!$pricingGroupId) {
+                        if ($priceGroup['id'] == $availablePricingGroup['id']) {
+                            $shouldSetPrice = true;
+                        }
+                    } else {
+                        if ($priceGroup['id'] == $pricingGroupId && $availablePricingGroup['id'] == $pricingGroupId) {
+                            $shouldSetPrice = true;
+                        }
+                    }
+                    if ($shouldSetPrice) {
                         $price = floatval($priceGroup['pivot']['price']);
                         $discount_value = floatval($priceGroup['pivot']['discount_value']);
                         $discount_percent = $priceGroup['pivot']['discount_percent'];

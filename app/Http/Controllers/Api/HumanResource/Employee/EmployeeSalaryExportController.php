@@ -156,6 +156,51 @@ class EmployeeSalaryExportController extends Controller
         $company_profit_difference_minus_amount_week_4 = $company_profit_week_4 - $total_amount_week_4;
         $company_profit_difference_minus_amount_week_5 = $company_profit_week_5 - $total_amount_week_5;
 
+        $day_average_divisor = 0;
+        $total_minimum_component_score = 0;
+        $total_additional_component_score = 0;
+        $total_final_score = 0;
+        $average_minimum_component_score = 0;
+        $average_additional_component_score = 0;
+        $average_final_score = 0;
+
+      if ($employeeSalary->active_days_week1 != 0) {
+        $day_average_divisor++;
+        $total_minimum_component_score += $additionalSalaryData['total_assessments']['week1'];
+        $total_additional_component_score += $additionalSalaryData['total_achievements']['week1'];
+        $total_final_score += $salary_final_score_week_1;
+      }
+      if ($employeeSalary->active_days_week2 != 0) {
+        $day_average_divisor++;
+        $total_minimum_component_score += $additionalSalaryData['total_assessments']['week2'];
+        $total_additional_component_score += $additionalSalaryData['total_achievements']['week2'];
+        $total_final_score += $salary_final_score_week_2;
+      }
+      if ($employeeSalary->active_days_week3 != 0) {
+        $day_average_divisor++;
+        $total_minimum_component_score += $additionalSalaryData['total_assessments']['week3'];
+        $total_additional_component_score += $additionalSalaryData['total_achievements']['week3'];
+        $total_final_score += $salary_final_score_week_3;
+      }
+      if ($employeeSalary->active_days_week4 != 0) {
+        $day_average_divisor++;
+        $total_minimum_component_score += $additionalSalaryData['total_assessments']['week4'];
+        $total_additional_component_score += $additionalSalaryData['total_achievements']['week4'];
+        $total_final_score += $salary_final_score_week_4;
+      }
+      if ($employeeSalary->active_days_week5 != 0) {
+        $day_average_divisor++;
+        $total_minimum_component_score += $additionalSalaryData['total_assessments']['week5'];
+        $total_additional_component_score += $additionalSalaryData['total_achievements']['week5'];
+        $total_final_score += $salary_final_score_week_5;
+      }
+
+      $average_minimum_component_score = $day_average_divisor != 0 ? $total_minimum_component_score / $day_average_divisor : 0;
+      $average_additional_component_score = $day_average_divisor != 0 ? $total_additional_component_score / $day_average_divisor : 0;
+      $average_final_score = $day_average_divisor != 0 ? $total_final_score / $day_average_divisor : 0;
+
+      $total_payment = ($employeeSalary->payment_from_marketing_week1 + $employeeSalary->payment_from_sales_week1 + $employeeSalary->payment_from_spg_week1 + $employeeSalary->cash_payment_week1) + ($employeeSalary->payment_from_marketing_week2 + $employeeSalary->payment_from_sales_week2 + $employeeSalary->payment_from_spg_week2 + $employeeSalary->cash_payment_week2) + ($employeeSalary->payment_from_marketing_week3 + $employeeSalary->payment_from_sales_week3 + $employeeSalary->payment_from_spg_week3 + $employeeSalary->cash_payment_week3) + ($employeeSalary->payment_from_marketing_week4 + $employeeSalary->payment_from_sales_week4 + $employeeSalary->payment_from_spg_week4 + $employeeSalary->cash_payment_week4) + ($employeeSalary->payment_from_marketing_week5 + $employeeSalary->payment_from_sales_week5 + $employeeSalary->payment_from_spg_week5 + $employeeSalary->cash_payment_week5);
+
         return [
             'salary_final_score_week_1' => $salary_final_score_week_1,
             'salary_final_score_week_2' => $salary_final_score_week_2,
@@ -203,6 +248,10 @@ class EmployeeSalaryExportController extends Controller
             'company_profit_difference_minus_amount_week_3' => $company_profit_difference_minus_amount_week_3,
             'company_profit_difference_minus_amount_week_4' => $company_profit_difference_minus_amount_week_4,
             'company_profit_difference_minus_amount_week_5' => $company_profit_difference_minus_amount_week_5,
+            'average_minimum_component_score' => $average_minimum_component_score,
+            'average_additional_component_score' => $average_additional_component_score,
+            'average_final_score' => $average_final_score,
+            'total_payment' => $total_payment,
         ];
     }
 }

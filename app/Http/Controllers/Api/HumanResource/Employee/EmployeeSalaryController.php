@@ -663,8 +663,8 @@ class EmployeeSalaryController extends Controller
                 }
             }
 
-            $dateWithTimeFrom = date('Y-m-d 00:00:00', strtotime($request->startDate));
-            $dateWithTimeTo = date('Y-m-d 23:59:59', strtotime($request->endDate));
+            $dateWithTimeFrom = date('Y-m-d H:i:s', strtotime($request->startDate));
+            $dateWithTimeTo = date('Y-m-d H:i:s', strtotime($request->endDate));
 
             $queryValueCashCredit = $this->queryValueCashCredit($dateWithTimeFrom, $dateWithTimeTo, $userId);
 

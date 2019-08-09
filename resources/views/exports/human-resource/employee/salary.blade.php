@@ -259,7 +259,7 @@
 	        <td style="text-align:center;">{{ number_format($employeeSalary->cash_payment_week3, 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->cash_payment_week4, 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->cash_payment_week5, 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['total_payment'], 2) }}</td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_payment'], 2) }}</b></td>
 	    </tr>
 	    <tr>
 	        <td colspan="2">Settlement Difference Minus Amount</td>
@@ -268,7 +268,7 @@
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['settlement_difference_minus_amount_week_3'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['settlement_difference_minus_amount_week_4'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['settlement_difference_minus_amount_week_5'], 2) }}</td>
-	        <td>&nbsp;</td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_settlement_difference_minus_amount'], 2) }}</b></td>
 	    </tr>
 	    <tr>
 	        <td colspan="2">Company Profit Difference Minus Amount</td>
@@ -277,16 +277,16 @@
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['company_profit_difference_minus_amount_week_3'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['company_profit_difference_minus_amount_week_4'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['company_profit_difference_minus_amount_week_5'], 2) }}</td>
-	        <td>&nbsp;</td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_company_profit_difference_minus_amount'], 2) }}</b></td>
 	    </tr>
 	    <tr>
-	        <td colspan="2">Weekly Payment</td>
+	        <td colspan="2">Weekly Sales</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->weekly_sales_week1, 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->weekly_sales_week2, 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->weekly_sales_week3, 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->weekly_sales_week4, 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->weekly_sales_week5, 2) }}</td>
-	        <td>&nbsp;</td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_weekly_sales'], 2) }}</b></td>
 	    </tr>
 	    <tr>
 	        <td colspan="2">WA Daily Report</td>

@@ -201,6 +201,12 @@ class EmployeeSalaryExportController extends Controller
 
       $total_payment = ($employeeSalary->payment_from_marketing_week1 + $employeeSalary->payment_from_sales_week1 + $employeeSalary->payment_from_spg_week1 + $employeeSalary->cash_payment_week1) + ($employeeSalary->payment_from_marketing_week2 + $employeeSalary->payment_from_sales_week2 + $employeeSalary->payment_from_spg_week2 + $employeeSalary->cash_payment_week2) + ($employeeSalary->payment_from_marketing_week3 + $employeeSalary->payment_from_sales_week3 + $employeeSalary->payment_from_spg_week3 + $employeeSalary->cash_payment_week3) + ($employeeSalary->payment_from_marketing_week4 + $employeeSalary->payment_from_sales_week4 + $employeeSalary->payment_from_spg_week4 + $employeeSalary->cash_payment_week4) + ($employeeSalary->payment_from_marketing_week5 + $employeeSalary->payment_from_sales_week5 + $employeeSalary->payment_from_spg_week5 + $employeeSalary->cash_payment_week5);
 
+      $total_settlement_difference_minus_amount = $settlement_difference_minus_amount_week_1 + $settlement_difference_minus_amount_week_2 + $settlement_difference_minus_amount_week_3 + $settlement_difference_minus_amount_week_4 + $settlement_difference_minus_amount_week_5;
+
+      $total_company_profit_difference_minus_amount = $company_profit_difference_minus_amount_week_1 + $company_profit_difference_minus_amount_week_2 + $company_profit_difference_minus_amount_week_3 + $company_profit_difference_minus_amount_week_4 + $company_profit_difference_minus_amount_week_5;
+
+      $total_weekly_sales = $employeeSalary->weekly_sales_week1 + $employeeSalary->weekly_sales_week2 + $employeeSalary->weekly_sales_week3 + $employeeSalary->weekly_sales_week4 + $employeeSalary->weekly_sales_week5;
+
         return [
             'salary_final_score_week_1' => $salary_final_score_week_1,
             'salary_final_score_week_2' => $salary_final_score_week_2,
@@ -252,6 +258,9 @@ class EmployeeSalaryExportController extends Controller
             'average_additional_component_score' => $average_additional_component_score,
             'average_final_score' => $average_final_score,
             'total_payment' => $total_payment,
+            'total_settlement_difference_minus_amount' => $total_settlement_difference_minus_amount,
+            'total_company_profit_difference_minus_amount' => $total_company_profit_difference_minus_amount,
+            'total_weekly_sales' => $total_weekly_sales,
         ];
     }
 }

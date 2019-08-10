@@ -203,17 +203,17 @@
 	        <td>&nbsp;</td>
 	    </tr>
 	    <tr>
+	        <td colspan="6"></td>>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received'], 2) }}</b></td>
+	        <td>&nbsp;</td>
+	    </tr>
+	    <tr>
 	        <td colspan="2"><b>Maximum Amount Receivable</b></td>
 	        <td>&nbsp;</td>
 	        <td>&nbsp;</td>
 	        <td>&nbsp;</td>
 	        <td>&nbsp;</td>
 	        <td style="text-align:center;"><b>{{ number_format($employeeSalary->maximum_salary_amount, 2) }}</b></td>
-	        <td>&nbsp;</td>
-	    </tr>
-	    <tr>
-	        <td colspan="6"></td>>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received'], 2) }}</b></td>
 	        <td>&nbsp;</td>
 	    </tr>
 	    <tr>

@@ -210,6 +210,8 @@ class EmployeeSalaryController extends Controller
             $employee_salary->wa_daily_report_week4 = $request->get('wa_daily_report_week_4') ?? 0;
             $employee_salary->wa_daily_report_week5 = $request->get('wa_daily_report_week_5') ?? 0;
 
+            $employee_salary->maximum_salary_amount = $request->get('maximum_salary_amount') ?? 0;
+
             $employee_salary->save();
 
             foreach ($assessments['indicators'] as $assessment) {
@@ -339,6 +341,8 @@ class EmployeeSalaryController extends Controller
         $employee_salary->wa_daily_report_week3 = $salary['wa_daily_report_week3'] ?? 0;
         $employee_salary->wa_daily_report_week4 = $salary['wa_daily_report_week4'] ?? 0;
         $employee_salary->wa_daily_report_week5 = $salary['wa_daily_report_week5'] ?? 0;
+
+        $employee_salary->maximum_salary_amount = $salary['maximum_salary_amount'] ?? 0;
 
         $employee_salary->save();
 

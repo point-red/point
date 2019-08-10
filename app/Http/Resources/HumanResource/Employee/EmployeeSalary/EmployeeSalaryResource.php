@@ -85,6 +85,8 @@ class EmployeeSalaryResource extends JsonResource
             'wa_daily_report_week4' => $this->wa_daily_report_week4,
             'wa_daily_report_week5' => $this->wa_daily_report_week5,
 
+            'maximum_salary_amount' => $this->maximum_salary_amount,
+
             'assessments' => EmployeeSalaryAssessmentResource::collection($this->assessments),
             'achievements' => EmployeeSalaryAchievementResource::collection($this->achievements),
         ];

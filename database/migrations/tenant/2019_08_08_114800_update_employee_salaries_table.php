@@ -25,6 +25,9 @@ class UpdateEmployeeSalariesTable extends Migration
             $table->double('wa_daily_report_week3')->after('wa_daily_report_week2')->default(0);
             $table->double('wa_daily_report_week4')->after('wa_daily_report_week3')->default(0);
             $table->double('wa_daily_report_week5')->after('wa_daily_report_week4')->default(0);
+
+            $table->double('maximum_salary_amount')->after('wa_daily_report_week5')->default(0);
+
         });
     }
 
@@ -47,6 +50,8 @@ class UpdateEmployeeSalariesTable extends Migration
             $table->dropColumn('wa_daily_report_week3');
             $table->dropColumn('wa_daily_report_week4');
             $table->dropColumn('wa_daily_report_week5');
+
+            $table->dropColumn('maximum_salary_amount');
         });
     }
 }

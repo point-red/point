@@ -49,11 +49,6 @@
 	        <td>PERIOD:</td>
 	        <td colspan="6">{{ date('d F Y', strtotime($employeeSalary->start_date)) }} - {{ date('d F Y', strtotime($employeeSalary->end_date)) }}</td>
 	    </tr>
-	    <tr>
-	    	<th colspan="8">
-	        	<br/>
-	        </td>
-	    </tr>
     	<tr>
 	        <td colspan="2"></td>
 	        <td style="text-align:center;">W1</td>
@@ -214,6 +209,15 @@
 	        <td>&nbsp;</td>
 	        <td>&nbsp;</td>
 	        <td style="text-align:center;"><b>{{ number_format($employeeSalary->maximum_salary_amount, 2) }}</b></td>
+	        <td>If KPI 100%</td>
+	    </tr>
+	    <tr>
+	        <td colspan="2"><b>Amount Received Difference</b></td>
+	        <td>&nbsp;</td>
+	        <td>&nbsp;</td>
+	        <td>&nbsp;</td>
+	        <td>&nbsp;</td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_difference'], 2) }}</b></td>
 	        <td>&nbsp;</td>
 	    </tr>
 	    <tr>

@@ -73,6 +73,20 @@ class EmployeeSalaryResource extends JsonResource
             'cash_payment_week4' => $this->cash_payment_week4,
             'cash_payment_week5' => $this->cash_payment_week5,
 
+            'weekly_sales_week1' => $this->weekly_sales_week1,
+            'weekly_sales_week2' => $this->weekly_sales_week2,
+            'weekly_sales_week3' => $this->weekly_sales_week3,
+            'weekly_sales_week4' => $this->weekly_sales_week4,
+            'weekly_sales_week5' => $this->weekly_sales_week5,
+
+            'wa_daily_report_week1' => $this->wa_daily_report_week1,
+            'wa_daily_report_week2' => $this->wa_daily_report_week2,
+            'wa_daily_report_week3' => $this->wa_daily_report_week3,
+            'wa_daily_report_week4' => $this->wa_daily_report_week4,
+            'wa_daily_report_week5' => $this->wa_daily_report_week5,
+
+            'maximum_salary_amount' => $this->maximum_salary_amount,
+
             'assessments' => EmployeeSalaryAssessmentResource::collection($this->assessments),
             'achievements' => EmployeeSalaryAchievementResource::collection($this->achievements),
         ];

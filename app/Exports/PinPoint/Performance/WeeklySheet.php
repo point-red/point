@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use App\Model\HumanResource\Kpi\Automated;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
@@ -32,7 +33,7 @@ class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnForm
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
         $this->date = $date;
-        $this->totalDay = $totalDay;
+        $this->totalDay = Automated::getDays($this->dateFrom, $this->dateTo);
     }
 
     /**

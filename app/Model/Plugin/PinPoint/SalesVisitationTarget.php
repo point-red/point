@@ -14,6 +14,8 @@ class SalesVisitationTarget extends MasterModel
     protected $fillable = ['date', 'user_id', 'call', 'effective_call', 'value'];
 
     protected $casts = [
+        'call' => 'double',
+        'effective_call' => 'double',
         'value' => 'double',
     ];
 

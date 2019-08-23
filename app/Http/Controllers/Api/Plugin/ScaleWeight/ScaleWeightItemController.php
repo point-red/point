@@ -37,6 +37,7 @@ class ScaleWeightItemController extends Controller
     public function store(StoreScaleWeightItemRequest $request)
     {
         $scaleWeightItem = new ScaleWeightItem;
+        $scaleWeightItem->uuid = $request->has('uuid') ? $request->get('uuid') : null;
         $scaleWeightItem->form_number = $request->get('form_number');
         $scaleWeightItem->license_number = $request->get('license_number');
         $scaleWeightItem->driver = $request->get('driver');

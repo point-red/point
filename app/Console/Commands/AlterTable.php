@@ -44,8 +44,7 @@ class AlterTable extends Command
 
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('ALTER TABLE `pin_point_sales_visitation_targets` CHANGE `call` `call` decimal(65,30) unsigned');
-            DB::connection('tenant')->statement('ALTER TABLE `pin_point_sales_visitation_targets` CHANGE `effective_call` `effective_call` decimal(65,30) unsigned');
+            DB::connection('tenant')->statement('ALTER TABLE `scale_weight_items` ADD `uuid` varchar(255) default null unique after `id`');
         }
     }
 }

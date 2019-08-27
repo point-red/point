@@ -17,9 +17,9 @@ class KpiAutomatedController extends Controller
     {
         $returnable = [];
 
-        if (count($request->automated_codes) > 0 && $request->startDate && $request->endDate) {
+        if (count($request->automated_codes) > 0 && $request->get('startDate') && $request->get('endDate')) {
             foreach ($request->automated_codes as $automated_code) {
-                $returnable[$automated_code] = Automated::getData($automated_code, $request->startDate, $request->endDate, $request->employeeId);
+                $returnable[$automated_code] = Automated::getData($automated_code, $request->get('startDate'), $request->get('endDate'), $request->get('employeeId'));
             }
         }
 

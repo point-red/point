@@ -24,16 +24,23 @@ class SalesVisitationTarget extends MasterModel
         return $this->belongsTo(User::class);
     }
 
-    public static function target($dateTo, $userId)
+    public static function target($dateFrom, $dateTo)
     {
-        $query = self::whereIn('date', function ($query) use ($dateTo, $userId) {
-            $query->selectRaw('max(date)')->from(self::getTableName())->where('date', '<=', $dateTo);
-        })->where('user_id', $userId)->first();
+        $query = self::whereIn('date', function ($query) use ($dateTo) {
+            $query->selectRaw('max(date)')->from(self::getTableName())->where('date', '<=', $dateTo)->groupBy('user_id');
+        });
 
-        return [
-            'call' => $query ? $query->call : 0,
-            'effective_call' => $query ? $query->effective_call : 0,
-            'value' => $query ? $query->value : 0,
-        ];
+        $targets = User::leftJoinSub($query, 'query', function ($join) {
+            $join->on('users.id', '=', 'query.user_id');
+        })->select('query.id as id')
+            ->addSelect('users.name as name')
+            ->addSelect('users.id as user_id')
+            ->addSelect('query.date as date')
+            ->addSelect('query.call as call')
+            ->addSelect('query.effective_call as effective_call')
+            ->addSelect('query.value as value')
+            ->groupBy('users.id');
+
+        return $targets;
     }
 }

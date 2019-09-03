@@ -27,6 +27,7 @@ class Item extends MasterModel
         'weight',
         'stock_reminder',
         'disabled',
+        'is_marketplace_item',
     ];
 
     protected $casts = [

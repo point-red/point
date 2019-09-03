@@ -10,5 +10,10 @@ Route::prefix('project')->namespace('Project')->group(function () {
     Route::get('projects/{id}/preferences', 'ProjectPreferenceController@show');
     Route::put('projects/{id}/preferences', 'ProjectPreferenceController@update');
     Route::patch('projects/{id}/preferences', 'ProjectPreferenceController@update');
+
+    Route::get('projects/{id}/marketplace', 'ProjectMarketPlaceController@show');
+    Route::put('projects/{id}/marketplace', 'ProjectMarketPlaceController@update');
+    Route::patch('projects/{id}/marketplace', 'ProjectMarketPlaceController@update');
+
     Route::apiResource('request-join', 'RequestJoinController');
 });

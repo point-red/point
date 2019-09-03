@@ -11,6 +11,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
+use App\Model\Marketplace\MarketplaceItemUnit;
+use App\Model\Marketplace\MarketplaceItem;
+use App\Model\Project\Project;
 
 class ItemController extends Controller
 {
@@ -52,6 +55,20 @@ class ItemController extends Controller
             $item = Item::create($request->all());
             $item->load('units', 'groups');
 
+            /**
+             * For market place item
+             */
+            if ($item->is_marketplace_item) {
+                $marketplace_item_request = $request->only(['code', 'barcode', 'name', 'size', 'color', 'weight', 'notes', 'units']);
+                $marketplace_item_request['item_id'] = $item->id;
+
+                $project = Project::where('code', $request->header('Tenant'))->first();
+                if ($project) {
+                    $marketplace_item_request['project_id'] = $project->id;
+                }
+                
+                $marketplace_item = MarketplaceItem::create($marketplace_item_request);
+            }
             return new ApiResource($item);
         });
 
@@ -74,6 +91,24 @@ class ItemController extends Controller
             foreach ($items as $item) {
                 $item = Item::create($item);
                 $item->load('units', 'groups');
+
+                if ($item->is_marketplace_item) {
+                    $marketplace_item['code'] = $item->code;
+                    $marketplace_item['barcode'] = $item->barcode;
+                    $marketplace_item['name'] = $item->name;
+                    $marketplace_item['size'] = $item->size;
+                    $marketplace_item['color'] = $item->color;
+                    $marketplace_item['weight'] = $item->weight;
+                    $marketplace_item['notes'] = $item->notes;
+                    $marketplace_item['item_id'] = $item->id;
+                    $marketplace_item['units'] = $item->units;
+
+                    $project = Project::where('code', $request->header('Tenant'))->first();
+                    if ($project) {
+                        $marketplace_item_request['project_id'] = $project->id;
+                    }
+                    $marketplace_item = MarketplaceItem::create($marketplace_item);
+                }
 
                 array_push($collection, $item);
             }
@@ -112,6 +147,39 @@ class ItemController extends Controller
         $item = Item::findOrFail($id);
         $item->fill($request->all());
         $item->save();
+
+        /** 
+         * This code section is to save market place item on database
+         * If you check visible in marketplace option for item, it should be shown on other's sight via marketplace.
+         * To solve this, when you update an item, it will make(update) or remove same item on marketplace_item table
+         */
+        $marketplace_item = MarketplaceItem::where("item_id", $id)->first();
+        if (!$marketplace_item) {
+            if ($item->is_marketplace_item) {
+                $marketplace_item_request = $request->only(['code', 'barcode', 'name', 'size', 'color', 'weight', 'notes', 'units']);
+                $marketplace_item_request['item_id'] = $item->id;
+
+                $project = Project::where('code', $request->header('Tenant'))->first();
+                if ($project) {
+                    $marketplace_item_request['project_id'] = $project->id;
+                }
+
+                $marketplace_item = MarketplaceItem::create($marketplace_item_request);
+            }
+        } else {
+            if ($item->is_marketplace_item) {
+                $marketplace_item_request = $request->only(['code', 'barcode', 'name', 'size', 'color', 'weight', 'notes', 'units']);
+                $marketplace_item_request['item_id'] = $item->id;
+                $project = Project::where('code', $request->header('Tenant'))->first();
+                if ($project) {
+                    $marketplace_item_request['project_id'] = $project->id;
+                }
+                $marketplace_item->fill($marketplace_item_request);
+                $marketplace_item->save();   
+            } else {
+                $marketplace_item->delete();
+            }
+        }
 
         $units = $request->get('units');
         $unitsToBeInserted = [];
@@ -154,6 +222,39 @@ class ItemController extends Controller
             $newItem->fill($item);
             $newItem->save();
 
+            /** 
+             * This code section is to save market place item on database
+             * If you check visible in marketplace option for item, it should be shown on other's sight via marketplace.
+             * To solve this, when you update an item, it will make(update) or remove same item on marketplace_item table
+             */
+            $marketplace_item = MarketplaceItem::where("item_id", $id)->first();
+            if (!$marketplace_item) {
+                if ($item->is_marketplace_item) {
+                    $marketplace_item_request = $request->only(['code', 'barcode', 'name', 'size', 'color', 'weight', 'notes', 'units']);
+                    $marketplace_item_request['item_id'] = $item->id;
+
+                    $project = Project::where('code', $request->header('Tenant'))->first();
+                    if ($project) {
+                        $marketplace_item_request['project_id'] = $project->id;
+                    }
+
+                    $marketplace_item = MarketplaceItem::create($marketplace_item_request);
+                }
+            } else {
+                if ($item->is_marketplace_item) {
+                    $marketplace_item_request = $request->only(['code', 'barcode', 'name', 'size', 'color', 'weight', 'notes', 'units']);
+                    $marketplace_item_request['item_id'] = $item->id;
+                    $project = Project::where('code', $request->header('Tenant'))->first();
+                    if ($project) {
+                        $marketplace_item_request['project_id'] = $project->id;
+                    }
+                    $marketplace_item->fill($marketplace_item_request);
+                    $marketplace_item->save();   
+                } else {
+                    $marketplace_item->delete();
+                }
+            }
+
             $units = $item['units'];
             $unitsToBeInserted = [];
             if ($units) {
@@ -179,7 +280,7 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $relationMethods = ['inventories'];
 
@@ -194,6 +295,17 @@ class ItemController extends Controller
         }
 
         $item->delete();
+
+        /**
+         * Remove marketplace item
+         */
+        $project = Project::where('code', $request->header('Tenant'))->first();
+        if ($project) {
+            $marketplace_item = MarketplaceItem::where("item_id", $id)->where("project_id", $project->id)->first();
+            if ($marketplace_item) {
+                $marketplace_item->delete();
+            }
+        }
 
         return response()->json([], 204);
     }

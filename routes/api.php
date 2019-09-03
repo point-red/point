@@ -26,6 +26,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
         Route::post('auth-user', 'AuthUserController@show');
         require base_path('routes/api/account.php');
         require base_path('routes/api/project.php');
+        require base_path('routes/api/marketplace.php');
 
         // Global Transaction
         Route::resource('transactions', 'TransactionController');

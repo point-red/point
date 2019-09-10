@@ -15,8 +15,8 @@ class PerformanceExport implements WithMultipleSheets
      */
     public function __construct(string $dateFrom, string $dateTo)
     {
-        $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
-        $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
+        $this->dateFrom = date('Y-m-d H:i:s', strtotime($dateFrom));
+        $this->dateTo = date('Y-m-d H:i:s', strtotime($dateTo));
     }
 
     /**

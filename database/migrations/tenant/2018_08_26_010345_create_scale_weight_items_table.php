@@ -15,6 +15,7 @@ class CreateScaleWeightItemsTable extends Migration
     {
         Schema::create('scale_weight_items', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('uuid')->unique()->nullable();
             $table->string('machine_code');
             $table->string('form_number');
             $table->string('vendor');

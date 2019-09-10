@@ -19,7 +19,7 @@ class PerformanceReportExportController extends Controller
         $dateFrom = $request->get('date_from');
         $dateTo = $request->get('date_to');
 
-        $time = strtotime($dateFrom);
+        $time = strtotime($dateTo);
         $last = date('M Y', strtotime($dateTo));
         $files = [];
 

@@ -15,6 +15,12 @@ class User extends MasterModel
 
     use HasRoles;
 
+    protected $casts = [
+        'call' => 'double',
+        'effective_call' => 'double',
+        'value' => 'double',
+    ];
+
     public function getPermissions()
     {
         $permissions = $this->getAllPermissions();

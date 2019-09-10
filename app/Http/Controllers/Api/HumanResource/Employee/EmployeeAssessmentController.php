@@ -86,9 +86,6 @@ class EmployeeAssessmentController extends Controller
         $dateFrom = $date['start'];
         $dateTo = $date['end'];
 
-        $assessmentDateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
-        $assessmentDateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
-
         DB::connection('tenant')->beginTransaction();
 
         $kpi = new Kpi;
@@ -111,7 +108,7 @@ class EmployeeAssessmentController extends Controller
                 if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code'])) {
                     $kpiIndicator->automated_code = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code'];
 
-                    $data = Automated::getData($kpiIndicator->automated_code, $assessmentDateFrom, $assessmentDateTo, $employeeId);
+                    $data = Automated::getData($kpiIndicator->automated_code, $dateFrom, $dateTo, $employeeId);
 
                     $kpiIndicator->target = $data['target'];
                     $kpiIndicator->score = $data['score'];

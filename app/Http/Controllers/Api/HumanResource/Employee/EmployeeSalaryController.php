@@ -192,11 +192,25 @@ class EmployeeSalaryController extends Controller
             $employee_salary->payment_from_spg_week4 = $request->get('payment_from_spg_week_4') ?? 0;
             $employee_salary->payment_from_spg_week5 = $request->get('payment_from_spg_week_5') ?? 0;
 
-            $employee_salary->cash_payment_week1 = $achievements['cash_payment']['week1'] ?? 0;
-            $employee_salary->cash_payment_week2 = $achievements['cash_payment']['week2'] ?? 0;
-            $employee_salary->cash_payment_week3 = $achievements['cash_payment']['week3'] ?? 0;
-            $employee_salary->cash_payment_week4 = $achievements['cash_payment']['week4'] ?? 0;
-            $employee_salary->cash_payment_week5 = $achievements['cash_payment']['week5'] ?? 0;
+            $employee_salary->cash_payment_week1 = $request->get('cash_payment_week_1') ?? 0;
+            $employee_salary->cash_payment_week2 = $request->get('cash_payment_week_2') ?? 0;
+            $employee_salary->cash_payment_week3 = $request->get('cash_payment_week_3') ?? 0;
+            $employee_salary->cash_payment_week4 = $request->get('cash_payment_week_4') ?? 0;
+            $employee_salary->cash_payment_week5 = $request->get('cash_payment_week_5') ?? 0;
+
+            $employee_salary->weekly_sales_week1 = $achievements['weekly_sales']['week1'] ?? 0;
+            $employee_salary->weekly_sales_week2 = $achievements['weekly_sales']['week2'] ?? 0;
+            $employee_salary->weekly_sales_week3 = $achievements['weekly_sales']['week3'] ?? 0;
+            $employee_salary->weekly_sales_week4 = $achievements['weekly_sales']['week4'] ?? 0;
+            $employee_salary->weekly_sales_week5 = $achievements['weekly_sales']['week5'] ?? 0;
+
+            $employee_salary->wa_daily_report_week1 = $request->get('wa_daily_report_week_1') ?? 0;
+            $employee_salary->wa_daily_report_week2 = $request->get('wa_daily_report_week_2') ?? 0;
+            $employee_salary->wa_daily_report_week3 = $request->get('wa_daily_report_week_3') ?? 0;
+            $employee_salary->wa_daily_report_week4 = $request->get('wa_daily_report_week_4') ?? 0;
+            $employee_salary->wa_daily_report_week5 = $request->get('wa_daily_report_week_5') ?? 0;
+
+            $employee_salary->maximum_salary_amount = $request->get('maximum_salary_amount') ?? 0;
 
             $employee_salary->save();
 
@@ -315,6 +329,20 @@ class EmployeeSalaryController extends Controller
         $employee_salary->payment_from_spg_week3 = $salary['payment_from_spg_week3'] ?? 0;
         $employee_salary->payment_from_spg_week4 = $salary['payment_from_spg_week4'] ?? 0;
         $employee_salary->payment_from_spg_week5 = $salary['payment_from_spg_week5'] ?? 0;
+
+        $employee_salary->cash_payment_week1 = $salary['cash_payment_week1'] ?? 0;
+        $employee_salary->cash_payment_week2 = $salary['cash_payment_week2'] ?? 0;
+        $employee_salary->cash_payment_week3 = $salary['cash_payment_week3'] ?? 0;
+        $employee_salary->cash_payment_week4 = $salary['cash_payment_week4'] ?? 0;
+        $employee_salary->cash_payment_week5 = $salary['cash_payment_week5'] ?? 0;
+
+        $employee_salary->wa_daily_report_week1 = $salary['wa_daily_report_week1'] ?? 0;
+        $employee_salary->wa_daily_report_week2 = $salary['wa_daily_report_week2'] ?? 0;
+        $employee_salary->wa_daily_report_week3 = $salary['wa_daily_report_week3'] ?? 0;
+        $employee_salary->wa_daily_report_week4 = $salary['wa_daily_report_week4'] ?? 0;
+        $employee_salary->wa_daily_report_week5 = $salary['wa_daily_report_week5'] ?? 0;
+
+        $employee_salary->maximum_salary_amount = $salary['maximum_salary_amount'] ?? 0;
 
         $employee_salary->save();
 
@@ -491,25 +519,25 @@ class EmployeeSalaryController extends Controller
         $employee_achievements = [
             'automated' => [
                 'balance' => [
-                    'weight' => 0,
+                    'weight' => 5,
                 ],
                 'achievement_national_call' => [
-                    'weight' => 0,
+                    'weight' => 10,
                 ],
                 'achievement_national_effective_call' => [
-                    'weight' => 0,
+                    'weight' => 10,
                 ],
                 'achievement_national_value' => [
-                    'weight' => 0,
+                    'weight' => 15,
                 ],
                 'achievement_area_call' => [
-                    'weight' => 0,
+                    'weight' => 10,
                 ],
                 'achievement_area_effective_call' => [
-                    'weight' => 0,
+                    'weight' => 20,
                 ],
                 'achievement_area_value' => [
-                    'weight' => 0,
+                    'weight' => 30,
                 ],
             ],
             'cash_payment' => [
@@ -519,8 +547,15 @@ class EmployeeSalaryController extends Controller
                 'week4' => 0,
                 'week5' => 0,
             ],
+            'weekly_sales' => [
+                'week1' => 0,
+                'week2' => 0,
+                'week3' => 0,
+                'week4' => 0,
+                'week5' => 0,
+            ],
             'total' => [
-                'weight' => 0,
+                'weight' => 100,
                 'week1' => 0,
                 'week2' => 0,
                 'week3' => 0,
@@ -632,8 +667,8 @@ class EmployeeSalaryController extends Controller
                 }
             }
 
-            $dateWithTimeFrom = date('Y-m-d 00:00:00', strtotime($request->startDate));
-            $dateWithTimeTo = date('Y-m-d 23:59:59', strtotime($request->endDate));
+            $dateWithTimeFrom = date('Y-m-d H:i:s', strtotime($request->startDate));
+            $dateWithTimeTo = date('Y-m-d H:i:s', strtotime($request->endDate));
 
             $queryValueCashCredit = $this->queryValueCashCredit($dateWithTimeFrom, $dateWithTimeTo, $userId);
 
@@ -644,6 +679,7 @@ class EmployeeSalaryController extends Controller
                         if ($value['payment_method'] === 'cash') {
                             $employee_achievements['cash_payment'][$value['week_of_month']] += (float) $value['value'];
                         }
+                        $employee_achievements['weekly_sales'][$value['week_of_month']] += (float) $value['value'];
                     }
                 }
             }

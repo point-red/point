@@ -17,8 +17,8 @@ class CreatePinPointSalesVisitationTargetsTable extends Migration
             $table->increments('id');
             $table->datetime('date');
             $table->unsignedInteger('user_id')->index();
-            $table->unsignedInteger('call');
-            $table->unsignedInteger('effective_call');
+            $table->unsignedDecimal('call', 65, 30);
+            $table->unsignedDecimal('effective_call', 65, 30);
             $table->unsignedDecimal('value', 65, 30);
             $table->timestamps();
             $table->unsignedInteger('created_by')->index();

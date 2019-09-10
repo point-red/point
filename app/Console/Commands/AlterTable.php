@@ -44,7 +44,7 @@ class AlterTable extends Command
 
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('ALTER TABLE `inventory_audit_items` ADD `price` decimal(65, 30) unsigned after `quantity`');
+            DB::connection('tenant')->statement('ALTER TABLE `scale_weight_items` ADD `uuid` varchar(255) default null unique after `id`');
         }
     }
 }

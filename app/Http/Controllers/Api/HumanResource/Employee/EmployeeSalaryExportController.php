@@ -10,10 +10,12 @@ use Barryvdh\DomPDF\Facade as PDF;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Model\HumanResource\Employee\EmployeeSalary;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\Salary\SalaryExport;
 
 class EmployeeSalaryExportController extends Controller
 {
-    public function export(Request $request)
+    public function exportPDF(Request $request)
     {
         $request->validate([
           'id' => 'required|integer',
@@ -41,7 +43,7 @@ class EmployeeSalaryExportController extends Controller
             'calculatedSalaryData' => $calculatedSalaryData,
         ];
 
-        $pdf = PDF::loadView('exports.human-resource.employee.salary', $data);
+        $pdf = PDF::loadView('exports.human-resource.employee.salaryPdf', $data);
         $pdf = $pdf->setPaper('a4', 'portrait')->setWarnings(false);
         $pdf = $pdf->download()->getOriginalContent();
         Storage::put($path, $pdf);
@@ -50,6 +52,56 @@ class EmployeeSalaryExportController extends Controller
             return response()->json([
                 'message' => 'Failed to export',
             ], 422);
+        }
+
+        $cloudStorage = new CloudStorage();
+        $cloudStorage->file_name = $fileName;
+        $cloudStorage->file_ext = $fileExt;
+        $cloudStorage->feature = 'employee salary';
+        $cloudStorage->key = $key;
+        $cloudStorage->path = $path;
+        $cloudStorage->disk = env('STORAGE_DISK');
+        $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
+        $cloudStorage->owner_id = 1;
+        $cloudStorage->expired_at = Carbon::now()->addDay(1);
+        $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
+        $cloudStorage->save();
+
+        return response()->json([
+            'data' => [
+                'url' => $cloudStorage->download_url,
+            ],
+        ], 200);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $request->validate([
+          'id' => 'required|integer',
+          'employeeId' => 'required|integer',
+        ]);
+
+        $employeeSalary = EmployeeSalary::where('employee_salaries.employee_id', $request->get('employeeId'))
+              ->where('employee_salaries.id', $request->get('id'))
+              ->first();
+
+        $employee_salary_controller = new EmployeeSalaryController();
+        $additionalSalaryData = $employee_salary_controller->getAdditionalSalaryData($employeeSalary)['additional'];
+        $calculatedSalaryData = $this->getCalculationSalaryData($employeeSalary, $additionalSalaryData);
+
+        $tenant = strtolower($request->header('Tenant'));
+        $key = str_random(16);
+        $fileName = strtoupper($tenant)
+            .' - Employee Salary Export - '.$employeeSalary->employee->name.' - '.date('d m Y', strtotime($employeeSalary->start_date)).' to '.date('d m Y', strtotime($employeeSalary->end_date));
+        $fileExt = 'xlsx';
+        $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
+
+        $result = Excel::store(new SalaryExport($employeeSalary, $additionalSalaryData, $calculatedSalaryData), $path, env('STORAGE_DISK'));
+
+        if (! $result) {
+            return response()->json([
+              'message' => 'Failed to export',
+          ], 422);
         }
 
         $cloudStorage = new CloudStorage();

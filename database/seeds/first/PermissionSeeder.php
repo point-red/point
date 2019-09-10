@@ -175,7 +175,8 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('delete '.$permission);
         }
 
-        Permission::createIfNotExists('print employee salary');
+        Permission::createIfNotExists('export employee salary pdf');
+        Permission::createIfNotExists('export employee salary excel');
     }
 
     private function setPluginPermission()

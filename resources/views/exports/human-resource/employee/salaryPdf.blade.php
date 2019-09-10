@@ -84,7 +84,7 @@
 	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['average_minimum_component_score'], 2) }}%</b></td>
 	    </tr>
 	    <tr>
-	    	<th colspan="8">
+	    	<td colspan="8">
 	        	<br/>
 	        </td>
 	    </tr>
@@ -139,7 +139,7 @@
 	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['average_final_score'], 2) }}%</b></td>
 	    </tr>
 	    <tr>
-	    	<th colspan="8">
+	    	<td colspan="8">
 	        	<br/>
 	        </td>
 	    </tr>
@@ -198,7 +198,7 @@
 	        <td>&nbsp;</td>
 	    </tr>
 	    <tr>
-	        <td colspan="6"></td>>
+	        <td colspan="6"></td>
 	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received'], 2) }}</b></td>
 	        <td>&nbsp;</td>
 	    </tr>

@@ -54,7 +54,7 @@ class EndContractNotificationCommand extends Command
             $nextMonth = Carbon::now()->addMonth(1);
 
             $employeeContracts = EmployeeContract::where('contract_end', '>', now())
-                ->where('contract_end', '>', $nextMonth)
+                ->where('contract_end', '<', $nextMonth)
                 ->get();
 
             $userIds = TenantUser::pluck('id')->toArray();
@@ -62,18 +62,26 @@ class EndContractNotificationCommand extends Command
             $userTokens = FirebaseToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
 
             if ($employeeContracts->count() > 0) {
-                Artisan::call('push-notification', [
-                    'token' => $userTokens,
-                    'title' => 'Employee Contract',
-                    'body' => 'Some of your employee contract will end soon',
-                ]);
+                foreach ($employeeContracts as $employeeContract) {
+                    $message = 'Contract for ' . $employeeContract->employee->name . ' will end soon';
 
-                Firestore::set('notifications', null, [
-                    'userId' => $project->owner->id,
-                    'projectId' => $project->id,
-                    'message' => 'Some of your employee contract will end soon',
-                    'createdAt' => date('Y-m-d H:i:s')
-                ]);
+                    $clickAction = $project->code . '.' . env('TENANT_DOMAIN') . '/human-resource/employee/' . $employeeContract->employee_id;
+
+                    Artisan::call('push-notification', [
+                        'token' => $userTokens,
+                        'title' => 'Contract Expiration',
+                        'body' => $message,
+                        'click_action' => $clickAction,
+                    ]);
+
+                    Firestore::set('notifications', null, [
+                        'userId' => $project->owner->id,
+                        'projectId' => $project->id,
+                        'message' => $message,
+                        'clickAction' => $clickAction,
+                        'createdAt' => Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->timezone($project->timezone)->toDateTimeString(),
+                    ]);
+                }
             }
         }
     }

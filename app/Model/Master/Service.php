@@ -24,4 +24,14 @@ class Service extends MasterModel
     {
         return $this->morphToMany(Group::class, 'groupable');
     }
+
+    /**
+     * Get the price for this service.
+     */
+    public function prices()
+    {
+        return $this
+            ->belongsToMany(PricingGroup::class, PriceListService::getTableName(), 'service_id', 'pricing_group_id')
+            ->withPivot(['price', 'discount_value', 'discount_percent', 'date', 'pricing_group_id']);
+    }
 }

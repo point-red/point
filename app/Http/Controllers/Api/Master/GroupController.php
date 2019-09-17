@@ -23,11 +23,19 @@ class GroupController extends Controller
     {
         $groupClassReference = $request->get('class_reference');
 
-        if (! GroupClassReference::isAvailable($groupClassReference)) {
-            return response()->json(GroupClassReference::$isNotAvailableResponse);
+        if (is_array($groupClassReference)) {
+            foreach ($groupClassReference as $groupClassRef) {
+                if (! GroupClassReference::isAvailable($groupClassRef)) {
+                    return response()->json(GroupClassReference::$isNotAvailableResponse);
+                }
+            }
+            $groups = Group::eloquentFilter($request);        
+        } else {
+            if (! GroupClassReference::isAvailable($groupClassReference)) {
+                return response()->json(GroupClassReference::$isNotAvailableResponse);
+            }
+            $groups = Group::where('class_reference', $groupClassReference)->eloquentFilter($request);
         }
-
-        $groups = Group::where('class_reference', $groupClassReference)->eloquentFilter($request);
 
         if ($request->get('type')) {
             $groups = $groups->where('type', $request->get('type'));

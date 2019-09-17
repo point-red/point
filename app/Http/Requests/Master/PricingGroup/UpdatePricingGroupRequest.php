@@ -13,7 +13,7 @@ class UpdatePricingGroupRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,7 @@ class UpdatePricingGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'label' => 'required|unique:tenant.pricing_groups,label,'.$this->id
         ];
     }
 }

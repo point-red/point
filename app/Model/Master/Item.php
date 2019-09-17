@@ -103,7 +103,17 @@ class Item extends MasterModel
         }
 
         if (isset($data['groups'])) {
-            $item->groups()->attach($data['groups']);
+            foreach ($data['groups'] as $group) {
+                if (!$group['id'] && $group['name']) {
+                    $newGroup = new Group;
+                    $newGroup->name = $group['name'];
+                    $newGroup->type = $group['type'];
+                    $newGroup->class_reference = $group['class_reference'];
+                    $item->groups()->attach($newGroup->id);
+                } elseif ($group['id']) {
+                    $item->groups()->attach($group['id']);
+                }
+            }
         }
 
         return $item;

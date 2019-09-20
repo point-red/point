@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api\Purchase\PurchaseReturn;
+namespace App\Http\Controllers\Api\Sales\SalesReturn;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Model\Purchase\PurchaseReturn\PurchaseReturn;
+use App\Model\Sales\SalesReturn\SalesReturn;
 
-class PurchaseReturnController extends Controller
+class SalesReturnController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +17,7 @@ class PurchaseReturnController extends Controller
      */
     public function index()
     {
-        //
+        // 
     }
 
     /**
@@ -29,10 +29,10 @@ class PurchaseReturnController extends Controller
     public function store(Request $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $purchaseReturn = PurchaseReturn::create($request->all());
-            $purchaseReturn->load('form', 'supplier', 'items', 'services');
+            $salesReturn = SalesReturn::create($request->all());
+            $salesReturn->load('form', 'customer', 'items', 'services');
 
-            return new ApiResource($purchaseReturn);
+            return new ApiResource($salesReturn);
         });
 
         return $result;
@@ -47,9 +47,9 @@ class PurchaseReturnController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseReturn = PurchaseReturn::eloquentFilter($request)->findOrFail($id);
+        $salesReturn = SalesReturn::eloquentFilter($request)->findOrFail($id);
 
-        return new ApiResource($purchaseReturn);
+        return new ApiResource($salesReturn);
     }
 
     /**

@@ -9,5 +9,5 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::apiResource('delivery-notes', 'DeliveryNote\\DeliveryNoteController');
     Route::get('invoices/last-price/{itemId}', 'SalesInvoice\\SalesInvoicePricingController@lastPrice');
     Route::apiResource('invoices', 'SalesInvoice\\SalesInvoiceController');
-    // Route::apiResource('return', 'ReturnController');
+    Route::apiResource('return', 'SalesReturn\\SalesReturnController');
 });

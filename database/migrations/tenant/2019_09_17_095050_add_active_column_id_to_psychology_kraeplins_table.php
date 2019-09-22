@@ -31,8 +31,10 @@ class AddActiveColumnIdToPsychologyKraeplinsTable extends Migration
      */
     public function down()
     {
-        Schema::table('psychology_kraeplin', function (Blueprint $table) {
-            $table->dropColumn('active_column_id');
-        });
+        if(Schema::hasColumn('psychology_kraeplins', 'active_column_id')) {
+            Schema::table('psychology_kraeplin', function (Blueprint $table) {
+                $table->dropColumn('active_column_id');
+            });
+        }
     }
 }

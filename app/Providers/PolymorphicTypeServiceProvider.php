@@ -29,6 +29,7 @@ use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\Purchase\PurchaseContract\PurchaseContract;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
+use App\Model\Pos\PosBill;
 
 class PolymorphicTypeServiceProvider extends ServiceProvider
 {
@@ -49,6 +50,8 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             // Inventory
             InventoryAudit::$morphName => InventoryAudit::class,
             OpeningStock::$morphName => OpeningStock::class,
+            // Pos
+            PosBill::$morphName => PosBill::class,
             // Purchase
             PurchaseRequest::$morphName => PurchaseRequest::class,
             PurchaseOrder::$morphName => PurchaseOrder::class,

@@ -28,4 +28,12 @@ class PricingGroup extends MasterModel
     {
         return $this->hasMany(PriceListItem::class);
     }
+
+    /**
+     * Get the item's price of pricing group.
+     */
+    public function priceListService()
+    {
+        return $this->hasMany(PriceListService::class);
+    }
 }

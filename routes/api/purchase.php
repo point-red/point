@@ -8,5 +8,5 @@ Route::prefix('purchase')->namespace('Purchase')->group(function () {
     Route::apiResource('orders', 'PurchaseOrder\\PurchaseOrderController');
     Route::resource('receives', 'PurchaseReceive\\PurchaseReceiveController');
     Route::apiResource('invoices', 'PurchaseInvoice\\PurchaseInvoiceController');
-    // Route::apiResource('return', 'ReturnController');
+    Route::apiResource('return', 'PurchaseReturn\\PurchaseReturnController');
 });

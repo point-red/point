@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Http\Requests\Master\PricingGroup\StorePricingGroupRequest;
+use App\Http\Requests\Master\PricingGroup\UpdatePricingGroupRequest;
 use Illuminate\Http\Request;
 use App\Model\Master\PricingGroup;
-use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
@@ -32,7 +33,7 @@ class PricingGroupController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return ApiResource
      */
-    public function store(Request $request)
+    public function store(StorePricingGroupRequest $request)
     {
         $pricingGroup = new PricingGroup;
         $pricingGroup->fill($request->all());
@@ -63,14 +64,11 @@ class PricingGroupController extends Controller
      * @return ApiResource
      * @throws \Throwable
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePricingGroupRequest $request, $id)
     {
         $pricingGroup = PricingGroup::findOrFail($id);
         $pricingGroup->fill($request->all());
-
-        DB::connection('tenant')->transaction(function () use ($pricingGroup) {
-            $pricingGroup->save();
-        });
+        $pricingGroup->save();
 
         return new ApiResource($pricingGroup);
     }

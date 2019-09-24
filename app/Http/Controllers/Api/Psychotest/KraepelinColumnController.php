@@ -20,11 +20,15 @@ class KraepelinColumnController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new KraepelinColumnCollection(KraepelinColumn::all());
+        $kraepelin_columns = KraepelinColumn::eloquentFilter($request)->select('psychotest_kraepelin_columns.*');
+        $kraepelin_columns = pagination($kraepelin_columns, $request->input('limit'));
+
+        return new KraepelinColumnCollection($kraepelin_columns);
     }
 
     /**

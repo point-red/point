@@ -2,10 +2,14 @@
 
 namespace App\Model\Psychotest;
 
+use App\Traits\EloquentFilters;
 use Illuminate\Database\Eloquent\Model;
 
 class KraepelinColumn extends Model
 {
+
+    use EloquentFilters;
+
     protected $connection = 'tenant';
 
     /**

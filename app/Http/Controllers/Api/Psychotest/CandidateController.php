@@ -18,11 +18,15 @@ class CandidateController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \Illuminate\Http\Request $request
      * @return App\Http\Resources\Psychotest\Candidate\CandidateCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new CandidateCollection(Candidate::all());
+        $candidates = Candidate::eloquentFilter($request)->select('psychotest_candidates.*');
+        $candidates = pagination($candidates, $request->input('limit'));
+
+        return new CandidateCollection($candidates);
     }
 
     /**

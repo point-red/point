@@ -19,11 +19,15 @@ class KraepelinController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param \Illuminate\Http\Request $request
      * @return App\Http\Resources\Psychotest\Kraepelin\KraepelinCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new KraepelinCollection(Kraepelin::all());
+        $kraepelins = Kraepelin::eloquentFilter($request)->select('psychotest_kraepelins.*');
+        $kraepelins = pagination($kraepelins, $request->input('limit'));
+
+        return new KraepelinCollection($kraepelins);
     }
 
     /**

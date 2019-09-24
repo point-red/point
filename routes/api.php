@@ -54,4 +54,15 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         require base_path('routes/api/plugin/scale-weight.php');
         require base_path('routes/api/plugin/pin-point.php');
     });
+
+    Route::prefix('psychotest')->namespace('Psychotest')->group(function () {
+        Route::apiResource('candidates', 'CandidateController');
+        Route::apiResource('kraepelins', 'KraepelinController');
+        Route::apiResource('kraepelin-columns', 'KraepelinColumnController');
+    });
+
+    // These routes below using client_credentials tokens for the authentication
+    Route::middleware('client')->group(function () {
+        require base_path('routes/api/reward.php');
+    });
 });

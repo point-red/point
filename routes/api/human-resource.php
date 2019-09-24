@@ -31,9 +31,4 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::post('employees/{employee_id}/salary/export', 'EmployeeSalaryExportController@export');
     });
 
-    Route::prefix('psychology')->namespace('Psychology')->group(function () {
-        Route::apiResource('candidates', 'CandidateController');
-        Route::apiResource('kraeplins', 'KraeplinController');
-        Route::apiResource('kraeplin-columns', 'KraeplinColumnController');
-    });
 });

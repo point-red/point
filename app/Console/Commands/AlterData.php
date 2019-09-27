@@ -57,24 +57,64 @@ class AlterData extends Command
 
             $items = Item::all();
 
-            $kopibaraItems = [
-                'B001 REGULER BUBUK 250GR',
-                'B005 REGULER KOPI GULA 20GR',
-                'B008 REGULER CUP HOREKA 1KG',
-                'B011 REGULER 3 IN 1 BULK 1KG',
-                'R001 PREMIUM PACK 70GR',
-                'R002 PREMIUM PACK 5GR',
-                'R003 PREMIUM CUP KOPI GULA',
-                'R008 PREMIUM BIJI SEAL PACK 1KG',
-                'R012 PREMIUM PACK HOREKA 1KG',
-                'Y007 NEW GEN BULK PACK 1KG'
+            $kopibaraCodes = [
+                'B001',
+                'B005',
+                'B008',
+                'B011',
+                'R001',
+                'R002',
+                'R003',
+                'R008',
+                'R012',
+                'Y007',
+                'P012',
+                'P013',
+                'P014',
             ];
 
-            foreach ($kopibaraItems as $kopibaraItem) {
-                if (!Item::where('name', $kopibaraItem)->first()) {
+            $kopibaraItems = [
+                'REGULER BUBUK 250GR',
+                'REGULER KOPI GULA 20GR',
+                'REGULER CUP HOREKA 1KG',
+                'REGULER 3 IN 1 BULK 1KG',
+                'PREMIUM PACK 70GR',
+                'PREMIUM PACK 5GR',
+                'PREMIUM CUP KOPI GULA',
+                'PREMIUM BIJI SEAL PACK 1KG',
+                'PREMIUM PACK HOREKA 1KG',
+                'NEW GEN BULK PACK 1KG',
+                'KOPI BARA ARABICA FLORES BAJAWA (ARFBJ)',
+                'KOPI BARA ARABICA KINTAMANI (AKTB)',
+                'KOPI BARA ARABICA TORAJA (ATJ)',
+            ];
+
+            foreach (Item::all() as $dbItem) {
+                foreach ($kopibaraItems as $kopibaraItem) {
+                    if (substr($dbItem->name, 5) == $kopibaraItem) {
+                        $dbItem->code = substr($dbItem->name,0, 4);
+                        $dbItem->name = $kopibaraItem;
+                        $dbItem->save();
+                        break;
+                    }
+                }
+            }
+
+            foreach ($kopibaraItems as $index => $kopibaraItem) {
+                $dbItem = Item::where('name', $kopibaraItem)->first();
+                if (!$dbItem) {
                     $item = new Item;
+                    $item->code = $kopibaraCodes[$index];
                     $item->name = $kopibaraItem;
+                    $account = ChartOfAccount::where('name', 'sediaan barang jadi (manufaktur)')->first();
+                    $item->chart_of_account_id = $account->id;
                     $item->save();
+
+                    $itemUnit = new ItemUnit;
+                    $itemUnit->name = 'pcs';
+                    $itemUnit->label = 'pcs';
+                    $itemUnit->item_id = $item->id;
+                    $itemUnit->save();
                 }
             }
 

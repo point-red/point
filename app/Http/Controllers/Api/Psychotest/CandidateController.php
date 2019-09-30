@@ -51,13 +51,9 @@ class CandidateController extends Controller
      */
     public function login(Request $request)
     {
-        $candidate = Candidate::where('password', $request->password)->first();
+        $candidate = Candidate::where('password', $request->password)->firstOrFail();
 
-        if ($candidate) {
-            return new CandidateResource($candidate);
-        } else {
-            return response()->json(null, 404);
-        }
+        return new CandidateResource($candidate);
     }
 
     /**

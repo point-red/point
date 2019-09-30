@@ -25,9 +25,7 @@ class StoreCandidateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'phone' => ['required', 'numeric'],
-            'password' => ['required', 'string'],
-            'is_password_used' => ['boolean']
+            'phone' => ['required', 'numeric']
         ];
     }
 }

@@ -19,6 +19,8 @@ class CreatePsychotestCandidatesTable extends Migration
             $table->string('phone');
             $table->string('password');
             $table->boolean('is_password_used')->default(false);
+            $table->boolean('is_kraepelin_filled')->default(false);
+            $table->boolean('is_papikostick_filled')->default(false);
             $table->timestamps();
         });
     }

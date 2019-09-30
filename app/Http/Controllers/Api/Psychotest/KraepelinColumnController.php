@@ -61,8 +61,15 @@ class KraepelinColumnController extends Controller
             $kraepelin_column->current_second_number = random_int(1, 9);
 
             $kraepelin_column->save();
+
+            $kraepelin->active_column_id = $kraepelin_column->id;
+            $kraepelin->save();
             
-            return new KraepelinColumnResource($kraepelin_column);
+            return response()->json(['data' => [
+                'resource' => new KraepelinColumnResource($kraepelin_column),
+                'is_correct' => false,
+                'is_new_column' => true
+            ]]);
         }
     }
 

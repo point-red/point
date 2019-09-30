@@ -35,7 +35,11 @@ class Kraepelin extends Model
         return $this->belongsTo('App\Model\Psychotest\Candidate');
     }
 
-    public function kraepelinColumns() {
+    public function active_column() {
+        return $this->belongsTo('App\Model\Psychotest\KraepelinColumn');
+    }
+
+    public function kraepelin_columns() {
         return $this->hasMany('App\Model\Psychotest\KraepelinColumn');
     }
 }

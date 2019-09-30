@@ -20,6 +20,8 @@ class CandidateResource extends JsonResource
             'phone' => $this->phone,
             'password' => $this->password,
             'is_password_used' => boolval($this->is_password_used),
+            'is_kraepelin_filled' => boolval($this->is_kraepelin_filled),
+            'is_papikostick_filled' => boolval($this->is_papikostick_filled),
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString()
         ];

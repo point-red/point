@@ -47,6 +47,20 @@ class CandidateController extends Controller
     }
 
     /**
+     * 
+     */
+    public function login(Request $request)
+    {
+        $candidate = Candidate::where('password', $request->password)->first();
+
+        if ($candidate) {
+            return new CandidateResource($candidate);
+        } else {
+            return response()->json(null, 404);
+        }
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request

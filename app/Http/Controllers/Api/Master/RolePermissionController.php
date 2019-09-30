@@ -6,6 +6,7 @@ use App\Model\Auth\Role;
 use Illuminate\Http\Request;
 use App\Model\Auth\Permission;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Arr;
 
 class RolePermissionController extends Controller
 {
@@ -19,7 +20,7 @@ class RolePermissionController extends Controller
     public function index($roleId)
     {
         $role = Role::findOrFail($roleId);
-        $names = array_pluck($role->permissions, 'name');
+        $names = Arr::pluck($role->permissions, 'name');
 
         return $names;
     }

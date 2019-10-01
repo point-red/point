@@ -10,7 +10,7 @@
 |
 */
 
-Route::prefix('v1')->namespace('Api')->group(function () {
+Route::prefix('v1')->namespace('Api')->middleware('api')->group(function () {
     Route::post('register', 'RegisterController@store');
 
     Route::prefix('auth')->namespace('Auth')->group(function () {

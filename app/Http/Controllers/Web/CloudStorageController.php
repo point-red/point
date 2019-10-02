@@ -6,6 +6,7 @@ use App\Model\CloudStorage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\FileNotFoundException;
 
 class CloudStorageController extends Controller
 {
@@ -25,12 +26,16 @@ class CloudStorageController extends Controller
 
         $fileName = $cloudStorage->file_name.'.'.$cloudStorage->file_ext;
 
-        $file = Storage::disk($cloudStorage->disk)->download($cloudStorage->path, $fileName);
+        try {
+            $file = Storage::disk($cloudStorage->disk)->download($cloudStorage->path, $fileName);
 
-        if (!$file) {
+            if (!$file) {
+                return view('web.file-not-found');
+            }
+
+            return $file;
+        } catch (FileNotFoundException $exception) {
             return view('web.file-not-found');
         }
-
-        return $file;
     }
 }

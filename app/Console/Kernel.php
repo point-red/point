@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('notification:sales-visitation-team-lead')->hourly();
+        $schedule->command('cloud-storage:remove-expired')->hourly();
     }
 
     /**

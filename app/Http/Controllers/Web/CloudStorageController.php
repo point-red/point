@@ -19,12 +19,18 @@ class CloudStorageController extends Controller
     {
         $cloudStorage = CloudStorage::where('key', $request->get('key'))->first();
 
-        if ($cloudStorage) {
-            $file = $cloudStorage->file_name.'.'.$cloudStorage->file_ext;
-
-            return Storage::disk($cloudStorage->disk)->download($cloudStorage->path, $file);
-        } else {
+        if (!$cloudStorage) {
             return view('web.file-not-found');
         }
+
+        $fileName = $cloudStorage->file_name.'.'.$cloudStorage->file_ext;
+
+        $file = Storage::disk($cloudStorage->disk)->download($cloudStorage->path, $fileName);
+
+        if (!$file) {
+            return view('web.file-not-found');
+        }
+
+        return $file;
     }
 }

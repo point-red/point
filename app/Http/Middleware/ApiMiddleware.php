@@ -16,6 +16,7 @@ class ApiMiddleware
     public function handle($request, Closure $next)
     {
         config(['auth.defaults.guard' => 'api']);
+
         return $next($request);
     }
 }

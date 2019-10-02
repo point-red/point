@@ -18,7 +18,7 @@ class BackupDatabases extends Command
      *
      * @var string
      */
-    protected $signature = 'db:backup-all';
+    protected $signature = 'db:backup-all {days_expired}';
 
     /**
      * The console command description.
@@ -88,7 +88,7 @@ class BackupDatabases extends Command
         $cloudStorage->disk = env('STORAGE_DISK');
         $cloudStorage->project_id = null;
         $cloudStorage->owner_id = null;
-        $cloudStorage->expired_at = Carbon::now()->addDay(1);
+        $cloudStorage->expired_at = Carbon::now()->addDay($this->argument('days_expired'));
         $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
         $cloudStorage->save();
     }
@@ -133,7 +133,7 @@ class BackupDatabases extends Command
             $cloudStorage->disk = env('STORAGE_DISK');
             $cloudStorage->project_id = $project->id;
             $cloudStorage->owner_id = null;
-            $cloudStorage->expired_at = Carbon::now()->addDay(1);
+            $cloudStorage->expired_at = Carbon::now()->addDay($this->argument('days_expired'));
             $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
             $cloudStorage->save();
         }

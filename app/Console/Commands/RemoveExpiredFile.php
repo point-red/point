@@ -41,7 +41,7 @@ class RemoveExpiredFile extends Command
     public function handle()
     {
         $this->line('Get expired file list');
-        $cloudStorages = CloudStorage::where('expired_at', '<', Carbon::now())->limit(100)->get();
+        $cloudStorages = CloudStorage::where('expired_at', '<', Carbon::now())->limit(5000)->get();
 
         if ($cloudStorages->count() == 0) {
             $this->line('Expired file not found');

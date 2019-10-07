@@ -60,7 +60,7 @@ class CandidateController extends Controller
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     * @return App\Http\Resources\Psychotest\Candidate\CandidateCollection
+     * @return \App\Http\Resources\Psychotest\Candidate\CandidateCollection
      */
     public function index(Request $request)
     {

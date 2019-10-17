@@ -18,7 +18,8 @@ class CreatePsychotestPapikostickResultsTable extends Migration
             $table->integer('total');
             $table->unsignedInteger('papikostick_id')->index();
             $table->unsignedInteger('category_id')->index();
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
 
             // Relationship
             $table->foreign('papikostick_id')

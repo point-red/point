@@ -16,7 +16,8 @@ class CreatePsychotestPapikostickQuestionsTable extends Migration
         Schema::create('psychotest_papikostick_questions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('number');
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
         });
     }
 

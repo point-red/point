@@ -18,7 +18,8 @@ class CreatePsychotestPapikostickOptionsTable extends Migration
             $table->string('content');
             $table->unsignedInteger('question_id')->index();
             $table->unsignedInteger('category_id')->index();
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
 
             // Relationship
             $table->foreign('question_id')

@@ -16,7 +16,8 @@ class CreatePsychotestPapikosticksTable extends Migration
         Schema::create('psychotest_papikosticks', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('candidate_id')->index();
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
 
             // Relationship
             $table->foreign('candidate_id')

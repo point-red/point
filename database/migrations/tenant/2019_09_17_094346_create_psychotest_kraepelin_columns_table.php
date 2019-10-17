@@ -20,7 +20,8 @@ class CreatePsychotestKraepelinColumnsTable extends Migration
             $table->integer('current_second_number');
             $table->integer('correct')->default(0);
             $table->integer('count')->default(0);
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
 
             // References
             $table->foreign('kraepelin_id')

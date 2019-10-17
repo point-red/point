@@ -23,6 +23,7 @@ class PapikostickCategorySeeder extends Seeder
             ["name" => "D", "description" => "ORANG YANG SUKA BEKERJA DENGAN HAL – HAL RINCI (Interest in Working With Details)"],
             ["name" => "C", "description" => "PERAN LEBIH MENGATUR (Organized Type)"],
             ["name" => "E", "description" => "KEMAMPUAN MENGENDALIKAN EMOSI (Emotional Resistant)"],
+            
             ["name" => "N", "description" => "KEMAMPUAN MENYELESAIKAN TUGAS SECARA MANDIRI (Need to Finish Task)"],
             ["name" => "A", "description" => "PERAN MEMILIKI AMBISI DALAM BERPRESTASI (Need to Achieve)"],
             ["name" => "P", "description" => "KEMAMPUAN MENGATUR ORANG LAIN (Need to Control Others)"],

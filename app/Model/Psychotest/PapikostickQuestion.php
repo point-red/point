@@ -19,4 +19,8 @@ class PapikostickQuestion extends Model
      */
     protected $table = 'psychotest_papikostick_questions';
     
+    public function papikostick_options()
+    {
+        return $this->hasMany('App\Model\Psychotest\PapikostickOption', 'question_id');
+    }
 }

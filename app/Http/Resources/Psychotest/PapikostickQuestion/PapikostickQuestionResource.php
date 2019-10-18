@@ -17,6 +17,7 @@ class PapikostickQuestionResource extends JsonResource
         return [
             'id' => $this->id,
             'number' => $this->number,
+            'options' => $this->when($request->input('expand') && strpos($request->input('includes'), 'papikostick_options')  !== false, $this->papikostick_options),
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString()
         ];

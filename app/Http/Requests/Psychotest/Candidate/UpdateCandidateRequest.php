@@ -26,7 +26,9 @@ class UpdateCandidateRequest extends FormRequest
         return [
             'name' => ['required', 'string'],
             'phone' => ['required', 'numeric'],
-            'is_password_used' => ['boolean']
+            'is_password_used' => ['boolean'],
+            'is_kraepelin_filled' => ['boolean'],
+            'is_papikostick_filled' => ['boolean']
         ];
     }
 }

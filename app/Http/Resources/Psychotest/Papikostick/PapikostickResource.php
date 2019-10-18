@@ -18,6 +18,7 @@ class PapikostickResource extends JsonResource
             'id' => $this->id,
             'candidate_id' => $this->candidate_id,
             'candidate' => $this->when($request->input('expand') && strpos($request->input('includes'), 'candidate') !== false, $this->candidate),
+            'papikostick_results' => $this->when($request->input('expand') && strpos($request->input('includes'), 'papikostick_results') !== false, $this->papikostick_results),
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString()
         ];

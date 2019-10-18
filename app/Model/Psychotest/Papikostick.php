@@ -19,9 +19,14 @@ class Papikostick extends Model
      */
     protected $table = 'psychotest_papikosticks';
 
+    public function papikostick_results()
+    {
+        return $this->hasMany('App\Model\Psychotest\PapikostickResult', 'papikostick_id');
+    }
+
     public function candidate()
     {
-        return $this->belongsTo('App\Model\Psychotest\Candidate');
+        return $this->belongsTo('App\Model\Psychotest\Candidate', 'candidate_id');
     }
     
 }

@@ -141,6 +141,7 @@ class CandidateController extends Controller
             $candidate = Candidate::findOrFail($id);
             $candidate->name = $validated['name'];
             $candidate->phone = $validated['phone'];
+            $candidate->is_password_used = $validated['is_password_used'];
             $candidate->is_kraepelin_filled = $validated['is_kraepelin_filled'];
             $candidate->is_papikostick_filled = $validated['is_papikostick_filled'];
 

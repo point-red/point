@@ -19,6 +19,15 @@ class PapikostickResult extends Model
      */
     protected $table = 'psychotest_papikostick_results';
 
+    /**
+     * The model's default values for attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'total' => 0
+    ];
+
     public function papikostick()
     {
         return $this->belongsTo('App\Model\Psychotest\Papikostick');

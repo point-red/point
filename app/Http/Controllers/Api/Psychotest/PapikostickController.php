@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Model\Psychotest\Papikostick;
+use App\Model\Psychotest\PapikostickCategory;
+use App\Model\Psychotest\PapikostickResult;
 
 use App\Http\Resources\Psychotest\Papikostick\PapikostickResource;
 use App\Http\Resources\Psychotest\Papikostick\PapikostickCollection;
@@ -55,6 +57,16 @@ class PapikostickController extends Controller
             $papikostick->candidate_id = $validated['candidate_id'];
             
             $papikostick->save();
+            
+            $papikostickCategories = PapikostickCategory::all();
+            foreach ($papikostickCategories as $category) {
+                $papikostickResult = new PapikostickResult();
+
+                $papikostickResult->category_id = $category->id;
+                $papikostickResult->papikostick_id = $papikostick->id;
+
+                $papikostickResult->save();
+            }
 
             return new PapikostickResource($papikostick);
         }

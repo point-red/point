@@ -53,6 +53,8 @@ class PapikostickCategoryController extends Controller
             $papikostick_category = new PapikostickCategory();
             $papikostick_category->name = $validated['name'];
             $papikostick_category->description = $validated['description'];
+            $papikostick_category->max = $validated['max'];
+            $papikostick_category->min = $validated['min'];
 
             $papikostick_category->save();
             
@@ -99,6 +101,8 @@ class PapikostickCategoryController extends Controller
             $papikostick_category = PapikostickCategory::findOrFail($id);
             $papikostick_category->name = $validated['name'];
             $papikostick_category->description = $validated['description'];
+            $papikostick_category->max = $validated['max'];
+            $papikostick_category->min = $validated['min'];
 
             $papikostick_category->save();
 

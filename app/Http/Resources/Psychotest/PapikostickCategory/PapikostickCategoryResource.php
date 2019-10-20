@@ -18,6 +18,8 @@ class PapikostickCategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            'max' => $this->max,
+            'min' => $this->min,
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString()
         ];

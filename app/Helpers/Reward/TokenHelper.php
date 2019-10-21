@@ -11,7 +11,7 @@ class TokenHelper
     {
         $tokenGenerator = TokenGenerator::where('source', $source)->first();
 
-        if ($tokenGenerator->is_active) {
+        if ($tokenGenerator && $tokenGenerator->is_active) {
             $token = new Token([
                 'user_id' => auth()->user()->id,
                 'source' => $tokenGenerator->source,

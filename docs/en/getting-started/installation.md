@@ -6,10 +6,13 @@ Point framework has a few system requirements. Of course, all of these requireme
 
 However, if you are not using Homestead, you will need to make sure your server meets the following requirements:
 
-- PHP >= 7.1.3
+- PHP >= 7.2.0
+- BCMath PHP Extension
+- Ctype PHP Extension
+- JSON PHP Extension
+- Mbstring PHP Extension
 - OpenSSL PHP Extension
 - PDO PHP Extension
-- Mbstring PHP Extension
 - Tokenizer PHP Extension
 - XML PHP Extension
 

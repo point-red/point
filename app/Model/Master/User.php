@@ -3,6 +3,7 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use Illuminate\Support\Arr;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends MasterModel
@@ -24,7 +25,7 @@ class User extends MasterModel
     public function getPermissions()
     {
         $permissions = $this->getAllPermissions();
-        $names = array_pluck($permissions, 'name');
+        $names = Arr::pluck($permissions, 'name');
 
         return $names;
     }

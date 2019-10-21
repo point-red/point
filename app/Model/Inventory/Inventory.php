@@ -45,4 +45,12 @@ class Inventory extends PointModel
     {
         return $this->belongsTo(Item::class, 'item_id');
     }
+
+    /**
+     * The item unit that belong to the inventory.
+     */
+    public function itemUnit()
+    {
+        return $this->belongsTo(ItemUnit::class);
+    }
 }

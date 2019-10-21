@@ -16,6 +16,8 @@ class PurchaseReceiveItem extends TransactionModel
         'purchase_order_item_id',
         'item_id',
         'item_name',
+        'production_number',
+        'expiry_date',
         'gross_weight',
         'tare_weight',
         'net_weight',

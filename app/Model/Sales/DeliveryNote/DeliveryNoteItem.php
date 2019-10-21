@@ -14,6 +14,8 @@ class DeliveryNoteItem extends TransactionModel
 
     protected $fillable = [
         'delivery_order_item_id',
+        'production_number',
+        'expiry_date',
         'gross_weight',
         'tare_weight',
         'net_weight',

@@ -14,6 +14,8 @@ class PosBillItem extends TransactionModel
     protected $fillable = [
         'item_id',
         'item_name',
+        'production_number',
+        'expiry_date',
         'quantity',
         'unit',
         'converter',

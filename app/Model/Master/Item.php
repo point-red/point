@@ -56,6 +56,14 @@ class Item extends MasterModel
         return $this->hasMany(ItemUnit::class);
     }
 
+    /**
+     * Get all of the details for the items.
+     */
+    public function details()
+    {
+        return $this->hasMany(ItemDetail::class);
+    }
+
     public function account()
     {
         return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');

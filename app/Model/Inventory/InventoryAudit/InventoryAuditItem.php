@@ -19,6 +19,8 @@ class InventoryAuditItem extends TransactionModel
 
     protected $fillable = [
         'item_id',
+        'production_number',
+        'expiry_date',
         'quantity',
         'price',
         'unit',

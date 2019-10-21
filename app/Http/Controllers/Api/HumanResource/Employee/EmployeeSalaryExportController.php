@@ -44,7 +44,7 @@ class EmployeeSalaryExportController extends Controller
         $pdf = PDF::loadView('exports.human-resource.employee.salary', $data);
         $pdf = $pdf->setPaper('a4', 'portrait')->setWarnings(false);
         $pdf = $pdf->download()->getOriginalContent();
-        Storage::put($path, $pdf);
+        Storage::disk(env('STORAGE_DISK'))->put($path, $pdf);
 
         if (! $pdf) {
             return response()->json([

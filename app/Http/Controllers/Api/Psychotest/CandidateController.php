@@ -142,8 +142,13 @@ class CandidateController extends Controller
             $candidate->name = $validated['name'];
             $candidate->phone = $validated['phone'];
             $candidate->is_password_used = $validated['is_password_used'];
-            $candidate->is_kraepelin_filled = $validated['is_kraepelin_filled'];
-            $candidate->is_papikostick_filled = $validated['is_papikostick_filled'];
+
+            $candidate->is_kraepelin_started = $validated['is_kraepelin_started'];
+            $candidate->is_kraepelin_finished = $validated['is_kraepelin_finished'];
+
+            $candidate->is_papikostick_started = $validated['is_papikostick_started'];
+            $candidate->current_papikostick_index = $validated['current_papikostick_index'];
+            $candidate->is_papikostick_finished = $validated['is_papikostick_finished'];
 
             $candidate->save();
 

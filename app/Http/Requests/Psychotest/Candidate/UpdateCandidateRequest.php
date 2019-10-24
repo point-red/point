@@ -27,8 +27,13 @@ class UpdateCandidateRequest extends FormRequest
             'name' => ['required', 'string'],
             'phone' => ['required', 'numeric'],
             'is_password_used' => ['boolean'],
-            'is_kraepelin_filled' => ['boolean'],
-            'is_papikostick_filled' => ['boolean']
+
+            'is_kraepelin_started' => ['boolean'],
+            'is_kraepelin_finished' => ['boolean'],
+
+            'is_papikostick_started' => ['boolean'],
+            'current_papikostick_index' => ['numeric'],
+            'is_papikostick_finished' => ['boolean']
         ];
     }
 }

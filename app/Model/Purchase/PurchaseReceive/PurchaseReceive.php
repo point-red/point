@@ -164,7 +164,7 @@ class PurchaseReceive extends TransactionModel
                 $feePerItem = $totalPerItem / $totalItemsAmount * $additionalFee;
                 $price = ($totalPerItem + $feePerItem) / $item->quantity;
 
-                InventoryHelper::increase($form->id, $purchaseReceive->warehouse_id, $item->item_id, $item->quantity, $price);
+                InventoryHelper::increase($form->id, $purchaseReceive->warehouse_id, $item->item_id, $item->production_number, $item->expiry_date, $item->quantity, $price);
             }
         }
     }

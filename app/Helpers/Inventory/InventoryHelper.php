@@ -4,6 +4,7 @@ namespace App\Helpers\Inventory;
 
 use App\Model\Form;
 use App\Model\Master\Item;
+use App\Model\Master\ItemDetail;
 use App\Model\Inventory\Inventory;
 use App\Exceptions\StockNotEnoughException;
 use App\Exceptions\ItemQuantityInvalidException;
@@ -19,7 +20,7 @@ class InventoryHelper
      * @throws StockNotEnoughException
      * @throws ItemQuantityInvalidException
      */
-    private static function insert($formId, $warehouseId, $itemId, $quantity, $price)
+    private static function insert($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, $quantity, $price)
     {
         if ($quantity == 0) {
             throw new ItemQuantityInvalidException(Item::findOrFail($itemId));
@@ -31,6 +32,8 @@ class InventoryHelper
         $inventory->form_id = $formId;
         $inventory->warehouse_id = $warehouseId;
         $inventory->item_id = $itemId;
+        $inventory->production_number = $productionNumber;
+        $inventory->expiry_date = $expiryDate;
         $inventory->quantity = $quantity;
         $inventory->price = $price;
         $inventory->total_quantity = $quantity;
@@ -62,16 +65,20 @@ class InventoryHelper
         $inventory->save();
     }
 
-    public static function increase($formId, $warehouseId, $itemId, $quantity, $price)
+    public static function increase($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, $quantity, $price)
     {
         Item::where('id', $itemId)->increment('stock', $quantity);
+
+        ItemDetail::where('item_id', $itemId)->where('production_number', $productionNumber)->increment('stock', $quantity);
 
         self::insert($formId, $warehouseId, $itemId, abs($quantity), $price);
     }
 
-    public static function decrease($formId, $warehouseId, $itemId, $quantity)
+    public static function decrease($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, $quantity)
     {
         Item::where('id', $itemId)->decrement('stock', $quantity);
+
+        ItemDetail::where('item_id', $itemId)->where('production_number', $productionNumber)->decrement('stock', $quantity);
 
         self::insert($formId, $warehouseId, $itemId, -abs($quantity), 0);
     }
@@ -84,7 +91,7 @@ class InventoryHelper
      * @param $price
      * @throws ItemQuantityInvalidException
      */
-    public static function audit($formId, $warehouseId, $itemId, $quantity, $price)
+    public static function audit($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, $quantity, $price)
     {
         $item = Item::where('id', $itemId)->first();
 
@@ -103,6 +110,8 @@ class InventoryHelper
         $inventory->form_id = $formId;
         $inventory->warehouse_id = $warehouseId;
         $inventory->item_id = $itemId;
+        $inventory->production_number = $productionNumber;
+        $inventory->expiry_date = $expiryDate;
         $inventory->quantity = $quantity;
         $inventory->price = 0;
         $inventory->cogs = $cogs;

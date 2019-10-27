@@ -116,7 +116,7 @@ class DeliveryNote extends TransactionModel
         $deliveryOrder->updateIfDone();
 
         foreach ($items as $item) {
-            InventoryHelper::decrease($form->id, $deliveryNote->warehouse_id, $item->item_id, $item->quantity);
+            InventoryHelper::decrease($form->id, $deliveryNote->warehouse_id, $item->item_id, $item->production_number, $item->expiry_date, $item->quantity);
         }
 
         return $deliveryNote;

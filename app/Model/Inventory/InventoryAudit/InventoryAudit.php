@@ -63,6 +63,8 @@ class InventoryAudit extends TransactionModel
             InventoryHelper::audit($inventoryAudit->form->id,
                 $inventoryAudit->warehouse_id,
                 $inventoryAuditItem->item_id,
+                $inventoryAuditItem->production_number,
+                $inventoryAuditItem->expiry_date,
                 $inventoryAuditItem->quantity,
                 $inventoryAuditItem->price);
         }

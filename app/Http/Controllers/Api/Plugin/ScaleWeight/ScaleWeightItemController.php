@@ -20,10 +20,7 @@ class ScaleWeightItemController extends Controller
      */
     public function index(Request $request)
     {
-        $date_from = $request->get('date_from');
-        $date_to = $request->get('date_to');
-
-        $scaleWeightItem = ScaleWeightItem::whereBetween('time', [$date_from, $date_to])->paginate(100);
+        $scaleWeightItem = ScaleWeightItem::eloquentFilter($request)->paginate(100);
 
         return new ScaleWeightItemCollection($scaleWeightItem);
     }

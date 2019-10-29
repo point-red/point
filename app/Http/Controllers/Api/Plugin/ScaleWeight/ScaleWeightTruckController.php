@@ -19,10 +19,7 @@ class ScaleWeightTruckController extends Controller
      */
     public function index(Request $request)
     {
-        $date_from = $request->get('date_from');
-        $date_to = $request->get('date_to');
-
-        $scaleWeightTruck = ScaleWeightTruck::whereBetween('time_in', [$date_from, $date_to])->paginate(100);
+        $scaleWeightTruck = ScaleWeightTruck::eloquentFilter($request)->paginate(100);
 
         return new ScaleWeightTruckCollection($scaleWeightTruck);
     }

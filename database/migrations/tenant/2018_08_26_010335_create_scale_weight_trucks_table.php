@@ -15,6 +15,7 @@ class CreateScaleWeightTrucksTable extends Migration
     {
         Schema::create('scale_weight_trucks', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('uuid')->unique()->nullable();
             $table->string('machine_code');
             $table->string('form_number');
             $table->string('vendor');

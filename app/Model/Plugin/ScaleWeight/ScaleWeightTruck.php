@@ -2,10 +2,10 @@
 
 namespace App\Model\Plugin\ScaleWeight;
 
+use App\Model\PointModel;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 
-class ScaleWeightTruck extends Model
+class ScaleWeightTruck extends PointModel
 {
     protected $connection = 'tenant';
 

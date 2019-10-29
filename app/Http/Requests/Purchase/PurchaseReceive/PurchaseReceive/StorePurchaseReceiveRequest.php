@@ -40,7 +40,6 @@ class StorePurchaseReceiveRequest extends FormRequest
             'items.*.item_name' => 'required|string',
             'items.*.purchase_order_item_id' => ValidationRule::foreignKey('purchase_order_items'),
             'items.*.quantity' => ValidationRule::quantity(),
-            'items.*.expiry_date' => 'date',
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::quantity(),
             'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),

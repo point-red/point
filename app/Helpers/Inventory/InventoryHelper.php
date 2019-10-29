@@ -69,18 +69,40 @@ class InventoryHelper
     {
         Item::where('id', $itemId)->increment('stock', $quantity);
 
-        ItemDetail::where('item_id', $itemId)->where('production_number', $productionNumber)->increment('stock', $quantity);
+        $detail = ItemDetail::where('item_id', $itemId)->where('production_number', $productionNumber)->where('expiry_date', $expiryDate);
 
-        self::insert($formId, $warehouseId, $itemId, abs($quantity), $price);
+        if ($detail->count()) {
+            $detail->increment('stock', $quantity);
+        } else {
+            $itemDetail = new ItemDetail;
+            $itemDetail->item_id = $itemId;
+            $itemDetail->stock = abs($quantity);
+            $itemDetail->production_number = $productionNumber;
+            $itemDetail->expiry_date = $expiryDate;
+            $itemDetail->save();
+        }
+
+        self::insert($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, abs($quantity), $price);
     }
 
     public static function decrease($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, $quantity)
     {
         Item::where('id', $itemId)->decrement('stock', $quantity);
 
-        ItemDetail::where('item_id', $itemId)->where('production_number', $productionNumber)->decrement('stock', $quantity);
+        $detail = ItemDetail::where('item_id', $itemId)->where('production_number', $productionNumber)->where('expiry_date', $expiryDate);
 
-        self::insert($formId, $warehouseId, $itemId, -abs($quantity), 0);
+        if ($detail->count()) {
+            $detail->decrement('stock', $quantity);
+        } else {
+            $itemDetail = new ItemDetail;
+            $itemDetail->item_id = $itemId;
+            $itemDetail->stock = -abs($quantity);
+            $itemDetail->production_number = $productionNumber;
+            $itemDetail->expiry_date = $expiryDate;
+            $itemDetail->save();
+        }
+
+        self::insert($formId, $warehouseId, $itemId,  $productionNumber, $expiryDate, -abs($quantity), 0);
     }
 
     /**

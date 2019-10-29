@@ -14,8 +14,8 @@ class UpdateInventoryAuditItemsTable extends Migration
     public function up()
     {
         Schema::table('inventory_audit_items', function (Blueprint $table) {
-            $table->string('production_number')->after('item_id')->nullable()->unique();
-            $table->date('expiry_date')->after('production_number');
+            $table->string('production_number')->after('item_id')->nullable();
+            $table->date('expiry_date')->after('production_number')->nullable();
         });
     }
 

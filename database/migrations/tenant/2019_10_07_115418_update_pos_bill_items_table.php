@@ -14,8 +14,8 @@ class UpdatePosBillItemsTable extends Migration
     public function up()
     {
         Schema::table('pos_bill_items', function (Blueprint $table) {
-            $table->string('production_number')->after('item_name')->nullable()->unique();
-            $table->date('expiry_date')->after('production_number');
+            $table->string('production_number')->after('item_name')->nullable();
+            $table->date('expiry_date')->after('production_number')->nullable();
         });
     }
 

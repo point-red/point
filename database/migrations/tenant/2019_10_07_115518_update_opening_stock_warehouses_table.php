@@ -14,8 +14,8 @@ class UpdateOpeningStockWarehousesTable extends Migration
     public function up()
     {
         Schema::table('opening_stock_warehouses', function (Blueprint $table) {
-            $table->string('production_number')->after('warehouse_id')->nullable()->unique();
-            $table->date('expiry_date')->after('production_number');
+            $table->string('production_number')->after('warehouse_id')->nullable();
+            $table->date('expiry_date')->after('production_number')->nullable();
         });
     }
 

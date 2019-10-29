@@ -15,8 +15,8 @@ class UpdateInventoriesTable extends Migration
     {
         Schema::table('inventories', function (Blueprint $table) {
             $table->unsignedInteger('item_unit_id')->index()->after('item_id');
-            $table->string('production_number')->after('item_unit_id')->nullable()->unique();
-            $table->date('expiry_date')->after('production_number');
+            $table->string('production_number')->after('item_unit_id')->nullable();
+            $table->date('expiry_date')->after('production_number')->nullable();
 
             $table->foreign('item_unit_id')
                 ->references('id')

@@ -44,7 +44,7 @@ class AlterTable extends Command
 
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('ALTER TABLE `pricing_groups` ADD UNIQUE (`label`)');
+            DB::connection('tenant')->statement('ALTER TABLE `scale_weight_trucks` ADD `uuid` VARCHAR (255) UNIQUE AFTER `id`');
         }
     }
 }

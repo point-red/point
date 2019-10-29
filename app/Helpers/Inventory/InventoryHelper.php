@@ -102,7 +102,7 @@ class InventoryHelper
             $itemDetail->save();
         }
 
-        self::insert($formId, $warehouseId, $itemId,  $productionNumber, $expiryDate, -abs($quantity), 0);
+        self::insert($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, -abs($quantity), 0);
     }
 
     /**

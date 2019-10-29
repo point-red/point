@@ -42,7 +42,6 @@ class UpdatePurchaseReceiveRequest extends FormRequest
             'items.*.purchase_order_item_id' => ValidationRule::foreignKey('purchase_order_items'),
             'items.*.quantity' => ValidationRule::quantity(),
             'items.*.expiry_date' => 'date',
-            'items.*.production_number' => 'string',
             'items.*.unit' => ValidationRule::quantity(),
             'items.*.converter' => ValidationRule::quantity(),
             'items.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),

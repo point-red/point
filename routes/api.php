@@ -58,6 +58,8 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
     Route::prefix('psychotest')->namespace('Psychotest')->group(function () {
         Route::post('candidates/login', 'CandidateController@login');
         Route::apiResource('candidates', 'CandidateController');
+        Route::apiResource('candidate-positions', 'CandidatePositionController');
+        Route::apiResource('position-categories', 'PositionCategoryController');
         
         Route::apiResource('kraepelins', 'KraepelinController');
         Route::apiResource('kraepelin-columns', 'KraepelinColumnController');

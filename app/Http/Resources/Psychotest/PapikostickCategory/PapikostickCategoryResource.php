@@ -18,8 +18,7 @@ class PapikostickCategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'max' => $this->max,
-            'min' => $this->min,
+            'position_category' => $this->when($request->input('expand') && strpos($request->input('includes'), 'position_category') !== false, $this->position_category),
             'created_at' => $this->created_at->toISOString(),
             'updated_at' => $this->updated_at->toISOString()
         ];

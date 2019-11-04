@@ -37,4 +37,8 @@ class Candidate extends Model
     public function kraepelin() {
         return $this->hasOne('App\Model\Psychotest\Kraepelin');
     }
+
+    public function candidate_position() {
+        return $this->hasOne('App\Model\Psychotest\CandidatePosition');
+    }
 }

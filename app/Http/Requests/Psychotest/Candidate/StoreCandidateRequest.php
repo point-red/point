@@ -25,7 +25,25 @@ class StoreCandidateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'phone' => ['required', 'numeric']
+            'phone' => ['required', 'numeric'],
+            'position_id' => ['required', 'numeric'],
+
+            'is_password_used' => ['boolean'],
+
+            'is_kraepelin_started' => ['boolean'],
+            'is_kraepelin_finished' => ['boolean'],
+
+            'is_papikostick_started' => ['boolean'],
+            'current_papikostick_index' => ['numeric'],
+            'is_papikostick_finished' => ['boolean'],
+
+            'level' => ['string'],
+            'ktp_number' => ['string'],
+            'place_of_birth' => ['string'],
+            'date_of_birth' => ['string'],
+            'sex' => ['string'],
+            'religion' => ['string'],
+            'marital_status' => ['string']
         ];
     }
 }

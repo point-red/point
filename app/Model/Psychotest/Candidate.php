@@ -31,14 +31,22 @@ class Candidate extends Model
 
         'is_papikostick_started' => false,
         'current_papikostick_index' => 0,
-        'is_papikostick_finished' => false
+        'is_papikostick_finished' => false,
+
+        "level" => "",
+        "ktp_number" => "",
+        "place_of_birth" => "",
+        "date_of_birth" => "",
+        "sex" => "",
+        "religion" => "",
+        "marital_status" => "",
     ];
 
     public function kraepelin() {
         return $this->hasOne('App\Model\Psychotest\Kraepelin');
     }
 
-    public function candidate_position() {
-        return $this->hasOne('App\Model\Psychotest\CandidatePosition');
+    public function position() {
+        return $this->belongsTo('App\Model\Psychotest\CandidatePosition', 'position_id');
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Model\Psychotest\Candidate;
+use App\Model\Psychotest\CandidatePosition;
 
 use App\Http\Resources\Psychotest\Candidate\CandidateResource;
 use App\Http\Resources\Psychotest\Candidate\CandidateCollection;
@@ -91,10 +92,31 @@ class CandidateController extends Controller
         $validated = $request->validated();
         
         if ($validated) {
+            $candidate_position = CandidatePosition::findOrFail($validated['position_id']);
+
             $candidate = new Candidate();
             $candidate->name = $validated['name'];
             $candidate->phone = $validated['phone'];
+            $candidate->position_id = $candidate_position->id;
+            
             $candidate->password = $this->random_str();
+
+            $candidate->is_password_used = $validated['is_password_used'];
+
+            $candidate->is_kraepelin_started = $validated['is_kraepelin_started'];
+            $candidate->is_kraepelin_finished = $validated['is_kraepelin_finished'];
+
+            $candidate->is_papikostick_started = $validated['is_papikostick_started'];
+            $candidate->current_papikostick_index = $validated['current_papikostick_index'];
+            $candidate->is_papikostick_finished = $validated['is_papikostick_finished'];
+
+            $candidate->level = $validated['level'];
+            $candidate->ktp_number = $validated['ktp_number'];
+            $candidate->place_of_birth = $validated['place_of_birth'];
+            $candidate->date_of_birth = $validated['date_of_birth'];
+            $candidate->sex = $validated['sex'];
+            $candidate->religion = $validated['religion'];
+            $candidate->marital_status = $validated['marital_status'];
 
             $candidate->save();
 
@@ -138,9 +160,14 @@ class CandidateController extends Controller
         $validated = $request->validated();
 
         if ($validated) {
+            $candidate_position = CandidatePosition::findOrFail($validated['position_id']);
+            
+
             $candidate = Candidate::findOrFail($id);
             $candidate->name = $validated['name'];
             $candidate->phone = $validated['phone'];
+            $candidate->position_id = $candidate_position->id;
+
             $candidate->is_password_used = $validated['is_password_used'];
 
             $candidate->is_kraepelin_started = $validated['is_kraepelin_started'];
@@ -149,6 +176,14 @@ class CandidateController extends Controller
             $candidate->is_papikostick_started = $validated['is_papikostick_started'];
             $candidate->current_papikostick_index = $validated['current_papikostick_index'];
             $candidate->is_papikostick_finished = $validated['is_papikostick_finished'];
+
+            $candidate->level = $validated['level'];
+            $candidate->ktp_number = $validated['ktp_number'];
+            $candidate->place_of_birth = $validated['place_of_birth'];
+            $candidate->date_of_birth = $validated['date_of_birth'];
+            $candidate->sex = $validated['sex'];
+            $candidate->religion = $validated['religion'];
+            $candidate->marital_status = $validated['marital_status'];
 
             $candidate->save();
 

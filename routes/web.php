@@ -11,16 +11,18 @@
 |
 */
 
-Route::view('/', 'welcome');
-
 Route::namespace('Web')->group(function () {
+    Route::view('/', 'welcome');
+
     Route::get('/download', 'CloudStorageController@download');
-//    Route::get('/phpinfo', function () {
-//        phpinfo();
-//    });
+    Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 });
 
-Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
-Route::post('login', 'Auth\LoginController@login');
-Route::post('logout', 'Auth\LoginController@logout')->name('logout');
-Route::get('/home', 'HomeController@index')->name('home');
+Route::namespace('Web')->middleware('web-middleware')->group(function () {
+    Route::post('login', 'Auth\LoginController@login');
+    Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+});
+
+Route::namespace('Web')->middleware(['web-middleware', 'auth:web'])->group(function () {
+    Route::get('/home', 'HomeController@index')->name('home');
+});

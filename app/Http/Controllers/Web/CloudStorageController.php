@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Web;
 
 use App\Model\CloudStorage;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\FileNotFoundException;
 
-class CloudStorageController extends Controller
+class CloudStorageController extends WebController
 {
     /**
      * Download the resource.

@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Accounting\CutOff\CutOffCollection;
+use App\Http\Resources\Accounting\CutOff\CutOffResource;
+use App\Model\Accounting\CutOff;
+use App\Model\Accounting\CutOffDetail;
+use App\Model\Accounting\Journal;
 use App\Model\Form;
 use Illuminate\Http\Request;
-use App\Model\Accounting\CutOff;
-use App\Model\Accounting\Journal;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use App\Model\Accounting\CutOffDetail;
-use App\Http\Resources\Accounting\CutOff\CutOffResource;
-use App\Http\Resources\Accounting\CutOff\CutOffCollection;
 
 class CutOffController extends Controller
 {

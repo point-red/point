@@ -3,7 +3,6 @@
 namespace App\Model\Pos;
 
 use App\Model\Form;
-use App\Model\Master\Item;
 use App\Model\Master\Customer;
 use App\Model\TransactionModel;
 
@@ -85,7 +84,7 @@ class PosBill extends TransactionModel
         $form = new Form;
         $form->saveData($data, $bill);
 
-        $bill->form()->update(['done' => $data['is_done']]);        
+        $bill->form()->update(['done' => $data['is_done']]);
 
         return $bill;
     }

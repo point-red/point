@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Inventory;
 
-use Carbon\Carbon;
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Inventory\Inventory;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Inventory\InventoryCollection;
+use App\Model\Form;
+use App\Model\Inventory\Inventory;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class InventoryController extends Controller
 {

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Master;
 
-use Tests\TestCase;
-use Tests\RefreshDatabase;
 use App\Model\Master\Warehouse;
+use Tests\RefreshDatabase;
+use Tests\TestCase;
 
 class WarehouseValidationTest extends TestCase
 {

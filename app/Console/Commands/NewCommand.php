@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\User;
 use App\Model\Project\Project;
-use Illuminate\Console\Command;
 use App\Model\Project\ProjectUser;
+use App\User;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
 class NewCommand extends Command
@@ -50,7 +50,7 @@ class NewCommand extends Command
         Artisan::call('passport:install');
         Artisan::call('passport:client', [
             '--client' => 'client',
-            '--name' => 'Website'
+            '--name' => 'Website',
         ]);
 
         $this->line('setup new user "admin" and password "admin"');

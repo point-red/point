@@ -1,9 +1,9 @@
 <?php
 
-use App\Model\Master\Phone;
 use App\Model\Master\Address;
-use Illuminate\Database\Seeder;
+use App\Model\Master\Phone;
 use App\Model\Plugin\PinPoint\SalesVisitation;
+use Illuminate\Database\Seeder;
 
 class UpdateFormDateSeeder extends Seeder
 {

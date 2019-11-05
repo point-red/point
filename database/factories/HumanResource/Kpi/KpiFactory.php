@@ -1,7 +1,7 @@
 <?php
 
-use Faker\Generator as Faker;
 use App\Model\HumanResource\Kpi\Kpi;
+use Faker\Generator as Faker;
 
 $factory->define(Kpi::class, function (Faker $faker) {
     return [

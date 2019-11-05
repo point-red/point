@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use App\Model\HumanResource\Kpi\KpiTemplate;
 use App\Model\HumanResource\Kpi\KpiTemplateGroup;
-use App\Model\HumanResource\Kpi\KpiTemplateScore;
 use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
+use App\Model\HumanResource\Kpi\KpiTemplateScore;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DummyKpiTemplateSeeder extends Seeder
 {

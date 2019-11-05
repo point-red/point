@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
+use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
+use App\Model\HumanResource\Kpi\Automated;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
-use App\Model\HumanResource\Kpi\KpiScore;
-use App\Model\HumanResource\Kpi\Automated;
 use App\Model\HumanResource\Kpi\KpiIndicator;
-use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
-use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
+use App\Model\HumanResource\Kpi\KpiScore;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeAssessmentController extends Controller
 {

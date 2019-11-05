@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\HumanResource\Employee\EmployeeGender;
 use App\Http\Resources\HumanResource\Employee\EmployeeGender\EmployeeGenderCollection;
+use App\Model\HumanResource\Employee\EmployeeGender;
+use Illuminate\Http\Request;
 
 class EmployeeGenderController extends Controller
 {

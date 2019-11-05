@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Accounting\RatioReport;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Helpers\Ratio\TotalDebtToAssetRatio;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class TotalDebtToAssetRatioController extends Controller
 {

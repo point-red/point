@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Finance\Payment\Payment;
 
-use App\Model\Master\Allocation;
 use App\Http\Requests\ValidationRule;
 use App\Model\Accounting\ChartOfAccount;
-use Illuminate\Foundation\Http\FormRequest;
 use App\Model\Finance\Payment\PaymentDetail;
+use App\Model\Master\Allocation;
+use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePaymentRequest extends FormRequest
 {

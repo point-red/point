@@ -2,10 +2,10 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
-use App\Model\Master\Item;
-use App\Model\TransactionModel;
 use App\Model\Master\Allocation;
+use App\Model\Master\Item;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
+use App\Model\TransactionModel;
 
 class PurchaseRequestItem extends TransactionModel
 {

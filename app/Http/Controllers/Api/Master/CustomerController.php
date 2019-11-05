@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Master\Customer\StoreCustomerRequest;
+use App\Http\Requests\Master\Customer\UpdateCustomerRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Accounting\Journal;
+use App\Model\Finance\Payment\Payment;
+use App\Model\Master\Address;
 use App\Model\Master\Bank;
+use App\Model\Master\ContactPerson;
+use App\Model\Master\Customer;
 use App\Model\Master\Email;
 use App\Model\Master\Group;
 use App\Model\Master\Phone;
-use Illuminate\Http\Request;
-use App\Model\Master\Address;
-use App\Model\Master\Customer;
-use App\Model\Accounting\Journal;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\ContactPerson;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\Finance\Payment\Payment;
 use Illuminate\Database\QueryException;
-use App\Http\Requests\Master\Customer\StoreCustomerRequest;
-use App\Http\Requests\Master\Customer\UpdateCustomerRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {

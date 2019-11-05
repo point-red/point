@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources\HumanResource\Employee\EmployeeSalaryAssessment;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\HumanResource\Employee\EmployeeSalaryAssessmentScore\EmployeeSalaryAssessmentScoreResource;
 use App\Http\Resources\HumanResource\Employee\EmployeeSalaryAssessmentTarget\EmployeeSalaryAssessmentTargetResource;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class EmployeeSalaryAssessmentResource extends JsonResource
 {

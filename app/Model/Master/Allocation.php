@@ -2,8 +2,8 @@
 
 namespace App\Model\Master;
 
-use App\Model\MasterModel;
 use App\Model\AllocationReport;
+use App\Model\MasterModel;
 
 class Allocation extends MasterModel
 {

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
+use App\Model\Project\Project;
 use Illuminate\Support\Facades\Artisan;
 
 class ResetDatabaseController extends Controller

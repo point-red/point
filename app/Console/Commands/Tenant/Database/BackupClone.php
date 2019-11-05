@@ -3,8 +3,8 @@
 namespace App\Console\Commands\Tenant\Database;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class BackupClone extends Command
 {

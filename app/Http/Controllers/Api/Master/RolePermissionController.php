@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Http\Controllers\Controller;
+use App\Model\Auth\Permission;
 use App\Model\Auth\Role;
 use Illuminate\Http\Request;
-use App\Model\Auth\Permission;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Arr;
 
 class RolePermissionController extends Controller

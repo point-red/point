@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
-use App\Model\Form;
-use App\Model\Master\Item;
-use App\Model\Master\Group;
-use Illuminate\Http\Request;
-use App\Model\Master\Customer;
 use App\Helper\Reward\TokenHelper;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
+use App\Http\Resources\ApiResource;
+use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
+use App\Model\Form;
+use App\Model\Master\Customer;
+use App\Model\Master\Group;
+use App\Model\Master\Item;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
-use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
 use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
-use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
-use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
+use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SalesVisitationController extends Controller
 {

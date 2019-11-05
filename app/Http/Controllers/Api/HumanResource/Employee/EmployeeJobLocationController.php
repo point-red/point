@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use Illuminate\Http\Request;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\HumanResource\Employee\EmployeeJobLocation;
-use App\Http\Resources\HumanResource\Employee\EmployeeJobLocation\EmployeeJobLocationResource;
 use App\Http\Requests\HumanResource\Employee\EmployeeJobLocation\StoreEmployeeJobLocationRequest;
 use App\Http\Requests\HumanResource\Employee\EmployeeJobLocation\UpdateEmployeeJobLocationRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Http\Resources\HumanResource\Employee\EmployeeJobLocation\EmployeeJobLocationResource;
+use App\Model\HumanResource\Employee\EmployeeJobLocation;
+use Illuminate\Http\Request;
 
 class EmployeeJobLocationController extends Controller
 {

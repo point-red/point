@@ -2,8 +2,8 @@
 
 namespace App\Model\Purchase\PurchaseContract;
 
-use App\Model\TransactionModel;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
+use App\Model\TransactionModel;
 
 class PurchaseContractItem extends TransactionModel
 {

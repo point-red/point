@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
+use Illuminate\Database\Seeder;
 
 class DummyMasterSeeder extends Seeder
 {

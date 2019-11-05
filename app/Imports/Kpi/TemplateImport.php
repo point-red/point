@@ -2,8 +2,8 @@
 
 namespace App\Imports\Kpi;
 
-use Illuminate\Support\Collection;
 use App\Model\HumanResource\Kpi\KpiTemplate;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
 class TemplateImport implements ToCollection

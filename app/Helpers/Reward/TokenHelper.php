@@ -22,7 +22,5 @@ class TokenHelper
 
             return $token;
         }
-
-        return null;
     }
 }

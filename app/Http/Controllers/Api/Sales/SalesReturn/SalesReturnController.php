@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesReturn;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiResource;
+use App\Model\Sales\SalesReturn\SalesReturn;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
-use App\Http\Controllers\Controller;
-use App\Model\Sales\SalesReturn\SalesReturn;
 
 class SalesReturnController extends Controller
 {
@@ -17,7 +17,7 @@ class SalesReturnController extends Controller
      */
     public function index()
     {
-        // 
+        //
     }
 
     /**

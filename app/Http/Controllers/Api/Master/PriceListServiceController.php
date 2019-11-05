@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiResource;
+use App\Http\Resources\Master\PriceListCollection;
+use App\Model\Master\PriceListService;
+use App\Model\Master\PricingGroup;
 use App\Model\Master\Service;
 use Illuminate\Http\Request;
-use App\Model\Master\PricingGroup;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\PriceListService;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Master\PriceListCollection;
 
 class PriceListServiceController extends Controller
 {
@@ -68,7 +68,7 @@ class PriceListServiceController extends Controller
                 $pricing_group_id = null;
                 foreach ($priceGroups as $priceGroup) {
                     $shouldSetPrice = false;
-                    if (!$pricingGroupId) {
+                    if (! $pricingGroupId) {
                         if ($priceGroup['id'] == $availablePricingGroup['id']) {
                             $shouldSetPrice = true;
                         }

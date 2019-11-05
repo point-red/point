@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Model\FirebaseToken;
-use Illuminate\Http\Request;
-use App\Model\Project\Project;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiResource;
+use App\Model\FirebaseToken;
+use App\Model\Project\Project;
+use Illuminate\Http\Request;
 
 class FirebaseTokenController extends Controller
 {

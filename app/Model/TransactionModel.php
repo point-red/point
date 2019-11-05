@@ -2,11 +2,11 @@
 
 namespace App\Model;
 
-use App\Traits\FormScopes;
-use Illuminate\Http\Request;
-use App\Traits\DashboardChartPeriod;
 use App\Exceptions\FormArchivedException;
 use App\Exceptions\UpdatePeriodNotAllowedException;
+use App\Traits\DashboardChartPeriod;
+use App\Traits\FormScopes;
+use Illuminate\Http\Request;
 
 class TransactionModel extends PointModel
 {

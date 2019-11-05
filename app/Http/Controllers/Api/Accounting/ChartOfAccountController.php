@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use Illuminate\Http\Request;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Model\Accounting\ChartOfAccount;
-use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource;
 use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountCollection;
+use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource;
+use App\Http\Resources\ApiResource;
+use App\Model\Accounting\ChartOfAccount;
+use Illuminate\Http\Request;
 
 class ChartOfAccountController extends Controller
 {

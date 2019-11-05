@@ -26,7 +26,7 @@ class PosBillService extends TransactionModel
         'quantity' => 'double',
         'price' => 'double',
         'discount_percent' => 'double',
-        'discount_value' => 'double',        
+        'discount_value' => 'double',
     ];
 
     public function posBill()

@@ -1,8 +1,8 @@
 <?php
 
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\SettingJournal;
 use Illuminate\Database\Seeder;
-use App\Model\Accounting\ChartOfAccount;
 
 class SettingJournalSeeder extends Seeder
 {

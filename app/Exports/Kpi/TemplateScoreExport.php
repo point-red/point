@@ -2,11 +2,11 @@
 
 namespace App\Exports\Kpi;
 
-use Maatwebsite\Excel\Concerns\WithTitle;
 use App\Model\HumanResource\Kpi\KpiTemplate;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Model\HumanResource\Kpi\KpiTemplateScore;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
 class TemplateScoreExport implements FromCollection, WithTitle, WithHeadings
 {

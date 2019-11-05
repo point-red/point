@@ -19,7 +19,7 @@ class CloudStorageController extends WebController
     {
         $cloudStorage = CloudStorage::where('key', $request->get('key'))->first();
 
-        if (!$cloudStorage) {
+        if (! $cloudStorage) {
             return view('web.file-not-found');
         }
 
@@ -28,7 +28,7 @@ class CloudStorageController extends WebController
         try {
             $file = Storage::disk($cloudStorage->disk)->download($cloudStorage->path, $fileName);
 
-            if (!$file) {
+            if (! $file) {
                 return view('web.file-not-found');
             }
 

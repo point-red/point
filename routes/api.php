@@ -14,7 +14,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
     Route::post('register', 'RegisterController@store');
 
     Route::get('test', function () {
-       return response()->json(['message' => 'welcome']);
+        return response()->json(['message' => 'welcome']);
     });
 
     Route::prefix('auth')->namespace('Auth')->group(function () {

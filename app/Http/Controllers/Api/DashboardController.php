@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Finance\Payment\Payment;
-use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Sales\SalesInvoice\SalesInvoice;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {

@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Sales\SalesContract\SalesContract;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class StoreSalesContractRequest extends FormRequest
 {

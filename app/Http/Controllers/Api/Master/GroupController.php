@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Model\Master\Group;
-use Illuminate\Http\Request;
-use App\Http\Resources\ApiResource;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
 use App\Helpers\Master\GroupClassReference;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Group\StoreGroupRequest;
 use App\Http\Requests\Master\Group\UpdateGroupRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\Group;
+use Illuminate\Http\Request;
 
 class GroupController extends Controller
 {
@@ -29,7 +29,7 @@ class GroupController extends Controller
                     return response()->json(GroupClassReference::$isNotAvailableResponse);
                 }
             }
-            $groups = Group::eloquentFilter($request);        
+            $groups = Group::eloquentFilter($request);
         } else {
             if (! GroupClassReference::isAvailable($groupClassReference)) {
                 return response()->json(GroupClassReference::$isNotAvailableResponse);

@@ -7,8 +7,8 @@
 
 namespace App\Helpers\Firebase;
 
-use Google\Cloud\Firestore\FirestoreClient;
 use Google\Cloud\Core\Exception\GoogleException;
+use Google\Cloud\Firestore\FirestoreClient;
 
 class Firestore
 {

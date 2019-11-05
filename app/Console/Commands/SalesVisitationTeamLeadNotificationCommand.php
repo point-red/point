@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\SalesVisitationTeamLeadNotificationMail;
 use App\Model\Master\User;
+use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Mail\SalesVisitationTeamLeadNotificationMail;
 
 class SalesVisitationTeamLeadNotificationCommand extends Command
 {

@@ -3,8 +3,8 @@
 namespace Tests;
 
 use App\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 abstract class TestCase extends PointTestCase
 {

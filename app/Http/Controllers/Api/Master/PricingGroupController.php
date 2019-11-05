@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\PricingGroup\StorePricingGroupRequest;
 use App\Http\Requests\Master\PricingGroup\UpdatePricingGroupRequest;
-use Illuminate\Http\Request;
-use App\Model\Master\PricingGroup;
-use App\Http\Resources\ApiResource;
-use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\PricingGroup;
+use Illuminate\Http\Request;
 
 class PricingGroupController extends Controller
 {

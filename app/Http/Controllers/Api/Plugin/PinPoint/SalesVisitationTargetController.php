@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
-use App\Model\Master\User;
-use Illuminate\Http\Request;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\User;
 use App\Model\Plugin\PinPoint\SalesVisitationTarget;
+use Illuminate\Http\Request;
 
 class SalesVisitationTargetController extends Controller
 {

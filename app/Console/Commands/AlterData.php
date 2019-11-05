@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Item;
 use App\Model\Master\ItemUnit;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
-use App\Model\Accounting\ChartOfAccount;
+use Illuminate\Support\Facades\DB;
 
 class AlterData extends Command
 {
@@ -92,7 +92,7 @@ class AlterData extends Command
             foreach (Item::all() as $dbItem) {
                 foreach ($kopibaraItems as $kopibaraItem) {
                     if (substr($dbItem->name, 5) == $kopibaraItem) {
-                        $dbItem->code = substr($dbItem->name,0, 4);
+                        $dbItem->code = substr($dbItem->name, 0, 4);
                         $dbItem->name = $kopibaraItem;
                         $dbItem->save();
                         break;
@@ -102,7 +102,7 @@ class AlterData extends Command
 
             foreach ($kopibaraItems as $index => $kopibaraItem) {
                 $dbItem = Item::where('name', $kopibaraItem)->first();
-                if (!$dbItem) {
+                if (! $dbItem) {
                     $item = new Item;
                     $item->code = $kopibaraCodes[$index];
                     $item->name = $kopibaraItem;

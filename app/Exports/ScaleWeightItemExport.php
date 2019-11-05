@@ -2,10 +2,10 @@
 
 namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
 class ScaleWeightItemExport implements FromQuery, WithHeadings, WithMapping
 {

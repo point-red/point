@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseContract;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\Purchase\PurchaseContract\PurchaseContract;
 use App\Http\Requests\Purchase\PurchaseContract\StorePurchaseContractRequest;
 use App\Http\Requests\Purchase\PurchaseContract\UpdatePurchaseContractRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Purchase\PurchaseContract\PurchaseContract;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseContractController extends Controller
 {

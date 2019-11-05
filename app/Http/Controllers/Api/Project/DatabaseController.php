@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Database\ViewTableRequest;
+use App\Model\Project\Project;
 
 class DatabaseController extends Controller
 {

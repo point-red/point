@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Accounting\ChartOfAccountType;
+use Illuminate\Http\Request;
 
 class ChartOfAccountTypeController extends Controller
 {

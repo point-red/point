@@ -24,7 +24,7 @@ class UpdatePricingGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'label' => 'required|unique:tenant.pricing_groups,label,'.$this->id
+            'label' => 'required|unique:tenant.pricing_groups,label,'.$this->id,
         ];
     }
 }

@@ -2,16 +2,16 @@
 
 namespace App\Exports\PinPoint;
 
-use Maatwebsite\Excel\Events\AfterSheet;
-use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Events\BeforeExport;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use App\Model\Plugin\PinPoint\SalesVisitation;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Events\BeforeExport;
 
 class NotInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize
 {

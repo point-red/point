@@ -2,9 +2,9 @@
 
 namespace App\Model;
 
+use App\Model\Project\Project;
 use App\User;
 use Carbon\Carbon;
-use App\Model\Project\Project;
 use Illuminate\Database\Eloquent\Model;
 
 class CloudStorage extends Model

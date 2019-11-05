@@ -4,13 +4,13 @@ namespace App\Console\Commands\Notification;
 
 use App\Helpers\Firebase\Firestore;
 use App\Model\FirebaseToken;
+use App\Model\HumanResource\Employee\EmployeeContract;
+use App\Model\Master\User as TenantUser;
 use App\Model\Project\Project;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
-use App\Model\Master\User as TenantUser;
-use App\Model\HumanResource\Employee\EmployeeContract;
+use Illuminate\Support\Facades\DB;
 
 class EndContractNotificationCommand extends Command
 {
@@ -63,9 +63,9 @@ class EndContractNotificationCommand extends Command
 
             if ($employeeContracts->count() > 0) {
                 foreach ($employeeContracts as $employeeContract) {
-                    $message = 'Contract for ' . $employeeContract->employee->name . ' will end soon';
+                    $message = 'Contract for '.$employeeContract->employee->name.' will end soon';
 
-                    $clickAction = $project->code . '.' . env('TENANT_DOMAIN') . '/human-resource/employee/' . $employeeContract->employee_id;
+                    $clickAction = $project->code.'.'.env('TENANT_DOMAIN').'/human-resource/employee/'.$employeeContract->employee_id;
 
                     Artisan::call('push-notification', [
                         'token' => $userTokens,

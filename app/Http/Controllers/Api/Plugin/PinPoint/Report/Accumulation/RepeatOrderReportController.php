@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint\Report\Accumulation;
 
-use Carbon\Carbon;
-use App\Model\Form;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Model\Form;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class RepeatOrderReportController extends Controller
 {

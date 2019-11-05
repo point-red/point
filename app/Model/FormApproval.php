@@ -2,8 +2,8 @@
 
 namespace App\Model;
 
-use Carbon\Carbon;
 use App\Model\Master\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class FormApproval extends Model

@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\HumanResource\Employee\EmployeeMaritalStatus;
 
-use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Model\HumanResource\Employee\EmployeeMaritalStatus;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class EmployeeMaritalStatusCollection extends ResourceCollection
 {

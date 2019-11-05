@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Web;
 
 class HomeController extends WebController
 {
-
     /**
      * Show the application dashboard.
      *

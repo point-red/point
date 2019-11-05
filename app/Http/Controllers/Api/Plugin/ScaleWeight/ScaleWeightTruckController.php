@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;
-use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckResource;
-use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckCollection;
 use App\Http\Requests\Plugin\ScaleWeight\ScaleWeightTruck\StoreScaleWeightTruckRequest;
+use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckCollection;
+use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckResource;
+use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;
+use Illuminate\Http\Request;
 
 class ScaleWeightTruckController extends Controller
 {

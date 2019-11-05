@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiResource;
 use App\Model\Master\Item;
 use Illuminate\Http\Request;
-use App\Http\Resources\ApiResource;
-use App\Http\Controllers\Controller;
 
 class ItemGroupController extends Controller
 {

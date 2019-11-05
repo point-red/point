@@ -2,9 +2,9 @@
 
 namespace App\Imports\Kpi;
 
+use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 
 class TemplateIndicatorImport implements ToCollection
 {

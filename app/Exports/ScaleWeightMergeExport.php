@@ -8,13 +8,13 @@
 
 namespace App\Exports;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, WithColumnFormatting
 {

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use Illuminate\Http\Request;
-use App\Model\Master\Service;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
 use App\Http\Requests\Master\Service\StoreServiceRequest;
 use App\Http\Requests\Master\Service\UpdateServiceRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\Service;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ServiceController extends Controller
 {

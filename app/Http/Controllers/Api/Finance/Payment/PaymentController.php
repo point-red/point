@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Api\Finance\Payment;
 
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Master\Customer;
-use App\Model\Master\Supplier;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\Finance\Payment\Payment;
-use App\Model\HumanResource\Employee\Employee;
 use App\Http\Requests\Finance\Payment\Payment\StorePaymentRequest;
 use App\Http\Requests\Finance\Payment\Payment\UpdatePaymentRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Finance\Payment\Payment;
+use App\Model\Form;
+use App\Model\HumanResource\Employee\Employee;
+use App\Model\Master\Customer;
+use App\Model\Master\Supplier;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {

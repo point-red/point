@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreatePosBillItemsTable extends Migration
 {
@@ -24,7 +24,7 @@ class CreatePosBillItemsTable extends Migration
             $table->unsignedDecimal('discount_value', 65, 30)->default(0);
             $table->boolean('taxable')->default(true);
             $table->string('unit');
-            $table->decimal('converter', 65, 30);            
+            $table->decimal('converter', 65, 30);
             $table->text('notes')->nullable();
 
             $table->foreign('pos_bill_id')->references('id')->on('pos_bills')->onDelete('cascade');

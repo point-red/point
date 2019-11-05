@@ -2,11 +2,11 @@
 
 namespace App\Model;
 
-use App\Model\Master\User;
-use App\Model\Master\Customer;
-use App\Model\Master\Supplier;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
+use App\Model\Master\Customer;
+use App\Model\Master\Supplier;
+use App\Model\Master\User;
 
 class Form extends PointModel
 {

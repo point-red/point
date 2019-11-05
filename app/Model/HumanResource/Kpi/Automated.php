@@ -2,14 +2,14 @@
 
 namespace App\Model\HumanResource\Kpi;
 
-use DateTime;
-use DatePeriod;
-use DateInterval;
-use App\Model\TransactionModel;
-use App\Model\Master\User;
 use App\Model\HumanResource\Employee\Employee;
+use App\Model\Master\User;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationTarget;
+use App\Model\TransactionModel;
+use DateInterval;
+use DatePeriod;
+use DateTime;
 
 class Automated extends TransactionModel
 {
@@ -79,7 +79,7 @@ class Automated extends TransactionModel
             $queryTarget = SalesVisitationTarget::target($dateFrom, $dateTo);
             $queryValue = SalesVisitation::value($dateFrom, $dateTo);
 
-             $result = User::leftJoinSub($queryTarget, 'queryTarget', function ($join) {
+            $result = User::leftJoinSub($queryTarget, 'queryTarget', function ($join) {
                 $join->on('users.id', '=', 'queryTarget.user_id');
             })->leftJoinSub($queryValue, 'queryValue', function ($join) {
                 $join->on('users.id', '=', 'queryValue.created_by');

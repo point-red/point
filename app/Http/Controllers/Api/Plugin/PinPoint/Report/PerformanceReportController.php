@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint\Report;
 
-use App\Model\Master\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Plugin\PinPoint\Report\Performance\PerformanceCollection;
 use App\Model\HumanResource\Kpi\Automated;
+use App\Model\Master\User;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationTarget;
-use App\Http\Resources\Plugin\PinPoint\Report\Performance\PerformanceCollection;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PerformanceReportController extends Controller
 {

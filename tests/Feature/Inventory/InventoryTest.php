@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Inventory;
 
-use Tests\TestCase;
 use App\Model\Master\Item;
 use App\Model\Master\Supplier;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class InventoryTest extends TestCase
 {

@@ -2,13 +2,13 @@
 
 namespace App\Model\Sales\SalesDownPayment;
 
+use App\Model\Finance\Payment\Payment;
 use App\Model\Form;
 use App\Model\Master\Customer;
-use App\Model\TransactionModel;
-use App\Model\Finance\Payment\Payment;
-use App\Model\Sales\SalesOrder\SalesOrder;
-use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\Sales\SalesContract\SalesContract;
+use App\Model\Sales\SalesInvoice\SalesInvoice;
+use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\TransactionModel;
 
 class SalesDownPayment extends TransactionModel
 {

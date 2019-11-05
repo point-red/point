@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Master;
 
-use Tests\TestCase;
 use Tests\RefreshDatabase;
+use Tests\TestCase;
 
 class SupplierTest extends TestCase
 {

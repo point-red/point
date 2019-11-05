@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesContract;
 
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Master\Customer;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\Sales\SalesContract\SalesContract;
 use App\Http\Requests\Sales\SalesContract\SalesContract\StoreSalesContractRequest;
 use App\Http\Requests\Sales\SalesContract\SalesContract\UpdateSalesContractRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Form;
+use App\Model\Master\Customer;
+use App\Model\Sales\SalesContract\SalesContract;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SalesContractController extends Controller
 {

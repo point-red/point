@@ -3,10 +3,10 @@
 namespace App\Exceptions;
 
 use Exception;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 

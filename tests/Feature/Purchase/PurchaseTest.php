@@ -2,14 +2,14 @@
 
 namespace Tests\Feature\Purchase\PurchaseOrder;
 
-use Tests\TestCase;
-use ChartOfAccountSeeder;
-use App\Model\Master\Item;
-use Tests\RefreshDatabase;
-use App\Model\Master\Supplier;
-use App\Model\Master\Warehouse;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\HumanResource\Employee\Employee;
+use App\Model\Master\Item;
+use App\Model\Master\Supplier;
+use App\Model\Master\Warehouse;
+use ChartOfAccountSeeder;
+use Tests\RefreshDatabase;
+use Tests\TestCase;
 
 class PurchaseTest extends TestCase
 {

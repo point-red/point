@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use Illuminate\Http\Request;
-use App\Model\Accounting\Journal;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\Accounting\Journal;
+use Illuminate\Http\Request;
 
 class JournalController extends Controller
 {

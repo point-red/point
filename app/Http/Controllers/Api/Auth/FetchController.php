@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use Illuminate\Http\Request;
-use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
+use App\Model\Project\Project;
+use Illuminate\Http\Request;
 
 class FetchController extends Controller
 {

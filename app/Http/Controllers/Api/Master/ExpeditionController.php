@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Master\Expedition\StoreExpeditionRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\Address;
 use App\Model\Master\Bank;
+use App\Model\Master\ContactPerson;
 use App\Model\Master\Email;
+use App\Model\Master\Expedition;
 use App\Model\Master\Phone;
 use Illuminate\Http\Request;
-use App\Model\Master\Address;
-use App\Model\Master\Expedition;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\ContactPerson;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Http\Requests\Master\Expedition\StoreExpeditionRequest;
 
 class ExpeditionController extends Controller
 {

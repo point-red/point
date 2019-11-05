@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\HumanResource\Employee\EmployeeEmail;
-use App\Model\HumanResource\Employee\EmployeeGroup;
-use App\Model\HumanResource\Employee\EmployeeScorer;
-use App\Model\HumanResource\Employee\EmployeeContract;
-use App\Model\HumanResource\Employee\EmployeeSocialMedia;
-use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\HumanResource\Employee\Employee;
+use App\Model\HumanResource\Employee\EmployeeContract;
+use App\Model\HumanResource\Employee\EmployeeEmail;
+use App\Model\HumanResource\Employee\EmployeeGroup;
+use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
+use App\Model\HumanResource\Employee\EmployeeScorer;
+use App\Model\HumanResource\Employee\EmployeeSocialMedia;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
 {

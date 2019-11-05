@@ -3,8 +3,8 @@
 namespace App\Model\Plugin\PinPoint;
 
 use App\Model\Form;
-use App\Model\PointModel;
 use App\Model\Master\Customer;
+use App\Model\PointModel;
 use Illuminate\Support\Facades\DB;
 
 class SalesVisitation extends PointModel

@@ -2,9 +2,9 @@
 
 namespace App\Model\Finance\PaymentOrder;
 
-use App\Model\TransactionModel;
-use App\Model\Master\Allocation;
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\Master\Allocation;
+use App\Model\TransactionModel;
 
 class PaymentOrderDetail extends TransactionModel
 {

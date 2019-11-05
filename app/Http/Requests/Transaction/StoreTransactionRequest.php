@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Transaction;
 
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class StoreTransactionRequest extends FormRequest
 {

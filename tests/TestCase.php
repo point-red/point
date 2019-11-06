@@ -3,21 +3,20 @@
 namespace Tests;
 
 use App\User;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Log;
 
-abstract class TestCase extends PointTestCase
+abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
+    // use RefreshTenantDatabase;
 
     /**
      *  Set up the test.
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
-
-        Artisan::call('config:clear');
 
         if (! defined('LARAVEL_START')) {
             define('LARAVEL_START', microtime(true));
@@ -27,15 +26,33 @@ abstract class TestCase extends PointTestCase
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
-
-        DB::connection('mysql')->reconnect();
-        DB::connection('tenant')->reconnect();
     }
 
+    protected function tearDown(): void
+    {
+        $this->logRequestTime();
+
+        parent::tearDown();
+    }
+
+    /**
+     *
+     */
     protected function signIn()
     {
-        $user = User::first();
+        $user = factory(User::class)->create();
 
         $this->actingAs($user, 'api');
+    }
+
+    protected function logRequestTime()
+    {
+        $start = LARAVEL_START;
+        $end = microtime(true);
+        $diff = $end - $start;
+        Log::channel('testing')->info('['.app('request')->method().'] '
+            .app('request')->url()
+            .' '
+            .$diff);
     }
 }

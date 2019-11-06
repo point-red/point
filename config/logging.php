@@ -43,6 +43,12 @@ return [
             'level' => 'debug',
         ],
 
+        'testing' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/testing.log'),
+            'level' => 'debug',
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),

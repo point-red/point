@@ -2,20 +2,20 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
-use Carbon\Carbon;
-use App\Model\Form;
-use App\Model\Master\Item;
-use App\Model\Master\Customer;
-use App\Model\AllocationReport;
-use App\Model\TransactionModel;
-use App\Model\Master\Allocation;
-use App\Model\Accounting\Journal;
-use App\Model\Inventory\Inventory;
-use App\Model\Finance\Payment\Payment;
 use App\Exceptions\IsReferencedException;
-use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\Accounting\Journal;
+use App\Model\AllocationReport;
+use App\Model\Finance\Payment\Payment;
+use App\Model\Form;
+use App\Model\Inventory\Inventory;
+use App\Model\Master\Allocation;
+use App\Model\Master\Customer;
+use App\Model\Master\Item;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
+use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\TransactionModel;
+use Carbon\Carbon;
 
 class SalesInvoice extends TransactionModel
 {

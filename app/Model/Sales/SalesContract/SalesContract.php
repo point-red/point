@@ -4,9 +4,9 @@ namespace App\Model\Sales\SalesContract;
 
 use App\Model\Form;
 use App\Model\Master\Customer;
-use App\Model\TransactionModel;
-use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
+use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\TransactionModel;
 
 class SalesContract extends TransactionModel
 {

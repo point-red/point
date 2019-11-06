@@ -27,7 +27,7 @@ class PurchaseReturn extends TransactionModel
     /**
      * Get the list of returned items.
      *
-     * @return eloquent
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function items()
     {
@@ -37,7 +37,7 @@ class PurchaseReturn extends TransactionModel
     /**
      * Get the list of returned items.
      *
-     * @return eloquent
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function services()
     {

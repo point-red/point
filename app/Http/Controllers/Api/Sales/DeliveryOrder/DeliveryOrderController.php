@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Api\Sales\DeliveryOrder;
 
-use Throwable;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder\UpdateDeliveryOrderRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
 use App\Model\Form;
+use App\Model\Master\Customer;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Model\Master\Customer;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder\UpdateDeliveryOrderRequest;
+use Throwable;
 
 class DeliveryOrderController extends Controller
 {

@@ -22,7 +22,7 @@ class Role extends \Spatie\Permission\Models\Role
     public static function createIfNotExists($name)
     {
         if (! self::isExists($name)) {
-            self::create(['name' => $name]);
+            self::create(['name' => $name, 'guard_name' => 'api']);
         }
 
         return self::where('name', $name)->first();

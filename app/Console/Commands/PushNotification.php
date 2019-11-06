@@ -51,7 +51,7 @@ class PushNotification extends Command
             'title'     => $title,
             'body'      => $body,
             'sound'     => 'default',
-            'click_action' => $clickAction
+            'click_action' => $clickAction,
         ];
 
         $fields = [

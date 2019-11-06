@@ -3,8 +3,8 @@
 namespace App\Model\Sales\SalesContract;
 
 use App\Model\Master\Group;
-use App\Model\TransactionModel;
 use App\Model\Sales\SalesOrder\SalesOrderItem;
+use App\Model\TransactionModel;
 
 class SalesContractGroupItem extends TransactionModel
 {

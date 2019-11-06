@@ -2,8 +2,8 @@
 
 namespace App\Model\Plugin\PinPoint;
 
-use App\Model\PointModel;
 use App\Model\Master\Item;
+use App\Model\PointModel;
 
 class SalesVisitationDetail extends PointModel
 {

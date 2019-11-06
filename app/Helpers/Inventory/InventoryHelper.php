@@ -2,12 +2,12 @@
 
 namespace App\Helpers\Inventory;
 
+use App\Exceptions\ItemQuantityInvalidException;
+use App\Exceptions\StockNotEnoughException;
 use App\Model\Form;
+use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
 use App\Model\Master\ItemDetail;
-use App\Model\Inventory\Inventory;
-use App\Exceptions\StockNotEnoughException;
-use App\Exceptions\ItemQuantityInvalidException;
 
 class InventoryHelper
 {

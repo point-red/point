@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\HumanResource\Kpi;
 
-use Tests\TestCase;
-use Tests\RefreshDatabase;
 use App\Model\HumanResource\Kpi\KpiResult;
+use Tests\RefreshDatabase;
+use Tests\TestCase;
 
 class KpiResultValidationTest extends TestCase
 {

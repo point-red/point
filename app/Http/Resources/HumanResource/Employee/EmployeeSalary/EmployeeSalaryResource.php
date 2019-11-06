@@ -3,9 +3,9 @@
 namespace App\Http\Resources\HumanResource\Employee\EmployeeSalary;
 
 use App\Http\Resources\ApiResource;
-use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\HumanResource\Employee\EmployeeSalaryAssessment\EmployeeSalaryAssessmentResource;
 use App\Http\Resources\HumanResource\Employee\EmployeeSalaryAchievement\EmployeeSalaryAchievementResource;
+use App\Http\Resources\HumanResource\Employee\EmployeeSalaryAssessment\EmployeeSalaryAssessmentResource;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class EmployeeSalaryResource extends JsonResource
 {

@@ -2,10 +2,10 @@
 
 namespace App\Exports\Kpi;
 
-use Maatwebsite\Excel\Concerns\WithTitle;
 use App\Model\HumanResource\Kpi\KpiTemplate;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
 class TemplateGroupExport implements FromCollection, WithTitle, WithHeadings
 {

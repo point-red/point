@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\HumanResource\Employee;
 
-use Tests\TestCase;
 use Tests\RefreshDatabase;
+use Tests\TestCase;
 
 class EmployeeTest extends TestCase
 {

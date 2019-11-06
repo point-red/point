@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Reward;
 
-use App\Model\Reward\Token;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\Reward\Token;
+use Illuminate\Http\Request;
 
 class TokenController extends Controller
 {

@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Api\Pos;
 
-use Throwable;
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Master\Customer;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\Pos\PosBill;
 use App\Http\Requests\Pos\PosBill\StorePosBillRequest;
 use App\Http\Requests\Pos\PosBill\UpdatePosBillRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Form;
+use App\Model\Master\Customer;
+use App\Model\Pos\PosBill;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class BillController extends Controller
 {

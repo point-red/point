@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Master;
 
-use Tests\TestCase;
-use Tests\RefreshDatabase;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiTemplateGroup;
+use Tests\RefreshDatabase;
+use Tests\TestCase;
 
 class KpiTemplateGroupTest extends TestCase
 {

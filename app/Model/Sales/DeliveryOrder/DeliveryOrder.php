@@ -2,13 +2,13 @@
 
 namespace App\Model\Sales\DeliveryOrder;
 
+use App\Exceptions\IsReferencedException;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
-use App\Model\TransactionModel;
-use App\Exceptions\IsReferencedException;
-use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
+use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\TransactionModel;
 
 class DeliveryOrder extends TransactionModel
 {

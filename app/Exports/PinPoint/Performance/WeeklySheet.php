@@ -2,21 +2,21 @@
 
 namespace App\Exports\PinPoint\Performance;
 
+use App\Model\HumanResource\Kpi\Automated;
 use App\Model\Master\Item;
 use App\Model\Master\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromView;
-use Maatwebsite\Excel\Events\AfterSheet;
-use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use App\Model\HumanResource\Kpi\Automated;
 use App\Model\Plugin\PinPoint\SalesVisitation;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationTarget;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnFormatting, WithEvents
 {

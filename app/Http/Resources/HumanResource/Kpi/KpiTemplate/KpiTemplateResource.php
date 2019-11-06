@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\HumanResource\Kpi\KpiTemplate;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\HumanResource\Kpi\KpiTemplateGroup\KpiTemplateGroupCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class KpiTemplateResource extends JsonResource
 {

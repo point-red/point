@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ScaleWeightMergeController extends Controller
 {

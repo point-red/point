@@ -2,21 +2,21 @@
 
 namespace App\Exports\PinPoint;
 
+use App\Model\Plugin\PinPoint\SalesVisitation;
+use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithCharts;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Chart\Chart;
-use PhpOffice\PhpSpreadsheet\Chart\Title;
-use Maatwebsite\Excel\Concerns\WithCharts;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
 use PhpOffice\PhpSpreadsheet\Chart\Layout;
 use PhpOffice\PhpSpreadsheet\Chart\Legend;
 use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
-use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
-use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
+use PhpOffice\PhpSpreadsheet\Chart\Title;
 
 class ChartSimilarProductExport implements FromView, WithCharts, WithTitle, ShouldAutoSize
 {

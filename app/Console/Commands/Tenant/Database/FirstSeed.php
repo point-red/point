@@ -5,8 +5,8 @@ namespace App\Console\Commands\Tenant\Database;
 use App\Model\Auth\Role;
 use App\Model\Master\User;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 class FirstSeed extends Command
 {

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SalesReturnService extends Model
 {
     protected $connection = 'tenant';
-    
+
     /**
      * Indicates if the model should be timestamped.
      *

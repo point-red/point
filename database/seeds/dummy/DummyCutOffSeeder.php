@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\Model\Accounting\CutOff;
-use App\Model\Accounting\Journal;
-use Illuminate\Support\Facades\DB;
 use App\Model\Accounting\CutOffDetail;
+use App\Model\Accounting\Journal;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DummyCutOffSeeder extends Seeder
 {

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use Carbon\Carbon;
+use App\Http\Controllers\Controller;
 use App\Model\CloudStorage;
-use Illuminate\Http\Request;
+use App\Model\HumanResource\Employee\EmployeeSalary;
 use App\Model\Project\Project;
 use Barryvdh\DomPDF\Facade as PDF;
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Model\HumanResource\Employee\EmployeeSalary;
 
 class EmployeeSalaryExportController extends Controller
 {

@@ -2,10 +2,10 @@
 
 namespace App\Model\Inventory\InventoryAudit;
 
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
-use App\Helpers\Inventory\InventoryHelper;
 
 class InventoryAudit extends TransactionModel
 {

@@ -2,13 +2,13 @@
 
 namespace App\Model\Purchase\PurchaseDownPayment;
 
+use App\Exceptions\IsReferencedException;
 use App\Model\Form;
 use App\Model\Master\Supplier;
-use App\Model\TransactionModel;
-use App\Exceptions\IsReferencedException;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Model\Purchase\PurchaseContract\PurchaseContract;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\TransactionModel;
 
 class PurchaseDownPayment extends TransactionModel
 {

@@ -2,9 +2,9 @@
 
 namespace App\Model\Purchase\PurchaseReceive;
 
+use App\Model\Master\Allocation;
 use App\Model\Master\Item;
 use App\Model\TransactionModel;
-use App\Model\Master\Allocation;
 
 class PurchaseReceiveItem extends TransactionModel
 {

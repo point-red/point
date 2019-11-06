@@ -34,12 +34,18 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => [/*'rollbar', */'slack', 'daily'],
+            'channels' => [/*'rollbar', 'slack', */'daily'],
         ],
 
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
+            'level' => 'debug',
+        ],
+
+        'testing' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/testing.log'),
             'level' => 'debug',
         ],
 

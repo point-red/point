@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\HumanResource\Kpi;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class KpiTemplateIndicatorValidationTest extends TestCase
 {

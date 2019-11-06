@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Master\Group;
 
-use Illuminate\Validation\Rule;
 use App\Helpers\Master\GroupClassReference;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateGroupRequest extends FormRequest
 {

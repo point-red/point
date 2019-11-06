@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;
-use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckResource;
-use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckCollection;
 use App\Http\Requests\Plugin\ScaleWeight\ScaleWeightTruck\StoreScaleWeightTruckRequest;
+use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckCollection;
+use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightTruck\ScaleWeightTruckResource;
+use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;
+use Illuminate\Http\Request;
 
 class ScaleWeightTruckController extends Controller
 {
@@ -19,10 +19,7 @@ class ScaleWeightTruckController extends Controller
      */
     public function index(Request $request)
     {
-        $date_from = $request->get('date_from');
-        $date_to = $request->get('date_to');
-
-        $scaleWeightTruck = ScaleWeightTruck::whereBetween('time_in', [$date_from, $date_to])->paginate(100);
+        $scaleWeightTruck = ScaleWeightTruck::eloquentFilter($request)->paginate(100);
 
         return new ScaleWeightTruckCollection($scaleWeightTruck);
     }
@@ -39,6 +36,7 @@ class ScaleWeightTruckController extends Controller
         $scaleWeightTruck = new ScaleWeightTruck;
         $scaleWeightTruck->form_number = $request->get('form_number');
         $scaleWeightTruck->machine_code = $request->get('machine_code');
+        $scaleWeightTruck->uuid = $request->get('uuid');
         $scaleWeightTruck->license_number = $request->get('license_number');
         $scaleWeightTruck->driver = $request->get('driver');
         $scaleWeightTruck->user = $request->get('user');

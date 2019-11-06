@@ -2,11 +2,11 @@
 
 namespace App\Model\Sales\SalesQuotation;
 
+use App\Exceptions\IsReferencedException;
 use App\Model\Form;
 use App\Model\Master\Customer;
-use App\Model\TransactionModel;
-use App\Exceptions\IsReferencedException;
 use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\TransactionModel;
 
 class SalesQuotation extends TransactionModel
 {

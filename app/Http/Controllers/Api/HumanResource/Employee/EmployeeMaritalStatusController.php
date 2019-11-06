@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\HumanResource\Employee\EmployeeMaritalStatus;
 use App\Http\Resources\HumanResource\Employee\EmployeeMaritalStatus\EmployeeMaritalStatusCollection;
+use App\Model\HumanResource\Employee\EmployeeMaritalStatus;
+use Illuminate\Http\Request;
 
 class EmployeeMaritalStatusController extends Controller
 {

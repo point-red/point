@@ -24,7 +24,7 @@ class StorePricingGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'label' => 'required|unique:tenant.pricing_groups,label'
+            'label' => 'required|unique:tenant.pricing_groups,label',
         ];
     }
 }

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
-use App\Http\Resources\ApiResource;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
-use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemResource;
-use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemCollection;
 use App\Http\Requests\Plugin\ScaleWeight\ScaleWeightItem\StoreScaleWeightItemRequest;
+use App\Http\Resources\ApiResource;
+use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemCollection;
+use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
+use Illuminate\Http\Request;
 
 class ScaleWeightItemController extends Controller
 {
@@ -20,10 +19,7 @@ class ScaleWeightItemController extends Controller
      */
     public function index(Request $request)
     {
-        $date_from = $request->get('date_from');
-        $date_to = $request->get('date_to');
-
-        $scaleWeightItem = ScaleWeightItem::whereBetween('time', [$date_from, $date_to])->paginate(100);
+        $scaleWeightItem = ScaleWeightItem::eloquentFilter($request)->paginate(100);
 
         return new ScaleWeightItemCollection($scaleWeightItem);
     }
@@ -101,7 +97,7 @@ class ScaleWeightItemController extends Controller
     {
         $scaleWeightItem = ScaleWeightItem::findOrFail($id);
         $scaleWeightItem->delete();
-        
+
         return response()->json([], 204);
     }
 }

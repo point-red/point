@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
+use Closure;
 use Illuminate\Support\Facades\DB;
 
 class TenantMiddleware

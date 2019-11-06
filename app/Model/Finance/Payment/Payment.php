@@ -2,10 +2,10 @@
 
 namespace App\Model\Finance\Payment;
 
+use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\Journal;
 use App\Model\Form;
 use App\Model\TransactionModel;
-use App\Model\Accounting\Journal;
-use App\Model\Accounting\ChartOfAccount;
 
 class Payment extends TransactionModel
 {

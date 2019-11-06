@@ -2,13 +2,13 @@
 
 namespace App\Model\Master;
 
-use App\Model\Form;
-use App\Model\MasterModel;
-use App\Model\Inventory\Inventory;
-use App\Model\Accounting\ChartOfAccount;
 use App\Helpers\Inventory\InventoryHelper;
+use App\Model\Accounting\ChartOfAccount;
+use App\Model\Form;
+use App\Model\Inventory\Inventory;
 use App\Model\Inventory\OpeningStock\OpeningStock;
 use App\Model\Inventory\OpeningStock\OpeningStockWarehouse;
+use App\Model\MasterModel;
 
 class Item extends MasterModel
 {
@@ -114,7 +114,7 @@ class Item extends MasterModel
 
         if (isset($data['groups'])) {
             foreach ($data['groups'] as $group) {
-                if (!$group['id'] && $group['name']) {
+                if (! $group['id'] && $group['name']) {
                     $newGroup = new Group;
                     $newGroup->name = $group['name'];
                     $newGroup->type = $group['type'];

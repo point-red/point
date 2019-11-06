@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment;
 
-use App\Model\Master\Allocation;
 use App\Http\Requests\ValidationRule;
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\Master\Allocation;
+use App\Model\Sales\SalesContract\SalesContract;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Model\Sales\SalesContract\SalesContract;
 
 class UpdateSalesDownPaymentRequest extends FormRequest
 {

@@ -13,6 +13,10 @@
 Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(function () {
     Route::post('register', 'RegisterController@store');
 
+    Route::get('test', function () {
+        return response()->json(['message' => 'welcome']);
+    });
+
     Route::prefix('auth')->namespace('Auth')->group(function () {
         Route::post('login', 'LoginController@index');
         Route::post('fetch', 'FetchController@index');

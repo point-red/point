@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest;
 
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class StorePurchaseRequestRequest extends FormRequest
 {

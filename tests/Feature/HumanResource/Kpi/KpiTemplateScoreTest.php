@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Master;
 
-use Tests\TestCase;
+use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
 use App\Model\HumanResource\Kpi\KpiTemplateScore;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
+use Tests\TestCase;
 
 class KpiTemplateScoreTest extends TestCase
 {

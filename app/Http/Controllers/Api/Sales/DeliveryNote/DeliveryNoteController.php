@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Api\Sales\DeliveryNote;
 
-use Throwable;
-use App\Model\Form;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use App\Model\Master\Customer;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Http\Requests\Sales\DeliveryNote\DeliveryNote\StoreDeliveryNoteRequest;
 use App\Http\Requests\Sales\DeliveryNote\DeliveryNote\UpdateDeliveryNoteRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Form;
+use App\Model\Master\Customer;
+use App\Model\Sales\DeliveryNote\DeliveryNote;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class DeliveryNoteController extends Controller
 {

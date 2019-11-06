@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Model\CloudStorage;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\CloudStorage;
+use Illuminate\Http\Request;
 
 class StorageController extends Controller
 {

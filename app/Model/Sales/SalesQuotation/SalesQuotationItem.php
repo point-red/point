@@ -2,8 +2,8 @@
 
 namespace App\Model\Sales\SalesQuotation;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Model\Sales\SalesOrder\SalesOrderItem;
+use Illuminate\Database\Eloquent\Model;
 
 class SalesQuotationItem extends Model
 {

@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
-use Laravel\Telescope\Telescope;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
+use Laravel\Telescope\Telescope;
 use Laravel\Telescope\TelescopeApplicationServiceProvider;
+use Illuminate\Support\Facades\Auth;
 
 class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 {
@@ -31,6 +32,17 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
                    $entry->isScheduledTask() ||
                    $entry->hasMonitoredTag();
         });
+    }
+
+    /**
+     * Configure the Telescope authorization services.
+     *
+     * @return void
+     */
+    protected function authorization()
+    {
+        Auth::setDefaultDriver('web');
+        parent::authorization();
     }
 
     /**

@@ -37,4 +37,12 @@ class User extends MasterModel
     {
         return $this->belongsToMany('App\Model\HumanResource\Employee\Employee', 'employee_scorer');
     }
+
+    /**
+     * The warehouses that belong to the user.
+     */
+    public function warehouses()
+    {
+        return $this->belongsToMany('App\Model\Master\Warehouse', 'user_warehouse');
+    }
 }

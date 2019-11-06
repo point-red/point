@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Master;
 
 use Illuminate\Http\Request;
 use App\Model\Master\User as TenantUser;
+use App\Model\Master\UserWarehouse;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Resources\Master\User\UserResource;
 use App\Http\Resources\Master\User\UserCollection;
@@ -21,7 +22,10 @@ class UserController extends ApiController
      */
     public function index(Request $request)
     {
-        return new UserCollection(TenantUser::eloquentFilter($request)->with('roles')->paginate($limit ?? 100));
+        return new UserCollection(TenantUser::eloquentFilter($request)->with('roles')
+                ->with(['warehouses' => function($query) {
+                    $query->orderBy('name', 'ASC');
+                }])->paginate($limit ?? 100));
     }
 
     /**
@@ -33,11 +37,15 @@ class UserController extends ApiController
      */
     public function store(StoreUserRequest $request)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $tenantUser = new TenantUser;
         $tenantUser->name = $request->name;
         $tenantUser->email = $request->email;
         $tenantUser->password = bcrypt($request->password);
         $tenantUser->save();
+
+        DB::connection('tenant')->commit();
 
         return new UserResource($tenantUser);
     }
@@ -51,7 +59,10 @@ class UserController extends ApiController
      */
     public function show($id)
     {
-        return new UserResource(TenantUser::with('roles')->findOrFail($id));
+        return new UserResource(TenantUser::with('roles')
+                ->with(['warehouses' => function($query) {
+                    $query->orderBy('name', 'ASC');
+                }])->findOrFail($id));
     }
 
     /**
@@ -64,10 +75,14 @@ class UserController extends ApiController
      */
     public function update(UpdateUserRequest $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $tenantUser = TenantUser::findOrFail($id);
         $tenantUser->name = $request->name;
         $tenantUser->email = $request->email;
         $tenantUser->save();
+
+        DB::connection('tenant')->commit();
 
         return new UserResource($tenantUser);
     }

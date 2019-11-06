@@ -18,7 +18,7 @@ trait ApiExceptionHandler
         if ($exception instanceof NotFoundHttpException) {
             return response()->json([
                 'code' => 404,
-                'message' => 'Http not found',
+                'message' => 'Http not found.',
             ], 404);
         }
 
@@ -26,7 +26,7 @@ trait ApiExceptionHandler
         if ($exception instanceof ModelNotFoundException) {
             return response()->json([
                 'code' => 404,
-                'message' => 'Model not found',
+                'message' => 'Model not found.',
             ], 404);
         }
 

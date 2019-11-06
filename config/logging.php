@@ -34,7 +34,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => [/*'rollbar', */'slack', 'daily'],
+            'channels' => [/*'rollbar', 'slack', */'daily'],
         ],
 
         'single' => [

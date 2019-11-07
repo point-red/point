@@ -73,6 +73,36 @@ class PositionCategoryController extends Controller
     }
 
     /**
+     * Bulk update a newly created resource in storage.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \App\Http\Resources\Psychotest\PositionCategory\PositionCategoryCollection
+     */
+    public function bulk_update(Request $request)
+    {
+        $position = CandidatePosition::findOrFail($request->input('position_id'));
+        $categories = $request->input('categories');
+
+        foreach ($categories as $cat) {
+            $category = PapikostickCategory::findOrFail($cat['category_id']);
+
+            $positionCategory = PositionCategory::findOrFail($cat['id']);
+
+            $positionCategory->position_id = $position->id;
+            $positionCategory->category_id = $category->id;
+            $positionCategory->category_max = $cat['category_max'];
+            $positionCategory->category_min = $cat['category_min'];
+
+            $positionCategory->save();
+        }
+
+        $positionCategories = PositionCategory::eloquentFilter($request)->select('psychotest_position_categories.*')->where('position_id', '=', $position->id);
+        $positionCategories = pagination($positionCategories, $request->input('limit'));
+
+        return new PositionCategoryCollection($positionCategories);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\Psychotest\PositionCategory\StorePositionCategoryRequest  $request

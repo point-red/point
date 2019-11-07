@@ -60,7 +60,8 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::apiResource('candidates', 'CandidateController');
         Route::apiResource('candidate-positions', 'CandidatePositionController');
         Route::apiResource('position-categories', 'PositionCategoryController');
-        Route::post('position-categories/bulk', 'PositionCategoryController@bulk_store');
+        Route::post('position-categories/bulk-store', 'PositionCategoryController@bulk_store');
+        Route::post('position-categories/bulk-update', 'PositionCategoryController@bulk_update');
         
         Route::apiResource('kraepelins', 'KraepelinController');
         Route::apiResource('kraepelin-columns', 'KraepelinColumnController');

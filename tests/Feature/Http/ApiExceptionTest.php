@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Http;
 
 use Tests\TestCase;
 
@@ -9,7 +9,7 @@ class ApiExceptionTest extends TestCase
     /** @test */
     public function model_not_found_exception_test()
     {
-        config()->set('database.default', 'point_tenant_test');
+        config()->set('database.default', 'tenant');
         $response = $this->json('GET', '/api/v1/master/warehouses/9999', [], [$this->headers]);
 
         $response->assertJsonStructure(['code', 'message']);

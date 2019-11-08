@@ -103,6 +103,26 @@ class PositionCategoryController extends Controller
     }
 
     /**
+     * Bulk delete resource in storage.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \App\Http\Resources\Psychotest\PositionCategory\PositionCategoryCollection
+     */
+    public function bulk_delete(Request $request)
+    {
+        $position = CandidatePosition::findOrFail($request->input('position_id'));
+        $categories = $request->input('categories');
+
+        foreach ($categories as $cat) {
+            $positionCategory = PositionCategory::findOrFail($cat['id']);
+
+            $positionCategory->delete();
+        }
+
+        return response()->json(['ok' => 'ok']);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\Psychotest\PositionCategory\StorePositionCategoryRequest  $request

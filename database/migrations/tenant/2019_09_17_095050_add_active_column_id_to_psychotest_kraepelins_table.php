@@ -20,7 +20,7 @@ class AddActiveColumnIdToPsychotestKraepelinsTable extends Migration
             $table->foreign('active_column_id')
                 ->references('id')
                 ->on('psychotest_kraepelin_columns')
-                ->onDelete('restrict');
+                ->onDelete('cascade');
         });
     }
 

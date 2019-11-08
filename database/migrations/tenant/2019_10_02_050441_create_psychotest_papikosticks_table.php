@@ -23,7 +23,7 @@ class CreatePsychotestPapikosticksTable extends Migration
             $table->foreign('candidate_id')
                 ->references('id')
                 ->on('psychotest_candidates')
-                ->onDelete('restrict');
+                ->onDelete('cascade');
         });
     }
 

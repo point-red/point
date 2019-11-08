@@ -20,16 +20,16 @@ class CreatePsychotestCandidatesTable extends Migration
             $table->string('password');
             
             // $table->set('level', ['Staff', 'Supervisor', 'Manager', 'Direktur']);
-            $table->string('level');
-            $table->string('ktp_number');
-            $table->string('place_of_birth');
-            $table->string('date_of_birth');
+            $table->string('level')->nullable()->default('');
+            $table->string('ktp_number')->nullable()->default('');
+            $table->string('place_of_birth')->nullable()->default('');
+            $table->string('date_of_birth')->nullable()->default('');
             // $table->set('sex', ['Laki-laki', 'Perempuan']);
-            $table->string('sex');
+            $table->string('sex')->nullable()->default('');
             // $table->set('religion', ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Budha', 'Konghucu', 'Lainnya']);
-            $table->string('religion');
+            $table->string('religion')->nullable()->default('');
             // $table->set('marital_status', ['Menikah', 'Belum Menikah']);
-            $table->string('marital_status');
+            $table->string('marital_status')->nullable()->default('');
 
             $table->unsignedInteger('position_id')->index();
 

@@ -27,7 +27,7 @@ class CreatePsychotestKraepelinColumnsTable extends Migration
             $table->foreign('kraepelin_id')
                 ->references('id')
                 ->on('psychotest_kraepelins')
-                ->onDelete('restrict');
+                ->onDelete('cascade');
         });
     }
 

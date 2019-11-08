@@ -17,7 +17,7 @@ class CreatePsychotestPapikostickResultsTable extends Migration
             $table->increments('id');
             $table->integer('total');
             $table->unsignedInteger('papikostick_id')->index();
-            $table->unsignedInteger('category_id')->index();
+            $table->unsignedInteger('category_id')->index()->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
 
@@ -25,12 +25,12 @@ class CreatePsychotestPapikostickResultsTable extends Migration
             $table->foreign('papikostick_id')
                 ->references('id')
                 ->on('psychotest_papikosticks')
-                ->onDelete('restrict');
+                ->onDelete('cascade');
 
             $table->foreign('category_id')
                 ->references('id')
                 ->on('psychotest_papikostick_categories')
-                ->onDelete('restrict');
+                ->onDelete('set null');
         });
     }
 

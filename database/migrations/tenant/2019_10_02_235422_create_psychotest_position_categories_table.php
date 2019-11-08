@@ -27,10 +27,12 @@ class CreatePsychotestPositionCategoriesTable extends Migration
             // Relationship
             $table->foreign('position_id')
                 ->references('id')
-                ->on('psychotest_candidate_positions');
+                ->on('psychotest_candidate_positions')
+                ->onDelete('cascade');
             $table->foreign('category_id')
                 ->references('id')
-                ->on('psychotest_papikostick_categories');
+                ->on('psychotest_papikostick_categories')
+                ->onDelete('cascade');
         });
     }
 

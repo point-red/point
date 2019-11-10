@@ -12,6 +12,6 @@ class PapikostickQuestionSeeder extends Seeder
      */
     public function run()
     {
-        factory(PapikostickQuestion::class, 99)->create();
+        factory(PapikostickQuestion::class, 90)->create();
     }
 }

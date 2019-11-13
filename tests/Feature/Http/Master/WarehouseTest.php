@@ -3,14 +3,12 @@
 namespace Tests\Feature\Master;
 
 use App\Model\Master\Warehouse;
-use Tests\RefreshDatabase;
 use Tests\TestCase;
 
 class WarehouseTest extends TestCase
 {
-    use RefreshDatabase;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -18,25 +16,26 @@ class WarehouseTest extends TestCase
     }
 
     /** @test */
-    public function an_user_can_create_warehouse()
+    public function create_warehouse()
     {
         $data = [
-            'code' => 'code',
-            'name' => 'name',
+            'code' => $this->faker->randomNumber(null, false),
+            'name' => $this->faker->name,
         ];
 
-        $response = $this->json('POST', 'api/v1/master/warehouses', $data, [$this->headers]);
+        $response = $this->json('POST', '/api/v1/master/warehouses', $data, [$this->headers]);
 
         $response->assertStatus(201);
 
-        $this->assertDatabaseHas('warehouses', $data);
+        $this->assertDatabaseHas('warehouses', $data, 'tenant');
     }
 
     /** @test */
-    public function an_user_can_read_single_warehouse()
+    public function read_single_warehouse()
     {
         $warehouse = factory(Warehouse::class)->create();
-        $response = $this->json('GET', 'api/v1/master/warehouses/'.$warehouse->id, [], [$this->headers]);
+
+        $response = $this->json('GET', '/api/v1/master/warehouses/'.$warehouse->id, [], [$this->headers]);
 
         $response->assertJson([
             'data' => [
@@ -47,11 +46,11 @@ class WarehouseTest extends TestCase
     }
 
     /** @test */
-    public function an_user_can_read_all_warehouse()
+    public function read_all_warehouse()
     {
         $warehouses = factory(Warehouse::class, 2)->create();
 
-        $response = $this->json('GET', 'api/v1/master/warehouses', [], [$this->headers]);
+        $response = $this->json('GET', '/api/v1/master/warehouses', [], [$this->headers]);
 
         foreach ($warehouses as $warehouse) {
             $this->assertDatabaseHas('warehouses', [
@@ -64,33 +63,33 @@ class WarehouseTest extends TestCase
     }
 
     /** @test */
-    public function an_user_can_update_warehouse()
+    public function update_warehouse()
     {
         $warehouse = factory(Warehouse::class)->create();
 
         $data = [
             'id' => $warehouse->id,
-            'code' => $warehouse->code,
-            'name' => $warehouse->name,
-            'address' => 'Another Address',
-            'phone' => 'New Phone',
+            'code' => $this->faker->randomNumber(null, false),
+            'name' => $this->faker->name,
+            'address' => $this->faker->address,
+            'phone' => $this->faker->phoneNumber,
         ];
 
-        $response = $this->json('PUT', 'api/v1/master/warehouses/'.$warehouse->id, $data, [$this->headers]);
+        $response = $this->json('PUT', '/api/v1/master/warehouses/'.$warehouse->id, $data, [$this->headers]);
+
+        $response->assertStatus(200);
 
         $response->assertJson(['data' => $data]);
 
         $this->assertDatabaseHas('warehouses', $data, 'tenant');
-
-        $response->assertStatus(200);
     }
 
     /** @test */
-    public function an_user_can_delete_warehouse()
+    public function delete_warehouse()
     {
         $warehouse = factory(Warehouse::class)->create();
 
-        $response = $this->json('DELETE', 'api/v1/master/warehouses/'.$warehouse->id, [], [$this->headers]);
+        $response = $this->json('DELETE', '/api/v1/master/warehouses/'.$warehouse->id, [], [$this->headers]);
 
         $response->assertStatus(204);
 

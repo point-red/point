@@ -18,14 +18,14 @@ class UserTest extends TestCase
     /** @test */
     public function test_sample()
     {
-        $response = $this->get('/');
+        $response = $this->get('/', $this->headers);
         $response->assertStatus(200);
     }
 
     /** @test */
     public function test_sample_a()
     {
-        $response = $this->get('/');
+        $response = $this->get('/', $this->headers);
         $response->assertStatus(200);
     }
 }

@@ -12,8 +12,6 @@ class RegistrationTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-
-        config()->set('database.default', 'mysql');
     }
 
     /** @test */

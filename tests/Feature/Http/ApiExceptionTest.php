@@ -16,7 +16,6 @@ class ApiExceptionTest extends TestCase
     {
         $this->signIn();
 
-        config()->set('database.default', 'tenant');
         $response = $this->json('GET', '/api/v1/master/warehouses/9999', [], [$this->headers]);
 
         $response->assertJsonStructure(['code', 'message']);

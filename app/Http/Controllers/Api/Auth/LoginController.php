@@ -7,7 +7,6 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Model\Project\Project;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
-use Laravel\Passport\Token;
 
 class LoginController extends Controller
 {

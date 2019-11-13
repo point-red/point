@@ -7,7 +7,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/php:7.1-browsers
+      - image: circleci/php:7.3-browsers
     working_directory: ~/laravel
     steps:
       - checkout
@@ -15,14 +15,14 @@ jobs:
       #https://askubuntu.com/questions/594656/how-to-install-the-latest-versions-of-nodejs-and-npm
       #We are using Node JS 6 because that's the current version on our local vagrant/homestead machines
       - run:
-         name: Download NodeJS v6
-         command: curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+         name: Download NodeJS v12
+         command: curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+         command: sudo apt-get install -y nodejs
 
       #sqlite needed for laravel database
-      #nodejs6 needed to run `npm run watch` later
       - run:
-         name: Install PHP sqlite and nodejs 6
-         command: sudo apt-get install -y libsqlite3-dev nodejs
+         name: Install PHP sqlite
+         command: sudo apt-get install -y libsqlite3-dev
 
 
       # Leave this for future use if php-zip is ever required

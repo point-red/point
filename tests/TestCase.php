@@ -3,13 +3,27 @@
 namespace Tests;
 
 use App\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Log;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
-    // use RefreshTenantDatabase;
+
+    /**
+     * Database migration can be so slow on local machine
+     * Instead run migrate on each test, you can run manually
+     * "php artisan migrate:fresh --env=testing"
+     * "php artisan migrate:fresh --env=testing --database=tenant --path=database/migrations/tenant"
+     * and comment this code below "use RefreshTenantDatabase;"
+     * and uncomment "use DatabaseTransactions;"
+     *
+     * By default we still use "use RefreshTenantDatabase;" for integration with travis, etc
+     * So you shouldn't commit this change
+     */
+    use RefreshTenantDatabase;
+    // use DatabaseTransactions;
 
     /**
      *  Set up the test.
@@ -18,7 +32,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        if (! defined('LARAVEL_START')) {
+        if (!defined('LARAVEL_START')) {
             define('LARAVEL_START', microtime(true));
         }
 

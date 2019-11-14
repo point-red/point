@@ -18,7 +18,6 @@ trait RefreshTenantDatabase
      */
     protected function refreshTestDatabase()
     {
-        config()->set('database.default', 'tenant');
         if (! RefreshTenantDatabaseState::$migrated) {
 
             $this->artisan('migrate:fresh', [

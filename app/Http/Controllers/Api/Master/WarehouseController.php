@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Warehouse\StoreWarehouseRequest;
 use App\Http\Requests\Master\Warehouse\UpdateWarehouseRequest;
-use App\Http\Resources\Master\Warehouse\WarehouseCollection;
-use App\Http\Resources\Master\Warehouse\WarehouseResource;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
 use App\Model\Master\Warehouse;
 use Illuminate\Http\Request;
 
@@ -16,8 +16,7 @@ class WarehouseController extends Controller
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     *
-     * @return \App\Http\Resources\Master\Warehouse\WarehouseCollection
+     * @return ApiCollection
      */
     public function index(Request $request)
     {
@@ -25,15 +24,14 @@ class WarehouseController extends Controller
 
         $warehouses = pagination($warehouses, $request->get('limit'));
 
-        return new WarehouseCollection($warehouses);
+        return new ApiCollection($warehouses);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param \App\Http\Requests\Master\Warehouse\StoreWarehouseRequest $request
-     *
-     * @return \App\Http\Resources\Master\Warehouse\WarehouseResource
+     * @return ApiResource
      */
     public function store(StoreWarehouseRequest $request)
     {
@@ -41,7 +39,7 @@ class WarehouseController extends Controller
         $warehouse->fill($request->all());
         $warehouse->save();
 
-        return new WarehouseResource($warehouse);
+        return new ApiResource($warehouse);
     }
 
     /**
@@ -49,14 +47,13 @@ class WarehouseController extends Controller
      *
      * @param  Request $request
      * @param  int $id
-     *
-     * @return \App\Http\Resources\Master\Warehouse\WarehouseResource
+     * @return ApiResource
      */
     public function show(Request $request, $id)
     {
         $warehouse = Warehouse::eloquentFilter($request)->findOrFail($id);
 
-        return new WarehouseResource($warehouse);
+        return new ApiResource($warehouse);
     }
 
     /**
@@ -64,8 +61,7 @@ class WarehouseController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     *
-     * @return \App\Http\Resources\Master\Warehouse\WarehouseResource
+     * @return ApiResource
      */
     public function update(UpdateWarehouseRequest $request, $id)
     {
@@ -73,7 +69,7 @@ class WarehouseController extends Controller
         $warehouse->fill($request->all());
         $warehouse->save();
 
-        return new WarehouseResource($warehouse);
+        return new ApiResource($warehouse);
     }
 
     /**

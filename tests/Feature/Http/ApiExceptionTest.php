@@ -6,17 +6,23 @@ use Tests\TestCase;
 
 class ApiExceptionTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+    }
+
     /** @test */
     public function model_not_found_exception_test()
     {
-        config()->set('database.default', 'tenant');
+        $this->signIn();
+
         $response = $this->json('GET', '/api/v1/master/warehouses/9999', [], [$this->headers]);
 
         $response->assertJsonStructure(['code', 'message']);
 
         $response->assertJson([
-            'code' => 401,
-            'message' => 'Unauthenticated.',
+            'code' => 404,
+            'message' => 'Model not found.',
         ]);
     }
 

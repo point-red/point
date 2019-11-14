@@ -5,11 +5,13 @@ namespace Tests;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Log;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
+    use WithFaker;
 
     /**
      * Database migration can be so slow on local machine
@@ -24,6 +26,11 @@ abstract class TestCase extends BaseTestCase
      */
     use RefreshTenantDatabase;
     // use DatabaseTransactions;
+
+    // Setting this allows both DB connections to be reset between tests
+    protected $connectionsToTransact = ['mysql', 'tenant'];
+
+    protected $user;
 
     /**
      *  Set up the test.
@@ -40,10 +47,14 @@ abstract class TestCase extends BaseTestCase
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
+
+        \DB::beginTransaction();
     }
 
     protected function tearDown(): void
     {
+        \DB::rollback();
+
         $this->logRequestTime();
 
         parent::tearDown();
@@ -54,9 +65,20 @@ abstract class TestCase extends BaseTestCase
      */
     protected function signIn()
     {
-        $user = factory(User::class)->create();
+        $this->user = factory(User::class)->create();
 
-        $this->actingAs($user, 'api');
+        $this->actingAs($this->user, 'api');
+
+        $this->connectTenantUser();
+    }
+
+    protected function connectTenantUser()
+    {
+        $tenantUser = new \App\Model\Master\User();
+        $tenantUser->id = $this->user->id;
+        $tenantUser->name = $this->user->name;
+        $tenantUser->email = $this->user->email;
+        $tenantUser->save();
     }
 
     protected function logRequestTime()

@@ -26,7 +26,7 @@ class InventoryHelper
             throw new ItemQuantityInvalidException(Item::findOrFail($itemId));
         }
 
-        $lastInventory = self::getLastReference($itemId, $warehouseId);
+        $lastInventory = self::getLastReference($itemId, $warehouseId, $productionNumber, $expiryDate);
 
         $inventory = new Inventory;
         $inventory->form_id = $formId;
@@ -117,7 +117,7 @@ class InventoryHelper
     {
         $item = Item::where('id', $itemId)->first();
 
-        $lastInventory = self::getLastReference($itemId, $warehouseId);
+        $lastInventory = self::getLastReference($itemId, $warehouseId, $productionNumber, $expiryDate);
 
         if (! $lastInventory && ! $price) {
             throw new ItemQuantityInvalidException($item);
@@ -151,11 +151,13 @@ class InventoryHelper
      * @param $warehouseId
      * @return mixed
      */
-    private static function getLastReference($itemId, $warehouseId)
+    private static function getLastReference($itemId, $warehouseId, $productionNumber, $expiryDate)
     {
         return Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
             ->where('item_id', $itemId)
             ->where('warehouse_id', $warehouseId)
+            ->where('production_number', $productionNumber)
+            ->where('expiry_date', $expiryDate)
             ->orderBy('date', 'DESC')
             ->orderBy('form_id', 'DESC')
             ->first();

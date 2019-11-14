@@ -41,7 +41,11 @@ class UserWarehouseController extends Controller
      */
     public function show(Request $request, $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        return response()->json([
+            'data' => $user->warehouses,
+        ]);
     }
 
     /**

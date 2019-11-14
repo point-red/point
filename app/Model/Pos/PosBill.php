@@ -2,6 +2,7 @@
 
 namespace App\Model\Pos;
 
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\TransactionModel;
@@ -23,6 +24,7 @@ class PosBill extends TransactionModel
         'tax',
         'paid',
         'notes',
+        'warehouse_id'
     ];
 
     protected $casts = [
@@ -85,6 +87,12 @@ class PosBill extends TransactionModel
         $form->saveData($data, $bill);
 
         $bill->form()->update(['done' => $data['is_done']]);
+
+        if ($data['is_done']) {
+            foreach ($items as $item) {
+                InventoryHelper::decrease($form->id, $bill->warehouse_id, $item->item_id, $item->production_number, $item->expiry_date, $item->quantity);
+            }
+        }
 
         return $bill;
     }

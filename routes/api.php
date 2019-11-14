@@ -36,6 +36,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::resource('transactions', 'TransactionController');
         Route::apiResource('firebase-token', 'FirebaseTokenController');
         Route::apiResource('storage', 'StorageController');
+        require base_path('routes/api/reward.php');
 
         // Tenant
         require base_path('routes/api/master.php');
@@ -52,10 +53,5 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         // Plugin
         require base_path('routes/api/plugin/scale-weight.php');
         require base_path('routes/api/plugin/pin-point.php');
-    });
-
-    // These routes below using client_credentials tokens for the authentication
-    Route::middleware('client')->group(function () {
-        require base_path('routes/api/reward.php');
     });
 });

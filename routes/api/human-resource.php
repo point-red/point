@@ -3,6 +3,7 @@
 Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
     Route::prefix('kpi')->namespace('Kpi')->group(function () {
         Route::apiResource('templates', 'KpiTemplateController');
+        Route::post('templates/duplicate', 'KpiTemplateController@duplicate');
         Route::apiResource('template-groups', 'KpiTemplateGroupController');
         Route::apiResource('template-indicators', 'KpiTemplateIndicatorController');
         Route::apiResource('template-scores', 'KpiTemplateScoreController');

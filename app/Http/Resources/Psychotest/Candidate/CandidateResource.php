@@ -21,6 +21,9 @@ class CandidateResource extends JsonResource
             'position_id' => $this->position_id,
             'position' => $this->when($request->input('expand') && strpos($request->input('includes'), 'position') !== false, $this->position),
 
+            'kraepelin' => $this->when($request->input('expand') && strpos($request->input('includes'), 'kraepelin') !== false, $this->kraepelin),
+            'papikostick' => $this->when($request->input('expand') && strpos($request->input('includes'), 'papikostick') !== false, $this->papikostick),
+
             'password' => $this->password,
             'is_password_used' => boolval($this->is_password_used),
 

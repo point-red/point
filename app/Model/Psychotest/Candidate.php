@@ -46,6 +46,10 @@ class Candidate extends Model
         return $this->hasOne('App\Model\Psychotest\Kraepelin');
     }
 
+    public function papikostick() {
+        return $this->hasOne('App\Model\Psychotest\Papikostick');
+    }
+
     public function position() {
         return $this->belongsTo('App\Model\Psychotest\CandidatePosition', 'position_id');
     }

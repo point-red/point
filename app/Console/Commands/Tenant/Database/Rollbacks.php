@@ -14,7 +14,7 @@ class Rollbacks extends Command
      *
      * @var string
      */
-    protected $signature = 'tenant:rollbacks';
+    protected $signature = 'tenant:migrate:rollbacks';
 
     /**
      * The console command description.

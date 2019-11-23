@@ -44,8 +44,8 @@ class NewCommand extends Command
         $dbName = $this->argument('database_name') ?? env('DB_DATABASE');
 
         $this->line('create '.$dbName.' database');
-        Artisan::call('tenant:database:delete', ['db_name' => $dbName]);
-        Artisan::call('tenant:database:create', ['db_name' => $dbName]);
+        Artisan::call('hub:database:delete', ['db_name' => $dbName]);
+        Artisan::call('hub:database:create', ['db_name' => $dbName]);
         Artisan::call('migrate');
         Artisan::call('passport:install');
         Artisan::call('passport:client', [

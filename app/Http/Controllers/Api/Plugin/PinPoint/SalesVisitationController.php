@@ -16,6 +16,8 @@ use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
+use App\Wrapper\CarbonWrapper;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -86,6 +88,26 @@ class SalesVisitationController extends Controller
             $customer = Customer::firstOrCreate([
                 'name' => $request->get('customer_name'),
             ]);
+        }
+
+        $latest = SalesVisitation::orderBy('created_at', 'desc')->first();
+        if ($latest) {
+            $a = CarbonWrapper::create($latest->created_at);
+            $b = Carbon::now();
+
+            $limit = 10;
+            $wait = $limit - CarbonWrapper::diffInMinute($a, $b);
+
+            if($limit > CarbonWrapper::diffInMinute($a, $b)) {
+                return response()->json([
+                    'code' => 422,
+                    'message' => 'form kunjungan sales hanya bisa di isi setiap 10 menit sekali, anda harus menunggu '
+                        . $wait . ' menit untuk bisa membuat form baru',
+                    // TODO: see user language preference to translate each message
+                    // 'message' => 'Sales visitation form is applicable every 10 minutes, you need to wait '
+                    //    . $wait . ' more minutes before create new form',
+                ], 422);
+            }
         }
 
         $customer->groups()->attach($group);

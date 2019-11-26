@@ -30,6 +30,7 @@ class CreateScaleWeightTrucksTable extends Migration
             $table->string('user');
             $table->boolean('is_delivery');
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

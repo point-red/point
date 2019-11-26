@@ -33,7 +33,7 @@ class AlterOauthTokenDeviceInfoTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('oauth_access_tokens', function (Blueprint $table) {
             $table->dropColumn([
                 'is_mobile',
                 'os_name',

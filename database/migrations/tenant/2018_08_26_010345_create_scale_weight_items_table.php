@@ -28,6 +28,7 @@ class CreateScaleWeightItemsTable extends Migration
             $table->datetime('time');
             $table->string('user');
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

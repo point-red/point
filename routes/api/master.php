@@ -21,12 +21,21 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::patch('items/bulk', 'ItemController@updateMany');
     Route::apiResource('items', 'ItemController');
     Route::apiResource('services', 'ServiceController');
+    // Customer
+    Route::post('customer-groups/attach', 'CustomerGroupController@attach');
+    Route::post('customer-groups/detach', 'CustomerGroupController@detach');
+    Route::apiResource('customer-groups', 'CustomerGroupController');
     Route::apiResource('customers', 'CustomerController');
-    Route::apiResource('suppliers', 'SupplierController');
-    Route::apiResource('expeditions', 'ExpeditionController');
-    Route::apiResource('allocations', 'AllocationController');
-
     Route::apiResource('price-list-items', 'PriceListItemController');
     Route::apiResource('price-list-services', 'PriceListServiceController');
     Route::apiResource('pricing-groups', 'PricingGroupController');
+    // Supplier
+    Route::post('supplier-groups/attach', 'SupplierGroupController@attach');
+    Route::post('supplier-groups/detach', 'SupplierGroupController@detach');
+    Route::apiResource('supplier-groups', 'SupplierGroupController');
+    Route::apiResource('suppliers', 'SupplierController');
+    // Expedition
+    Route::apiResource('expeditions', 'ExpeditionController');
+    // Allocation
+    Route::apiResource('allocations', 'AllocationController');
 });

@@ -15,6 +15,6 @@ class CustomerGroup extends MasterModel
      */
     public function customers()
     {
-        return $this->belongstomany(customer::class);
+        return $this->belongstomany(Customer::class);
     }
 }

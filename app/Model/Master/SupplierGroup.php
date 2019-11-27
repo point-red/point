@@ -13,7 +13,7 @@ class SupplierGroup extends MasterModel
     /**
      * Get all of the customers that are assigned this group.
      */
-    public function customers()
+    public function suppliers()
     {
         return $this->belongsToMany(Supplier::class);
     }

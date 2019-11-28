@@ -2,18 +2,16 @@
 
 namespace App\Console\Commands;
 
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Customer;
 use App\Model\Master\CustomerGroup;
 use App\Model\Master\Group;
 use App\Model\Master\Item;
 use App\Model\Master\ItemGroup;
-use App\Model\Master\ItemUnit;
 use App\Model\Master\Supplier;
 use App\Model\Master\SupplierGroup;
 use App\Model\Project\Project;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 class AlterData extends Command
@@ -60,35 +58,57 @@ class AlterData extends Command
             $groups = Group::all();
             foreach ($groups as $group) {
                 if ($group->class_reference == 'Customer' || $group->class_reference == Customer::class) {
-                    $customerGroup = new CustomerGroup;
-                    $customerGroup->name = $group->name;
-                    $customerGroup->save();
+                    $customerGroup = CustomerGroup::where('name', $group->name)->first();
+                    if (!$customerGroup) {
+                        $customerGroup = new CustomerGroup;
+                        $customerGroup->name = $group->name;
+                        $customerGroup->save();
+                    }
+
 
                     $gs = DB::connection('tenant')->table('groupables')->where('group_id', $group->id)->get();
                     foreach ($gs as $g) {
-                        $customerGroup->customers()->attach($g->groupable_id);
+                        $customerGroup->customers()->detach($g->groupable_id);
+                        $customerGroup->customers()->attach($g->groupable_id, [
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now(),
+                        ]);
                     }
                 }
 
                 if ($group->class_reference == 'Supplier' || $group->class_reference == Supplier::class) {
-                    $supplierGroup = new SupplierGroup;
-                    $supplierGroup->name = $group->name;
-                    $supplierGroup->save();
+                    $supplierGroup = SupplierGroup::where('name', $group->name)->first();
+                    if (!$supplierGroup) {
+                        $supplierGroup = new SupplierGroup;
+                        $supplierGroup->name = $group->name;
+                        $supplierGroup->save();
+                    }
 
                     $gs = DB::connection('tenant')->table('groupables')->where('group_id', $group->id)->get();
                     foreach ($gs as $g) {
-                        $supplierGroup->suppliers()->attach($g->groupable_id);
+                        $supplierGroup->suppliers()->detach($g->groupable_id);
+                        $supplierGroup->suppliers()->attach($g->groupable_id, [
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now(),
+                        ]);
                     }
                 }
 
                 if ($group->class_reference == 'Item' || $group->class_reference == Item::class) {
-                    $itemGroup = new ItemGroup;
-                    $itemGroup->name = $group->name;
-                    $itemGroup->save();
+                    $itemGroup = ItemGroup::where('name', $group->name)->first();
+                    if (!$itemGroup) {
+                        $itemGroup = new ItemGroup;
+                        $itemGroup->name = $group->name;
+                        $itemGroup->save();
+                    }
 
                     $gs = DB::connection('tenant')->table('groupables')->where('group_id', $group->id)->get();
                     foreach ($gs as $g) {
-                        $itemGroup->items()->attach($g->groupable_id);
+                        $itemGroup->items()->detach($g->groupable_id);
+                        $itemGroup->items()->attach($g->groupable_id, [
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now(),
+                        ]);
                     }
                 }
             }

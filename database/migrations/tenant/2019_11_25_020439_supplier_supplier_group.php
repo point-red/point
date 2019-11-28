@@ -17,6 +17,10 @@ class SupplierSupplierGroup extends Migration
             $table->unsignedInteger('supplier_id')->index();
             $table->unsignedInteger('supplier_group_id')->index();
             $table->timestamps();
+
+            $table->unique(['supplier_id', 'supplier_group_id']);
+            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
+            $table->foreign('supplier_group_id')->references('id')->on('supplier_groups')->onDelete('cascade');
         });
     }
 

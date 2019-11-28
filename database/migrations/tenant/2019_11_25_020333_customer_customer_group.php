@@ -17,6 +17,10 @@ class CustomerCustomerGroup extends Migration
             $table->unsignedInteger('customer_id')->index();
             $table->unsignedInteger('customer_group_id')->index();
             $table->timestamps();
+
+            $table->unique(['customer_id', 'customer_group_id']);
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('customer_group_id')->references('id')->on('customer_groups')->onDelete('cascade');
         });
     }
 

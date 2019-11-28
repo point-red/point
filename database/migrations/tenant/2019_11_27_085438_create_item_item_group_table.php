@@ -17,6 +17,10 @@ class CreateItemItemGroupTable extends Migration
             $table->unsignedInteger('item_id')->index();
             $table->unsignedInteger('item_group_id')->index();
             $table->timestamps();
+
+            $table->unique(['item_id', 'item_group_id']);
+            $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');
+            $table->foreign('item_group_id')->references('id')->on('item_groups')->onDelete('cascade');
         });
     }
 

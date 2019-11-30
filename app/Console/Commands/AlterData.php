@@ -56,15 +56,8 @@ class AlterData extends Command
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
-            $migration = DB::connection('tenant')->table('migrations')->where('migration', '2018_10_17_084721_create_groups_table')->first();
-            if ($migration) {
-                $migration->delete();
-            }
-
-            $migration = DB::connection('tenant')->table('migrations')->where('migration', '2018_10_17_084814_create_groupables_table')->first();
-            if ($migration) {
-                $migration->delete();
-            }
+            DB::connection('tenant')->table('migrations')->where('migration', '=', '2018_10_17_084721_create_groups_table')->delete();
+            DB::connection('tenant')->table('migrations')->where('migration', '=', '2018_10_17_084814_create_groupables_table')->delete();
 
             $groups = Group::all();
             foreach ($groups as $group) {

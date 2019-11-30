@@ -9,7 +9,7 @@ use App\Http\Resources\ApiResource;
 use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
 use App\Model\Form;
 use App\Model\Master\Customer;
-use App\Model\Master\Group;
+use App\Model\Master\CustomerGroup;
 use App\Model\Master\Item;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
@@ -75,9 +75,9 @@ class SalesVisitationController extends Controller
         }
 
         if ($request->get('group_id')) {
-            $group = Group::findOrFail($request->get('group_id'));
+            $group = CustomerGroup::findOrFail($request->get('group_id'));
         } else {
-            $group = Group::firstOrCreate([
+            $group = CustomerGroup::firstOrCreate([
                 'name' => $request->get('group'),
             ]);
         }

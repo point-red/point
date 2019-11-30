@@ -4,7 +4,7 @@ namespace App\Http\Requests\Master\CustomerGroup;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCustomerGroupRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class UpdateCustomerGroupRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:tenant.customer_groups,name,'.$this->id,
+            'name' => 'required|unique:tenant.customer_groups'
         ];
     }
 }

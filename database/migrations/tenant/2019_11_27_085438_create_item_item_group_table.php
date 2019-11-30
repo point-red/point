@@ -16,7 +16,7 @@ class CreateItemItemGroupTable extends Migration
         Schema::create('item_item_group', function (Blueprint $table) {
             $table->unsignedInteger('item_id')->index();
             $table->unsignedInteger('item_group_id')->index();
-            $table->timestamps();
+            $table->timestamp('created_at');
 
             $table->unique(['item_id', 'item_group_id']);
             $table->foreign('item_id')->references('id')->on('items')->onDelete('cascade');

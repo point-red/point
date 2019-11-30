@@ -69,10 +69,7 @@ class AlterData extends Command
                     $gs = DB::connection('tenant')->table('groupables')->where('group_id', $group->id)->get();
                     foreach ($gs as $g) {
                         $customerGroup->customers()->detach($g->groupable_id);
-                        $customerGroup->customers()->attach($g->groupable_id, [
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now(),
-                        ]);
+                        $customerGroup->customers()->attach($g->groupable_id, ['created_at' => Carbon::now()]);
                     }
                 }
 
@@ -87,10 +84,7 @@ class AlterData extends Command
                     $gs = DB::connection('tenant')->table('groupables')->where('group_id', $group->id)->get();
                     foreach ($gs as $g) {
                         $supplierGroup->suppliers()->detach($g->groupable_id);
-                        $supplierGroup->suppliers()->attach($g->groupable_id, [
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now(),
-                        ]);
+                        $supplierGroup->suppliers()->attach($g->groupable_id, ['created_at' => Carbon::now()]);
                     }
                 }
 
@@ -105,10 +99,7 @@ class AlterData extends Command
                     $gs = DB::connection('tenant')->table('groupables')->where('group_id', $group->id)->get();
                     foreach ($gs as $g) {
                         $itemGroup->items()->detach($g->groupable_id);
-                        $itemGroup->items()->attach($g->groupable_id, [
-                            'created_at' => Carbon::now(),
-                            'updated_at' => Carbon::now(),
-                        ]);
+                        $itemGroup->items()->attach($g->groupable_id, ['created_at' => Carbon::now()]);
                     }
                 }
             }

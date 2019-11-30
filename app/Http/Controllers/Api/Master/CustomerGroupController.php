@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Master;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Master\CustomerGroup\AttachRequest;
-use App\Http\Requests\Master\CustomerGroup\StoreCustomerGroupRequest;
-use App\Http\Requests\Master\CustomerGroup\UpdateCustomerGroupRequest;
+use App\Http\Requests\Master\CustomerGroup\StoreRequest;
+use App\Http\Requests\Master\CustomerGroup\UpdateRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Master\Customer;
@@ -32,10 +32,10 @@ class CustomerGroupController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreCustomerGroupRequest $request
+     * @param StoreRequest $request
      * @return ApiResource
      */
-    public function store(StoreCustomerGroupRequest $request)
+    public function store(StoreRequest $request)
     {
         $group = new CustomerGroup;
         $group->fill($request->all());
@@ -61,11 +61,11 @@ class CustomerGroupController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateCustomerGroupRequest $request
+     * @param UpdateRequest $request
      * @param $id
      * @return ApiResource
      */
-    public function update(UpdateCustomerGroupRequest $request, $id)
+    public function update(UpdateRequest $request, $id)
     {
         $group = CustomerGroup::findOrFail($id);
         $group->fill($request->all());

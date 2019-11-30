@@ -16,7 +16,7 @@ class CustomerCustomerGroup extends Migration
         Schema::create('customer_customer_group', function (Blueprint $table) {
             $table->unsignedInteger('customer_id')->index();
             $table->unsignedInteger('customer_group_id')->index();
-            $table->timestamps();
+            $table->timestamp('created_at');
 
             $table->unique(['customer_id', 'customer_group_id']);
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');

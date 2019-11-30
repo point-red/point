@@ -16,7 +16,7 @@ class SupplierSupplierGroup extends Migration
         Schema::create('supplier_supplier_group', function (Blueprint $table) {
             $table->unsignedInteger('supplier_id')->index();
             $table->unsignedInteger('supplier_group_id')->index();
-            $table->timestamps();
+            $table->timestamp('created_at');
 
             $table->unique(['supplier_id', 'supplier_group_id']);
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');

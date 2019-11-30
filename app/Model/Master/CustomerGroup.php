@@ -18,9 +18,4 @@ class CustomerGroup extends MasterModel
     {
         return $this->belongstomany(Customer::class);
     }
-
-    public function attachCustomer($customerId)
-    {
-        $this->customers()->syncWithoutDetaching([$customerId], ['created_at' => Carbon::now()]);
-    }
 }

@@ -18,6 +18,7 @@ use App\Model\Master\CustomerGroup;
 use App\Model\Master\Email;
 use App\Model\Master\Group;
 use App\Model\Master\Phone;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -130,7 +131,7 @@ class CustomerController extends Controller
             }
 
             if ($group) {
-                $group->attachCustomer($customer);
+                $group->customers()->syncWithoutDetaching([$customer->id], ['created_at' => Carbon::now()]);
             }
         }
 

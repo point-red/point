@@ -21,9 +21,9 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $services = Service::eloquentFilter($request)
-            ->with('groups')
-            ->paginate($request->get('paginate') ?? 20);
+        $services = Service::eloquentFilter($request);
+
+        $services = $services->paginate($request->get('paginate') ?? 20);
 
         return new ApiCollection($services);
     }

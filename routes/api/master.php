@@ -25,6 +25,9 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::patch('items/bulk', 'ItemController@updateMany');
     Route::apiResource('items', 'ItemController');
     // Service
+    Route::post('service-groups/attach', 'ServiceGroupController@attach');
+    Route::post('service-groups/detach', 'ServiceGroupController@detach');
+    Route::apiResource('service-groups', 'ServiceGroupController');
     Route::apiResource('services', 'ServiceController');
     // Customer
     Route::post('customer-groups/attach', 'CustomerGroupController@attach');
@@ -42,5 +45,8 @@ Route::prefix('master')->namespace('Master')->group(function () {
     // Expedition
     Route::apiResource('expeditions', 'ExpeditionController');
     // Allocation
+    Route::post('allocation-groups/attach', 'AllocationGroupController@attach');
+    Route::post('allocation-groups/detach', 'AllocationGroupController@detach');
+    Route::apiResource('allocation-groups', 'AllocationGroupController');
     Route::apiResource('allocations', 'AllocationController');
 });

@@ -44,8 +44,8 @@ class AlterTable extends Command
 
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('ALTER TABLE `scale_weight_trucks` ADD COLUMN `deleted_at` timestamp null');
-            DB::connection('tenant')->statement('ALTER TABLE `scale_weight_items` ADD COLUMN  `deleted_at` timestamp null');
+            DB::connection('tenant')->statement('DROP TABLE `groupables`');
+            DB::connection('tenant')->statement('DROP TABLE `groups`');
         }
     }
 }

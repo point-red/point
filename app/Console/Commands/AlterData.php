@@ -12,6 +12,7 @@ use App\Model\Master\SupplierGroup;
 use App\Model\Project\Project;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 class AlterData extends Command
@@ -50,10 +51,20 @@ class AlterData extends Command
         $projects = Project::all();
         foreach ($projects as $project) {
             $this->line('Clone '.$project->code);
-//            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
             $this->line('Alter '.$project->code);
-//            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
+            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
+
+            $migration = DB::connection('tenant')->table('migrations')->where('migration', '2018_10_17_084721_create_groups_table')->first();
+            if ($migration) {
+                $migration->delete();
+            }
+
+            $migration = DB::connection('tenant')->table('migrations')->where('migration', '2018_10_17_084814_create_groupables_table')->first();
+            if ($migration) {
+                $migration->delete();
+            }
 
             $groups = Group::all();
             foreach ($groups as $group) {

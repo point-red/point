@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Master;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Master\SupplierGroup\AttachRequest;
-use App\Http\Requests\Master\SupplierGroup\StoreSupplierGroupRequest;
-use App\Http\Requests\Master\SupplierGroup\UpdateSupplierGroupRequest;
+use App\Http\Requests\Master\SupplierGroup\StoreRequest;
+use App\Http\Requests\Master\SupplierGroup\UpdateRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Master\Supplier;
@@ -32,10 +32,10 @@ class SupplierGroupController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreSupplierGroupRequest $request
+     * @param StoreRequest $request
      * @return ApiResource
      */
-    public function store(StoreSupplierGroupRequest $request)
+    public function store(StoreRequest $request)
     {
         $group = new SupplierGroup;
         $group->fill($request->all());
@@ -61,11 +61,11 @@ class SupplierGroupController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateSupplierGroupRequest $request
+     * @param UpdateRequest $request
      * @param $id
      * @return ApiResource
      */
-    public function update(UpdateSupplierGroupRequest $request, $id)
+    public function update(UpdateRequest $request, $id)
     {
         $group = SupplierGroup::findOrFail($id);
         $group->fill($request->all());

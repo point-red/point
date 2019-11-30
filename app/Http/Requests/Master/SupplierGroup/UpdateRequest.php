@@ -4,7 +4,7 @@ namespace App\Http\Requests\Master\SupplierGroup;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateSupplierGroupRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

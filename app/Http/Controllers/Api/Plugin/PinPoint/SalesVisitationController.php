@@ -110,7 +110,7 @@ class SalesVisitationController extends Controller
             }
         }
 
-        $customer->groups()->attach($group);
+        $customer->groups()->syncWithoutDetaching([$group->id], ['created_at' => Carbon::now()]);
 
         $form = new Form;
         $form->date = date('Y-m-d H:i:s', strtotime($request->get('date')));

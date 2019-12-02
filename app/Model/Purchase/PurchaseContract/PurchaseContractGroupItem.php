@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseContract;
 
+use App\Model\Master\ItemGroup;
 use App\Model\TransactionModel;
 
 class PurchaseContractGroupItem extends TransactionModel
@@ -11,8 +12,7 @@ class PurchaseContractGroupItem extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'group_id',
-        'group_name',
+        'item_group_id',
         'price',
         'quantity',
         'notes',
@@ -32,6 +32,6 @@ class PurchaseContractGroupItem extends TransactionModel
 
     public function group()
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(ItemGroup::class);
     }
 }

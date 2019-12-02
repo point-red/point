@@ -2,7 +2,7 @@
 
 namespace App\Model\Sales\SalesContract;
 
-use App\Model\Master\Group;
+use App\Model\Master\ItemGroup;
 use App\Model\Sales\SalesOrder\SalesOrderItem;
 use App\Model\TransactionModel;
 
@@ -13,8 +13,7 @@ class SalesContractGroupItem extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'group_id',
-        'group_name',
+        'item_group_id',
         'price',
         'quantity',
         'discount_percent',
@@ -37,7 +36,7 @@ class SalesContractGroupItem extends TransactionModel
 
     public function group()
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(ItemGroup::class);
     }
 
     public function salesOrderItems()

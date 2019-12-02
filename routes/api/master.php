@@ -14,6 +14,10 @@ Route::prefix('master')->namespace('Master')->group(function () {
     // Master
     Route::apiResource('groups', 'GroupController');
     Route::apiResource('warehouses', 'WarehouseController');
+    // Item
+    Route::post('item-groups/attach', 'ItemGroupController@attach');
+    Route::post('item-groups/detach', 'ItemGroupController@detach');
+    Route::apiResource('item-groups', 'ItemGroupController');
     Route::post('items/{id}/attach-groups', 'ItemGroupController@attach');
     Route::post('items/{id}/detach-groups', 'ItemGroupController@detach');
     Route::post('items/{id}/sync-groups', 'ItemGroupController@sync');
@@ -21,13 +25,29 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::put('items/bulk', 'ItemController@updateMany');
     Route::patch('items/bulk', 'ItemController@updateMany');
     Route::apiResource('items', 'ItemController');
+    // Service
+    Route::post('service-groups/attach', 'ServiceGroupController@attach');
+    Route::post('service-groups/detach', 'ServiceGroupController@detach');
+    Route::apiResource('service-groups', 'ServiceGroupController');
     Route::apiResource('services', 'ServiceController');
+    // Customer
+    Route::post('customer-groups/attach', 'CustomerGroupController@attach');
+    Route::post('customer-groups/detach', 'CustomerGroupController@detach');
+    Route::apiResource('customer-groups', 'CustomerGroupController');
     Route::apiResource('customers', 'CustomerController');
-    Route::apiResource('suppliers', 'SupplierController');
-    Route::apiResource('expeditions', 'ExpeditionController');
-    Route::apiResource('allocations', 'AllocationController');
-
     Route::apiResource('price-list-items', 'PriceListItemController');
     Route::apiResource('price-list-services', 'PriceListServiceController');
     Route::apiResource('pricing-groups', 'PricingGroupController');
+    // Supplier
+    Route::post('supplier-groups/attach', 'SupplierGroupController@attach');
+    Route::post('supplier-groups/detach', 'SupplierGroupController@detach');
+    Route::apiResource('supplier-groups', 'SupplierGroupController');
+    Route::apiResource('suppliers', 'SupplierController');
+    // Expedition
+    Route::apiResource('expeditions', 'ExpeditionController');
+    // Allocation
+    Route::post('allocation-groups/attach', 'AllocationGroupController@attach');
+    Route::post('allocation-groups/detach', 'AllocationGroupController@detach');
+    Route::apiResource('allocation-groups', 'AllocationGroupController');
+    Route::apiResource('allocations', 'AllocationController');
 });

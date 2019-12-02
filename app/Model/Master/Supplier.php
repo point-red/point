@@ -28,7 +28,7 @@ class Supplier extends MasterModel
      */
     public function groups()
     {
-        return $this->morphToMany(Group::class, 'groupable');
+        return $this->belongsToMany(SupplierGroup::class);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Customer\StoreCustomerRequest;
 use App\Http\Requests\Master\Customer\UpdateCustomerRequest;
+use App\Http\Requests\Master\CustomerGroup\AttachRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Accounting\Journal;
@@ -13,9 +14,11 @@ use App\Model\Master\Address;
 use App\Model\Master\Bank;
 use App\Model\Master\ContactPerson;
 use App\Model\Master\Customer;
+use App\Model\Master\CustomerGroup;
 use App\Model\Master\Email;
 use App\Model\Master\Group;
 use App\Model\Master\Phone;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -116,22 +119,19 @@ class CustomerController extends Controller
         if ($request->has('group')) {
             $group = null;
             if (! empty($request->get('group')['id'])) {
-                $group = Group::findOrFail($request->get('group')['id']);
+                $group = CustomerGroup::findOrFail($request->get('group')['id']);
             } elseif (! empty($request->get('group')['name'])) {
-                $group = Group::where('name', $request->get('group')['name'])
-                    ->where('class_reference', Customer::class)
-                    ->first();
+                $group = CustomerGroup::where('name', $request->get('group')['name'])->first();
 
                 if (! $group) {
-                    $group = new Group;
+                    $group = new CustomerGroup;
                     $group->name = $request->get('group')['name'];
-                    $group->class_reference = 'customer';
                     $group->save();
                 }
             }
 
             if ($group) {
-                $group->customers()->attach($customer);
+                $group->customers()->syncWithoutDetaching([$customer->id], ['created_at' => Carbon::now()]);
             }
         }
 

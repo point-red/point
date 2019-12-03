@@ -107,7 +107,7 @@ class Item extends MasterModel
                     $openingStockWarehouse->expiry_date = $osWarehouse['expiry_date'];
                     $openingStockWarehouse->save();
 
-                    InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['production_number'], $osWarehouse['expiry_date'], $osWarehouse['quantity'], $osWarehouse['price']);
+                    InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $item->units[0]->id, $osWarehouse['production_number'], $osWarehouse['expiry_date'], $osWarehouse['quantity'], $osWarehouse['price']);
                 }
             }
         }

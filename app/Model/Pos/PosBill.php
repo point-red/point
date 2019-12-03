@@ -89,8 +89,8 @@ class PosBill extends TransactionModel
         $bill->form()->update(['done' => $data['is_done']]);
 
         if ($data['is_done']) {
-            foreach ($items as $item) {
-                InventoryHelper::decrease($form->id, $bill->warehouse_id, $item->item_id, $item->production_number, $item->expiry_date, $item->quantity);
+            foreach ($data['items'] as $item) {
+                InventoryHelper::decrease($form->id, $bill->warehouse_id, $item->item_id, $item->item_unit_id, $item->production_number, $item->expiry_date, $item->quantity);
             }
         }
 

@@ -20,18 +20,19 @@ class InventoryHelper
      * @throws StockNotEnoughException
      * @throws ItemQuantityInvalidException
      */
-    private static function insert($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, $quantity, $price)
+    private static function insert($formId, $warehouseId, $itemId, $itemUnitId, $productionNumber, $expiryDate, $quantity, $price)
     {
         if ($quantity == 0) {
             throw new ItemQuantityInvalidException(Item::findOrFail($itemId));
         }
 
-        $lastInventory = self::getLastReference($itemId, $warehouseId, $productionNumber, $expiryDate);
+        $lastInventory = self::getLastReference($itemId, $itemUnitId, $warehouseId, $productionNumber, $expiryDate);
 
         $inventory = new Inventory;
         $inventory->form_id = $formId;
         $inventory->warehouse_id = $warehouseId;
         $inventory->item_id = $itemId;
+        $inventory->item_unit_id = $itemUnitId;
         $inventory->production_number = $productionNumber;
         $inventory->expiry_date = $expiryDate;
         $inventory->quantity = $quantity;
@@ -65,7 +66,7 @@ class InventoryHelper
         $inventory->save();
     }
 
-    public static function increase($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, $quantity, $price)
+    public static function increase($formId, $warehouseId, $itemId, $itemUnitId, $productionNumber, $expiryDate, $quantity, $price)
     {
         Item::where('id', $itemId)->increment('stock', $quantity);
 
@@ -82,10 +83,10 @@ class InventoryHelper
             $itemDetail->save();
         }
 
-        self::insert($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, abs($quantity), $price);
+        self::insert($formId, $warehouseId, $itemId, $itemUnitId, $productionNumber, $expiryDate, abs($quantity), $price);
     }
 
-    public static function decrease($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, $quantity)
+    public static function decrease($formId, $warehouseId, $itemId, $itemUnitId, $productionNumber, $expiryDate, $quantity)
     {
         Item::where('id', $itemId)->decrement('stock', $quantity);
 
@@ -102,7 +103,7 @@ class InventoryHelper
             $itemDetail->save();
         }
 
-        self::insert($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, -abs($quantity), 0);
+        self::insert($formId, $warehouseId, $itemId, $itemUnitId, $productionNumber, $expiryDate, -abs($quantity), 0);
     }
 
     /**
@@ -113,11 +114,11 @@ class InventoryHelper
      * @param $price
      * @throws ItemQuantityInvalidException
      */
-    public static function audit($formId, $warehouseId, $itemId, $productionNumber, $expiryDate, $quantity, $price)
+    public static function audit($formId, $warehouseId, $itemId, $itemUnitId, $productionNumber, $expiryDate, $quantity, $price)
     {
         $item = Item::where('id', $itemId)->first();
 
-        $lastInventory = self::getLastReference($itemId, $warehouseId, $productionNumber, $expiryDate);
+        $lastInventory = self::getLastReference($itemId, $itemUnitId, $warehouseId, $productionNumber, $expiryDate);
 
         if (! $lastInventory && ! $price) {
             throw new ItemQuantityInvalidException($item);
@@ -132,6 +133,7 @@ class InventoryHelper
         $inventory->form_id = $formId;
         $inventory->warehouse_id = $warehouseId;
         $inventory->item_id = $itemId;
+        $inventory->item_unit_id = $itemUnitId;
         $inventory->production_number = $productionNumber;
         $inventory->expiry_date = $expiryDate;
         $inventory->quantity = $quantity;
@@ -151,10 +153,11 @@ class InventoryHelper
      * @param $warehouseId
      * @return mixed
      */
-    private static function getLastReference($itemId, $warehouseId, $productionNumber, $expiryDate)
+    private static function getLastReference($itemId, $itemUnitId, $warehouseId, $productionNumber, $expiryDate)
     {
         return Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
             ->where('item_id', $itemId)
+            ->where('item_unit_id', $itemUnitId)
             ->where('warehouse_id', $warehouseId)
             ->where('production_number', $productionNumber)
             ->where('expiry_date', $expiryDate)

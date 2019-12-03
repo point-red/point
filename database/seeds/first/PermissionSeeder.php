@@ -15,6 +15,8 @@ class PermissionSeeder extends Seeder
     {
         $role = Role::createIfNotExists('super admin');
 
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
         $this->setMasterPermission();
         $this->setPurchasePermission();
         $this->setSalesPermission();

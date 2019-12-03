@@ -69,6 +69,20 @@ class CreateEmployeeSalariesTable extends Migration
             $table->double('cash_payment_week4')->default(0);
             $table->double('cash_payment_week5')->default(0);
 
+            $table->double('weekly_sales_week1')->default(0);
+            $table->double('weekly_sales_week2')->default(0);
+            $table->double('weekly_sales_week3')->default(0);
+            $table->double('weekly_sales_week4')->default(0);
+            $table->double('weekly_sales_week5')->default(0);
+
+            $table->double('wa_daily_report_week1')->default(0);
+            $table->double('wa_daily_report_week2')->default(0);
+            $table->double('wa_daily_report_week3')->default(0);
+            $table->double('wa_daily_report_week4')->default(0);
+            $table->double('wa_daily_report_week5')->default(0);
+
+            $table->double('maximum_salary_amount')->default(0);
+
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();

@@ -4,7 +4,7 @@ namespace App\Http\Requests\Plugin\ScaleWeight\ScaleWeightTruck;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreScaleWeightTruckRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

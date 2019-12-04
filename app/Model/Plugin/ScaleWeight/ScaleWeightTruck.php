@@ -11,6 +11,12 @@ class ScaleWeightTruck extends PointModel
 
     protected $table = 'scale_weight_trucks';
 
+    protected $casts = [
+        'gross_weight' => 'double',
+        'tare_weight' => 'double',
+        'net_weight' => 'double',
+    ];
+
 //    public function setTimeInAttribute($value)
 //    {
 //        $this->attributes['time_in'] = Carbon::parse($value, request()->header('Timezone'))->timezone('UTC')->toDateTimeString();

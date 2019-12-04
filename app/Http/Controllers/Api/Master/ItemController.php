@@ -93,7 +93,6 @@ class ItemController extends Controller
      */
     public function show(Request $request, $id)
     {
-
         $dateFrom = date('Y-m-d H:i:s', strtotime($request->get('date_from')));
         $dateTo = date('Y-m-d H:i:s', strtotime($request->get('date_to')));
         $warehouseId = $request->get('warehouse_id');
@@ -104,7 +103,7 @@ class ItemController extends Controller
                             $query->where('warehouse_id', $warehouseId);
                         }
                         $query->with(['form' => function($query) use ($dateFrom, $dateTo) {
-                            if($dateFrom && $dateTo) {
+                            if ($dateFrom && $dateTo) {
                                 $query->whereBetween('date', [$dateFrom, $dateTo]);
                                 $query->sortBy('date');
                             }

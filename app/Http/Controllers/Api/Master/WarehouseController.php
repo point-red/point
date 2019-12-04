@@ -51,7 +51,18 @@ class WarehouseController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $warehouse = Warehouse::eloquentFilter($request)->findOrFail($id);
+        $dateFrom = date('Y-m-d H:i:s', strtotime($request->get('date_from')));
+        $dateTo = date('Y-m-d H:i:s', strtotime($request->get('date_to')));
+
+        $warehouse = Warehouse::eloquentFilter($request)
+                        ->with(['inventories' => function($query) use ($dateFrom, $dateTo) {
+                            $query->with(['form' => function($query) use ($dateFrom, $dateTo) {
+                                if ($dateFrom && $dateTo) {
+                                    $query->whereBetween('date', [$dateFrom, $dateTo]);
+                                    $query->sortBy('date');
+                                }
+                            }]);
+                        }])->findOrFail($id);
 
         return new ApiResource($warehouse);
     }

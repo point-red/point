@@ -20,6 +20,8 @@ class CreatePinPointSalesVisitationsTable extends Migration
             $table->string('name');
             $table->string('group');
             $table->string('address');
+            $table->string('district')->nullable();
+            $table->string('sub_district')->nullable();
             $table->string('phone');
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();

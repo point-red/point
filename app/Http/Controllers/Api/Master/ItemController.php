@@ -93,7 +93,23 @@ class ItemController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $item = Item::eloquentFilter($request)->findOrFail($id);
+
+        $dateFrom = date('Y-m-d H:i:s', strtotime($request->get('date_from')));
+        $dateTo = date('Y-m-d H:i:s', strtotime($request->get('date_to')));
+        $warehouseId = $request->get('warehouse_id');
+
+        $item = Item::eloquentFilter($request)
+                    ->with(['inventories' => function($query) use ($warehouseId, $dateFrom, $dateTo) {
+                        if ($warehouseId) {
+                            $query->where('warehouse_id', $warehouseId);
+                        }
+                        $query->with(['form' => function($query) use ($dateFrom, $dateTo) {
+                            if($dateFrom && $dateTo) {
+                                $query->whereBetween('date', [$dateFrom, $dateTo]);
+                                $query->sortBy('date');
+                            }
+                        }]);
+                    }])->findOrFail($id);
 
         return new ApiResource($item);
     }

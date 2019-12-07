@@ -81,7 +81,7 @@ class ScaleWeightTruckController extends Controller
         $scaleWeightTruck = ScaleWeightTruck::findOrFail($id);
         $scaleWeightTruck->form_number = $request->get('form_number');
         $scaleWeightTruck->machine_code = $request->get('machine_code');
-        $scaleWeightTruck->uuid = $request->get('uuid') ?? null;
+        $scaleWeightTruck->uuid = $request->get('uuid');
         $scaleWeightTruck->license_number = $request->get('license_number');
         $scaleWeightTruck->driver = $request->get('driver');
         $scaleWeightTruck->user = $request->get('user');

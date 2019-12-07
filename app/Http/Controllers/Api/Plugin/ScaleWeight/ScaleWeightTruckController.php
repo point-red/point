@@ -21,7 +21,9 @@ class ScaleWeightTruckController extends Controller
      */
     public function index(Request $request)
     {
-        $scaleWeightTruck = ScaleWeightTruck::eloquentFilter($request)->paginate(100);
+        $scaleWeightTruck = ScaleWeightTruck::eloquentFilter($request);
+
+        $scaleWeightTruck = pagination($scaleWeightTruck, $request->get('limit'));
 
         return new ApiCollection($scaleWeightTruck);
     }
@@ -79,6 +81,7 @@ class ScaleWeightTruckController extends Controller
         $scaleWeightTruck = ScaleWeightTruck::findOrFail($id);
         $scaleWeightTruck->form_number = $request->get('form_number');
         $scaleWeightTruck->machine_code = $request->get('machine_code');
+        $scaleWeightTruck->uuid = $request->get('uuid') ?? null;
         $scaleWeightTruck->license_number = $request->get('license_number');
         $scaleWeightTruck->driver = $request->get('driver');
         $scaleWeightTruck->user = $request->get('user');

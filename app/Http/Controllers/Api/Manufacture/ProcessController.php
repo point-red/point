@@ -71,7 +71,7 @@ class ProcessController extends Controller
      */
     public function update(UpdateManufactureProcessRequest $request, $id)
     {
-        $result = DB::connection('tenant')->transaction(function () use ($request) {
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
             $process = ManufactureProcess::findOrFail($id);
             $process->fill($request->all());
             $process->save();

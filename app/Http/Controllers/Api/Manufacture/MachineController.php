@@ -80,7 +80,7 @@ class MachineController extends Controller
      */
     public function update(UpdateManufactureMachineRequest $request, $id)
     {
-        $result = DB::connection('tenant')->transaction(function () use ($request) {
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
             $machine = ManufactureMachine::findOrFail($id);
             $machine->fill($request->all());
             $machine->save();

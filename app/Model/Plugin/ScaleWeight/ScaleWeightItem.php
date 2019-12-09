@@ -11,13 +11,13 @@ class ScaleWeightItem extends PointModel
 
     protected $table = 'scale_weight_items';
 
-//    public function setTimeAttribute($value)
-//    {
-//        $this->attributes['time'] = Carbon::parse($value, request()->header('Timezone'))->timezone('UTC')->toDateTimeString();
-//    }
-//
-//    public function getTimeAttribute($value)
-//    {
-//        return Carbon::parse($value, 'UTC')->timezone(request()->header('Timezone'))->toDateTimeString();
-//    }
+    public function setTimeAttribute($value)
+    {
+        $this->attributes['time'] = convert_to_server_timezone($value);
+    }
+
+    public function getTimeAttribute($value)
+    {
+        return convert_to_local_timezone($value);
+    }
 }

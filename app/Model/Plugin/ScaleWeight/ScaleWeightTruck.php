@@ -30,7 +30,6 @@ class ScaleWeightTruck extends PointModel
     public function setTimeOutAttribute($value)
     {
         $this->attributes['time_out'] = convert_to_server_timezone($value);
-        info($this->attributes['time_out']);
     }
 
     public function getTimeOutAttribute($value)

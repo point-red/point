@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Manufacture;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Manufacture\Machine\StoreManufactureMachineRequest;
-use App\Http\Requests\Manufacture\Machine\UpdateManufactureMachineRequest;
+use App\Http\Requests\Manufacture\ManufactureMachine\StoreManufactureMachineRequest;
+use App\Http\Requests\Manufacture\ManufactureMachine\UpdateManufactureMachineRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Manufacture\ManufactureMachine;

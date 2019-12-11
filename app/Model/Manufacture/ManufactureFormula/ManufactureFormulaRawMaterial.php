@@ -14,7 +14,7 @@ class ManufactureFormulaRawMaterial extends TransactionModel
 
     protected $fillable = [
         'item_id',
-        'warehouse_id'
+        'warehouse_id',
         'item_name',
         'warehouse_name',
         'quantity',

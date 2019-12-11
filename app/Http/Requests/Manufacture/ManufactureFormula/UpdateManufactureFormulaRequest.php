@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Manufacture\ManufactureFormula\ManufactureFormula;
+namespace App\Http\Requests\Manufacture\ManufactureFormula;
 
 use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;

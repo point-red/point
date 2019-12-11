@@ -77,8 +77,8 @@ class FormulaController extends Controller
                 ->load('manufactureProcess')
                 ->load('rawMaterials.item')
                 ->load('rawMaterials.warehouse')
-                ->load('finishedGoods.item')
-                ->load('finishedGoods.warehouse');
+                ->load('finishGoods.item')
+                ->load('finishGoods.warehouse');
 
             return new ApiResource($manfuactureFormula);
         });
@@ -124,8 +124,8 @@ class FormulaController extends Controller
                 ->load('manufactureProcess')
                 ->load('rawMaterials.item')
                 ->load('rawMaterials.warehouse')
-                ->load('finishedGoods.item')
-                ->load('finishedGoods.warehouse');
+                ->load('finishGoods.item')
+                ->load('finishGoods.warehouse');
 
             return new ApiResource($manufactureFormula);
         });

@@ -16,6 +16,7 @@ class ManufactureFormulaRawMaterial extends TransactionModel
         'item_id',
         'warehouse_id'
         'item_name',
+        'warehouse_name',
         'quantity',
         'unit',
     ];

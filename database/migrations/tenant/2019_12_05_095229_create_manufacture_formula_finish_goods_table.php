@@ -19,6 +19,7 @@ class CreateManufactureFormulaFinishGoodsTable extends Migration
             $table->unsignedInteger('item_id');
             $table->unsignedInteger('warehouse_id');
             $table->string('item_name');
+            $table->string('warehouse_name');
             $table->decimal('quantity', 65, 30);
             $table->string('unit');
 

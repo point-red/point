@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class FormulaController extends Controller
+class InputMaterialController extends Controller
 {
     /**
      * Display a listing of the resource.

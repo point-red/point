@@ -7,7 +7,6 @@ use App\Model\Form;
 use App\Model\FormApproval;
 use App\Model\Manufacture\ManufactureProcess\ManufactureProcess;
 use App\Model\Manufacture\ManufactureInput\ManufactureInput;
-use App\Model\Manufacture\ManufactureOutput\ManufactureOutput;
 use App\Model\TransactionModel;
 use Carbon\Carbon;
 
@@ -56,11 +55,6 @@ class ManufactureFormula extends TransactionModel
     public function inputMaterials()
     {
         return $this->hasMany(ManufactureInput::class)->active();
-    }
-
-    public function outputProducts()
-    {
-        return $this->hasMany(ManufactureOutput::class)->active();
     }
 
     public function isAllowedToUpdate()
@@ -116,13 +110,9 @@ class ManufactureFormula extends TransactionModel
 
     private function isNotReferenced()
     {
-        // Check if not referenced by input material & output product
+        // Check if not referenced by input material
         if ($this->inputMaterials->count()) {
             throw new IsReferencedException('Cannot edit form because referenced by input material', $this->inputMaterials);
-        }
-
-        if ($this->outputProducts->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by output product', $this->outputProducts);
         }
     }
 }

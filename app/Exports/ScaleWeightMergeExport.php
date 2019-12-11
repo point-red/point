@@ -114,7 +114,7 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
         $x = ['Time In', 'Time Out', 'Time'];
         foreach ($this->headers as $header) {
             if (in_array($header, $x)) {
-                $a[] = $row->{$this->key[$header]}.' ';
+                $a[] = date('H.i', strtotime($row->{$this->key[$header]})).' ';
             } else {
                 $a[] = $row->{$this->key[$header]};
             }

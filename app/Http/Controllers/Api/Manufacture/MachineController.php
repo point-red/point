@@ -7,7 +7,7 @@ use App\Http\Requests\Manufacture\ManufactureMachine\StoreManufactureMachineRequ
 use App\Http\Requests\Manufacture\ManufactureMachine\UpdateManufactureMachineRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Manufacture\ManufactureMachine;
+use App\Model\Manufacture\ManufactureMachine\ManufactureMachine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

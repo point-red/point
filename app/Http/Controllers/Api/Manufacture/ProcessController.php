@@ -7,7 +7,7 @@ use App\Http\Requests\Manufacture\ManufactureProcess\StoreManufactureProcessRequ
 use App\Http\Requests\Manufacture\ManufactureProcess\UpdateManufactureProcessRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Manufacture\ManufactureProcess;
+use App\Model\Manufacture\ManufactureProcess\ManufactureProcess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -91,6 +91,8 @@ class ProcessController extends Controller
     public function destroy($id)
     {
         $process = ManufactureProcess::findOrFail($id);
+        $process->isAllowedToDelete();
+
         $process->delete();
 
         return response()->json([], 204);

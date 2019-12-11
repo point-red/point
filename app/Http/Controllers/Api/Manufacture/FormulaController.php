@@ -46,18 +46,21 @@ class FormulaController extends Controller
      * Request :
      *  - number (String)
      *  - manufacture_process_id (Int)
+     *  - manufacture_process_name (String)
      *  - name (String)
      *  -
      *  - raw_materials (Array) :
      *      - item_id (Int)
      *      - warehouse_id (Int)
      *      - item_name (String)
+     *      - warehouse_name (String)
      *      - quantity (Decimal)
      *      - unit (String)
      *  - finish_goods (Array) :
      *      - item_id (Int)
      *      - warehouse_id (Int)
      *      - item_name (String)
+     *      - warehouse_name (String)     
      *      - quantity (Decimal)
      *      - unit (String).
      *

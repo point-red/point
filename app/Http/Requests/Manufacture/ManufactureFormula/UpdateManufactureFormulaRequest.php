@@ -28,6 +28,7 @@ class UpdateManufactureFormulaRequest extends FormRequest
 
         $rulesManufacturFormula = [
             'manufacture_process_id' => ValidationRule::foreignKey('manufacture_processes'),
+            'manufacture_process_name' => 'required|string',
             'name' => 'required|string',
             'raw_materials' => 'required|array',
             'finish_goods' => 'required|array',

@@ -16,6 +16,7 @@ class CreateManufactureFormulasTable extends Migration
         Schema::create('manufacture_formulas', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('manufacture_process_id');
+            $table->string('manufacture_process_name');
             $table->string('name');
             $table->text('notes')->nullable();
 

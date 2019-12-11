@@ -1,32 +1,36 @@
 <?php
 
-namespace App\Model\Manufacture\ManufactureFormula;
+namespace App\Model\Manufacture\ManufactureInput;
 
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
 use App\Model\FormApproval;
+use App\Model\Manufacture\ManufactureMachine\ManufactureMachine;
 use App\Model\Manufacture\ManufactureProcess\ManufactureProcess;
-use App\Model\Manufacture\ManufactureInput\ManufactureInput;
+use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
 use App\Model\Manufacture\ManufactureOutput\ManufactureOutput;
 use App\Model\TransactionModel;
 use Carbon\Carbon;
 
-class ManufactureFormula extends TransactionModel
+class ManufactureInput extends TransactionModel
 {
-    public static $morphName = 'ManufactureFormula';
+    public static $morphName = 'ManufactureInput';
 
     public $timestamps = false;
 
     protected $connection = 'tenant';
 
     protected $fillable = [
-    	'manufacture_process_id',
+    	'manufacture_machine_id',
+        'manufacture_process_id',
+        'manufacture_formula_id',
+        'manufacture_machine_name',
         'manufacture_process_name',
-        'name',
+        'manufacture_formula_name',
         'notes',
     ];
 
-    public $defaultNumberPrefix = 'MF';
+    public $defaultNumberPrefix = 'MI';
 
     public function form()
     {
@@ -35,12 +39,17 @@ class ManufactureFormula extends TransactionModel
 
     public function rawMaterials()
     {
-        return $this->hasMany(ManufactureFormulaRawMaterial::class);
+        return $this->hasMany(ManufactureInputRawMaterial::class);
     }
 
     public function finishGoods()
     {
-        return $this->hasMany(ManufactureFormulaFinishGood::class);
+        return $this->hasMany(ManufactureInputFinishGood::class);
+    }
+
+    public function manufactureMachine()
+    {
+        return $this->belongsTo(ManufactureMachine::class);
     }
 
     public function manufactureProcess()
@@ -48,14 +57,14 @@ class ManufactureFormula extends TransactionModel
         return $this->belongsTo(ManufactureProcess::class);
     }
 
+    public function manufactureFormula()
+    {
+        return $this->belongsTo(ManufactureFormula::class);
+    }
+
     public function approvers()
     {
         return $this->hasManyThrough(FormApproval::class, Form::class, 'formable_id', 'form_id')->where('formable_type', self::$morphName);
-    }
-
-    public function inputMaterials()
-    {
-        return $this->hasMany(ManufactureInput::class)->active();
     }
 
     public function outputProducts()
@@ -77,50 +86,45 @@ class ManufactureFormula extends TransactionModel
 
     public static function create($data)
     {
-        $formula = new self;
-        $formula->fill($data);
+        $input = new self;
+        $input->fill($data);
 
         $rawMaterials = self::mapRawMaterials($data['raw_materials'] ?? []);
         $finishGoods = self::mapFinishGoods($data['finish_goods'] ?? []);
 
-        $formula->save();
+        $input->save();
 
-        $formula->rawMaterials()->saveMany($rawMaterials);
-        $formula->finishGoods()->saveMany($finishGoods);
+        $input->rawMaterials()->saveMany($rawMaterials);
+        $input->finishGoods()->saveMany($finishGoods);
 
         $form = new Form;
-        $form->saveData($data, $formula);
+        $form->saveData($data, $input);
 
-        return $formula;
+        return $input;
     }
 
     private static function mapRawMaterials($rawMaterials)
     {
         return array_map(function ($rawMaterial) {
-            $formulaRawMaterial = new ManufactureFormulaRawMaterial;
-            $formulaRawMaterial->fill($rawMaterial);
+            $inputRawMaterial = new ManufactureInputRawMaterial;
+            $inputRawMaterial->fill($rawMaterial);
 
-            return $formulaRawMaterial;
+            return $inputRawMaterial;
         }, $rawMaterials);
     }
 
     private static function mapFinishGoods($finishGoods)
     {
         return array_map(function ($finishGood) {
-            $formulaFinishGood = new ManufactureFormulaFinishGood;
-            $formulaFinishGood->fill($finishGood);
+            $inputFinishGood = new ManufactureInputFinishGood;
+            $inputFinishGood->fill($finishGood);
 
-            return $formulaFinishGood;
+            return $inputFinishGood;
         }, $finishGoods);
     }
 
     private function isNotReferenced()
     {
-        // Check if not referenced by input material & output product
-        if ($this->inputMaterials->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by input material', $this->inputMaterials);
-        }
-
         if ($this->outputProducts->count()) {
             throw new IsReferencedException('Cannot edit form because referenced by output product', $this->outputProducts);
         }

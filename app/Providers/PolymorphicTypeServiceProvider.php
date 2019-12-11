@@ -29,6 +29,7 @@ use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\Sales\SalesReturn\SalesReturn;
 use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
+use App\Model\Manufacture\ManufactureInput\ManufactureInput;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -72,6 +73,7 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             SalesReturn::$morphName => SalesReturn::class,
             // Manufacture
             ManufactureFormula::$morphName => ManufactureFormula::class,
+            ManufactureInput::$morphName => ManufactureInput::class,
             // Finance
             PaymentOrder::$morphName => PaymentOrder::class,
             Payment::$morphName => Payment::class,

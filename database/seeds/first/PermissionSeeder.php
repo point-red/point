@@ -102,6 +102,7 @@ class PermissionSeeder extends Seeder
             'manufacture machine',
             'manufacture process',
             'manufacture formula',
+            'manufacture input',
         ];
 
         foreach ($allPermission as $permission) {

@@ -278,3 +278,24 @@ if (! function_exists('get_setting_journal')) {
         return $settingJournal->chart_of_account_id;
     }
 }
+
+if (! function_exists('convert_javascript_object_to_array')) {
+    /**
+     * If values is javascript object then convert it to array.
+     *
+     * @param $values
+     * @return array
+     */
+    function convert_javascript_object_to_array($values)
+    {
+        if (is_null($values)) {
+            return [];
+        }
+
+        if (! is_array($values)) {
+            return json_decode($values, true);
+        }
+
+        return $values;
+    }
+}

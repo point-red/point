@@ -7,7 +7,6 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\Inventory\InventoryCollection;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
@@ -16,13 +15,26 @@ class InventoryController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @return InventoryCollection
+     * @return ApiCollection
      */
     public function index(Request $request)
     {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param Request $request
+     * @param int $itemId
+     * @return InventoryCollection
+     */
+    public function show(Request $request, $itemId)
+    {
+        $request->item_id = $itemId;
         $inventories = Inventory::eloquentFilter($request)
             ->join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
-            ->where('item_id', $request->get('item_id'))
+            ->where('item_id', $itemId)
             ->select(Inventory::getTableName('*'));
 
         if ($request->has('warehouse_id')) {

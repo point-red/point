@@ -19,7 +19,9 @@ class ScaleWeightItemController extends Controller
      */
     public function index(Request $request)
     {
-        $scaleWeightItem = ScaleWeightItem::eloquentFilter($request)->paginate(100);
+        $scaleWeightItem = ScaleWeightItem::eloquentFilter($request);
+
+        $scaleWeightItem = pagination($scaleWeightItem, $request->get('limit'));
 
         return new ScaleWeightItemCollection($scaleWeightItem);
     }

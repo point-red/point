@@ -49,6 +49,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         require base_path('routes/api/inventory.php');
         require base_path('routes/api/dashboard.php');
         require base_path('routes/api/reward.php');
+        require base_path('routes/api/media.php');
 
         // Plugin
         require base_path('routes/api/plugin/scale-weight.php');

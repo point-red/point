@@ -7,7 +7,9 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\Inventory\InventoryCollection;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
+use App\Model\Master\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class InventoryController extends Controller
 {
@@ -19,7 +21,58 @@ class InventoryController extends Controller
      */
     public function index(Request $request)
     {
-        //
+        $dateFrom = convert_to_server_timezone($request->get('date_from'));
+        $dateTo = convert_to_server_timezone($request->get('date_to'));
+        $warehouseId = $request->get('warehouse_id');
+
+        $inventoryStart = Inventory::join('forms', 'forms.id', '=', 'inventories.form_id')
+            ->select('inventories.*')
+            ->addSelect(DB::raw('sum(inventories.quantity) as totalQty'))
+            ->where('forms.date', '<', $dateFrom)
+            ->groupBy('inventories.item_id');
+
+        if ($warehouseId) {
+            $inventoryStart = $inventoryStart->where('warehouse_id', '=', $warehouseId);
+        }
+
+        $inventoryIn = Inventory::join('forms', 'forms.id', '=', 'inventories.form_id')
+            ->select('inventories.*')
+            ->addSelect(DB::raw('sum(inventories.quantity) as totalQty'))
+            ->whereBetween('forms.date', [$dateFrom, $dateTo])
+            ->where('quantity', '>', 0)
+            ->groupBy('inventories.item_id');
+
+        if ($warehouseId) {
+            $inventoryIn = $inventoryIn->where('warehouse_id', '=', $warehouseId);
+        }
+
+        $inventoryOut = Inventory::join('forms', 'forms.id', '=', 'inventories.form_id')
+            ->select('inventories.*')
+            ->addSelect(DB::raw('sum(inventories.quantity) as totalQty'))
+            ->whereBetween('forms.date', [$dateFrom, $dateTo])
+            ->where('quantity', '<', 0)
+            ->groupBy('inventories.item_id');
+
+        if ($warehouseId) {
+            $inventoryOut = $inventoryOut->where('warehouse_id', '=', $warehouseId);
+        }
+
+        $items = Item::leftJoinSub($inventoryIn, 'subQueryInventoryIn', function ($join) {
+                $join->on('items.id', '=', 'subQueryInventoryIn.item_id');
+            })->leftJoinSub($inventoryOut, 'subQueryInventoryOut', function ($join) {
+                $join->on('items.id', '=', 'subQueryInventoryOut.item_id');
+            })->leftJoinSub($inventoryStart, 'subQueryInventoryStart', function ($join) {
+                $join->on('items.id', '=', 'subQueryInventoryStart.item_id');
+            })
+            ->select('items.*')
+            ->addSelect('subQueryInventoryStart.totalQty as opening_balance')
+            ->addSelect('subQueryInventoryIn.totalQty as stock_in')
+            ->addSelect('subQueryInventoryOut.totalQty as stock_out')
+            ->addSelect(DB::raw('subQueryInventoryStart.totalQty + subQueryInventoryIn.totalQty as ending_balance'));
+
+        $items = pagination($items, $request->get('limit'));
+
+        return new ApiCollection($items);
     }
 
     /**

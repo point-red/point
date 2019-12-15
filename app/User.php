@@ -3,10 +3,11 @@
 namespace App;
 
 use App\Model\Project\Project;
+use App\Model\Reward\Token;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
@@ -19,7 +20,7 @@ class User extends Authenticatable
      */
     public function projects()
     {
-        return $this->belongsToMany(new Project());
+        return $this->belongsToMany(Project::class);
     }
 
     /**
@@ -46,5 +47,10 @@ class User extends Authenticatable
             ? 'email' : 'name';
 
         return $this->where($field, $username)->first();
+    }
+
+    public function rewardTokens()
+    {
+        return $this->hasMany(Token::class);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Model\HumanResource\Employee;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class EmployeeMaritalStatus extends Model
+class EmployeeMaritalStatus extends MasterModel
 {
     protected $connection = 'tenant';
 
@@ -13,6 +13,6 @@ class EmployeeMaritalStatus extends Model
      */
     public function employees()
     {
-        return $this->hasMany(get_class(new Employee()), 'employee_marital_status_id');
+        return $this->hasMany(Employee::class, 'employee_marital_status_id');
     }
 }

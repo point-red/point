@@ -16,7 +16,7 @@ class ProjectUser extends Model
      */
     public function user()
     {
-        return $this->belongsTo(get_class(new User()), 'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -24,6 +24,6 @@ class ProjectUser extends Model
      */
     public function project()
     {
-        return $this->belongsTo(get_class(new Project()), 'project_id');
+        return $this->belongsTo(Project::class, 'project_id');
     }
 }

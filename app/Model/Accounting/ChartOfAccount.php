@@ -2,9 +2,10 @@
 
 namespace App\Model\Accounting;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\Form;
+use App\Model\MasterModel;
 
-class ChartOfAccount extends Model
+class ChartOfAccount extends MasterModel
 {
     protected $connection = 'tenant';
 
@@ -15,7 +16,7 @@ class ChartOfAccount extends Model
      */
     public function type()
     {
-        return $this->belongsTo(get_class(new ChartOfAccountType()), 'type_id');
+        return $this->belongsTo(ChartOfAccountType::class, 'type_id');
     }
 
     /**
@@ -23,12 +24,14 @@ class ChartOfAccount extends Model
      */
     public function group()
     {
-        return $this->belongsTo(get_class(new ChartOfAccountGroup()), 'group_id');
+        return $this->belongsTo(ChartOfAccountGroup::class, 'group_id');
     }
 
     public function journals($date)
     {
-        return $this->hasMany(get_class(new Journal()), 'chart_of_account_id')->where('date', '<=', $date);
+        return $this->hasMany(Journal::class, 'chart_of_account_id')
+            ->join(Form::getTableName(), Form::getTableName('id'), '=', Journal::getTableName('form_id'))
+            ->where('forms.date', '<=', $date);
     }
 
     public function totalDebit($date)

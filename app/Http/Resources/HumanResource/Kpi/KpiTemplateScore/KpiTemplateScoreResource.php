@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\HumanResource\Kpi\KpiTemplateScore;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class KpiTemplateScoreResource extends JsonResource
 {

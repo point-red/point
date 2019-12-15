@@ -72,7 +72,6 @@
                         <a href="{{ url('/home') }}">Home</a>
                     @else
                         <a href="{{ route('login') }}">Login</a>
-                        <a href="{{ route('register') }}">Register</a>
                     @endauth
                 </div>
             @endif
@@ -84,8 +83,8 @@
 
                 <div class="links">
                     <a href="https://www.point.red">Website</a>
-                    <a href="https://point-red.github.io/point">Developer</a>
-                    <a href="https://documenter.getpostman.com/view/421224/pointred/77cf6Pd">API</a>
+                    <a href="https://developer.point.red">Developer</a>
+                    <a href="https://docs.point.red">API</a>
                 </div>
             </div>
         </div>

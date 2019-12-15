@@ -2,9 +2,16 @@
 
 namespace App\Model\Master;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class Warehouse extends Model
+class Warehouse extends MasterModel
 {
     protected $connection = 'tenant';
+
+    protected $fillable = [
+        'code',
+        'name',
+        'address',
+        'phone',
+    ];
 }

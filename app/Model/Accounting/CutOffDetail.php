@@ -10,11 +10,16 @@ class CutOffDetail extends Model
 
     protected $table = 'cut_off_details';
 
+    protected $casts = [
+        'debit' => 'double',
+        'credit' => 'double',
+    ];
+
     /**
      * Get the chart of account that owns the cut off detail.
      */
     public function chartOfAccount()
     {
-        return $this->belongsTo(get_class(new ChartOfAccount()), 'chart_of_account_id');
+        return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
     }
 }

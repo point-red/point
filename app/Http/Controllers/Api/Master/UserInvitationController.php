@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\User;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Master\UserInvitation\StoreUserInvitationRequest;
+use App\Http\Resources\Master\UserInvitation\UserInvitationCollection;
+use App\Http\Resources\Master\UserInvitation\UserInvitationResource;
 use App\Model\Auth\Role;
-use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
+use App\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Master\UserInvitation\UserInvitationResource;
-use App\Http\Resources\Master\UserInvitation\UserInvitationCollection;
-use App\Http\Requests\Master\UserInvitation\StoreUserInvitationRequest;
 
 class UserInvitationController extends Controller
 {
@@ -93,7 +93,7 @@ class UserInvitationController extends Controller
 
         $user = User::findOrFail($request->get('user_id'));
 
-        $dbName = 'point_'.strtolower($projectUser->project->code);
+        $dbName = env('DB_DATABASE').'_'.strtolower($projectUser->project->code);
         config()->set('database.connections.tenant.database', $dbName);
         DB::connection('tenant')->reconnect();
 

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Accounting;
 
 use App\Http\Controllers\Controller;
-use App\Model\Accounting\ChartOfAccount;
 use App\Http\Resources\Accounting\BalanceSheet\BalanceSheetCollection;
+use App\Model\Accounting\ChartOfAccount;
 
 class BalanceSheetController extends Controller
 {

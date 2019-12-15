@@ -2,21 +2,30 @@
 
 namespace App\Model\Master;
 
+use App\Model\MasterModel;
+use Illuminate\Support\Arr;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class User extends MasterModel
 {
     protected $connection = 'tenant';
 
     protected $guard_name = 'api';
 
+    protected $user_logs = false;
+
     use HasRoles;
+
+    protected $casts = [
+        'call' => 'double',
+        'effective_call' => 'double',
+        'value' => 'double',
+    ];
 
     public function getPermissions()
     {
         $permissions = $this->getAllPermissions();
-        $names = array_pluck($permissions, 'name');
+        $names = Arr::pluck($permissions, 'name');
 
         return $names;
     }

@@ -2,29 +2,43 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\Accounting\ChartOfAccount;
-use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource;
 use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountCollection;
+use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource;
+use App\Http\Resources\ApiResource;
+use App\Model\Accounting\ChartOfAccount;
+use Illuminate\Http\Request;
 
 class ChartOfAccountController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new ChartOfAccountCollection(ChartOfAccount::orderBy('type_id')->orderBy('number')->orderBy('alias')->get());
+        $accounts = ChartOfAccount::eloquentFilter($request);
+
+        // Filter account by type
+        // ex : filter_type = 'cash,bank'
+        if ($request->has('filter_type')) {
+            $types = explode(',', $request->get('filter_type'));
+            $accounts->whereHas('type', function ($query) use ($types) {
+                $query->whereIn('name', $types);
+            });
+        }
+
+        $accounts = pagination($accounts, $request->get('limit'));
+
+        return new ChartOfAccountCollection($accounts);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     *
+     * @param Request  $request
      * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource
      */
     public function store(Request $request)
@@ -43,20 +57,21 @@ class ChartOfAccountController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return ApiResource
      */
     public function show($id)
     {
-        //
+        $chartOfAccount = ChartOfAccount::findOrFail($id)->load(['type', 'group']);
+
+        return new ApiResource($chartOfAccount);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request $request
      * @param  int  $id
-     *
-     * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
@@ -67,7 +82,7 @@ class ChartOfAccountController extends Controller
         $chartOfAccount->alias = $request->get('name');
         $chartOfAccount->save();
 
-        return new ChartOfAccountResource($chartOfAccount);
+        return new ApiResource($chartOfAccount->load(['type', 'group']));
     }
 
     /**

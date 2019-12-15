@@ -3,9 +3,9 @@
 namespace App\Model\HumanResource\Employee\Employee;
 
 use App\Model\HumanResource\Employee\Employee;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class EmployeeCompanyEmail extends Model
+class EmployeeCompanyEmail extends MasterModel
 {
     protected $connection = 'tenant';
 
@@ -14,6 +14,6 @@ class EmployeeCompanyEmail extends Model
      */
     public function employee()
     {
-        return $this->belongsTo(get_class(new Employee()), 'employee_id');
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 }

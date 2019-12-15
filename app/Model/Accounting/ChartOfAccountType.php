@@ -2,9 +2,9 @@
 
 namespace App\Model\Accounting;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class ChartOfAccountType extends Model
+class ChartOfAccountType extends MasterModel
 {
     protected $connection = 'tenant';
 
@@ -12,7 +12,7 @@ class ChartOfAccountType extends Model
 
     public function accounts()
     {
-        return $this->hasMany(get_class(new ChartOfAccount()), 'type_id');
+        return $this->hasMany(ChartOfAccount::class, 'type_id');
     }
 
     public function totalDebit()

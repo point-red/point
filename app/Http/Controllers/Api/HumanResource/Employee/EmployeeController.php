@@ -2,33 +2,33 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Model\HumanResource\Employee\EmployeeGroup;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\HumanResource\Employee\EmployeeEmail;
-use App\Model\HumanResource\Employee\EmployeeScorer;
-use App\Model\HumanResource\Employee\EmployeeContract;
-use App\Model\HumanResource\Employee\EmployeeSocialMedia;
-use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\HumanResource\Employee\Employee;
+use App\Model\HumanResource\Employee\EmployeeContract;
+use App\Model\HumanResource\Employee\EmployeeEmail;
+use App\Model\HumanResource\Employee\EmployeeGroup;
+use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
+use App\Model\HumanResource\Employee\EmployeeScorer;
+use App\Model\HumanResource\Employee\EmployeeSocialMedia;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \App\Http\Resources\ApiCollection
+     * @param Request $request
+     * @return ApiCollection
      */
     public function index(Request $request)
     {
-        $employees = Employee::with('group')
+        $employees = Employee::eloquentFilter($request)
+            ->with('group')
             ->with('gender')
             ->with('religion')
             ->with('maritalStatus')
@@ -41,12 +41,12 @@ class EmployeeController extends Controller
             ->with('emails')
             ->with('addresses')
             ->with('phones')
-            ->select('employees.*')
-            ->filters($request->get('filters'))
-            ->fields($request->get('fields'))
-            ->sortBy($request->get('sort_by'))
-            ->includes($request->get('includes'))
-            ->paginate($request->get('paginate') ?? 20);
+            ->with('status')
+            ->with('jobLocation')
+            ->with('user')
+            ->select('employees.*');
+
+        $employees = pagination($employees, $request->get('limit'));
 
         $additional = [];
         foreach (explode(',', $request->get('additional')) as $addition) {
@@ -55,22 +55,21 @@ class EmployeeController extends Controller
             }
         }
 
-        return (new ApiCollection($employees))
-            ->additional(['additional' => $additional]);
+        return (new ApiCollection($employees))->additional(['additional' => $additional]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest $request
-     *
-     * @return \App\Http\Resources\ApiResource
+     * @param StoreEmployeeRequest $request
+     * @return ApiResource
      */
     public function store(StoreEmployeeRequest $request)
     {
         DB::connection('tenant')->beginTransaction();
 
         $employee = new Employee;
+        $employee->user_id = $request->get('user_id');
         $employee->code = $request->get('code');
         $employee->name = $request->get('name');
         $employee->personal_identity = $request->get('personal_identity');
@@ -84,37 +83,51 @@ class EmployeeController extends Controller
         $employee->employee_group_id = $request->get('employee_group_id');
         $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
         $employee->job_title = $request->get('job_title');
+        $employee->employee_status_id = $request->get('employee_status_id');
+        $employee->employee_job_location_id = $request->get('employee_job_location_id');
+        $employee->daily_transport_allowance = $request->get('daily_transport_allowance') ?? 0;
+        $employee->functional_allowance = $request->get('functional_allowance') ?? 0;
+        $employee->communication_allowance = $request->get('communication_allowance') ?? 0;
+
+        if ($request->get('employee_group_name')) {
+            $group = new EmployeeGroup;
+            $group->name = $request->get('employee_group_name');
+            $group->save();
+
+            $employee->employee_group_id = $group->id;
+        }
+
         $employee->save();
 
-        for ($i = 0; $i < count($request->get('addresses')); $i++) {
+        for ($i = 0; $i < count($request->get('addresses') ?? []); $i++) {
             $employeeAddress = new Employee\EmployeeAddress;
             $employeeAddress->employee_id = $employee->id;
             $employeeAddress->address = $request->get('addresses')[$i]['address'];
             $employeeAddress->save();
         }
 
-        for ($i = 0; $i < count($request->get('phones')); $i++) {
+        for ($i = 0; $i < count($request->get('phones') ?? []); $i++) {
             $employeePhone = new Employee\EmployeePhone;
             $employeePhone->employee_id = $employee->id;
             $employeePhone->phone = $request->get('phones')[$i]['phone'];
             $employeePhone->save();
         }
 
-        for ($i = 0; $i < count($request->get('emails')); $i++) {
+        for ($i = 0; $i < count($request->get('emails') ?? []); $i++) {
             $employeeEmail = new EmployeeEmail;
             $employeeEmail->employee_id = $employee->id;
             $employeeEmail->email = $request->get('emails')[$i]['email'];
             $employeeEmail->save();
         }
 
-        for ($i = 0; $i < count($request->get('company_emails')); $i++) {
+        for ($i = 0; $i < count($request->get('company_emails') ?? []); $i++) {
             $employeeEmails = new Employee\EmployeeCompanyEmail;
             $employeeEmails->employee_id = $employee->id;
             $employeeEmails->email = $request->get('company_emails')[$i]['email'];
             $employeeEmails->save();
         }
 
-        for ($i = 0; $i < count($request->get('salary_histories')); $i++) {
+        for ($i = 0; $i < count($request->get('salary_histories') ?? []); $i++) {
             $employeeSalaryHistory = new EmployeeSalaryHistory;
             $employeeSalaryHistory->employee_id = $employee->id;
             $employeeSalaryHistory->date = date('Y-m-d', strtotime($request->get('salary_histories')[$i]['date']));
@@ -122,7 +135,7 @@ class EmployeeController extends Controller
             $employeeSalaryHistory->save();
         }
 
-        for ($i = 0; $i < count($request->get('social_media')); $i++) {
+        for ($i = 0; $i < count($request->get('social_media') ?? []); $i++) {
             $employeeSocialMedia = new EmployeeSocialMedia;
             $employeeSocialMedia->employee_id = $employee->id;
             $employeeSocialMedia->type = $request->get('social_media')[$i]['type'];
@@ -130,7 +143,7 @@ class EmployeeController extends Controller
             $employeeSocialMedia->save();
         }
 
-        for ($i = 0; $i < count($request->get('contracts')); $i++) {
+        for ($i = 0; $i < count($request->get('contracts') ?? []); $i++) {
             $employeeContract = new EmployeeContract;
             $employeeContract->employee_id = $employee->id;
             $employeeContract->contract_begin = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_begin']));
@@ -148,14 +161,14 @@ class EmployeeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param  int                     $id
-     *
-     * @return \App\Http\Resources\ApiResource
+     * @return ApiResource
      */
     public function show(Request $request, $id)
     {
-        $employee = Employee::where('employees.id', $id)
+        $employee = Employee::eloquentFilter($request)
+            ->where('employees.id', $id)
             ->with('group')
             ->with('gender')
             ->with('religion')
@@ -169,11 +182,11 @@ class EmployeeController extends Controller
             ->with('emails')
             ->with('addresses')
             ->with('phones')
+            ->with('status')
+            ->with('jobLocation')
+            ->with('user')
             ->select('employees.*')
-            ->filters($request->get('filters'))
-            ->fields($request->get('fields'))
-            ->sortBy($request->get('sort_by'))
-            ->includes($request->get('includes'))
+            ->eloquentFilter($request)
             ->first();
 
         return new ApiResource($employee);
@@ -183,15 +196,15 @@ class EmployeeController extends Controller
      * Update the specified resource in storage.
      *
      * @param \App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest $request
-     * @param  int                                                                     $id
-     *
-     * @return \App\Http\Resources\ApiResource
+     * @param  int $id
+     * @return ApiResource
      */
     public function update(UpdateEmployeeRequest $request, $id)
     {
         DB::connection('tenant')->beginTransaction();
 
         $employee = Employee::findOrFail($id);
+        $employee->user_id = $request->get('user_id');
         $employee->code = $request->get('code');
         $employee->name = $request->get('name');
         $employee->personal_identity = $request->get('personal_identity');
@@ -202,9 +215,24 @@ class EmployeeController extends Controller
         $employee->employee_marital_status_id = $request->get('employee_marital_status_id');
         $employee->married_with = $request->get('married_with');
         $employee->employee_religion_id = $request->get('employee_religion_id');
-        $employee->employee_group_id = $request->get('employee_group_id');
         $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
         $employee->job_title = $request->get('job_title');
+        $employee->employee_status_id = $request->get('employee_status_id');
+        $employee->employee_job_location_id = $request->get('employee_job_location_id');
+        $employee->daily_transport_allowance = $request->get('daily_transport_allowance');
+        $employee->functional_allowance = $request->get('functional_allowance');
+        $employee->communication_allowance = $request->get('communication_allowance');
+
+        if ($request->get('employee_group_name')) {
+            $group = new EmployeeGroup;
+            $group->name = $request->get('employee_group_name');
+            $group->save();
+
+            $employee->employee_group_id = $group->id;
+        } else {
+            $employee->employee_group_id = $request->get('employee_group_id');
+        }
+
         $employee->save();
 
         $deleteAddresses = array_column($request->get('addresses'), 'id');
@@ -305,6 +333,7 @@ class EmployeeController extends Controller
                 $employee->scorers()->attach($scorer['id']);
             }
         }
+
         DB::connection('tenant')->commit();
 
         return new ApiResource($employee);
@@ -315,7 +344,7 @@ class EmployeeController extends Controller
      *
      * @param  int  $id
      *
-     * @return \App\Http\Resources\ApiResource
+     * @return ApiResource
      */
     public function destroy($id)
     {

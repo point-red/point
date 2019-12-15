@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use App\Model\Project\Project;
+use Illuminate\Http\Request;
 
 class AuthUserController extends ApiController
 {

@@ -61,6 +61,7 @@ class GenerateScaffoldingCommand extends Command
         Artisan::call('make:controller', [
             'name' => 'Api\\'.$this->module.$this->submodule.$this->name.'Controller',
             '-r' => true,
+            '--api' => true,
         ]);
 
         $this->line('created '.$this->name.' controller');

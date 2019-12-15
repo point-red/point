@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use Illuminate\Http\Request;
-use App\Model\Master\User as TenantUser;
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Resources\Master\User\UserResource;
-use App\Http\Resources\Master\User\UserCollection;
 use App\Http\Requests\Master\User\StoreUserRequest;
 use App\Http\Requests\Master\User\UpdateUserRequest;
+use App\Http\Resources\Master\User\UserCollection;
+use App\Http\Resources\Master\User\UserResource;
+use App\Model\Master\User as TenantUser;
+use Illuminate\Http\Request;
 
 class UserController extends ApiController
 {
@@ -21,7 +21,7 @@ class UserController extends ApiController
      */
     public function index(Request $request)
     {
-        return new UserCollection(TenantUser::with('roles')->paginate($limit ?? 100));
+        return new UserCollection(TenantUser::eloquentFilter($request)->with('roles')->paginate($limit ?? 100));
     }
 
     /**

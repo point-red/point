@@ -2,10 +2,12 @@
 
 namespace App\Model\Accounting;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\TransactionModel;
 
-class CutOff extends Model
+class CutOff extends TransactionModel
 {
+    public static $morphName = 'CutOff';
+
     protected $connection = 'tenant';
 
     protected $table = 'cut_offs';
@@ -15,6 +17,6 @@ class CutOff extends Model
      */
     public function details()
     {
-        return $this->hasMany(get_class(new CutOffDetail()), 'cut_off_id');
+        return $this->hasMany(CutOffDetail::class, 'cut_off_id');
     }
 }

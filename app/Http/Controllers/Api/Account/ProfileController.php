@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api\Account;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Account\Profile\UpdateProfileRequest;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Account\Profile\UpdateProfileRequest;
 
 class ProfileController extends Controller
 {
@@ -62,7 +62,7 @@ class ProfileController extends Controller
         $user->save();
 
         foreach ($user->projects as $project) {
-            config()->set('database.connections.tenant.database', 'point_'.strtolower($project->code));
+            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
             DB::connection('tenant')->beginTransaction();
 

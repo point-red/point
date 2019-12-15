@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Api\Project;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Project\Project\DeleteProjectRequest;
+use App\Http\Requests\Project\Project\StoreProjectRequest;
+use App\Http\Requests\Project\Project\UpdateProjectRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Http\Resources\Project\Project\ProjectResource;
 use App\Model\Master\User;
-use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-use App\Http\Resources\Project\Project\ProjectResource;
-use App\Http\Requests\Project\Project\StoreProjectRequest;
-use App\Http\Requests\Project\Project\DeleteProjectRequest;
-use App\Http\Requests\Project\Project\UpdateProjectRequest;
+use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
 {
@@ -21,17 +22,15 @@ class ProjectController extends Controller
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     *
-     * @return \App\Http\Controllers\Api\Project\ApiCollection
+     * @return ApiCollection
      */
     public function index(Request $request)
     {
-        $limit = $request->input('limit') ?? 0;
-
         $projects = Project::join('project_user', 'projects.id', '=', 'project_user.project_id')
             ->where('project_user.user_id', auth()->user()->id)
-            ->select('projects.*', 'user_id', 'user_name', 'user_email', 'joined', 'request_join_at', 'project_user.id as user_invitation_id')
-            ->paginate($limit);
+            ->select('projects.*', 'user_id', 'user_name', 'user_email', 'joined', 'request_join_at', 'project_user.id as user_invitation_id');
+
+        $projects = pagination($projects, $request->input('limit'));
 
         return new ApiCollection($projects);
     }
@@ -39,26 +38,24 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     *
+     * @param StoreProjectRequest $request
      * @return \App\Http\Resources\Project\Project\ProjectResource
      */
     public function store(StoreProjectRequest $request)
     {
         // User only allowed to create max 1 project
         $numberOfProject = Project::where('owner_id', auth()->user()->id)->count();
+        // TODO: disable new project creation
         if ($numberOfProject >= 1) {
             return response()->json([
                 'code' => 422,
-                'message' => 'Beta user only allowed to create 1 project',
+                'message' => 'We are updating our server, currently you cannot create new project',
             ], 422);
         }
 
         // Create new database for tenant project
-        $dbName = 'point_'.strtolower($request->get('code'));
-        Artisan::call('tenant:create-database', [
-            'db_name' => $dbName,
-        ]);
+        $dbName = env('DB_DATABASE').'_'.strtolower($request->get('code'));
+        Artisan::call('tenant:database:create', ['db_name' => $dbName]);
 
         // Update tenant database name in configuration
         config()->set('database.connections.tenant.database', $dbName);
@@ -69,8 +66,13 @@ class ProjectController extends Controller
         $project->owner_id = auth()->user()->id;
         $project->code = $request->get('code');
         $project->name = $request->get('name');
+        $project->group = $request->get('group');
+        $project->timezone = $request->get('timezone');
         $project->address = $request->get('address');
         $project->phone = $request->get('phone');
+        $project->whatsapp = $request->get('whatsapp');
+        $project->website = $request->get('website');
+        $project->marketplace_notes = $request->get('marketplace_notes');
         $project->vat_id_number = $request->get('vat_id_number');
         $project->invitation_code = get_invitation_code();
         $project->save();
@@ -84,11 +86,7 @@ class ProjectController extends Controller
         $projectUser->save();
 
         // Migrate database
-        Artisan::call('migrate', [
-            '--database' => 'tenant',
-            '--path' => 'database/migrations/tenant',
-            '--force' => true,
-        ]);
+        Artisan::call('tenant:migrate', ['db_name' => $dbName]);
 
         // Clone user point into their database
         $user = new User;
@@ -99,7 +97,7 @@ class ProjectController extends Controller
         $user->email = auth()->user()->email;
         $user->save();
 
-        Artisan::call('tenant:setup-database');
+        Artisan::call('tenant:seed:first', ['db_name' => $dbName]);
 
         DB::connection('tenant')->commit();
 
@@ -110,12 +108,17 @@ class ProjectController extends Controller
      * Display the specified resource.
      *
      * @param  int $id
-     *
-     * @return \App\Http\Resources\Project\Project\ProjectResource
+     * @return ApiResource
      */
     public function show($id)
     {
-        return new ProjectResource(Project::findOrFail($id));
+        $project = Project::findOrFail($id)->load('users');
+
+        $dbName = env('DB_DATABASE').'_'.strtolower($project->code);
+
+        $project->db_size = dbm_get_size($dbName, 'tenant');
+
+        return new ApiResource($project);
     }
 
     /**
@@ -131,8 +134,12 @@ class ProjectController extends Controller
         // Update tenant database name in configuration
         $project = Project::findOrFail($id);
         $project->name = $request->get('name');
+        $project->group = $request->get('group');
         $project->address = $request->get('address');
         $project->phone = $request->get('phone');
+        $project->whatsapp = $request->get('whatsapp');
+        $project->website = $request->get('website');
+        $project->marketplace_notes = $request->get('marketplace_notes');
         $project->vat_id_number = $request->get('vat_id_number');
         $project->invitation_code = $request->get('invitation_code');
         $project->invitation_code_enabled = $request->get('invitation_code_enabled');
@@ -156,8 +163,8 @@ class ProjectController extends Controller
         $project->delete();
 
         // Delete database tenant
-        Artisan::call('tenant:delete-database', [
-            'db_name' => 'point_'.strtolower($project->code),
+        Artisan::call('tenant:database:delete', [
+            'db_name' => env('DB_DATABASE').'_'.strtolower($project->code),
         ]);
 
         return new ProjectResource($project);

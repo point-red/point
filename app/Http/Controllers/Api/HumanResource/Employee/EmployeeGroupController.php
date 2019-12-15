@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\HumanResource\Employee\EmployeeGroup;
 use App\Http\Resources\HumanResource\Employee\EmployeeGroup\EmployeeGroupCollection;
+use App\Model\HumanResource\Employee\EmployeeGroup;
+use Illuminate\Http\Request;
 
 class EmployeeGroupController extends Controller
 {

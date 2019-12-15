@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateProjectsTable extends Migration
 {
@@ -17,8 +17,13 @@ class CreateProjectsTable extends Migration
             $table->increments('id');
             $table->string('code')->unique();
             $table->string('name');
+            $table->string('group')->nullable();
+            $table->string('timezone')->default('UTC');
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
+            $table->string('whatsapp')->nullable();
+            $table->string('website')->nullable();
+            $table->text('marketplace_notes')->nullable();
             $table->string('vat_id_number')->nullable();
             $table->unsignedInteger('owner_id')->index();
             $table->string('invitation_code', 20)->nullable()->unique();

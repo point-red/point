@@ -2,9 +2,9 @@
 
 namespace App\Model\HumanResource\Kpi;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class KpiTemplateScore extends Model
+class KpiTemplateScore extends MasterModel
 {
     protected $connection = 'tenant';
 
@@ -13,6 +13,6 @@ class KpiTemplateScore extends Model
      */
     public function indicator()
     {
-        return $this->belongsTo(get_class(new KpiTemplateIndicator()));
+        return $this->belongsTo(KpiTemplateIndicator::class);
     }
 }

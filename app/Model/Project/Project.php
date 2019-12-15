@@ -2,6 +2,7 @@
 
 namespace App\Model\Project;
 
+use App\Model\ProjectPreference;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,7 +15,7 @@ class Project extends Model
      */
     public function owner()
     {
-        return $this->belongsTo(get_class(new User()), 'owner_id');
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
     /**
@@ -22,6 +23,14 @@ class Project extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(new User());
+        return $this->belongsToMany(User::class);
+    }
+
+    /**
+     * Get the preference record associated with the project.
+     */
+    public function preference()
+    {
+        return $this->hasOne(ProjectPreference::class);
     }
 }

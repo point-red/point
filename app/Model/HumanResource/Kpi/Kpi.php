@@ -2,11 +2,11 @@
 
 namespace App\Model\HumanResource\Kpi;
 
-use App\Model\Master\User;
-use Illuminate\Database\Eloquent\Model;
 use App\Model\HumanResource\Employee\Employee;
+use App\Model\Master\User;
+use App\Model\TransactionModel;
 
-class Kpi extends Model
+class Kpi extends TransactionModel
 {
     protected $connection = 'tenant';
 
@@ -15,7 +15,7 @@ class Kpi extends Model
      */
     public function groups()
     {
-        return $this->hasMany(get_class(new KpiGroup()));
+        return $this->hasMany(KpiGroup::class);
     }
 
     /**
@@ -23,7 +23,7 @@ class Kpi extends Model
      */
     public function indicators()
     {
-        return $this->hasManyThrough('App\Model\HumanResource\Kpi\KpiIndicator', 'App\Model\HumanResource\Kpi\KpiGroup');
+        return $this->hasManyThrough(KpiIndicator::class, KpiGroup::class);
     }
 
     /**
@@ -31,7 +31,7 @@ class Kpi extends Model
      */
     public function employee()
     {
-        return $this->belongsTo(get_class(new Employee()));
+        return $this->belongsTo(Employee::class);
     }
 
     /**
@@ -39,6 +39,6 @@ class Kpi extends Model
      */
     public function scorer()
     {
-        return $this->belongsTo(get_class(new User()));
+        return $this->belongsTo(User::class);
     }
 }

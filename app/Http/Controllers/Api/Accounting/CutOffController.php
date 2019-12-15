@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use Illuminate\Http\Request;
-use App\Model\Accounting\CutOff;
-use App\Model\Accounting\Journal;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Model\Accounting\CutOffDetail;
-use App\Http\Resources\Accounting\CutOff\CutOffResource;
 use App\Http\Resources\Accounting\CutOff\CutOffCollection;
+use App\Http\Resources\Accounting\CutOff\CutOffResource;
+use App\Model\Accounting\CutOff;
+use App\Model\Accounting\CutOffDetail;
+use App\Model\Accounting\Journal;
+use App\Model\Form;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CutOffController extends Controller
 {
@@ -44,6 +45,9 @@ class CutOffController extends Controller
         $cutOff->number = 'CUTOFF/'.date('ym', strtotime($request->get('date'))).'/'.sprintf('%04d', ++$increment);
         $cutOff->save();
 
+        $form = new Form;
+        $form->saveData($request->all(), $cutOff);
+
         $details = $request->get('details');
         for ($i = 0; $i < count($details); $i++) {
             $cutOffDetail = new CutOffDetail;
@@ -54,9 +58,7 @@ class CutOffController extends Controller
             $cutOffDetail->save();
 
             $journal = new Journal;
-            $journal->journalable_type = get_class(new CutOff());
-            $journal->journalable_id = $cutOff->id;
-            $journal->date = $cutOff->date;
+            $journal->form_id = $form->id;
             $journal->chart_of_account_id = $cutOffDetail->chart_of_account_id;
             $journal->debit = $cutOffDetail->debit;
             $journal->credit = $cutOffDetail->credit;
@@ -107,7 +109,7 @@ class CutOffController extends Controller
 
         $cutOff->delete();
 
-        Journal::where('journalable_type', get_class($cutOff))->where('journalable_id', $id)->delete();
+        Journal::where('journalable_type', CutOff::class)->where('journalable_id', $id)->delete();
 
         DB::connection('tenant')->commit();
 

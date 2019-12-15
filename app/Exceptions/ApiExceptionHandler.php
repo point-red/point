@@ -3,11 +3,11 @@
 namespace App\Exceptions;
 
 use Exception;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use League\OAuth2\Server\Exception\OAuthServerException;
+use Illuminate\Validation\ValidationException;
+use Laravel\Passport\Exceptions\OAuthServerException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 trait ApiExceptionHandler
@@ -18,7 +18,7 @@ trait ApiExceptionHandler
         if ($exception instanceof NotFoundHttpException) {
             return response()->json([
                 'code' => 404,
-                'message' => 'Http not found',
+                'message' => 'Http not found.',
             ], 404);
         }
 
@@ -26,7 +26,7 @@ trait ApiExceptionHandler
         if ($exception instanceof ModelNotFoundException) {
             return response()->json([
                 'code' => 404,
-                'message' => 'Model not found',
+                'message' => 'Model not found.',
             ], 404);
         }
 
@@ -69,11 +69,27 @@ trait ApiExceptionHandler
             ], $exception->getCode());
         }
 
+        // handle form rules exception
+        if ($exception instanceof IsReferencedException) {
+            return response()->json([
+                'code' => $exception->getCode(),
+                'message' => $exception->getMessage(),
+                'referenced_by' => $exception->getReferenced(),
+            ], $exception->getCode());
+        }
+
+        if ($exception instanceof StockNotEnoughException || $exception instanceof ItemQuantityInvalidException) {
+            return response()->json([
+                'code' => 422,
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
+
         /* Handle server error or library error */
         if ($exception->getCode() >= 500 || ! $exception->getCode()) {
             return response()->json([
                 'code' => 500,
-                'message' => 'Request Error',
+                'message' => 'Internal Server Error',
             ], 500);
         }
 

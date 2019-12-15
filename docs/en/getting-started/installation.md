@@ -6,12 +6,17 @@ Point framework has a few system requirements. Of course, all of these requireme
 
 However, if you are not using Homestead, you will need to make sure your server meets the following requirements:
 
-- PHP >= 7.0.0
+- PHP >= 7.2.0
+- BCMath PHP Extension
+- Ctype PHP Extension
+- JSON PHP Extension
+- Mbstring PHP Extension
 - OpenSSL PHP Extension
 - PDO PHP Extension
-- Mbstring PHP Extension
 - Tokenizer PHP Extension
 - XML PHP Extension
+
+Since Point using Firestore you should install and enable *grpc*. For more detailed guide please check [https://cloud.google.com/php/grpc](https://cloud.google.com/php/grpc)  
 
 ## Download
 

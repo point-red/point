@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Accounting\RatioReport;
 
-use Illuminate\Http\Request;
 use App\Helpers\Ratio\AcidTestRatio;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class AcidTestRatioController extends Controller
 {

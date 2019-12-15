@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
-use Laravel\Horizon\Horizon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Horizon\Horizon;
+use Psr\Log\LoggerInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Horizon::auth(function ($request) {
+        Horizon::auth(function () {
             return true;
         });
     }
@@ -26,9 +28,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        if (env('APP_ENV') === 'production') {
-            $this->app->alias('bugsnag.logger', \Illuminate\Contracts\Logging\Log::class);
-            $this->app->alias('bugsnag.logger', \Psr\Log\LoggerInterface::class);
-        }
+        // if (env('APP_ENV') === 'production') {
+        //     $this->app->alias('bugsnag.logger', Log::class);
+        //     $this->app->alias('bugsnag.logger', LoggerInterface::class);
+        // }
     }
 }

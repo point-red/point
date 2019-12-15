@@ -19,6 +19,8 @@ trait EloquentFilters
             ->filterLike($request->get('filter_like'))
             ->filterMin($request->get('filter_min'))
             ->filterMax($request->get('filter_max'))
+            ->filterDateMin($request->get('filter_date_min'))
+            ->filterDateMax($request->get('filter_date_max'))
             ->filterNull($request->get('filter_null'))
             ->filterNotNull($request->get('filter_not_null'))
             ->filterHas($request->get('filter_has'))
@@ -30,6 +32,8 @@ trait EloquentFilters
             ->orFilterLike($request->get('or_filter_like'))
             ->orFilterMin($request->get('or_filter_min'))
             ->orFilterMax($request->get('or_filter_max'))
+            ->orFilterDateMin($request->get('or_filter_date_min'))
+            ->orFilterDateMax($request->get('or_filter_date_max'))
             ->orFilterNull($request->get('or_filter_null'))
             ->orFilterNotNull($request->get('or_filter_not_null'))
             ->orFilterWhereHas($request->get('or_filter_where_has'))
@@ -257,6 +261,58 @@ trait EloquentFilters
      * @param $query
      * @param $values
      *
+     * Example to get item that has stock at least 1
+     * ?filter_min[form.date]=2019-12-30
+     */
+    public function scopeFilterDateMin($query, $values)
+    {
+        $values = $this->convertJavascriptObjectToArray($values);
+
+        foreach ($values as $key => $value) {
+            $relation = explode('.', $key);
+            $column = array_pop($relation);
+            $relation = implode('.', $relation);
+
+            if (! empty($relation)) {
+                $query->whereHas($relation, function ($query) use ($column, $value) {
+                    $query->where($column, '>=', convert_to_server_timezone($value));
+                });
+            } else {
+                $query->where($key, '>=', convert_to_server_timezone($value));
+            }
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $values
+     *
+     * Example to get item that has stock below 30
+     * ?filter_max[stock]=30
+     */
+    public function scopeFilterDateMax($query, $values)
+    {
+        $values = $this->convertJavascriptObjectToArray($values);
+
+        foreach ($values as $key => $value) {
+            $relation = explode('.', $key);
+            $column = array_pop($relation);
+            $relation = implode('.', $relation);
+
+            if (! empty($relation)) {
+                $query->whereHas($relation, function ($query) use ($column, $value) {
+                    $query->where($column, '<=', convert_to_server_timezone($value));
+                });
+            } else {
+                $query->where($key, '<=', convert_to_server_timezone($value));
+            }
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $values
+     *
      * Example to get pending form
      * ?filter_null=form.status
      */
@@ -395,6 +451,32 @@ trait EloquentFilters
 
         foreach ($values as $key => $value) {
             $query->orWhere($key, '>=', $value);
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $values
+     */
+    public function scopeOrFilterDateMin($query, $values)
+    {
+        $values = $this->convertJavascriptObjectToArray($values);
+
+        foreach ($values as $key => $value) {
+            $query->orWhere($key, '<=', convert_to_server_timezone($value));
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $values
+     */
+    public function scopeOrFilterDateMax($query, $values)
+    {
+        $values = $this->convertJavascriptObjectToArray($values);
+
+        foreach ($values as $key => $value) {
+            $query->orWhere($key, '>=', convert_to_server_timezone($value));
         }
     }
 

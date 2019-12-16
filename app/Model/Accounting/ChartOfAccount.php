@@ -11,6 +11,13 @@ class ChartOfAccount extends MasterModel
 
     protected $table = 'chart_of_accounts';
 
+    protected $appends = ['name'];
+
+    public function getLabelAttribute()
+    {
+        return $this->number . ' ' . $this->name;
+    }s
+
     /**
      * Get the type that owns the chart of account.
      */

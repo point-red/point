@@ -116,22 +116,22 @@ class CustomerController extends Controller
         $customer->fill($request->all());
         $customer->save();
 
-        if ($request->has('group')) {
+        if ($request->has('groups')) {
             $group = null;
-            if (! empty($request->get('group')['id'])) {
-                $group = CustomerGroup::findOrFail($request->get('group')['id']);
-            } elseif (! empty($request->get('group')['name'])) {
-                $group = CustomerGroup::where('name', $request->get('group')['name'])->first();
-
-                if (! $group) {
-                    $group = new CustomerGroup;
-                    $group->name = $request->get('group')['name'];
-                    $group->save();
+            foreach ($request->get('groups') as $arrGroups) {
+                if (! empty($arrGroups['id'])) {
+                    $group = CustomerGroup::findOrFail($arrGroups['id']);
+                } elseif (! empty($arrGroups['name'])) {
+                    $group = CustomerGroup::where('name', $arrGroups['name'])->first();
+                    if (! $group) {
+                        $group = new CustomerGroup;
+                        $group->name = $arrGroups['name'];
+                        $group->save();
+                    }
                 }
-            }
-
-            if ($group) {
-                $group->customers()->syncWithoutDetaching([$customer->id], ['created_at' => Carbon::now()]);
+                if ($group) {
+                    $group->customers()->syncWithoutDetaching([$customer->id], ['created_at' => Carbon::now()]);
+                }
             }
         }
 
@@ -183,25 +183,22 @@ class CustomerController extends Controller
         $customer->fill($request->all());
         $customer->save();
 
-        if ($request->has('group')) {
+        if ($request->has('groups')) {
             $group = null;
-            if (! empty($request->get('group')['id'])) {
-                $group = Group::findOrFail($request->get('group')['id']);
-            } elseif (! empty($request->get('group')['name'])) {
-                $group = Group::where('name', $request->get('group')['name'])
-                    ->where('class_reference', Customer::class)
-                    ->first();
-
-                if (! $group) {
-                    $group = new Group;
-                    $group->name = $request->get('group')['name'];
-                    $group->class_reference = 'customer';
-                    $group->save();
+            foreach ($request->get('groups') as $arrGroups) {
+                if (! empty($arrGroups['id'])) {
+                    $group = CustomerGroup::findOrFail($arrGroups['id']);
+                } elseif (! empty($arrGroups['name'])) {
+                    $group = CustomerGroup::where('name', $arrGroups['name'])->first();
+                    if (! $group) {
+                        $group = new CustomerGroup;
+                        $group->name = $arrGroups['name'];
+                        $group->save();
+                    }
                 }
-            }
-
-            if ($group) {
-                $group->customers()->attach($customer);
+                if ($group) {
+                    $group->customers()->syncWithoutDetaching([$customer->id], ['created_at' => Carbon::now()]);
+                }
             }
         }
 

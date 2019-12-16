@@ -16,6 +16,8 @@ class Item extends MasterModel
 
     protected $connection = 'tenant';
 
+    protected $appends = ['label'];
+
     protected $fillable = [
         'code',
         'name',
@@ -34,6 +36,11 @@ class Item extends MasterModel
         'stock_reminder' => 'double',
         'cogs' => 'double',
     ];
+
+    public function getLabelAttribute()
+    {
+        return $this->code . ' ' . $this->name;
+    }
 
     public function inventories()
     {
@@ -107,11 +114,10 @@ class Item extends MasterModel
                 if (! $group['id'] && $group['name']) {
                     $newGroup = new Group;
                     $newGroup->name = $group['name'];
-                    $newGroup->type = $group['type'];
-                    $newGroup->class_reference = $group['class_reference'];
-                    $item->groups()->attach($newGroup->id);
+                    $newGroup->save();
+                    $item->groups()->syncWithoutDetaching($newGroup->id);
                 } elseif ($group['id']) {
-                    $item->groups()->attach($group['id']);
+                    $item->groups()->syncWithoutDetaching($group['id']);
                 }
             }
         }

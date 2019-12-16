@@ -21,4 +21,12 @@ class Warehouse extends MasterModel
     {
         return $this->code . ' ' . $this->name;
     }
+
+    /**
+     * The users that belong to the warehouse.
+     */
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_warehouse', 'warehouse_id', 'user_id');
+    }
 }

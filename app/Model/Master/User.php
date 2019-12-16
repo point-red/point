@@ -2,6 +2,7 @@
 
 namespace App\Model\Master;
 
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\MasterModel;
 use Illuminate\Support\Arr;
 use Spatie\Permission\Traits\HasRoles;
@@ -35,6 +36,14 @@ class User extends MasterModel
      */
     public function employees()
     {
-        return $this->belongsToMany('App\Model\HumanResource\Employee\Employee', 'employee_scorer');
+        return $this->belongsToMany(Employee::class, 'employee_scorer');
+    }
+
+    /**
+     * The warehouses that belong to the user.
+     */
+    public function warehouses()
+    {
+        return $this->belongsToMany(Warehouse::class, 'user_warehouse');
     }
 }

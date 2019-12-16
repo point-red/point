@@ -64,7 +64,11 @@ class InventoryAudit extends TransactionModel
                 $inventoryAudit->warehouse_id,
                 $inventoryAuditItem->item_id,
                 $inventoryAuditItem->quantity,
-                $inventoryAuditItem->price);
+                $inventoryAuditItem->price,
+                [
+                    'production_number' => $inventoryAuditItem->production_number,
+                    'expiry_date' => $inventoryAuditItem->expiry_date
+                ]);
         }
     }
 }

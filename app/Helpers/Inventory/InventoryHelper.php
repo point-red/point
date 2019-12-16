@@ -3,6 +3,7 @@
 namespace App\Helpers\Inventory;
 
 use App\Exceptions\ItemQuantityInvalidException;
+use App\Exceptions\ProductionNumberNotExistException;
 use App\Exceptions\StockNotEnoughException;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
@@ -19,7 +20,7 @@ class InventoryHelper
      * @throws StockNotEnoughException
      * @throws ItemQuantityInvalidException
      */
-    private static function insert($formId, $warehouseId, $itemId, $quantity, $price)
+    private static function insert($formId, $warehouseId, $itemId, $quantity, $price, $options = [])
     {
         if ($quantity == 0) {
             throw new ItemQuantityInvalidException(Item::findOrFail($itemId));
@@ -34,6 +35,14 @@ class InventoryHelper
         $inventory->quantity = $quantity;
         $inventory->price = $price;
         $inventory->total_quantity = $quantity;
+
+        if ($options['production_number']) {
+            $inventory->production_number = $options['production_number'];
+        }
+
+        if ($options['expiry_date']) {
+            $inventory->expiry_date = $options['expiry_date'];
+        }
 
         // check if stock is enough to prevent stock minus
         if ($quantity < 0 && (! $lastInventory || $lastInventory->total_quantity < $quantity)) {
@@ -62,18 +71,53 @@ class InventoryHelper
         $inventory->save();
     }
 
-    public static function increase($formId, $warehouseId, $itemId, $quantity, $price)
+    public static function increase($formId, $warehouseId, $itemId, $quantity, $price, $options = [])
     {
         Item::where('id', $itemId)->increment('stock', $quantity);
 
-        self::insert($formId, $warehouseId, $itemId, abs($quantity), $price);
+        self::insert($formId, $warehouseId, $itemId, abs($quantity), $price, $options);
     }
 
-    public static function decrease($formId, $warehouseId, $itemId, $quantity)
+    public static function decrease($formId, $warehouseId, $itemId, $quantity, $options = [])
     {
         Item::where('id', $itemId)->decrement('stock', $quantity);
 
-        self::insert($formId, $warehouseId, $itemId, -abs($quantity), 0);
+        if ($options['production_number']) {
+            // Check production number exist in inventory
+            $exist = Inventory::where('production_number', '=', $options['production_number'])->first();
+            if (!$exist) {
+                return new ProductionNumberNotExistException(Item::findOrFail($itemId), $options['production_number']);
+            }
+        }
+
+        self::insert($formId, $warehouseId, $itemId, abs($quantity) * -1, 0, $options);
+    }
+
+    /**
+     * Check stock availability
+     *
+     * @param $itemId
+     * @param $warehouseId
+     * @param $quantity
+     * @param array $options
+     * @return bool
+     */
+    public static function available($itemId, $warehouseId, $quantity, $options = [])
+    {
+        return true;
+    }
+
+    /**
+     * Check how much stock is available
+     *
+     * @param $itemId
+     * @param $warehouseId
+     * @param array $options
+     * @return int
+     */
+    public static function stock($itemId, $warehouseId, $options = [])
+    {
+        return 0;
     }
 
     /**

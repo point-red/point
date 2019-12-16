@@ -8,6 +8,7 @@ use App\Exceptions\StockNotEnoughException;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
+use Illuminate\Support\Facades\DB;
 
 class InventoryHelper
 {
@@ -104,6 +105,34 @@ class InventoryHelper
      */
     public static function available($itemId, $warehouseId, $quantity, $options = [])
     {
+        $dateFrom = date('Y-m-d H:i:s');
+
+        if ($options['date_from']) {
+            $dateFrom = convert_to_server_timezone($options['date_from']);
+        }
+
+        $inventory = Inventory::join('forms', 'forms.id', '=', 'inventories.form_id')
+            ->select(DB::raw('sum(inventories.quantity) as totalQty'))
+            ->where('forms.date', '<', $dateFrom)
+            ->where('inventories.warehouse_id', '=', $warehouseId)
+            ->where('inventories.item_id', '=', $itemId);
+
+        if ($options['production_number']) {
+            $inventory = $inventory->where('inventories.production_number', '=', $options['production_number']);
+        } else if ($options['expiry_date']) {
+            $inventory = $inventory->where('inventories.expiry_date', '=', $options['expiry_date']);
+        }
+
+        $inventory = $inventory->first();
+
+        if (!$inventory) {
+            return false;
+        }
+
+        if ($inventory->totalQty < $quantity) {
+            return false;
+        }
+
         return true;
     }
 
@@ -117,6 +146,30 @@ class InventoryHelper
      */
     public static function stock($itemId, $warehouseId, $options = [])
     {
+        $dateFrom = date('Y-m-d H:i:s');
+
+        if ($options['date_from']) {
+            $dateFrom = convert_to_server_timezone($options['date_from']);
+        }
+
+        $inventory = Inventory::join('forms', 'forms.id', '=', 'inventories.form_id')
+            ->select(DB::raw('sum(inventories.quantity) as totalQty'))
+            ->where('forms.date', '<', $dateFrom)
+            ->where('inventories.warehouse_id', '=', $warehouseId)
+            ->where('inventories.item_id', '=', $itemId);
+
+        if ($options['production_number']) {
+            $inventory = $inventory->where('inventories.production_number', '=', $options['production_number']);
+        } else if ($options['expiry_date']) {
+            $inventory = $inventory->where('inventories.expiry_date', '=', $options['expiry_date']);
+        }
+
+        $inventory = $inventory->first();
+
+        if (!$inventory) {
+            return 0;
+        }
+
         return 0;
     }
 

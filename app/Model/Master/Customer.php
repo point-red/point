@@ -14,7 +14,7 @@ class Customer extends MasterModel
 
     protected $connection = 'tenant';
 
-    protected $appends = ['name'];
+    protected $appends = ['label'];
 
     protected $casts = ['credit_ceiling' => 'double'];
 

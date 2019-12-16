@@ -184,22 +184,16 @@ class CustomerController extends Controller
         $customer->save();
 
         if ($request->has('groups')) {
-            $group = null;
-            foreach ($request->get('groups') as $arrGroups) {
-                if (! empty($arrGroups['id'])) {
-                    $group = CustomerGroup::findOrFail($arrGroups['id']);
-                } elseif (! empty($arrGroups['name'])) {
-                    $group = CustomerGroup::where('name', $arrGroups['name'])->first();
-                    if (! $group) {
-                        $group = new CustomerGroup;
-                        $group->name = $arrGroups['name'];
-                        $group->save();
-                    }
-                }
-                if ($group) {
-                    $group->customers()->syncWithoutDetaching([$customer->id], ['created_at' => Carbon::now()]);
+            $groups = $request->get('groups');
+            foreach ($groups as $group) {
+                if (! $group['id'] && $group['name']) {
+                    $newGroup = new Group;
+                    $newGroup->name = $group['name'];
+                    $newGroup->save();
+                    $group['id'] = $newGroup->id;
                 }
             }
+            $customer->groups()->sync(array_column($groups, 'id'));
         }
 
         Address::saveFromRelation($customer, $request->get('addresses'));

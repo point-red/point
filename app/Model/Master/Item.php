@@ -101,8 +101,12 @@ class Item extends MasterModel
                     $openingStockWarehouse->opening_stock_id = $openingStock->id;
                     $openingStockWarehouse->warehouse_id = $osWarehouse['warehouse_id'];
                     $openingStockWarehouse->quantity = $osWarehouse['quantity'];
-                    $openingStockWarehouse->production_number = $osWarehouse['production_number'];
-                    $openingStockWarehouse->expiry_date = convert_to_server_timezone($osWarehouse['expiry_date']);
+                    if (array_key_exists('production_number', $osWarehouse)) {
+                        $openingStockWarehouse->production_number = $osWarehouse['production_number'];
+                    }
+                    if (array_key_exists('expiry_date', $osWarehouse)) {
+                        $openingStockWarehouse->expiry_date = convert_to_server_timezone($osWarehouse['expiry_date']);
+                    }
                     $openingStockWarehouse->price = $osWarehouse['price'];
                     $openingStockWarehouse->save();
 

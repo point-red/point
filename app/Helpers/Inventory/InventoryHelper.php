@@ -18,8 +18,9 @@ class InventoryHelper
      * @param $itemId
      * @param $quantity
      * @param $price
-     * @throws StockNotEnoughException
+     * @param array $options
      * @throws ItemQuantityInvalidException
+     * @throws StockNotEnoughException
      */
     private static function insert($formId, $warehouseId, $itemId, $quantity, $price, $options = [])
     {
@@ -37,11 +38,11 @@ class InventoryHelper
         $inventory->price = $price;
         $inventory->total_quantity = $quantity;
 
-        if ($options['production_number']) {
+        if (array_key_exists('production_number', $options)) {
             $inventory->production_number = $options['production_number'];
         }
 
-        if ($options['expiry_date']) {
+        if (array_key_exists('expiry_date', $options)) {
             $inventory->expiry_date = $options['expiry_date'];
         }
 
@@ -83,7 +84,7 @@ class InventoryHelper
     {
         Item::where('id', $itemId)->decrement('stock', $quantity);
 
-        if ($options['production_number']) {
+        if (array_key_exists('production_number', $options)) {
             // Check production number exist in inventory
             $exist = Inventory::where('production_number', '=', $options['production_number'])->first();
             if (!$exist) {
@@ -107,7 +108,7 @@ class InventoryHelper
     {
         $dateFrom = date('Y-m-d H:i:s');
 
-        if ($options['date_from']) {
+        if (array_key_exists('date_from', $options)) {
             $dateFrom = convert_to_server_timezone($options['date_from']);
         }
 
@@ -117,9 +118,9 @@ class InventoryHelper
             ->where('inventories.warehouse_id', '=', $warehouseId)
             ->where('inventories.item_id', '=', $itemId);
 
-        if ($options['production_number']) {
+        if (array_key_exists('production_number', $options)) {
             $inventory = $inventory->where('inventories.production_number', '=', $options['production_number']);
-        } else if ($options['expiry_date']) {
+        } else if (array_key_exists('expiry_date', $options)) {
             $inventory = $inventory->where('inventories.expiry_date', '=', $options['expiry_date']);
         }
 
@@ -148,7 +149,7 @@ class InventoryHelper
     {
         $dateFrom = date('Y-m-d H:i:s');
 
-        if ($options['date_from']) {
+        if (array_key_exists('date_from', $options)) {
             $dateFrom = convert_to_server_timezone($options['date_from']);
         }
 
@@ -158,9 +159,9 @@ class InventoryHelper
             ->where('inventories.warehouse_id', '=', $warehouseId)
             ->where('inventories.item_id', '=', $itemId);
 
-        if ($options['production_number']) {
+        if (array_key_exists('production_number', $options)) {
             $inventory = $inventory->where('inventories.production_number', '=', $options['production_number']);
-        } else if ($options['expiry_date']) {
+        } else if (array_key_exists('expiry_date', $options)) {
             $inventory = $inventory->where('inventories.expiry_date', '=', $options['expiry_date']);
         }
 

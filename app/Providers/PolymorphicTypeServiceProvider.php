@@ -75,7 +75,7 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             // Manufacture
             ManufactureFormula::$morphName => ManufactureFormula::class,
             ManufactureInput::$morphName => ManufactureInput::class,
-            ManufactureOutput::$morphName => $ManufactureOutput::class,
+            ManufactureOutput::$morphName => ManufactureOutput::class,
             // Finance
             PaymentOrder::$morphName => PaymentOrder::class,
             Payment::$morphName => Payment::class,

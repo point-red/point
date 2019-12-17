@@ -14,6 +14,10 @@ class UpdateItemRequest extends FormRequest
      */
     public function authorize()
     {
+        if (! tenant(auth()->user()->id)->hasPermissionTo('update item')) {
+            return false;
+        }
+
         return true;
     }
 
@@ -26,7 +30,7 @@ class UpdateItemRequest extends FormRequest
     {
         return [
             'name' => 'string',
-            'chart_of_account_id' => ValidationRule::foreignKeyOptional('chart_of_accounts'),
+            'chart_of_account_id' => 'required',
             'code' => 'bail|nullable|string|unique:tenant.items,code,'.$this->id,
             'barcode' => 'bail|nullable|string|unique:tenant.items,barcode',
             'stock_reminder' => 'numeric|min:0',

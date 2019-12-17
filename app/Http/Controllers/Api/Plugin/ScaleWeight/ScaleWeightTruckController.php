@@ -21,6 +21,17 @@ class ScaleWeightTruckController extends Controller
      */
     public function index(Request $request)
     {
+        // Temporary solution for turn off/on synchronization
+        // Added, updated, and deleted query filter
+        if ($request->has('filter_null')
+            || $request->has('filter_equal')
+            || $request->has('filter_min')
+            || $request->has('filter_max')
+            || $request->has('filter_date_min')
+            || $request->has('filter_date_max')) {
+            return new ApiCollection(ScaleWeightTruck::where('id', '<', 1)->get());
+        }
+
         $scaleWeightTruck = ScaleWeightTruck::eloquentFilter($request);
 
         $scaleWeightTruck = pagination($scaleWeightTruck, $request->get('limit'));

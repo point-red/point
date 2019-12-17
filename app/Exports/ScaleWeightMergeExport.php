@@ -8,6 +8,7 @@
 
 namespace App\Exports;
 
+use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -61,9 +62,8 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
     public function query()
     {
         $from_sub_q = 'FROM '.config('database.connections.tenant.database').'.scale_weight_items 
-                WHERE license_number = t.license_number AND time BETWEEN t.time_in AND t.time_out ) as';
-        $merge = DB::table(config('database.connections.tenant.database').'.scale_weight_trucks as t')
-            ->whereRaw("time_in >= '$this->dateFrom'")
+                WHERE license_number = scale_weight_trucks.license_number AND time BETWEEN scale_weight_trucks.time_in AND scale_weight_trucks.time_out ) as';
+        $merge = ScaleWeightTruck::whereRaw("time_in >= '$this->dateFrom'")
             ->whereRaw("time_in <= '$this->dateTo'")
             ->select('license_number', DB::raw("DATE_FORMAT(time_in, '%d/%m/%Y') as date_in"),
                 DB::raw("DATE_FORMAT(time_out, '%d/%m/%Y') as date_out"),
@@ -85,13 +85,11 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
                 DB::raw("(SELECT MAX(item) $from_sub_q item_item"),
                 DB::raw("(SELECT MAX(user) $from_sub_q item_user")
             )
-            ->orderBy('t.time_in');
-        //karena jika tidak ada yg dipilih akan ditampilkan semua
-        //maka jika tidak ada yg dipilih saya tambahkan ~
+            ->orderBy('scale_weight_trucks.time_in');
         if (count($this->cat) > 0) {
-            $merge->whereIn('t.item', $this->cat);
+            $merge->whereIn('scale_weight_trucks.item', $this->cat);
         } else {
-            $merge->whereIn('t.item', ['~']);
+            $merge->whereIn('scale_weight_trucks.item', ['~']);
         }
 
         return $merge;
@@ -116,7 +114,7 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
         $x = ['Time In', 'Time Out', 'Time'];
         foreach ($this->headers as $header) {
             if (in_array($header, $x)) {
-                $a[] = $row->{$this->key[$header]}.' ';
+                $a[] = date('H.i', strtotime($row->{$this->key[$header]})).' ';
             } else {
                 $a[] = $row->{$this->key[$header]};
             }

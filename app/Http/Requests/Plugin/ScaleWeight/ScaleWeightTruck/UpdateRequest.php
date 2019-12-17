@@ -24,6 +24,7 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'uuid' => 'unique:tenant.scale_weight_trucks,uuid,'.$this->id,
             'machine_code' => 'required',
             'form_number' => 'required',
             'vendor' => 'required',

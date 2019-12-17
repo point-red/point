@@ -15,9 +15,8 @@ class ScaleWeightMergeController extends Controller
         $date_to = $request->get('date_to');
 
         $from_sub_q = 'FROM '.config('database.connections.tenant.database').'.scale_weight_items 
-                WHERE license_number = t.license_number AND time BETWEEN t.time_in AND t.time_out ) as';
-        $merge = DB::table(config('database.connections.tenant.database').'.scale_weight_trucks as t')
-            ->whereRaw("time_in >= '$date_from'")
+                WHERE license_number = scale_weight_trucks.license_number AND time BETWEEN scale_weight_trucks.time_in AND scale_weight_trucks.time_out ) as';
+        $merge = ScaleWeightTruck::whereRaw("time_in >= '$date_from'")
             ->whereRaw("time_in <= '$date_to'")
             ->select('license_number', DB::raw("DATE_FORMAT(time_in, '%d/%m/%Y') as date_in"),
                 DB::raw("DATE_FORMAT(time_out, '%d/%m/%Y') as date_out"),
@@ -39,14 +38,12 @@ class ScaleWeightMergeController extends Controller
                 DB::raw("(SELECT MAX(item) $from_sub_q item_item"),
                 DB::raw("(SELECT MAX(user) $from_sub_q item_user")
             )
-            ->orderBy('t.time_in');
+            ->orderBy('scale_weight_trucks.time_in');
 
         if ($request->has('cat')) {
-            $merge->whereIn('t.item', $request->cat);
+            $merge->whereIn('scale_weight_trucks.item', $request->cat);
         } else {
-            // with assumption there is no item have name "~"
-            // so it will show nothing
-            $merge->whereIn('t.item', ['~']);
+            $merge->whereIn('scale_weight_trucks.item', ['~']);
         }
 
         return response()->json(['data' => $merge->get()]);

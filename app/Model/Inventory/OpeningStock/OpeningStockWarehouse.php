@@ -10,6 +10,11 @@ class OpeningStockWarehouse extends TransactionModel
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'production_number',
+        'expiry_date',
+    ];
+
     protected $casts = [
         'price' => 'double',
         'quantity' => 'double',

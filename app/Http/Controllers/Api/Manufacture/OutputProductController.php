@@ -52,7 +52,7 @@ class OutputProductController extends Controller
      *  - finish_goods (Array) :
      *      - manufacture_input_finish_good_id (Int)
      *      - item_name (String)
-     *      - warehouse_name (String)     
+     *      - warehouse_name (String)
      *      - quantity (Decimal)
      *      - unit (String).
      *

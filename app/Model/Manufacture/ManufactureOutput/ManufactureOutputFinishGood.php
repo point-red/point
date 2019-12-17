@@ -14,7 +14,9 @@ class ManufactureOutputFinishGood extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'manufacture_input_finish_good_id',
+        'item_id',
+        'warehouse_id',
+        'input_finish_good_id',
         'item_name',
         'warehouse_name',
         'quantity',
@@ -30,6 +32,16 @@ class ManufactureOutputFinishGood extends TransactionModel
     public function manufactureOutput()
     {
         return $this->belongsTo(ManufactureOutput::class);
+    }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 
     public function manufactureInputFinishGood()

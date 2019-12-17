@@ -34,7 +34,11 @@ class StoreManufactureOutputRequest extends FormRequest
         ];
 
         $rulesManufactureOutputFinishGoods = [
-            'finish_goods.*.manufacture_input_finish_good_id' => ValidationRule::foreignKey('manufacture_input_finish_goods'),
+            'finish_goods.*.item_id' => ValidationRule::foreignKey('items'),
+            'finish_goods.*.warehouse_id' => ValidationRule::foreignKey('warehouses'),
+            'finish_goods.*.input_finish_good_id' => ValidationRule::foreignKey('manufacture_input_finish_goods'),            
+            'finish_goods.*.item_name' => 'required|string',
+            'finish_goods.*.warehouse_name' => 'required|string',
             'finish_goods.*.item_name' => 'required|string',
             'finish_goods.*.warehouse_name' => 'required|string',
             'finish_goods.*.quantity' => ValidationRule::quantity(),

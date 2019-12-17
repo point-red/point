@@ -60,7 +60,7 @@ class FormulaController extends Controller
      *      - item_id (Int)
      *      - warehouse_id (Int)
      *      - item_name (String)
-     *      - warehouse_name (String)     
+     *      - warehouse_name (String)
      *      - quantity (Decimal)
      *      - unit (String).
      *

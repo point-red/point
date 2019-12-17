@@ -48,7 +48,7 @@ class InputMaterialController extends Controller
      *  - manufacture_machine_id (Int)
      *  - manufacture_process_id (Int)
      *  - manufacture_machine_name (String)
-     *  - manufacture_process_name (String)     
+     *  - manufacture_process_name (String)
      *  -
      *  - raw_materials (Array) :
      *      - item_id (Int)
@@ -61,7 +61,7 @@ class InputMaterialController extends Controller
      *      - item_id (Int)
      *      - warehouse_id (Int)
      *      - item_name (String)
-     *      - warehouse_name (String)     
+     *      - warehouse_name (String)
      *      - quantity (Decimal)
      *      - unit (String).
      *

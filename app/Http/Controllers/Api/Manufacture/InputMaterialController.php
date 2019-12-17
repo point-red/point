@@ -72,8 +72,8 @@ class InputMaterialController extends Controller
     public function store(StoreManufactureInputRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $manfuactureFormula = ManufactureInput::create($request->all());
-            $manfuactureFormula
+            $manufactureInput = ManufactureInput::create($request->all());
+            $manufactureInput
                 ->load('form')
                 ->load('manufactureMachine')
                 ->load('manufactureProcess')
@@ -82,7 +82,7 @@ class InputMaterialController extends Controller
                 ->load('finishGoods.item')
                 ->load('finishGoods.warehouse');
 
-            return new ApiResource($manfuactureFormula);
+            return new ApiResource($manufactureInput);
         });
 
         return $result;
@@ -97,9 +97,9 @@ class InputMaterialController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $manfuactureFormula = ManufactureInput::eloquentFilter($request)->findOrFail($id);
+        $manufactureInput = ManufactureInput::eloquentFilter($request)->findOrFail($id);
 
-        return new ApiResource($manfuactureFormula);
+        return new ApiResource($manufactureInput);
     }
 
     /**

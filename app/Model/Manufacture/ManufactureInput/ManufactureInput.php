@@ -98,6 +98,7 @@ class ManufactureInput extends TransactionModel
         $input->finishGoods()->saveMany($finishGoods);
 
         $form = new Form;
+        $form->approved = true;
         $form->saveData($data, $input);
 
         return $input;

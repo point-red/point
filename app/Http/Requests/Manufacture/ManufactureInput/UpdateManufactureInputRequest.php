@@ -39,6 +39,7 @@ class UpdateManufactureInputRequest extends FormRequest
             'raw_materials.*.item_id' => ValidationRule::foreignKey('items'),
             'raw_materials.*.warehouse_id' => ValidationRule::foreignKey('warehouses'),
             'raw_materials.*.item_name' => 'required|string',
+            'raw_materials.*.warehouse_name' => 'required|string',
             'raw_materials.*.quantity' => ValidationRule::quantity(),
             'raw_materials.*.unit' => ValidationRule::unit(),
         ];
@@ -47,6 +48,7 @@ class UpdateManufactureInputRequest extends FormRequest
             'finish_goods.*.item_id' => ValidationRule::foreignKey('items'),
             'finish_goods.*.warehouse_id' => ValidationRule::foreignKey('warehouses'),
             'finish_goods.*.item_name' => 'required|string',
+            'finish_goods.*.warehouse_name' => 'required|string',
             'finish_goods.*.quantity' => ValidationRule::quantity(),
             'finish_goods.*.unit' => ValidationRule::unit(),
         ];

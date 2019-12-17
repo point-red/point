@@ -16,11 +16,18 @@ class Employee extends MasterModel
 
     protected $connection = 'tenant';
 
+    protected $appends = ['label'];
+
     protected $casts = [
         'daily_transport_allowance' => 'double',
         'functional_allowance' => 'double',
         'communication_allowance' => 'double',
     ];
+
+    public function getLabelAttribute()
+    {
+        return $this->code . ' ' . $this->name;
+    }
 
     /**
      * Get the group that owns the employee.

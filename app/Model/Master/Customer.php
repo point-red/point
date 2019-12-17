@@ -14,6 +14,8 @@ class Customer extends MasterModel
 
     protected $connection = 'tenant';
 
+    protected $appends = ['label'];
+
     protected $casts = ['credit_ceiling' => 'double'];
 
     protected $fillable = [
@@ -25,6 +27,11 @@ class Customer extends MasterModel
         'pricing_group_id',
         'disabled',
     ];
+
+    public function getLabelAttribute()
+    {
+        return $this->code . ' ' . $this->name;
+    }
 
     /**
      * Get all of the groups for the customer.

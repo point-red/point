@@ -7,6 +7,7 @@ use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\Master\Group;
 use App\Model\Master\Item;
 use App\Model\Master\ItemUnit;
 use Illuminate\Http\Request;
@@ -127,9 +128,17 @@ class ItemController extends Controller
         }
         $item->units()->saveMany($unitsToBeInserted);
 
-        $groups = $request->get('groups');
-        if (isset($groups)) {
-            $item->groups()->sync($groups);
+        if ($request->has('groups')) {
+            $groups = $request->get('groups');
+            foreach ($groups as $group) {
+                if (! $group['id'] && $group['name']) {
+                    $newGroup = new Group;
+                    $newGroup->name = $group['name'];
+                    $newGroup->save();
+                    $group['id'] = $newGroup->id;
+                }
+            }
+            $item->groups()->sync(array_column($groups, 'id'));
         }
 
         DB::connection('tenant')->commit();

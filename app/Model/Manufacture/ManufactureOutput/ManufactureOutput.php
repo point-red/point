@@ -3,6 +3,7 @@
 namespace App\Model\Manufacture\ManufactureOutput;
 
 use App\Exceptions\IsReferencedException;
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
 use App\Model\FormApproval;
 use App\Model\Manufacture\ManufactureMachine\ManufactureMachine;
@@ -67,6 +68,7 @@ class ManufactureOutput extends TransactionModel
     {
         $output = new self;
         $output->fill($data);
+        $output->quantity = $data['produced_quantity'];
 
         $finishGoods = self::mapFinishGoods($data['finish_goods'] ?? []);
 
@@ -77,6 +79,18 @@ class ManufactureOutput extends TransactionModel
         $form = new Form;
         $form->approved = true;
         $form->saveData($data, $output);
+
+        foreach ($data['finish_goods'] as $finishGood) {
+            $item = $finishGood['item'];
+            if ($item['require_production_number'] || $item['require_expiry_date']) {
+                InventoryHelper::increase($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['produced_quantity'], 0, [
+                    'production_number' => $finishGood['production_number'],
+                    'expiry_date' => $finishGood['expiry_date'],
+                ]);
+            } else {
+                InventoryHelper::increase($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['produced_quantity'], 0);
+            }
+        }
 
         return $output;
     }

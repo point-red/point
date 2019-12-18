@@ -28,6 +28,9 @@ use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\Sales\SalesReturn\SalesReturn;
+use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
+use App\Model\Manufacture\ManufactureInput\ManufactureInput;
+use App\Model\Manufacture\ManufactureOutput\ManufactureOutput;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -69,6 +72,10 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             DeliveryNote::$morphName => DeliveryNote::class,
             SalesInvoice::$morphName => SalesInvoice::class,
             SalesReturn::$morphName => SalesReturn::class,
+            // Manufacture
+            ManufactureFormula::$morphName => ManufactureFormula::class,
+            ManufactureInput::$morphName => ManufactureInput::class,
+            ManufactureOutput::$morphName => ManufactureOutput::class,
             // Finance
             PaymentOrder::$morphName => PaymentOrder::class,
             Payment::$morphName => Payment::class,

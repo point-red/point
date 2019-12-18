@@ -18,6 +18,7 @@ class PermissionSeeder extends Seeder
         $this->setMasterPermission();
         $this->setPurchasePermission();
         $this->setSalesPermission();
+        $this->setManufacturePermission();
         $this->setPosPermission();
         $this->setInventoryPermission();
         $this->setAccountingPermission();
@@ -83,6 +84,26 @@ class PermissionSeeder extends Seeder
             'sales invoice',
             'sales down payment',
             'sales return',
+        ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
+    private function setManufacturePermission()
+    {
+        Permission::createIfNotExists('menu manufacture');
+
+        $allPermission = [
+            'manufacture machine',
+            'manufacture process',
+            'manufacture formula',
+            'manufacture input',
+            'manufacture output',
         ];
 
         foreach ($allPermission as $permission) {

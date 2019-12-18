@@ -3,6 +3,7 @@
 namespace App\Model\Manufacture\ManufactureInput;
 
 use App\Exceptions\IsReferencedException;
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
 use App\Model\FormApproval;
 use App\Model\Manufacture\ManufactureMachine\ManufactureMachine;
@@ -100,6 +101,22 @@ class ManufactureInput extends TransactionModel
         $form = new Form;
         $form->approved = true;
         $form->saveData($data, $input);
+
+        foreach ($data['raw_materials'] as $rawMaterial) {
+            $item = $rawMaterial['item'];
+            if ($item['require_production_number'] || $item['require_expiry_date']) {
+                foreach ($rawMaterial['inventories'] as $inventory) {
+                    if ($inventory['quantity'] !== null) {
+                        InventoryHelper::decrease($form->id, $rawMaterial['warehouse_id'], $rawMaterial['item_id'], $inventory['quantity'], [
+                            'production_number' => $inventory['production_number'],
+                            'expiry_date' => $inventory['expiry_date'],
+                        ]);
+                    }
+                }
+            } else {
+                InventoryHelper::decrease($form->id, $rawMaterial['warehouse_id'], $rawMaterial['item_id'], $rawMaterial['quantity']);
+            }
+        }
 
         return $input;
     }

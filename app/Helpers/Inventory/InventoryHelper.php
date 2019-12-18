@@ -57,7 +57,7 @@ class InventoryHelper
         }
 
         // check if stock is enough to prevent stock minus
-        if ($quantity < 0 && (! $lastInventory || $lastInventory->total_quantity < $quantity)) {
+        if ($quantity < 0 && (! $lastInventory || ($lastInventory->total_quantity + $quantity) < 0)) {
             throw new StockNotEnoughException($item);
         }
 

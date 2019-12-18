@@ -16,8 +16,10 @@ class CreateManufactureOutputsTable extends Migration
         Schema::create('manufacture_outputs', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('manufacture_machine_id');
+            $table->unsignedInteger('manufacture_process_id');
             $table->unsignedInteger('manufacture_input_id');
             $table->string('manufacture_machine_name');
+            $table->string('manufacture_process_name');
             $table->text('notes')->nullable();
 
             $table->foreign('manufacture_machine_id')->references('id')->on('manufacture_machines')->onDelete('restrict');

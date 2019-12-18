@@ -7,6 +7,7 @@ use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
 use App\Model\FormApproval;
 use App\Model\Manufacture\ManufactureMachine\ManufactureMachine;
+use App\Model\Manufacture\ManufactureProcess\ManufactureProcess;
 use App\Model\Manufacture\ManufactureInput\ManufactureInput;
 use App\Model\TransactionModel;
 use Carbon\Carbon;
@@ -43,6 +44,11 @@ class ManufactureOutput extends TransactionModel
         return $this->belongsTo(ManufactureMachine::class);
     }
 
+    public function manufactureProcess()
+    {
+        return $this->belongsTo(ManufactureProcess::class);
+    }
+
     public function manufactureInput()
     {
         return $this->belongsTo(ManufactureInput::class);
@@ -52,7 +58,6 @@ class ManufactureOutput extends TransactionModel
     {
         return $this->hasManyThrough(FormApproval::class, Form::class, 'formable_id', 'form_id')->where('formable_type', self::$morphName);
     }
-
 
     public function isAllowedToUpdate()
     {
@@ -68,7 +73,6 @@ class ManufactureOutput extends TransactionModel
     {
         $output = new self;
         $output->fill($data);
-        $output->quantity = $data['produced_quantity'];
 
         $finishGoods = self::mapFinishGoods($data['finish_goods'] ?? []);
 
@@ -100,6 +104,7 @@ class ManufactureOutput extends TransactionModel
         return array_map(function ($finishGood) {
             $outputFinishGood = new ManufactureOutputFinishGood;
             $outputFinishGood->fill($finishGood);
+            $outputFinishGood->quantity = $finishGood['produced_quantity'];
 
             return $outputFinishGood;
         }, $finishGoods);

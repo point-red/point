@@ -12,7 +12,7 @@ class UserWarehouseController extends ApiController
     public function attach(AttachRequest $request)
     {
         $user = User::findOrFail($request->get('user_id'));
-        $user->warehouses()->attach($request->get('warehouse_id'));
+        $user->warehouses()->syncWithoutDetaching($request->get('warehouse_id'));
 
         return new ApiResource($user);
     }

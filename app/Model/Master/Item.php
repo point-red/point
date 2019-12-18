@@ -29,6 +29,8 @@ class Item extends MasterModel
         'weight',
         'stock_reminder',
         'disabled',
+        'require_production_number',
+        'require_expiry_date',
     ];
 
     protected $casts = [

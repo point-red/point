@@ -24,8 +24,10 @@ class InventoryHelper
      */
     private static function insert($formId, $warehouseId, $itemId, $quantity, $price, $options = [])
     {
+        $item = Item::findOrFail($itemId);
+
         if ($quantity == 0) {
-            throw new ItemQuantityInvalidException(Item::findOrFail($itemId));
+            throw new ItemQuantityInvalidException($item);
         }
 
         $lastInventory = self::getLastReference($itemId, $warehouseId);
@@ -39,16 +41,24 @@ class InventoryHelper
         $inventory->total_quantity = $quantity;
 
         if (array_key_exists('production_number', $options)) {
-            $inventory->production_number = $options['production_number'];
+            if ($item->require_production_number) {
+                $inventory->production_number = $options['production_number'];
+            } else {
+                $inventory->production_number = null;
+            }
         }
 
         if (array_key_exists('expiry_date', $options)) {
-            $inventory->expiry_date = $options['expiry_date'];
+            if ($item->require_expiry_date) {
+                $inventory->expiry_date = $options['expiry_date'];
+            } else {
+                $inventory->expiry_date = null;
+            }
         }
 
         // check if stock is enough to prevent stock minus
         if ($quantity < 0 && (! $lastInventory || $lastInventory->total_quantity < $quantity)) {
-            throw new StockNotEnoughException(Item::findOrFail($itemId));
+            throw new StockNotEnoughException($item);
         }
 
         $lastTotalValue = 0;

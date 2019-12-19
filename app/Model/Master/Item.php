@@ -16,6 +16,8 @@ class Item extends MasterModel
 
     protected $connection = 'tenant';
 
+    protected $appends = ['label'];
+
     protected $fillable = [
         'code',
         'name',
@@ -27,6 +29,8 @@ class Item extends MasterModel
         'weight',
         'stock_reminder',
         'disabled',
+        'require_production_number',
+        'require_expiry_date',
     ];
 
     protected $casts = [
@@ -34,6 +38,11 @@ class Item extends MasterModel
         'stock_reminder' => 'double',
         'cogs' => 'double',
     ];
+
+    public function getLabelAttribute()
+    {
+        return $this->code . ' ' . $this->name;
+    }
 
     public function inventories()
     {
@@ -94,6 +103,12 @@ class Item extends MasterModel
                     $openingStockWarehouse->opening_stock_id = $openingStock->id;
                     $openingStockWarehouse->warehouse_id = $osWarehouse['warehouse_id'];
                     $openingStockWarehouse->quantity = $osWarehouse['quantity'];
+                    if (array_key_exists('production_number', $osWarehouse)) {
+                        $openingStockWarehouse->production_number = $osWarehouse['production_number'];
+                    }
+                    if (array_key_exists('expiry_date', $osWarehouse)) {
+                        $openingStockWarehouse->expiry_date = convert_to_server_timezone($osWarehouse['expiry_date']);
+                    }
                     $openingStockWarehouse->price = $osWarehouse['price'];
                     $openingStockWarehouse->save();
 
@@ -107,11 +122,10 @@ class Item extends MasterModel
                 if (! $group['id'] && $group['name']) {
                     $newGroup = new Group;
                     $newGroup->name = $group['name'];
-                    $newGroup->type = $group['type'];
-                    $newGroup->class_reference = $group['class_reference'];
-                    $item->groups()->attach($newGroup->id);
+                    $newGroup->save();
+                    $item->groups()->syncWithoutDetaching($newGroup->id);
                 } elseif ($group['id']) {
-                    $item->groups()->attach($group['id']);
+                    $item->groups()->syncWithoutDetaching($group['id']);
                 }
             }
         }

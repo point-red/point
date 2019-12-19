@@ -3,10 +3,12 @@
 namespace App\Helpers\Inventory;
 
 use App\Exceptions\ItemQuantityInvalidException;
+use App\Exceptions\ProductionNumberNotExistException;
 use App\Exceptions\StockNotEnoughException;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
+use Illuminate\Support\Facades\DB;
 
 class InventoryHelper
 {
@@ -16,13 +18,16 @@ class InventoryHelper
      * @param $itemId
      * @param $quantity
      * @param $price
-     * @throws StockNotEnoughException
+     * @param array $options
      * @throws ItemQuantityInvalidException
+     * @throws StockNotEnoughException
      */
-    private static function insert($formId, $warehouseId, $itemId, $quantity, $price)
+    private static function insert($formId, $warehouseId, $itemId, $quantity, $price, $options = [])
     {
+        $item = Item::findOrFail($itemId);
+
         if ($quantity == 0) {
-            throw new ItemQuantityInvalidException(Item::findOrFail($itemId));
+            throw new ItemQuantityInvalidException($item);
         }
 
         $lastInventory = self::getLastReference($itemId, $warehouseId);
@@ -35,9 +40,25 @@ class InventoryHelper
         $inventory->price = $price;
         $inventory->total_quantity = $quantity;
 
+        if (array_key_exists('production_number', $options)) {
+            if ($item->require_production_number) {
+                $inventory->production_number = $options['production_number'];
+            } else {
+                $inventory->production_number = null;
+            }
+        }
+
+        if (array_key_exists('expiry_date', $options)) {
+            if ($item->require_expiry_date) {
+                $inventory->expiry_date = $options['expiry_date'];
+            } else {
+                $inventory->expiry_date = null;
+            }
+        }
+
         // check if stock is enough to prevent stock minus
-        if ($quantity < 0 && (! $lastInventory || $lastInventory->total_quantity < $quantity)) {
-            throw new StockNotEnoughException(Item::findOrFail($itemId));
+        if ($quantity < 0 && (! $lastInventory || ($lastInventory->total_quantity + $quantity) < 0)) {
+            throw new StockNotEnoughException($item);
         }
 
         $lastTotalValue = 0;
@@ -62,18 +83,105 @@ class InventoryHelper
         $inventory->save();
     }
 
-    public static function increase($formId, $warehouseId, $itemId, $quantity, $price)
+    public static function increase($formId, $warehouseId, $itemId, $quantity, $price, $options = [])
     {
         Item::where('id', $itemId)->increment('stock', $quantity);
 
-        self::insert($formId, $warehouseId, $itemId, abs($quantity), $price);
+        self::insert($formId, $warehouseId, $itemId, abs($quantity), $price, $options);
     }
 
-    public static function decrease($formId, $warehouseId, $itemId, $quantity)
+    public static function decrease($formId, $warehouseId, $itemId, $quantity, $options = [])
     {
         Item::where('id', $itemId)->decrement('stock', $quantity);
 
-        self::insert($formId, $warehouseId, $itemId, -abs($quantity), 0);
+        if (array_key_exists('production_number', $options)) {
+            // Check production number exist in inventory
+            $exist = Inventory::where('production_number', '=', $options['production_number'])->first();
+            if (!$exist) {
+                return new ProductionNumberNotExistException(Item::findOrFail($itemId), $options['production_number']);
+            }
+        }
+
+        self::insert($formId, $warehouseId, $itemId, abs($quantity) * -1, 0, $options);
+    }
+
+    /**
+     * Check stock availability
+     *
+     * @param $itemId
+     * @param $warehouseId
+     * @param $quantity
+     * @param array $options
+     * @return bool
+     */
+    public static function available($itemId, $warehouseId, $quantity, $options = [])
+    {
+        $dateFrom = date('Y-m-d H:i:s');
+
+        if (array_key_exists('date_from', $options)) {
+            $dateFrom = convert_to_server_timezone($options['date_from']);
+        }
+
+        $inventory = Inventory::join('forms', 'forms.id', '=', 'inventories.form_id')
+            ->select(DB::raw('sum(inventories.quantity) as totalQty'))
+            ->where('forms.date', '<', $dateFrom)
+            ->where('inventories.warehouse_id', '=', $warehouseId)
+            ->where('inventories.item_id', '=', $itemId);
+
+        if (array_key_exists('production_number', $options)) {
+            $inventory = $inventory->where('inventories.production_number', '=', $options['production_number']);
+        } else if (array_key_exists('expiry_date', $options)) {
+            $inventory = $inventory->where('inventories.expiry_date', '=', $options['expiry_date']);
+        }
+
+        $inventory = $inventory->first();
+
+        if (!$inventory) {
+            return false;
+        }
+
+        if ($inventory->totalQty < $quantity) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check how much stock is available
+     *
+     * @param $itemId
+     * @param $warehouseId
+     * @param array $options
+     * @return int
+     */
+    public static function stock($itemId, $warehouseId, $options = [])
+    {
+        $dateFrom = date('Y-m-d H:i:s');
+
+        if (array_key_exists('date_from', $options)) {
+            $dateFrom = convert_to_server_timezone($options['date_from']);
+        }
+
+        $inventory = Inventory::join('forms', 'forms.id', '=', 'inventories.form_id')
+            ->select(DB::raw('sum(inventories.quantity) as totalQty'))
+            ->where('forms.date', '<', $dateFrom)
+            ->where('inventories.warehouse_id', '=', $warehouseId)
+            ->where('inventories.item_id', '=', $itemId);
+
+        if (array_key_exists('production_number', $options)) {
+            $inventory = $inventory->where('inventories.production_number', '=', $options['production_number']);
+        } else if (array_key_exists('expiry_date', $options)) {
+            $inventory = $inventory->where('inventories.expiry_date', '=', $options['expiry_date']);
+        }
+
+        $inventory = $inventory->first();
+
+        if (!$inventory) {
+            return 0;
+        }
+
+        return 0;
     }
 
     /**

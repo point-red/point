@@ -5,31 +5,36 @@ namespace App\Http\Controllers\Api\Master;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\Master\User\StoreUserRequest;
 use App\Http\Requests\Master\User\UpdateUserRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
 use App\Http\Resources\Master\User\UserCollection;
 use App\Http\Resources\Master\User\UserResource;
 use App\Model\Master\User as TenantUser;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class UserController extends ApiController
 {
     /**
      * Display a listing of the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
-     *
-     * @return \App\Http\Resources\Master\User\UserCollection
+     * @param Request $request
+     * @return ApiCollection
      */
     public function index(Request $request)
     {
-        return new UserCollection(TenantUser::eloquentFilter($request)->with('roles')->paginate($limit ?? 100));
+        $users = TenantUser::eloquentFilter($request);
+
+        $users = pagination($users, $request->get('limit'));
+
+        return new ApiCollection($users);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\Master\User\StoreUserRequest $request
-     *
-     * @return \App\Http\Resources\Master\User\UserResource
+     * @param StoreUserRequest $request
+     * @return ApiResource
      */
     public function store(StoreUserRequest $request)
     {
@@ -39,28 +44,29 @@ class UserController extends ApiController
         $tenantUser->password = bcrypt($request->password);
         $tenantUser->save();
 
-        return new UserResource($tenantUser);
+        return new ApiResource($tenantUser);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     *
-     * @return \App\Http\Resources\Master\User\UserResource
+     * @param Request $request
+     * @param int $id
+     * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return new UserResource(TenantUser::with('roles')->findOrFail($id));
+        $user = TenantUser::eloquentFilter($request)->findOrFail($id);
+
+        return new ApiResource($user);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     *
-     * @return \App\Http\Resources\Master\User\UserResource
+     * @param UpdateUserRequest $request
+     * @param int $id
+     * @return ApiResource
      */
     public function update(UpdateUserRequest $request, $id)
     {
@@ -69,14 +75,14 @@ class UserController extends ApiController
         $tenantUser->email = $request->email;
         $tenantUser->save();
 
-        return new UserResource($tenantUser);
+        return new ApiResource($tenantUser);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {

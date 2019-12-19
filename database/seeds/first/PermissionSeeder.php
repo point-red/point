@@ -18,6 +18,7 @@ class PermissionSeeder extends Seeder
         $this->setMasterPermission();
         $this->setPurchasePermission();
         $this->setSalesPermission();
+        $this->setManufacturePermission();
         $this->setPosPermission();
         $this->setInventoryPermission();
         $this->setAccountingPermission();
@@ -93,6 +94,26 @@ class PermissionSeeder extends Seeder
         }
     }
 
+    private function setManufacturePermission()
+    {
+        Permission::createIfNotExists('menu manufacture');
+
+        $allPermission = [
+            'manufacture machine',
+            'manufacture process',
+            'manufacture formula',
+            'manufacture input',
+            'manufacture output',
+        ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
     private function setPosPermission()
     {
         Permission::createIfNotExists('menu pos');
@@ -112,9 +133,9 @@ class PermissionSeeder extends Seeder
     private function setInventoryPermission()
     {
         Permission::createIfNotExists('menu inventory');
+        Permission::createIfNotExists('read inventory report');
 
         $allPermission = [
-            'inventory report',
             'inventory audit',
             'stock correction',
             'transfer item',

@@ -42,6 +42,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         require base_path('routes/api/master.php');
         require base_path('routes/api/purchase.php');
         require base_path('routes/api/sales.php');
+        require base_path('routes/api/manufacture.php');
         require base_path('routes/api/pos.php');
         require base_path('routes/api/finance.php');
         require base_path('routes/api/accounting.php');

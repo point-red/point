@@ -16,6 +16,7 @@ class CreatePosBillsTable extends Migration
         Schema::create('pos_bills', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('customer_id')->nullable();
+            $table->unsignedInteger('warehouse_id')->index();
             $table->string('customer_name')->nullable();
             $table->unsignedDecimal('discount_percent', 33, 30)->nullable();
             $table->unsignedDecimal('discount_value', 65, 30)->default(0);
@@ -25,7 +26,8 @@ class CreatePosBillsTable extends Migration
             $table->decimal('paid', 65, 30);
             $table->text('notes')->nullable();
 
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('set null');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('restrict');
+            $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('restrict');
         });
     }
 

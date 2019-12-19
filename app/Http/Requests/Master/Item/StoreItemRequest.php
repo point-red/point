@@ -31,7 +31,7 @@ class StoreItemRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'chart_of_account_id' => ValidationRule::foreignKey('chart_of_accounts'),
+            'chart_of_account_id' => 'required',
             'code' => 'bail|nullable|string|unique:tenant.items,code',
             'barcode' => 'bail|nullable|string|unique:tenant.items,barcode',
             'stock_reminder' => 'numeric|min:0',

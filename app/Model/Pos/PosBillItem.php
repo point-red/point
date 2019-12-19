@@ -15,6 +15,8 @@ class PosBillItem extends TransactionModel
         'item_id',
         'item_name',
         'quantity',
+        'production_number',
+        'expiry_date',
         'unit',
         'converter',
         'price',

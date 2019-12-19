@@ -4,23 +4,24 @@ namespace App\Console\Commands;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
-class AlterData extends Command
+class AlterMigration extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'dev:alter-data';
+    protected $signature = 'dev:alter-migration';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Temporary';
+    protected $description = 'Temporary function to reorder database migration before v1.0';
 
     /**
      * Create a new command instance.
@@ -42,7 +43,7 @@ class AlterData extends Command
         $projects = Project::all();
         foreach ($projects as $project) {
             $this->line('Clone '.$project->code);
-//            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
             $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();

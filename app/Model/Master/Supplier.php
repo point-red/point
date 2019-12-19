@@ -15,6 +15,8 @@ class Supplier extends MasterModel
 
     protected $connection = 'tenant';
 
+    protected $appends = ['label'];
+
     protected $fillable = [
         'code',
         'name',
@@ -22,6 +24,11 @@ class Supplier extends MasterModel
         'notes',
         'disabled',
     ];
+
+    public function getLabelAttribute()
+    {
+        return $this->code . ' ' . $this->name;
+    }
 
     /**
      * Get all of the groups for the supplier.

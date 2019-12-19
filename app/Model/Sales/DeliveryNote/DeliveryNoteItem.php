@@ -18,6 +18,8 @@ class DeliveryNoteItem extends TransactionModel
         'tare_weight',
         'net_weight',
         'quantity',
+        'production_number',
+        'expiry_date',
         'unit',
         'converter',
         'notes',

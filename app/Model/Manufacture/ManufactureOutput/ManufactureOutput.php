@@ -92,7 +92,7 @@ class ManufactureOutput extends TransactionModel
                     $options['production_number'] = $finishGood['production_number'];
                 }
                 if (array_key_exists('expiry_date', $finishGood)) {
-                    $options['expiry_date'] = convert_to_server_timezone($finishGood['expiry_date']);
+                    $options['expiry_date'] = $finishGood['expiry_date'];
                 }
                 InventoryHelper::increase($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['produced_quantity'], 0, $options);
             } else {

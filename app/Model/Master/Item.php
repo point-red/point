@@ -110,7 +110,7 @@ class Item extends MasterModel
                         $options['production_number'] = $openingStockWarehouse->production_number;
                     }
                     if (array_key_exists('expiry_date', $osWarehouse)) {
-                        $openingStockWarehouse->expiry_date = convert_to_server_timezone($osWarehouse['expiry_date']);
+                        $openingStockWarehouse->expiry_date = $osWarehouse['expiry_date'];
                         $options['expiry_date'] = $openingStockWarehouse->expiry_date;
                     }
                     $openingStockWarehouse->save();

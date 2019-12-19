@@ -133,9 +133,9 @@ class PermissionSeeder extends Seeder
     private function setInventoryPermission()
     {
         Permission::createIfNotExists('menu inventory');
+        Permission::createIfNotExists('read inventory report');
 
         $allPermission = [
-            'inventory report',
             'inventory audit',
             'stock correction',
             'transfer item',

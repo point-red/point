@@ -2,8 +2,10 @@
 
 namespace App\Helpers\Inventory;
 
+use App\Exceptions\ExpiryDateNotFoundException;
 use App\Exceptions\ItemQuantityInvalidException;
 use App\Exceptions\ProductionNumberNotExistException;
+use App\Exceptions\ProductionNumberNotFoundException;
 use App\Exceptions\StockNotEnoughException;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
@@ -42,7 +44,11 @@ class InventoryHelper
 
         if (array_key_exists('production_number', $options)) {
             if ($item->require_production_number) {
-                $inventory->production_number = $options['production_number'];
+                if ($options['production_number']) {
+                    $inventory->production_number = $options['production_number'];
+                } else {
+                    return new ProductionNumberNotFoundException($item);
+                }
             } else {
                 $inventory->production_number = null;
             }
@@ -50,7 +56,11 @@ class InventoryHelper
 
         if (array_key_exists('expiry_date', $options)) {
             if ($item->require_expiry_date) {
-                $inventory->expiry_date = $options['expiry_date'];
+                if ($options['expiry_date']) {
+                    $inventory->expiry_date = $options['expiry_date'];
+                } else {
+                    return new ExpiryDateNotFoundException($item);
+                }
             } else {
                 $inventory->expiry_date = null;
             }

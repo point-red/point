@@ -10,6 +10,7 @@ use App\Exceptions\StockNotEnoughException;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
+use App\Model\Master\Warehouse;
 use Illuminate\Support\Facades\DB;
 
 class InventoryHelper
@@ -106,9 +107,11 @@ class InventoryHelper
 
         if (array_key_exists('production_number', $options)) {
             // Check production number exist in inventory
-            $exist = Inventory::where('production_number', '=', $options['production_number'])->first();
+            $exist = Inventory::where('production_number', '=', $options['production_number'])
+                        ->where('warehouse_id', $warehouseId)
+                        ->first();
             if (!$exist) {
-                return new ProductionNumberNotExistException(Item::findOrFail($itemId), $options['production_number']);
+                return new ProductionNumberNotExistException(Item::findOrFail($itemId), $options['production_number'], Warehouse::findOrFail($warehouseId));
             }
         }
 

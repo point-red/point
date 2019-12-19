@@ -116,10 +116,14 @@ class DeliveryNote extends TransactionModel
         $deliveryOrder->updateIfDone();
 
         foreach ($items as $item) {
-            InventoryHelper::decrease($form->id, $deliveryNote->warehouse_id, $item->item_id, $item->quantity, [
-                'production_number' => $item->production_number,
-                'expiry_date' => $item->expiry_date,
-            ]);
+            $options = [];
+            if ($item->production_number) {
+                $options['production_number'] = $item->production_number;
+            }
+            if ($item->expiry_date) {
+                $options['expiry_date'] = $item->expiry_date;
+            }
+            InventoryHelper::decrease($form->id, $deliveryNote->warehouse_id, $item->item_id, $item->quantity, $options);
         }
 
         return $deliveryNote;

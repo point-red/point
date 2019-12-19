@@ -164,10 +164,15 @@ class PurchaseReceive extends TransactionModel
                 $feePerItem = $totalPerItem / $totalItemsAmount * $additionalFee;
                 $price = ($totalPerItem + $feePerItem) / $item->quantity;
 
-                InventoryHelper::increase($form->id, $purchaseReceive->warehouse_id, $item->item_id, $item->quantity, $price, [
-                    'production_number' => $item->production_number,
-                    'expiry_date' => $item->expiry_date,
-                ]);
+                $options = [];
+                if ($item->production_number) {
+                    $options['production_number'] = $item->production_number;
+                }
+                if ($item->expiry_date) {
+                    $options['expiry_date'] = convert_to_server_timezone($item->expiry_date);
+                }
+
+                InventoryHelper::increase($form->id, $purchaseReceive->warehouse_id, $item->item_id, $item->quantity, $price, $options);
             }
         }
     }

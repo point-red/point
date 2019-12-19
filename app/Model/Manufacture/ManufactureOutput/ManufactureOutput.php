@@ -87,10 +87,14 @@ class ManufactureOutput extends TransactionModel
         foreach ($data['finish_goods'] as $finishGood) {
             $item = $finishGood['item'];
             if ($item['require_production_number'] || $item['require_expiry_date']) {
-                InventoryHelper::increase($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['produced_quantity'], 0, [
-                    'production_number' => $finishGood['production_number'],
-                    'expiry_date' => $finishGood['expiry_date'],
-                ]);
+                $options = [];
+                if (array_key_exists('production_number', $finishGood)) {
+                    $options['production_number'] = $finishGood['production_number'];
+                }
+                if (array_key_exists('expiry_date', $finishGood)) {
+                    $options['expiry_date'] = convert_to_server_timezone($finishGood['expiry_date']);
+                }
+                InventoryHelper::increase($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['produced_quantity'], 0, $options);
             } else {
                 InventoryHelper::increase($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['produced_quantity'], 0);
             }

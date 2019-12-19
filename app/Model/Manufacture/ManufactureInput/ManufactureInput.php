@@ -107,10 +107,14 @@ class ManufactureInput extends TransactionModel
             if ($item['require_production_number'] || $item['require_expiry_date']) {
                 foreach ($rawMaterial['inventories'] as $inventory) {
                     if ($inventory['quantity'] !== null) {
-                        InventoryHelper::decrease($form->id, $rawMaterial['warehouse_id'], $rawMaterial['item_id'], $inventory['quantity'], [
-                            'production_number' => $inventory['production_number'],
-                            'expiry_date' => $inventory['expiry_date'],
-                        ]);
+                        $options = [];
+                        if (array_key_exists('production_number', $inventory)) {
+                            $options['production_number'] = $inventory['production_number'];
+                        }
+                        if (array_key_exists('expiry_date', $inventory)) {
+                            $options['expiry_date'] = convert_to_server_timezone($inventory['expiry_date']);
+                        }
+                        InventoryHelper::decrease($form->id, $rawMaterial['warehouse_id'], $rawMaterial['item_id'], $inventory['quantity'], $options);
                     }
                 }
             } else {

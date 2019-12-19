@@ -14,6 +14,7 @@ use App\Model\HumanResource\Employee\EmployeeGroup;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 use App\Model\HumanResource\Employee\EmployeeScorer;
 use App\Model\HumanResource\Employee\EmployeeSocialMedia;
+use App\Services\MediaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -64,7 +65,7 @@ class EmployeeController extends Controller
      * @param StoreEmployeeRequest $request
      * @return ApiResource
      */
-    public function store(StoreEmployeeRequest $request)
+    public function store(StoreEmployeeRequest $request, MediaService $service)
     {
         DB::connection('tenant')->beginTransaction();
 
@@ -151,6 +152,12 @@ class EmployeeController extends Controller
             $employeeContract->link = '';
             $employeeContract->notes = $request->get('contracts')[$i]['notes'];
             $employeeContract->save();
+        }
+
+        for ($i = 0; $i < count($request->get('media') ?? []); $i++) {
+            $file = $request->get('media')[$i]['file'];
+            $note = $request->get('media')[$i]['note'];
+            $service->create(Employee::$morphName, $employee->id, $file, $note);
         }
 
         DB::connection('tenant')->commit();

@@ -15,6 +15,7 @@ Route::namespace('Web')->group(function () {
     Route::view('/', 'welcome');
 
     Route::get('/download', 'CloudStorageController@download');
+    Route::get('/media/{id}', 'CloudStorageController@downloadMedia');
     Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 });
 

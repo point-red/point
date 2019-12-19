@@ -3,11 +3,15 @@
 namespace App\Services;
 
 use App\Model\Media;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class MediaService {
+
+    const FOLDER_UPLOAD='upload/';
 
     public function create($table, $id, UploadedFile $file, $note) {
         DB::connection('tenant')->beginTransaction();
@@ -17,7 +21,8 @@ class MediaService {
         $media->note=$note;
         $media->name=sprintf('%s-%s.%s', $file->getFilename(), time(), $file->getClientOriginalExtension());
         $media->name_ori=$file->getClientOriginalName();
-        $media->path = $file->storeAs('upload', $media->name);
+        $path = self::FOLDER_UPLOAD . $media->name;
+        Storage::disk($this->getStorage())->put($path, $file->get());
         $media->mime=$file->getMimeType();
         $media->save();
         DB::connection('tenant')->commit();
@@ -33,24 +38,38 @@ class MediaService {
     }
 
     public function delete($id) {
+        DB::connection('tenant')->beginTransaction();
         $media = Media::findOrFail($id);
-        File::delete($this->getPath($media->path));
+        Storage::disk($this->getStorage())->delete($media->path);
         $media->delete();
+        DB::connection('tenant')->commit();
         return $media;
     }
 
     public function download($id) {
         $media = Media::findOrFail($id);
-        $path = $this->getPath($media->path);
-        return array (
-                'file' => $path,
-                'mime' => $media->mime,
-                'name' => $media->name_ori
-            );
+        try {
+            $file = Storage::disk($this->getStorage())->download(self::FOLDER_UPLOAD . $media->name, $media->name_ori);
+            if (!$file) {
+                return null;
+            }
+            return $file;
+        } catch (FileNotFoundException $exception) {
+            return null;
+        }
     }
 
-    private function getPath($path) {
-        return storage_path('app/'.$path);
+    private function getStorage() {
+        return env('STORAGE_DISK');
+    }
+
+    public function update($id, $note) {
+        DB::connection('tenant')->beginTransaction();
+        $media = Media::findOrFail($id);
+        $media->note = $note;
+        $media->save();
+        DB::connection('tenant')->commit();
+        return $media;
     }
 
 }

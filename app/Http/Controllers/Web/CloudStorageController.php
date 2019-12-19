@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Model\CloudStorage;
+use App\Services\MediaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\FileNotFoundException;
@@ -36,5 +37,13 @@ class CloudStorageController extends WebController
         } catch (FileNotFoundException $exception) {
             return view('web.file-not-found');
         }
+    }
+
+    public function downloadMedia(MediaService $service, $id) {
+        $file = $service->download($id);
+        if (!$file) {
+            return view('web.file-not-found');
+        }
+        return $file;
     }
 }

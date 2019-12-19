@@ -22,7 +22,7 @@ class CreateManufactureInputRawMaterialsTable extends Migration
             $table->string('warehouse_name');
             $table->decimal('quantity', 65, 30);
             $table->string('production_number')->nullable();
-            $table->date('expiry_date')->nullable();
+            $table->datetime('expiry_date')->nullable();
             $table->string('unit');
 
             $table->foreign('manufacture_input_id')->references('id')->on('manufacture_inputs')->onDelete('cascade');

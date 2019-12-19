@@ -19,7 +19,7 @@ class CreateInventoryAuditItemsTable extends Migration
             $table->unsignedInteger('item_id')->index();
             $table->unsignedDecimal('quantity', 65, 30);
             $table->string('production_number')->nullable();
-            $table->date('expiry_date')->nullable();
+            $table->datetime('expiry_date')->nullable();
             $table->unsignedDecimal('price', 65, 30);
             $table->string('unit');
             $table->decimal('converter', 65, 30);

@@ -17,7 +17,7 @@ class CreateMediaTable extends Migration
             $table->bigIncrements('id');
             $table->string('owner_table',50);
             $table->unsignedBigInteger('owner_id');
-            $table->string('mime',30);
+            $table->string('mime',255);
             $table->string('name',200);
             $table->string('name_ori',200);
             $table->string('path',1000);

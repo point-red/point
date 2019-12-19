@@ -23,8 +23,9 @@ class StoreMediaRequest extends FormRequest
      */
     public function rules()
     {
+// |mimes:jpeg,png,gif,webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
         return [
-            'file' => 'required|file|image|mimes:jpeg,png,gif,webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|max:10000',
+            'file' => 'required|file|max:10000',
         ];
     }
 }

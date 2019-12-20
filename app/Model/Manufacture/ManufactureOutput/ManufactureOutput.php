@@ -87,16 +87,20 @@ class ManufactureOutput extends TransactionModel
         foreach ($data['finish_goods'] as $finishGood) {
             $item = $finishGood['item'];
             if ($item['require_expiry_date'] || $item['require_production_number']) {
-                $options = [];
-                if (array_key_exists('expiry_date', $finishGood)) {
-                    $options['expiry_date'] = $finishGood['expiry_date'];
+                foreach ($finishGood['inventories'] as $inventory) {
+                    if ($inventory['quantity'] !== null) {
+                        $options = [];
+                        if (array_key_exists('expiry_date', $inventory)) {
+                            $options['expiry_date'] = $inventory['expiry_date'];
+                        }
+                        if (array_key_exists('production_number', $inventory)) {
+                            $options['production_number'] = $inventory['production_number'];
+                        }
+                        InventoryHelper::decrease($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $inventory['quantity'], $options);
+                    }
                 }
-                if (array_key_exists('production_number', $finishGood)) {
-                    $options['production_number'] = $finishGood['production_number'];
-                }
-                InventoryHelper::increase($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['produced_quantity'], 0, $options);
             } else {
-                InventoryHelper::increase($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['produced_quantity'], 0);
+                InventoryHelper::decrease($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['quantity']);
             }
         }
 
@@ -108,7 +112,6 @@ class ManufactureOutput extends TransactionModel
         return array_map(function ($finishGood) {
             $outputFinishGood = new ManufactureOutputFinishGood;
             $outputFinishGood->fill($finishGood);
-            $outputFinishGood->quantity = $finishGood['produced_quantity'];
 
             return $outputFinishGood;
         }, $finishGoods);

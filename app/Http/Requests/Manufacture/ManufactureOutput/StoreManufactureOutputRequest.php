@@ -28,7 +28,10 @@ class StoreManufactureOutputRequest extends FormRequest
 
         $rulesManufacturOutput = [
             'manufacture_machine_id' => ValidationRule::foreignKey('manufacture_machines'),
+            'manufacture_process_id' => ValidationRule::foreignKey('manufacture_processes'),
             'manufacture_input_id' => ValidationRule::foreignKey('manufacture_inputs'),
+            'manufacture_machine_name' => 'required|string',
+            'manufacture_process_name' => 'required|string',
             'manufacture_machine_name' => 'required|string',
             'finish_goods' => 'required|array',
         ];

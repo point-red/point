@@ -48,10 +48,14 @@ class InventoryHelper
                 if ($options['expiry_date']) {
                     $inventory->expiry_date = $options['expiry_date'];
                 } else {
-                    return new ExpiryDateNotFoundException($item);
+                    throw new ExpiryDateNotFoundException($item);
                 }
             } else {
                 $inventory->expiry_date = null;
+            }
+        } else {
+            if ($item->require_expiry_date) {
+                throw new ExpiryDateNotFoundException($item);
             }
         }
 
@@ -60,10 +64,14 @@ class InventoryHelper
                 if ($options['production_number']) {
                     $inventory->production_number = $options['production_number'];
                 } else {
-                    return new ProductionNumberNotFoundException($item);
+                    throw new ProductionNumberNotFoundException($item);
                 }
             } else {
                 $inventory->production_number = null;
+            }
+        } else {
+            if ($item->require_production_number) {
+                throw new ProductionNumberNotFoundException($item);
             }
         }
 
@@ -111,7 +119,7 @@ class InventoryHelper
                         ->where('warehouse_id', $warehouseId)
                         ->first();
             if (!$exist) {
-                return new ProductionNumberNotExistException(Item::findOrFail($itemId), $options['production_number'], Warehouse::findOrFail($warehouseId));
+                throw new ProductionNumberNotExistException(Item::findOrFail($itemId), $options['production_number'], Warehouse::findOrFail($warehouseId));
             }
         }
 

@@ -22,8 +22,10 @@ class ManufactureOutput extends TransactionModel
 
     protected $fillable = [
     	'manufacture_machine_id',
+        'manufacture_process_id',
         'manufacture_input_id',
         'manufacture_machine_name',
+        'manufacture_process_name',
         'notes',
     ];
 
@@ -84,24 +86,15 @@ class ManufactureOutput extends TransactionModel
         $form->approved = true;
         $form->saveData($data, $output);
 
-        foreach ($data['finish_goods'] as $finishGood) {
-            $item = $finishGood['item'];
-            if ($item['require_expiry_date'] || $item['require_production_number']) {
-                foreach ($finishGood['inventories'] as $inventory) {
-                    if ($inventory['quantity'] !== null) {
-                        $options = [];
-                        if (array_key_exists('expiry_date', $inventory)) {
-                            $options['expiry_date'] = $inventory['expiry_date'];
-                        }
-                        if (array_key_exists('production_number', $inventory)) {
-                            $options['production_number'] = $inventory['production_number'];
-                        }
-                        InventoryHelper::decrease($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $inventory['quantity'], $options);
-                    }
-                }
-            } else {
-                InventoryHelper::decrease($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['quantity']);
+        foreach ($finishGoods as $finishGood) {
+            $options = [];
+            if ($finishGood->expiry_date) {
+                $options['expiry_date'] = $finishGood->expiry_date;
             }
+            if ($finishGood->production_number) {
+                $options['production_number'] = $finishGood->production_number;
+            }
+            InventoryHelper::increase($form->id, $finishGood->warehouse_id, $finishGood->item_id, $finishGood->quantity, 0, $options);
         }
 
         return $output;

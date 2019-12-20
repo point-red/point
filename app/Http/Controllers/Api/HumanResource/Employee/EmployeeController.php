@@ -155,9 +155,8 @@ class EmployeeController extends Controller
         }
 
         for ($i = 0; $i < count($request->get('media') ?? []); $i++) {
-            $file = $request->get('media')[$i]['file'];
-            $note = $request->get('media')[$i]['note'];
-            $service->create(Employee::$morphName, $employee->id, $file, $note);
+            $mediaId = $request->get('media')[$i]['id'];
+            $service->changeOwner($mediaId, $employee->id);
         }
 
         DB::connection('tenant')->commit();

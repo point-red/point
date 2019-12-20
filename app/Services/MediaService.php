@@ -29,6 +29,14 @@ class MediaService {
         return $media;
     }
 
+    public function changeOwner($id, $owner) {
+        DB::connection('tenant')->beginTransaction();
+        $media = Media::findOrFail($id);
+        $media->owner_id = $owner;
+        $media->save();
+        DB::connection('tenant')->commit();
+    }
+
     public function findBy($request, $table, $id) {
         $medias = Media::eloquentFilter($request)
                         ->where('owner_table', $table)
@@ -47,7 +55,9 @@ class MediaService {
     }
 
     public function download($id) {
+        DB::connection('tenant')->beginTransaction();
         $media = Media::findOrFail($id);
+        DB::connection('tenant')->commit();
         try {
             $file = Storage::disk($this->getStorage())->download(self::FOLDER_UPLOAD . $media->name, $media->name_ori);
             if (!$file) {

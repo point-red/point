@@ -33,7 +33,7 @@ class InventoryHelper
             throw new ItemQuantityInvalidException($item);
         }
 
-        $lastInventory = self::getLastReference($itemId, $warehouseId);
+        $lastInventory = self::getLastReference($itemId, $warehouseId, $options);
 
         $inventory = new Inventory;
         $inventory->form_id = $formId;
@@ -217,11 +217,11 @@ class InventoryHelper
      * @param $price
      * @throws ItemQuantityInvalidException
      */
-    public static function audit($formId, $warehouseId, $itemId, $quantity, $price)
+    public static function audit($formId, $warehouseId, $itemId, $quantity, $price, $options = [])
     {
         $item = Item::where('id', $itemId)->first();
 
-        $lastInventory = self::getLastReference($itemId, $warehouseId);
+        $lastInventory = self::getLastReference($itemId, $warehouseId, $options);
 
         if (! $lastInventory && ! $price) {
             throw new ItemQuantityInvalidException($item);
@@ -253,13 +253,26 @@ class InventoryHelper
      * @param $warehouseId
      * @return mixed
      */
-    private static function getLastReference($itemId, $warehouseId)
+    private static function getLastReference($itemId, $warehouseId, $options = [])
     {
-        return Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
+        $item = Item::findOrFail($itemId);
+
+        $lastReference = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
             ->where('item_id', $itemId)
-            ->where('warehouse_id', $warehouseId)
-            ->orderBy('date', 'DESC')
+            ->where('warehouse_id', $warehouseId);
+
+        if (array_key_exists('expiry_date', $options) && $item->require_expiry_date) {
+            $lastReference = $lastReference->where('expiry_date', convert_to_server_timezone($options['expiry_date']));
+        }
+
+        if (array_key_exists('production_number', $options) && $item->require_production_number) {
+            $lastReference = $lastReference->where('production_number', $options['production_number']);
+        }
+
+        $lastReference = $lastReference->orderBy('date', 'DESC')
             ->orderBy('form_id', 'DESC')
             ->first();
+
+        return $lastReference;
     }
 }

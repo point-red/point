@@ -20,8 +20,8 @@ class ManufactureOutputFinishGood extends TransactionModel
         'item_name',
         'warehouse_name',
         'quantity',
-        'production_number',
         'expiry_date',
+        'production_number',
         'unit',
     ];
 

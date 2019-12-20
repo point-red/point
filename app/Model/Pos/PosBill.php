@@ -91,11 +91,11 @@ class PosBill extends TransactionModel
         if ($data['is_done']) {
             foreach ($data['items'] as $item) {
                 $options = [];
-                if ($item->production_number) {
-                    $options['production_number'] = $item->production_number;
-                }
                 if ($item->expiry_date) {
                     $options['expiry_date'] = $item->expiry_date;
+                }
+                if ($item->production_number) {
+                    $options['production_number'] = $item->production_number;
                 }
                 InventoryHelper::decrease($form->id, $bill->warehouse_id, $item->item_id, $item->quantity, $options);
             }

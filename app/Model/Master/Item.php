@@ -29,8 +29,8 @@ class Item extends MasterModel
         'weight',
         'stock_reminder',
         'disabled',
-        'require_production_number',
         'require_expiry_date',
+        'require_production_number',
     ];
 
     protected $casts = [
@@ -105,13 +105,13 @@ class Item extends MasterModel
                     $openingStockWarehouse->quantity = $osWarehouse['quantity'];
                     $openingStockWarehouse->price = $osWarehouse['price'];
                     $options = [];
-                    if (array_key_exists('production_number', $osWarehouse)) {
-                        $openingStockWarehouse->production_number = $osWarehouse['production_number'];
-                        $options['production_number'] = $openingStockWarehouse->production_number;
-                    }
                     if (array_key_exists('expiry_date', $osWarehouse)) {
                         $openingStockWarehouse->expiry_date = $osWarehouse['expiry_date'];
                         $options['expiry_date'] = $openingStockWarehouse->expiry_date;
+                    }
+                    if (array_key_exists('production_number', $osWarehouse)) {
+                        $openingStockWarehouse->production_number = $osWarehouse['production_number'];
+                        $options['production_number'] = $openingStockWarehouse->production_number;
                     }
                     $openingStockWarehouse->save();
 

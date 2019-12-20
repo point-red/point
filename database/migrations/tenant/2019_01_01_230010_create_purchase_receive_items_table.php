@@ -23,8 +23,8 @@ class CreatePurchaseReceiveItemsTable extends Migration
             $table->decimal('tare_weight', 65, 30)->nullable();
             $table->decimal('net_weight', 65, 30)->nullable();
             $table->decimal('quantity', 65, 30);
-            $table->string('production_number')->nullable();
             $table->datetime('expiry_date')->nullable();
+            $table->string('production_number')->nullable();
             $table->unsignedDecimal('price', 65, 30);
             $table->unsignedDecimal('discount_percent', 33, 30)->nullable();
             $table->unsignedDecimal('discount_value', 65, 30)->default(0);

@@ -43,18 +43,6 @@ class InventoryHelper
         $inventory->price = $price;
         $inventory->total_quantity = $quantity;
 
-        if (array_key_exists('production_number', $options)) {
-            if ($item->require_production_number) {
-                if ($options['production_number']) {
-                    $inventory->production_number = $options['production_number'];
-                } else {
-                    return new ProductionNumberNotFoundException($item);
-                }
-            } else {
-                $inventory->production_number = null;
-            }
-        }
-
         if (array_key_exists('expiry_date', $options)) {
             if ($item->require_expiry_date) {
                 if ($options['expiry_date']) {
@@ -64,6 +52,18 @@ class InventoryHelper
                 }
             } else {
                 $inventory->expiry_date = null;
+            }
+        }
+
+        if (array_key_exists('production_number', $options)) {
+            if ($item->require_production_number) {
+                if ($options['production_number']) {
+                    $inventory->production_number = $options['production_number'];
+                } else {
+                    return new ProductionNumberNotFoundException($item);
+                }
+            } else {
+                $inventory->production_number = null;
             }
         }
 
@@ -141,10 +141,12 @@ class InventoryHelper
             ->where('inventories.warehouse_id', '=', $warehouseId)
             ->where('inventories.item_id', '=', $itemId);
 
+        if (array_key_exists('expiry_date', $options)) {
+            $inventory = $inventory->where('inventories.expiry_date', '=', $options['expiry_date']);
+        }
+
         if (array_key_exists('production_number', $options)) {
             $inventory = $inventory->where('inventories.production_number', '=', $options['production_number']);
-        } else if (array_key_exists('expiry_date', $options)) {
-            $inventory = $inventory->where('inventories.expiry_date', '=', $options['expiry_date']);
         }
 
         $inventory = $inventory->first();
@@ -182,11 +184,13 @@ class InventoryHelper
             ->where('inventories.warehouse_id', '=', $warehouseId)
             ->where('inventories.item_id', '=', $itemId);
 
-        if (array_key_exists('production_number', $options)) {
-            $inventory = $inventory->where('inventories.production_number', '=', $options['production_number']);
-        } else if (array_key_exists('expiry_date', $options)) {
+        if (array_key_exists('expiry_date', $options)) {
             $inventory = $inventory->where('inventories.expiry_date', '=', $options['expiry_date']);
         }
+
+        if (array_key_exists('production_number', $options)) {
+            $inventory = $inventory->where('inventories.production_number', '=', $options['production_number']);
+        } 
 
         $inventory = $inventory->first();
 

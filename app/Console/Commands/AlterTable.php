@@ -44,18 +44,21 @@ class AlterTable extends Command
 
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('ALTER TABLE `sales_contract_group_items` DROP FOREIGN KEY `sales_contract_group_items_group_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_contract_group_items` DROP FOREIGN KEY `purchase_contract_group_items_group_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_contract_group_items` DROP COLUMN `group_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_contract_group_items` DROP COLUMN `group_name`');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_contract_group_items` DROP COLUMN `group_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_contract_group_items` DROP COLUMN `group_name`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_contract_group_items` ADD COLUMN `item_group_id` integer unsigned AFTER `sales_contract_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_contract_group_items` ADD CONSTRAINT `sales_contract_group_items_item_group_id_foreign` FOREIGN KEY (`item_group_id`) REFERENCES item_groups (`id`) ON DELETE CASCADE');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_contract_group_items` ADD COLUMN `item_group_id` integer unsigned');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_contract_group_items` ADD CONSTRAINT `purchase_contract_group_items_item_group_id_foreign` FOREIGN KEY (`item_group_id`) REFERENCES item_groups (`id`) ON DELETE CASCADE');
-            DB::connection('tenant')->statement('DROP TABLE `groupables`');
-            DB::connection('tenant')->statement('DROP TABLE `groups`');
+            DB::connection('tenant')->statement('ALTER TABLE `items` ADD COLUMN `require_production_number` boolean default false after `disabled`');
+            DB::connection('tenant')->statement('ALTER TABLE `items` ADD COLUMN `require_expiry_date` boolean default false after `require_production_number`');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD COLUMN `expiry_date` datetime default null after `quantity`');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD COLUMN `production_number` varchar(255) default null after `expiry_date`');
+            DB::connection('tenant')->statement('ALTER TABLE `opening_stock_warehouses` ADD COLUMN `expiry_date` datetime default null after `quantity`');
+            DB::connection('tenant')->statement('ALTER TABLE `opening_stock_warehouses` ADD COLUMN `production_number` varchar(255) default null after `expiry_date`');
+            DB::connection('tenant')->statement('ALTER TABLE `inventory_audit_items` ADD COLUMN `expiry_date` datetime default null after `quantity`');
+            DB::connection('tenant')->statement('ALTER TABLE `inventory_audit_items` ADD COLUMN `production_number` varchar(255) default null after `expiry_date`');
+            DB::connection('tenant')->statement('ALTER TABLE `purchase_receive_items` ADD COLUMN `expiry_date` datetime default null after `quantity`');
+            DB::connection('tenant')->statement('ALTER TABLE `purchase_receive_items` ADD COLUMN `production_number` varchar(255) default null after `expiry_date`');
+            DB::connection('tenant')->statement('ALTER TABLE `delivery_note_items` ADD COLUMN `expiry_date` datetime default null after `quantity`');
+            DB::connection('tenant')->statement('ALTER TABLE `delivery_note_items` ADD COLUMN `production_number` varchar(255) default null after `expiry_date`');
+            DB::connection('tenant')->statement('ALTER TABLE `pos_bill_items` ADD COLUMN `expiry_date` datetime default null after `quantity`');
+            DB::connection('tenant')->statement('ALTER TABLE `pos_bill_items` ADD COLUMN `production_number` varchar(255) default null after `expiry_date`');
+            DB::connection('tenant')->statement('ALTER TABLE `pos_bills` ADD COLUMN `warehouse_id` integer(10) unsigned not null after `customer_id`');
         }
     }
 }

@@ -59,6 +59,9 @@ class AlterTable extends Command
             DB::connection('tenant')->statement('ALTER TABLE `pos_bill_items` ADD COLUMN `expiry_date` datetime default null after `quantity`');
             DB::connection('tenant')->statement('ALTER TABLE `pos_bill_items` ADD COLUMN `production_number` varchar(255) default null after `expiry_date`');
             DB::connection('tenant')->statement('ALTER TABLE `pos_bills` ADD COLUMN `warehouse_id` integer(10) unsigned not null after `customer_id`');
+
+            DB::connection('tenant')->statement('ALTER TABLE `pos_bills` ADD CONSTRAINT `pos_bills_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES customers (`id`) ON DELETE RESTRICT');
+            DB::connection('tenant')->statement('ALTER TABLE `pos_bills` ADD CONSTRAINT `pos_bills_warehouse_id_foreign` FOREIGN KEY (`warehouse_id`) REFERENCES warehouses (`id`) ON DELETE RESTRICT');
         }
     }
 }

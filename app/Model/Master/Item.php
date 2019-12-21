@@ -99,7 +99,9 @@ class Item extends MasterModel
             if ($unit['default_purchase'] == true) {
                 $item->unit_default_purchase = $itemUnit->id;
                 $item->save();
-            } else if ($unit['default_sales'] == true) {
+            }
+
+            if ($unit['default_sales'] == true) {
                 $item->unit_default_sales = $itemUnit->id;
                 $item->save();
             }
@@ -132,7 +134,10 @@ class Item extends MasterModel
                     $openingStockWarehouse->price = $osWarehouse['price'];
                     $openingStockWarehouse->save();
 
-                    InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price']);
+                    InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price'], [
+                        'expiry_date' => $openingStockWarehouse->expiry_date,
+                        'production_number' => $openingStockWarehouse->production_number,
+                    ]);
                 }
             }
         }

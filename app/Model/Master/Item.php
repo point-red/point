@@ -41,7 +41,7 @@ class Item extends MasterModel
 
     public function getLabelAttribute()
     {
-        return $this->code . ' ' . $this->name;
+        return $this->code . ' - ' . $this->name;
     }
 
     public function inventories()
@@ -77,13 +77,29 @@ class Item extends MasterModel
         $item->save();
 
         $units = $data['units'];
-        $unitsToBeInserted = [];
-        foreach ($units as $unit) {
+        foreach ($units as $key => $unit) {
+            if ($unit['converter'] <= 0 || $unit['name'] == '') {
+                continue;
+            }
+
             $itemUnit = new ItemUnit();
+            $itemUnit->item_id = $item->id;
             $itemUnit->fill($unit);
-            array_push($unitsToBeInserted, $itemUnit);
+            $itemUnit->save();
+
+            if ($key == 0) {
+                $item->unit_default = $itemUnit->id;
+                $item->save();
+            }
+
+            if ($unit['default_purchase'] == true) {
+                $item->unit_default_purchase = $itemUnit->id;
+                $item->save();
+            } else if ($unit['default_sales'] == true) {
+                $item->unit_default_sales = $itemUnit->id;
+                $item->save();
+            }
         }
-        $item->units()->saveMany($unitsToBeInserted);
 
         if (isset($data['opening_stocks'])) {
             $openingStock = new OpeningStock;

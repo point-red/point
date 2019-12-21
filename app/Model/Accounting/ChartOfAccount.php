@@ -15,7 +15,7 @@ class ChartOfAccount extends MasterModel
 
     public function getLabelAttribute()
     {
-        return $this->number . ' ' . $this->alias;
+        return $this->number . ' - ' . $this->alias;
     }
 
     /**

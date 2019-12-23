@@ -18,8 +18,8 @@ class CreateOpeningStockWarehousesTable extends Migration
             $table->unsignedInteger('opening_stock_id');
             $table->unsignedInteger('warehouse_id');
             $table->unsignedDecimal('quantity', 65, 30);
+            $table->datetime('expiry_date')->nullable();
             $table->string('production_number')->nullable();
-            $table->date('expiry_date')->nullable();
             $table->unsignedDecimal('price', 65, 30);
 
             $table->foreign('opening_stock_id')->references('id')->on('opening_stocks')->onDelete('cascade');

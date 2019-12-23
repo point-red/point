@@ -15,8 +15,8 @@ class PosBillItem extends TransactionModel
         'item_id',
         'item_name',
         'quantity',
-        'production_number',
         'expiry_date',
+        'production_number',
         'unit',
         'converter',
         'price',
@@ -33,6 +33,16 @@ class PosBillItem extends TransactionModel
         'discount_percent' => 'double',
         'discount_value' => 'double',
     ];
+
+    public function setExpiryDateAttribute($value)
+    {
+        $this->attributes['expiry_date'] = convert_to_server_timezone($value);
+    }
+
+    public function getExpiryDateAttribute($value)
+    {
+        return convert_to_local_timezone($value);
+    }
 
     public function posBill()
     {

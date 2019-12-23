@@ -102,20 +102,15 @@ class ManufactureInput extends TransactionModel
         $form->approved = true;
         $form->saveData($data, $input);
 
-        foreach ($data['raw_materials'] as $rawMaterial) {
-            $item = $rawMaterial['item'];
-            if ($item['require_production_number'] || $item['require_expiry_date']) {
-                foreach ($rawMaterial['inventories'] as $inventory) {
-                    if ($inventory['quantity'] !== null) {
-                        InventoryHelper::decrease($form->id, $rawMaterial['warehouse_id'], $rawMaterial['item_id'], $inventory['quantity'], [
-                            'production_number' => $inventory['production_number'],
-                            'expiry_date' => $inventory['expiry_date'],
-                        ]);
-                    }
-                }
-            } else {
-                InventoryHelper::decrease($form->id, $rawMaterial['warehouse_id'], $rawMaterial['item_id'], $rawMaterial['quantity']);
+        foreach ($rawMaterials as $rawMaterial) {
+            $options = [];
+            if ($rawMaterial->expiry_date) {
+                $options['expiry_date'] = $rawMaterial->expiry_date;
             }
+            if ($rawMaterial->production_number) {
+                $options['production_number'] = $rawMaterial->production_number;
+            }
+            InventoryHelper::decrease($form->id, $rawMaterial->warehouse_id, $rawMaterial->item_id, $rawMaterial->quantity, $options);
         }
 
         return $input;

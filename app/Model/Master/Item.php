@@ -29,8 +29,8 @@ class Item extends MasterModel
         'weight',
         'stock_reminder',
         'disabled',
-        'require_production_number',
         'require_expiry_date',
+        'require_production_number',
     ];
 
     protected $casts = [
@@ -125,19 +125,19 @@ class Item extends MasterModel
                     $openingStockWarehouse->opening_stock_id = $openingStock->id;
                     $openingStockWarehouse->warehouse_id = $osWarehouse['warehouse_id'];
                     $openingStockWarehouse->quantity = $osWarehouse['quantity'];
+                    $openingStockWarehouse->price = $osWarehouse['price'];
+                    $options = [];
+                    if (array_key_exists('expiry_date', $osWarehouse)) {
+                        $openingStockWarehouse->expiry_date = $osWarehouse['expiry_date'];
+                        $options['expiry_date'] = $openingStockWarehouse->expiry_date;
+                    }
                     if (array_key_exists('production_number', $osWarehouse)) {
                         $openingStockWarehouse->production_number = $osWarehouse['production_number'];
+                        $options['production_number'] = $openingStockWarehouse->production_number;
                     }
-                    if (array_key_exists('expiry_date', $osWarehouse)) {
-                        $openingStockWarehouse->expiry_date = convert_to_server_timezone($osWarehouse['expiry_date']);
-                    }
-                    $openingStockWarehouse->price = $osWarehouse['price'];
                     $openingStockWarehouse->save();
 
-                    InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price'], [
-                        'expiry_date' => $openingStockWarehouse->expiry_date,
-                        'production_number' => $openingStockWarehouse->production_number,
-                    ]);
+                    InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price'], $options);
                 }
             }
         }

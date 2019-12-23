@@ -22,8 +22,10 @@ class ManufactureOutput extends TransactionModel
 
     protected $fillable = [
     	'manufacture_machine_id',
+        'manufacture_process_id',
         'manufacture_input_id',
         'manufacture_machine_name',
+        'manufacture_process_name',
         'notes',
     ];
 
@@ -84,16 +86,15 @@ class ManufactureOutput extends TransactionModel
         $form->approved = true;
         $form->saveData($data, $output);
 
-        foreach ($data['finish_goods'] as $finishGood) {
-            $item = $finishGood['item'];
-            if ($item['require_production_number'] || $item['require_expiry_date']) {
-                InventoryHelper::increase($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['produced_quantity'], 0, [
-                    'production_number' => $finishGood['production_number'],
-                    'expiry_date' => $finishGood['expiry_date'],
-                ]);
-            } else {
-                InventoryHelper::increase($form->id, $finishGood['warehouse_id'], $finishGood['item_id'], $finishGood['produced_quantity'], 0);
+        foreach ($finishGoods as $finishGood) {
+            $options = [];
+            if ($finishGood->expiry_date) {
+                $options['expiry_date'] = $finishGood->expiry_date;
             }
+            if ($finishGood->production_number) {
+                $options['production_number'] = $finishGood->production_number;
+            }
+            InventoryHelper::increase($form->id, $finishGood->warehouse_id, $finishGood->item_id, $finishGood->quantity, 0, $options);
         }
 
         return $output;
@@ -104,7 +105,6 @@ class ManufactureOutput extends TransactionModel
         return array_map(function ($finishGood) {
             $outputFinishGood = new ManufactureOutputFinishGood;
             $outputFinishGood->fill($finishGood);
-            $outputFinishGood->quantity = $finishGood['produced_quantity'];
 
             return $outputFinishGood;
         }, $finishGoods);

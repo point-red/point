@@ -21,10 +21,8 @@ class ManufactureOutput extends TransactionModel
     protected $connection = 'tenant';
 
     protected $fillable = [
-    	'manufacture_machine_id',
         'manufacture_process_id',
         'manufacture_input_id',
-        'manufacture_machine_name',
         'manufacture_process_name',
         'notes',
     ];
@@ -73,8 +71,11 @@ class ManufactureOutput extends TransactionModel
 
     public static function create($data)
     {
+        $input = ManufactureInput::findOrFail($data['manufacture_input_id']);
         $output = new self;
         $output->fill($data);
+        $output->manufacture_machine_id = $input->manufacture_machine_id;
+        $output->manufacture_machine_name = $input->manufacture_machine_name;
 
         $finishGoods = self::mapFinishGoods($data['finish_goods'] ?? []);
 

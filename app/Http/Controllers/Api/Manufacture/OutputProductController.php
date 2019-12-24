@@ -62,7 +62,7 @@ class OutputProductController extends Controller
      */
     public function store(StoreManufactureOutputRequest $request)
     {
-        $result = DB::connection('tenant')->transaction(function () use ($request) {
+        return DB::connection('tenant')->transaction(function () use ($request) {
             $manufactureOutput = ManufactureOutput::create($request->all());
             $manufactureOutput
                 ->load('form')
@@ -72,8 +72,6 @@ class OutputProductController extends Controller
 
             return new ApiResource($manufactureOutput);
         });
-
-        return $result;
     }
 
     /**

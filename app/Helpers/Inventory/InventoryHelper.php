@@ -22,7 +22,9 @@ class InventoryHelper
      * @param $quantity
      * @param $price
      * @param array $options
+     * @throws ExpiryDateNotFoundException
      * @throws ItemQuantityInvalidException
+     * @throws ProductionNumberNotFoundException
      * @throws StockNotEnoughException
      */
     private static function insert($formId, $warehouseId, $itemId, $quantity, $price, $options = [])

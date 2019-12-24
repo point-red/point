@@ -24,7 +24,7 @@ class StoreManufactureMachineRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|string|unique:tenant.manufacture_machines,code',
+            'code' => 'string|unique:tenant.manufacture_machines,code',
             'name' => 'required|string|unique:tenant.manufacture_machines,name',
         ];
     }

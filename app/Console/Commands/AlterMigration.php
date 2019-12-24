@@ -226,6 +226,8 @@ class AlterMigration extends Command
             // Plugins - Scale Weight
             self::update('2019_01_01_900200_create_scale_weight_trucks_table');
             self::update('2019_01_01_900201_create_scale_weight_items_table');
+            // Manufacture
+            // UserWarehouse
         }
     }
 

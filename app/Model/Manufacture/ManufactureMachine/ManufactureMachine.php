@@ -2,13 +2,13 @@
 
 namespace App\Model\Manufacture\ManufactureMachine;
 
-use App\Model\PointModel;
-use App\Model\Manufacture\ManufactureInputMaterial\ManufactureInputMaterial;
-use App\Model\Manufacture\ManufactureOutputProduct\ManufactureOutputProduct;
+use App\Model\MasterModel;
 
-class ManufactureMachine extends PointModel
+class ManufactureMachine extends MasterModel
 {
     protected $connection = 'tenant';
+
+    protected $appends = ['label'];
 
     protected $fillable = [
         'code',
@@ -16,30 +16,12 @@ class ManufactureMachine extends PointModel
         'notes'
     ];
 
-    public function inputMaterials()
+    public function getLabelAttribute()
     {
-        return $this->hasMany(ManufactureInputMaterial::class)->active();
-    }
-
-    public function outputProducts()
-    {
-        return $this->hasMany(ManufactureOutputProduct::class)->active();
-    }
-
-    public function isAllowedToDelete()
-    {
-        $this->isNotReferenced();
-    }
-
-    private function isNotReferenced()
-    {
-        // Check if not referenced by input material & output product
-        if ($this->inputMaterials->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by input material', $this->inputMaterials);
+        $label = '';
+        if ($this->code) {
+            $label = $this->code . ' - ';
         }
-
-        if ($this->outputProducts->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by output product', $this->outputProducts);
-        }
+        return $label . $this->name;
     }
 }

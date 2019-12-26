@@ -88,7 +88,8 @@ class InventoryController extends Controller
         $inventories = Inventory::eloquentFilter($request)
             ->join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
             ->where('item_id', $itemId)
-            ->select(Inventory::getTableName('*'));
+            ->select(Inventory::getTableName('*'))
+            ->addSelect(DB::raw('sum(inventories.quantity) as total_quantity'));
 
         if ($request->has('warehouse_id')) {
             $inventories = $inventories->where('warehouse_id', $request->get('warehouse_id'));

@@ -18,6 +18,7 @@ class CreatePosBillsTable extends Migration
             $table->unsignedInteger('customer_id')->nullable();
             $table->unsignedInteger('warehouse_id')->index();
             $table->string('customer_name')->nullable();
+            $table->string('warehouse_name')->nullable();
             $table->unsignedDecimal('discount_percent', 33, 30)->nullable();
             $table->unsignedDecimal('discount_value', 65, 30)->default(0);
             $table->string('type_of_tax'); // include / exclude / non

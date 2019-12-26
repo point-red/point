@@ -29,8 +29,8 @@ class Item extends MasterModel
         'weight',
         'stock_reminder',
         'disabled',
-        'require_production_number',
         'require_expiry_date',
+        'require_production_number',
     ];
 
     protected $casts = [
@@ -41,7 +41,11 @@ class Item extends MasterModel
 
     public function getLabelAttribute()
     {
-        return $this->code . ' ' . $this->name;
+        $label = '';
+        if ($this->code) {
+            $label = $this->code . ' - ';
+        }
+        return $label . $this->name;
     }
 
     public function inventories()
@@ -77,13 +81,31 @@ class Item extends MasterModel
         $item->save();
 
         $units = $data['units'];
-        $unitsToBeInserted = [];
-        foreach ($units as $unit) {
+        foreach ($units as $key => $unit) {
+            if ($unit['converter'] <= 0 || $unit['name'] == '') {
+                continue;
+            }
+
             $itemUnit = new ItemUnit();
+            $itemUnit->item_id = $item->id;
             $itemUnit->fill($unit);
-            array_push($unitsToBeInserted, $itemUnit);
+            $itemUnit->save();
+
+            if ($key == 0) {
+                $item->unit_default = $itemUnit->id;
+                $item->save();
+            }
+
+            if ($unit['default_purchase'] == true) {
+                $item->unit_default_purchase = $itemUnit->id;
+                $item->save();
+            }
+
+            if ($unit['default_sales'] == true) {
+                $item->unit_default_sales = $itemUnit->id;
+                $item->save();
+            }
         }
-        $item->units()->saveMany($unitsToBeInserted);
 
         if (isset($data['opening_stocks'])) {
             $openingStock = new OpeningStock;
@@ -103,16 +125,19 @@ class Item extends MasterModel
                     $openingStockWarehouse->opening_stock_id = $openingStock->id;
                     $openingStockWarehouse->warehouse_id = $osWarehouse['warehouse_id'];
                     $openingStockWarehouse->quantity = $osWarehouse['quantity'];
+                    $openingStockWarehouse->price = $osWarehouse['price'];
+                    $options = [];
+                    if (array_key_exists('expiry_date', $osWarehouse)) {
+                        $openingStockWarehouse->expiry_date = $osWarehouse['expiry_date'];
+                        $options['expiry_date'] = $openingStockWarehouse->expiry_date;
+                    }
                     if (array_key_exists('production_number', $osWarehouse)) {
                         $openingStockWarehouse->production_number = $osWarehouse['production_number'];
+                        $options['production_number'] = $openingStockWarehouse->production_number;
                     }
-                    if (array_key_exists('expiry_date', $osWarehouse)) {
-                        $openingStockWarehouse->expiry_date = convert_to_server_timezone($osWarehouse['expiry_date']);
-                    }
-                    $openingStockWarehouse->price = $osWarehouse['price'];
                     $openingStockWarehouse->save();
 
-                    InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price']);
+                    InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price'], $options);
                 }
             }
         }

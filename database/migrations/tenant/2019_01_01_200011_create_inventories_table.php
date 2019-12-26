@@ -19,8 +19,8 @@ class CreateInventoriesTable extends Migration
             $table->unsignedInteger('warehouse_id')->index();
             $table->unsignedInteger('item_id')->index();
             $table->decimal('quantity', 65, 30)->default(0);
+            $table->datetime('expiry_date')->nullable();
             $table->string('production_number')->nullable();
-            $table->date('expiry_date')->nullable();
             $table->unsignedDecimal('price', 65, 30)->default(0);
             $table->decimal('cogs', 65, 30)->default(0);
             $table->decimal('total_quantity', 65, 30)->default(0);

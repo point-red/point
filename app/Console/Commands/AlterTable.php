@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 class AlterTable extends Command
@@ -40,22 +41,13 @@ class AlterTable extends Command
         $projects = Project::all();
         foreach ($projects as $project) {
             $db = env('DB_DATABASE').'_'.strtolower($project->code);
-            $this->line('Alter '.$db);
 
+            $this->line('Clone '.$project->code);
+            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+            $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('ALTER TABLE `sales_contract_group_items` DROP FOREIGN KEY `sales_contract_group_items_group_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_contract_group_items` DROP FOREIGN KEY `purchase_contract_group_items_group_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_contract_group_items` DROP COLUMN `group_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_contract_group_items` DROP COLUMN `group_name`');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_contract_group_items` DROP COLUMN `group_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_contract_group_items` DROP COLUMN `group_name`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_contract_group_items` ADD COLUMN `item_group_id` integer unsigned AFTER `sales_contract_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_contract_group_items` ADD CONSTRAINT `sales_contract_group_items_item_group_id_foreign` FOREIGN KEY (`item_group_id`) REFERENCES item_groups (`id`) ON DELETE CASCADE');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_contract_group_items` ADD COLUMN `item_group_id` integer unsigned');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_contract_group_items` ADD CONSTRAINT `purchase_contract_group_items_item_group_id_foreign` FOREIGN KEY (`item_group_id`) REFERENCES item_groups (`id`) ON DELETE CASCADE');
-            DB::connection('tenant')->statement('DROP TABLE `groupables`');
-            DB::connection('tenant')->statement('DROP TABLE `groups`');
+            DB::connection('tenant')->statement('ALTER TABLE `pos_bills` ADD COLUMN `warehouse_name` varchar(255) default null after `customer_name`');
         }
     }
 }

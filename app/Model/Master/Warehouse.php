@@ -19,7 +19,11 @@ class Warehouse extends MasterModel
 
     public function getLabelAttribute()
     {
-        return $this->code . ' ' . $this->name;
+        $label = '';
+        if ($this->code) {
+            $label = $this->code . ' - ';
+        }
+        return $label . $this->name;
     }
 
     /**

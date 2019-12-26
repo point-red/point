@@ -123,7 +123,6 @@ class AlterMigration extends Command
             self::update('2019_01_01_120100_create_allocations_table');
             self::update('2019_01_01_120101_create_allocation_groups_table');
             self::update('2019_01_01_120102_create_allocation_allocation_group_table');
-            self::update('2019_01_01_120103_create_allocation_reports_table');
 
             // Person Relation
             self::update('2019_01_01_121000_create_addresses_table');
@@ -143,6 +142,7 @@ class AlterMigration extends Command
             // Mutation Table
             self::update('2019_01_01_200010_create_journals_table');
             self::update('2019_01_01_200011_create_inventories_table');
+            self::update('2019_01_01_200012_create_allocation_reports_table');
             // Accounting
             self::update('2019_01_01_210000_create_cut_offs_table');
             self::update('2019_01_01_210001_create_cut_off_details_table');
@@ -226,6 +226,8 @@ class AlterMigration extends Command
             // Plugins - Scale Weight
             self::update('2019_01_01_900200_create_scale_weight_trucks_table');
             self::update('2019_01_01_900201_create_scale_weight_items_table');
+            // Manufacture
+            // UserWarehouse
         }
     }
 

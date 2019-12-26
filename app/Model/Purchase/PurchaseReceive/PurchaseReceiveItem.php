@@ -20,8 +20,8 @@ class PurchaseReceiveItem extends TransactionModel
         'tare_weight',
         'net_weight',
         'quantity',
-        'production_number',
         'expiry_date',
+        'production_number',
         'unit',
         'converter',
         'notes',
@@ -37,6 +37,16 @@ class PurchaseReceiveItem extends TransactionModel
         'discount_value' => 'double',
         'converter' => 'double',
     ];
+
+    public function setExpiryDateAttribute($value)
+    {
+        $this->attributes['expiry_date'] = convert_to_server_timezone($value);
+    }
+
+    public function getExpiryDateAttribute($value)
+    {
+        return convert_to_local_timezone($value);
+    }
 
     public function item()
     {

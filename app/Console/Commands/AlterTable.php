@@ -78,6 +78,10 @@ class AlterTable extends Command
             DB::connection('tenant')->statement('ALTER TABLE `items` ADD COLUMN `archived_by` integer(10) unsigned default null');
             DB::connection('tenant')->statement('ALTER TABLE `items` ADD CONSTRAINT `items_archived_by_foreign` FOREIGN KEY (`archived_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
             //
+            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD COLUMN `archived_at` datetime default null');
+            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD COLUMN `archived_by` integer(10) unsigned default null');
+            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD CONSTRAINT `chart_of_accounts_archived_by_foreign` FOREIGN KEY (`archived_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
+            //
             DB::connection('tenant')->statement('ALTER TABLE `users` ADD COLUMN `created_by` integer(10) unsigned default null');
             DB::connection('tenant')->statement('ALTER TABLE `users` ADD CONSTRAINT `users_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
             DB::connection('tenant')->statement('ALTER TABLE `users` ADD COLUMN `updated_by` integer(10) unsigned default null');

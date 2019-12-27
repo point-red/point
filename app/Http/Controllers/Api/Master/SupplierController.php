@@ -93,6 +93,12 @@ class SupplierController extends Controller
             });
         }
 
+        if ($request->get('is_archived')) {
+            $suppliers = $suppliers->whereNotNull('archived_at');
+        } else {
+            $suppliers = $suppliers->whereNull('archived_at');
+        }
+
         $suppliers = pagination($suppliers, $request->get('limit'));
 
         return new ApiCollection($suppliers);

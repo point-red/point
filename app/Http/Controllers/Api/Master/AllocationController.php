@@ -22,6 +22,12 @@ class AllocationController extends Controller
     {
         $allocations = Allocation::eloquentFilter($request);
 
+        if ($request->get('is_archived')) {
+            $allocations = $allocations->whereNotNull('archived_at');
+        } else {
+            $allocations = $allocations->whereNull('archived_at');
+        }
+
         $allocations = pagination($allocations, $request->get('limit'));
 
         return new ApiCollection($allocations);

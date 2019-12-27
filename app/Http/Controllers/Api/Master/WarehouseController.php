@@ -22,6 +22,12 @@ class WarehouseController extends Controller
     {
         $warehouses = Warehouse::eloquentFilter($request);
 
+        if ($request->get('is_archived')) {
+            $warehouses = $warehouses->whereNotNull('archived_at');
+        } else {
+            $warehouses = $warehouses->whereNull('archived_at');
+        }
+
         $warehouses = pagination($warehouses, $request->get('limit'));
 
         return new ApiCollection($warehouses);

@@ -22,11 +22,14 @@ class CreateChartOfAccountsTable extends Migration
             $table->string('alias');
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
+            $table->unsignedInteger('archived_by')->index()->nullable();
             $table->timestamps();
+            $table->timestamp('archived_at')->nullable();
 
             $table->unique(['number', 'name']);
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('archived_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('type_id')->references('id')->on('chart_of_account_types')->onDelete('cascade');
             $table->foreign('group_id')->references('id')->on('chart_of_account_groups')->onDelete('cascade');
         });

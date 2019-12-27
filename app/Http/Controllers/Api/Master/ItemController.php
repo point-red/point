@@ -35,6 +35,12 @@ class ItemController extends Controller
             $items = $items->whereRaw('items.stock < items.stock_reminder');
         }
 
+        if ($request->get('is_archived')) {
+            $items = $items->whereNotNull('archived_at');
+        } else {
+            $items = $items->whereNull('archived_at');
+        }
+
         $items = pagination($items, $request->get('limit'));
 
         return new ApiCollection($items);

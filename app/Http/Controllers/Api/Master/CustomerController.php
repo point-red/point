@@ -241,4 +241,18 @@ class CustomerController extends Controller
 
         return new ApiResource($customer);
     }
+
+    /**
+     * Activate the specified resource from storage.
+     *
+     * @param int $id
+     * @return ApiResource
+     */
+    public function activate($id)
+    {
+        $customer = Customer::findOrFail($id);
+        $customer->activate();
+
+        return new ApiResource($customer);
+    }
 }

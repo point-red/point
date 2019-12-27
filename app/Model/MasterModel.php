@@ -29,6 +29,13 @@ class MasterModel extends PointModel
         $this->save();
     }
 
+    public function activate()
+    {
+        $this->archived_at = null;
+        $this->archived_by = null;
+        $this->save();
+    }
+
     public function logUpdatedColumn()
     {
         if (! $this->exists) {

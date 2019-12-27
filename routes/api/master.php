@@ -35,6 +35,8 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::post('customer-groups/attach', 'CustomerGroupController@attach');
     Route::post('customer-groups/detach', 'CustomerGroupController@detach');
     Route::apiResource('customer-groups', 'CustomerGroupController');
+    Route::put('customers/{id}/archive', 'CustomerController@archive');
+    Route::patch('customers/{id}/archive', 'CustomerController@archive');
     Route::apiResource('customers', 'CustomerController');
     Route::apiResource('price-list-items', 'PriceListItemController');
     Route::apiResource('price-list-services', 'PriceListServiceController');

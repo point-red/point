@@ -20,6 +20,7 @@ use App\Model\Master\Group;
 use App\Model\Master\Phone;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -211,19 +212,27 @@ class CustomerController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function destroy($id)
     {
         $customer = Customer::findOrFail($id);
-
-        try {
-            $customer->delete();
-        } catch (QueryException $e) {
-            $customer->disabled = true;
-            $customer->save();
-        }
+        $customer->delete();
 
         return response()->json([], 204);
+    }
+
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param int $id
+     * @return ApiResource
+     */
+    public function archive($id)
+    {
+        $customer = Customer::findOrFail($id);
+        $customer->archive();
+
+        return new ApiResource($customer);
     }
 }

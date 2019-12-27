@@ -229,6 +229,23 @@ class CustomerController extends Controller
     }
 
     /**
+     * delete the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkDelete(Request $request)
+    {
+        $customers = $request->get('customers');
+        foreach ($customers as $customer) {
+            $customer = Customer::findOrFail($customer['id']);
+            $customer->delete();
+        }
+
+        return response()->json([], 204);
+    }
+
+    /**
      * Archive the specified resource from storage.
      *
      * @param int $id
@@ -243,6 +260,23 @@ class CustomerController extends Controller
     }
 
     /**
+     * Archive the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkArchive(Request $request)
+    {
+        $customers = $request->get('customers');
+        foreach ($customers as $customer) {
+            $customer = Customer::findOrFail($customer['id']);
+            $customer->archive();
+        }
+
+        return response()->json([], 200);
+    }
+
+    /**
      * Activate the specified resource from storage.
      *
      * @param int $id
@@ -254,5 +288,22 @@ class CustomerController extends Controller
         $customer->activate();
 
         return new ApiResource($customer);
+    }
+
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkActivate(Request $request)
+    {
+        $customers = $request->get('customers');
+        foreach ($customers as $customer) {
+            $customer = Customer::findOrFail($customer['id']);
+            $customer->activate();
+        }
+
+        return response()->json([], 200);
     }
 }

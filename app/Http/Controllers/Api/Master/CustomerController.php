@@ -97,6 +97,12 @@ class CustomerController extends Controller
             });
         }
 
+        if ($request->get('is_archived')) {
+            $customers = $customers->whereNotNull('archived_at');
+        } else {
+            $customers = $customers->whereNull('archived_at');
+        }
+
         $customers = pagination($customers, $request->get('limit'));
 
         return new ApiCollection($customers);

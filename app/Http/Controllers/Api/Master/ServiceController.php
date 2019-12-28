@@ -23,6 +23,12 @@ class ServiceController extends Controller
     {
         $services = Service::eloquentFilter($request);
 
+        if ($request->get('is_archived')) {
+            $services = $services->whereNotNull('archived_at');
+        } else {
+            $services = $services->whereNull('archived_at');
+        }
+
         $services = $services->paginate($request->get('paginate') ?? 20);
 
         return new ApiCollection($services);

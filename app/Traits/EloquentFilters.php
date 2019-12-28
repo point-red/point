@@ -128,16 +128,18 @@ trait EloquentFilters
 
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                $relation = explode('.', $key);
-                $column = array_pop($relation);
-                $relation = implode('.', $relation);
+                if ($value != null) {
+                    $relation = explode('.', $key);
+                    $column = array_pop($relation);
+                    $relation = implode('.', $relation);
 
-                if (! empty($relation)) {
-                    $query->whereHas($relation, function ($query) use ($column, $value) {
-                        $query->where($column, $value);
-                    });
-                } else {
-                    $query->where($key, $value);
+                    if (! empty($relation)) {
+                        $query->whereHas($relation, function ($query) use ($column, $value) {
+                            $query->where($column, $value);
+                        });
+                    } else {
+                        $query->where($key, $value);
+                    }
                 }
             }
         });

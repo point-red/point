@@ -24,7 +24,6 @@ class CreateItemsTable extends Migration
             $table->string('weight')->nullable();
             $table->text('notes')->nullable();
             $table->boolean('taxable')->default(true);
-            $table->boolean('disabled')->default(false);
             $table->boolean('require_production_number')->default(false);
             $table->boolean('require_expiry_date')->default(false);
             $table->unsignedDecimal('stock', '65', 30)->default(0);
@@ -35,10 +34,13 @@ class CreateItemsTable extends Migration
 
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
+            $table->unsignedInteger('archived_by')->index()->nullable();
             $table->timestamps();
+            $table->timestamp('archived_at')->nullable();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('archived_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
         });
     }

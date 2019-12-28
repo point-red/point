@@ -19,15 +19,17 @@ class CreateCustomersTable extends Migration
             $table->string('tax_identification_number')->nullable();
             $table->string('name');
             $table->text('notes')->nullable();
-            $table->boolean('disabled')->default(false);
             $table->decimal('credit_ceiling', 65, 30)->default(0);
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
+            $table->unsignedInteger('archived_by')->index()->nullable();
             $table->unsignedInteger('pricing_group_id')->nullable()->index();
             $table->timestamps();
+            $table->timestamp('archived_at')->nullable();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('archived_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('pricing_group_id')->references('id')->on('pricing_groups')->onDelete('set null');
         });
     }

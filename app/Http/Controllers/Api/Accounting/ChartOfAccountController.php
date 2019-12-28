@@ -30,6 +30,12 @@ class ChartOfAccountController extends Controller
             });
         }
 
+        if ($request->get('is_archived')) {
+            $accounts = $accounts->whereNotNull('archived_at');
+        } else {
+            $accounts = $accounts->whereNull('archived_at');
+        }
+
         $accounts = pagination($accounts, $request->get('limit'));
 
         return new ChartOfAccountCollection($accounts);

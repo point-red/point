@@ -20,6 +20,7 @@ use App\Model\Master\Group;
 use App\Model\Master\Phone;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -94,6 +95,12 @@ class CustomerController extends Controller
                     ->where('groupables.groupable_type', Customer::$morphName)
                     ->where('groupables.group_id', '=', $request->get('group_id'));
             });
+        }
+
+        if ($request->get('is_archived')) {
+            $customers = $customers->whereNotNull('archived_at');
+        } else {
+            $customers = $customers->whereNull('archived_at');
         }
 
         $customers = pagination($customers, $request->get('limit'));
@@ -211,19 +218,92 @@ class CustomerController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function destroy($id)
     {
         $customer = Customer::findOrFail($id);
+        $customer->delete();
 
-        try {
+        return response()->json([], 204);
+    }
+
+    /**
+     * delete the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkDelete(Request $request)
+    {
+        $customers = $request->get('customers');
+        foreach ($customers as $customer) {
+            $customer = Customer::findOrFail($customer['id']);
             $customer->delete();
-        } catch (QueryException $e) {
-            $customer->disabled = true;
-            $customer->save();
         }
 
         return response()->json([], 204);
+    }
+
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param int $id
+     * @return ApiResource
+     */
+    public function archive($id)
+    {
+        $customer = Customer::findOrFail($id);
+        $customer->archive();
+
+        return new ApiResource($customer);
+    }
+
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkArchive(Request $request)
+    {
+        $customers = $request->get('customers');
+        foreach ($customers as $customer) {
+            $customer = Customer::findOrFail($customer['id']);
+            $customer->archive();
+        }
+
+        return response()->json([], 200);
+    }
+
+    /**
+     * Activate the specified resource from storage.
+     *
+     * @param int $id
+     * @return ApiResource
+     */
+    public function activate($id)
+    {
+        $customer = Customer::findOrFail($id);
+        $customer->activate();
+
+        return new ApiResource($customer);
+    }
+
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkActivate(Request $request)
+    {
+        $customers = $request->get('customers');
+        foreach ($customers as $customer) {
+            $customer = Customer::findOrFail($customer['id']);
+            $customer->activate();
+        }
+
+        return response()->json([], 200);
     }
 }

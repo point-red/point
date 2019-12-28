@@ -89,7 +89,7 @@ class PosBill extends TransactionModel
         $bill->form()->update(['done' => $data['is_done']]);
 
         if ($data['is_done']) {
-            foreach ($data['items'] as $item) {
+            foreach ($items as $item) {
                 $options = [];
                 if ($item->expiry_date) {
                     $options['expiry_date'] = $item->expiry_date;
@@ -97,7 +97,7 @@ class PosBill extends TransactionModel
                 if ($item->production_number) {
                     $options['production_number'] = $item->production_number;
                 }
-                InventoryHelper::decrease($form->id, $bill->warehouse_id, $item->item_id, $item->quantity, $options);
+                InventoryHelper::decrease($form->id, $bill->warehouse_id, $item->item_id, ($item->quantity * $item->converter), $options);
             }
         }
 
@@ -127,7 +127,7 @@ class PosBill extends TransactionModel
     private static function calculateAmount($bill, $items, $services)
     {
         $amount = array_reduce($items, function ($carry, $item) {
-            return $carry + $item->quantity * $item->converter * ($item->price - $item->discount_value);
+            return $carry + $item->quantity * ($item->price - $item->discount_value);
         }, 0);
 
         $amount += array_reduce($services, function ($carry, $service) {

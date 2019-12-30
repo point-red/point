@@ -128,7 +128,7 @@ trait EloquentFilters
 
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                if ($value != null) {
+                if ($value !== null) {
                     $relation = explode('.', $key);
                     $column = array_pop($relation);
                     $relation = implode('.', $relation);

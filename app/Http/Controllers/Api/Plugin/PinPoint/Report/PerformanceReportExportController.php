@@ -53,9 +53,9 @@ class PerformanceReportExportController extends Controller
             $cloudStorage->save();
 
             $files[] = [
-            'url' => $cloudStorage->download_url,
-            'name' => $fileName,
-          ];
+                'url' => $cloudStorage->download_url,
+                'name' => $fileName,
+            ];
 
             $time = strtotime('+1 month', $time);
         } while ($month != $last);

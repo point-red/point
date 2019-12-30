@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use App\Model\Project\Project;
+use App\Traits\EloquentFilters;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 class CloudStorage extends Model
 {
     protected $connection = 'mysql';
+
+    use EloquentFilters;
 
     public function getExpiredAtAttribute($value)
     {

@@ -16,8 +16,11 @@ class CreateCloudStoragesTable extends Migration
         Schema::create('cloud_storages', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('owner_id')->nullable();
+            $table->boolean('is_user_protected')->default(true);
             $table->unsignedInteger('project_id')->nullable();
             $table->string('feature');
+            $table->unsignedInteger('feature_id')->nullable();
+            $table->text('notes')->nullable();
             $table->string('file_name');
             $table->string('file_ext');
             $table->string('key');

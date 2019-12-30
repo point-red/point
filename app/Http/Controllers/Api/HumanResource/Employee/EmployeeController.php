@@ -7,6 +7,7 @@ use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\CloudStorage;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeEmail;
@@ -151,6 +152,16 @@ class EmployeeController extends Controller
             $employeeContract->link = '';
             $employeeContract->notes = $request->get('contracts')[$i]['notes'];
             $employeeContract->save();
+        }
+
+        for ($i = 0; $i < count($request->get('attachments') ?? []); $i++) {
+            $attachmentId = $request->get('attachments')[$i]['id'];
+            $cloudStorage = CloudStorage::findOrFail($attachmentId);
+            if ($request->get('attachments')[$i]['key'] == $cloudStorage->key) {
+                $cloudStorage->feature_id = $employee->id;
+                $cloudStorage->is_user_protected = false;
+                $cloudStorage->save();
+            }
         }
 
         DB::connection('tenant')->commit();

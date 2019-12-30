@@ -40,12 +40,15 @@ class CreateEmployeesTable extends Migration
             $table->unsignedInteger('user_id')->index()->nullable();
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
+            $table->unsignedInteger('archived_by')->index()->nullable();
             $table->timestamps();
+            $table->timestamp('archived_at')->nullable();
 
             // Relationship
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('archived_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('employee_group_id')->references('id')->on('employee_groups')->onDelete('set null');
             $table->foreign('employee_gender_id')->references('id')->on('employee_genders')->onDelete('set null');
             $table->foreign('employee_marital_status_id')->references('id')->on('employee_marital_statuses')->onDelete('set null');

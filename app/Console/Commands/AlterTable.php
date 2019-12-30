@@ -50,10 +50,10 @@ class AlterTable extends Command
             DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `archived_at` datetime default null');
             DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `archived_by` integer(10) unsigned default null');
             DB::connection('tenant')->statement('ALTER TABLE `employees` ADD CONSTRAINT `employees_archived_by_foreign` FOREIGN KEY (`archived_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
-
-            DB::statement('ALTER TABLE `cloud_storages` ADD COLUMN `feature_id` integer(10) unsigned default null after `feature`');
-            DB::statement('ALTER TABLE `cloud_storages` ADD COLUMN `notes` text default null after `feature_id`');
-            DB::statement('ALTER TABLE `cloud_storages` ADD COLUMN `is_user_protected` tinyint(1) not null default 1 after `owner_id`');
         }
+
+//            DB::statement('ALTER TABLE `cloud_storages` ADD COLUMN `feature_id` integer(10) unsigned default null after `feature`');
+//            DB::statement('ALTER TABLE `cloud_storages` ADD COLUMN `notes` text default null after `feature_id`');
+//            DB::statement('ALTER TABLE `cloud_storages` ADD COLUMN `is_user_protected` tinyint(1) not null default 1 after `owner_id`');
     }
 }

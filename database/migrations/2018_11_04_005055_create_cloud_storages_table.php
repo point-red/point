@@ -28,7 +28,7 @@ class CreateCloudStoragesTable extends Migration
             $table->string('path');
             $table->string('disk');
             $table->string('download_url');
-            $table->datetime('expired_at');
+            $table->datetime('expired_at')->nullable();
             $table->timestamps();
 
             $table->foreign('owner_id')

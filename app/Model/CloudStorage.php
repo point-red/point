@@ -16,12 +16,19 @@ class CloudStorage extends Model
 
     public function getExpiredAtAttribute($value)
     {
+        if ($value == null) {
+            return null;
+        }
         return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
     }
 
     public function setExpiredAtAttribute($value)
     {
-        $this->attributes['expired_at'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+        if ($value == null) {
+            $this->attributes['expired_at'] = null;
+        } else {
+            $this->attributes['expired_at'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
+        }
     }
 
     public function project()

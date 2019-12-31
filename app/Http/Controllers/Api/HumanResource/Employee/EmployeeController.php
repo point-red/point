@@ -160,6 +160,7 @@ class EmployeeController extends Controller
             if ($request->get('attachments')[$i]['key'] == $cloudStorage->key) {
                 $cloudStorage->feature_id = $employee->id;
                 $cloudStorage->is_user_protected = false;
+                $cloudStorage->expired_at = null;
                 $cloudStorage->save();
             }
         }

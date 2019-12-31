@@ -44,8 +44,8 @@ class StorageController extends Controller
             if (!Storage::disk(env('STORAGE_DISK'))->exists($cloudStorage->path)) {
                 continue;
             }
-            $fullPath = Storage::disk(env('STORAGE_DISK'))->path($cloudStorage->path);
-            $base64 = base64_encode(Storage::disk(env('STORAGE_DISK'))->get($cloudStorage->path));
+            $fullPath = Storage::disk($cloudStorage->disk)->path($cloudStorage->path);
+            $base64 = base64_encode(Storage::disk($cloudStorage->disk)->get($cloudStorage->path));
             $preview = 'data:'.mime_content_type($fullPath) . ';base64,' . $base64;
             if (in_array(mime_content_type($fullPath), $allowedMimeTypes)) {
                 $cloudStorage->preview = $preview;

@@ -11,9 +11,9 @@ class ServiceGroup extends MasterModel
     protected $fillable = ['name'];
 
     /**
-     * get all of the items that are assigned this group.
+     * get all of the services that are assigned this group.
      */
-    public function items()
+    public function services()
     {
         return $this->belongstomany(Service::class);
     }

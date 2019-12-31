@@ -120,7 +120,9 @@ class StorageController extends Controller
         $userProtected = filter_var($request->get('is_user_protected'), FILTER_VALIDATE_BOOLEAN);
         $cloudStorage->is_user_protected = $userProtected;
         $cloudStorage->notes = $request->get('notes');
-        $cloudStorage->expired_at = Carbon::now()->addDay(1);
+        if ($request->has('expiration_day') && $request->get('expiration_day') > 0) {
+            $cloudStorage->expired_at = Carbon::now()->addDay($request->get('expiration_day'));
+        }
         $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
         $cloudStorage->save();
     }

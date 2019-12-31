@@ -41,13 +41,12 @@ class StorageController extends Controller
 
         $allowedMimeTypes = ['image/jpeg','image/gif','image/png','image/bmp','image/svg+xml'];
         foreach ($cloudStorages as $key => $cloudStorage) {
-            if (!Storage::disk(env('STORAGE_DISK'))->exists($cloudStorage->path)) {
+            if (!Storage::disk($cloudStorage->disk)->exists($cloudStorage->path)) {
                 continue;
             }
-            $fullPath = Storage::disk($cloudStorage->disk)->path($cloudStorage->path);
             $base64 = base64_encode(Storage::disk($cloudStorage->disk)->get($cloudStorage->path));
-            $preview = 'data:'.mime_content_type($fullPath) . ';base64,' . $base64;
-            if (in_array(mime_content_type($fullPath), $allowedMimeTypes)) {
+            $preview = 'data:' . $cloudStorage->mime_type . ';base64,' . $base64;
+            if (in_array($cloudStorage->mime_type, $allowedMimeTypes)) {
                 $cloudStorage->preview = $preview;
             }
         }
@@ -108,6 +107,7 @@ class StorageController extends Controller
         $fileName = basename($request->file('file')->getClientOriginalName(), '.' . $request->file('file')->getClientOriginalExtension());
         $cloudStorage->file_name = $fileName;
         $cloudStorage->file_ext = $request->file('file')->getClientOriginalExtension();
+        $cloudStorage->mime_type = $request->file('file')->getClientMimeType();
         $cloudStorage->feature = $feature;
         if ($featureId > 0) {
             $cloudStorage->feature_id = $featureId;

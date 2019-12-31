@@ -20,6 +20,7 @@ class CreateCloudStoragesTable extends Migration
             $table->unsignedInteger('project_id')->nullable();
             $table->string('feature');
             $table->unsignedInteger('feature_id')->nullable();
+            $table->string('mime_type')->nullable();
             $table->text('notes')->nullable();
             $table->string('file_name');
             $table->string('file_ext');

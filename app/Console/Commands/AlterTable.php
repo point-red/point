@@ -38,22 +38,20 @@ class AlterTable extends Command
      */
     public function handle()
     {
-        $projects = Project::all();
-        foreach ($projects as $project) {
-            $db = env('DB_DATABASE').'_'.strtolower($project->code);
+//        $projects = Project::all();
+//        foreach ($projects as $project) {
+//            $db = env('DB_DATABASE').'_'.strtolower($project->code);
 
-            $this->line('Clone '.$project->code);
-            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
-            $this->line('Alter '.$project->code);
-            config()->set('database.connections.tenant.database', $db);
-            DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `archived_at` datetime default null');
-            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `archived_by` integer(10) unsigned default null');
-            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD CONSTRAINT `employees_archived_by_foreign` FOREIGN KEY (`archived_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
-        }
+//            $this->line('Clone '.$project->code);
+//            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+//            $this->line('Alter '.$project->code);
+//            config()->set('database.connections.tenant.database', $db);
+//            DB::connection('tenant')->reconnect();
+//            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `archived_at` datetime default null');
+//            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `archived_by` integer(10) unsigned default null');
+//            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD CONSTRAINT `employees_archived_by_foreign` FOREIGN KEY (`archived_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
+//        }
 
-//            DB::statement('ALTER TABLE `cloud_storages` ADD COLUMN `feature_id` integer(10) unsigned default null after `feature`');
-//            DB::statement('ALTER TABLE `cloud_storages` ADD COLUMN `notes` text default null after `feature_id`');
-//            DB::statement('ALTER TABLE `cloud_storages` ADD COLUMN `is_user_protected` tinyint(1) not null default 1 after `owner_id`');
+        DB::statement('ALTER TABLE `cloud_storages` ADD COLUMN `mime_type` varchar(255) default null after `feature_id`');
     }
 }

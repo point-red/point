@@ -15,6 +15,7 @@ use App\Model\HumanResource\Employee\EmployeeGroup;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 use App\Model\HumanResource\Employee\EmployeeScorer;
 use App\Model\HumanResource\Employee\EmployeeSocialMedia;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -365,5 +366,84 @@ class EmployeeController extends Controller
         $employee->delete();
 
         return new ApiResource($employee);
+    }
+
+    /**
+     * delete the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkDelete(Request $request)
+    {
+        $employees = $request->get('employees');
+        foreach ($employees as $employee) {
+            $employee = Employee::findOrFail($employee['id']);
+            $employee->delete();
+        }
+
+        return response()->json([], 204);
+    }
+
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param int $id
+     * @return ApiResource
+     */
+    public function archive($id)
+    {
+        $employee = Employee::findOrFail($id);
+        $employee->archive();
+
+        return new ApiResource($employee);
+    }
+
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkArchive(Request $request)
+    {
+        $employees = $request->get('employees');
+        foreach ($employees as $employee) {
+            $employee = Employee::findOrFail($employee['id']);
+            $employee->archive();
+        }
+
+        return response()->json([], 200);
+    }
+
+    /**
+     * Activate the specified resource from storage.
+     *
+     * @param int $id
+     * @return ApiResource
+     */
+    public function activate($id)
+    {
+        $employee = Employee::findOrFail($id);
+        $employee->activate();
+
+        return new ApiResource($employee);
+    }
+
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkActivate(Request $request)
+    {
+        $employees = $request->get('employees');
+        foreach ($employees as $employee) {
+            $employee = Employee::findOrFail($employee['id']);
+            $employee->activate();
+        }
+
+        return response()->json([], 200);
     }
 }

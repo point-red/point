@@ -48,6 +48,12 @@ class EmployeeController extends Controller
             ->with('user')
             ->select('employees.*');
 
+        if ($request->get('is_archived')) {
+            $employees = $employees->whereNotNull('archived_at');
+        } else {
+            $employees = $employees->whereNull('archived_at');
+        }
+
         $employees = pagination($employees, $request->get('limit'));
 
         $additional = [];

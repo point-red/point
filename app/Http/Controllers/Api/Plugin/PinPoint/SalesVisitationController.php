@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
 use App\Http\Resources\ApiResource;
 use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
+use App\Model\CloudStorage;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\CustomerGroup;
@@ -20,6 +21,7 @@ use App\Wrapper\CarbonWrapper;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class SalesVisitationController extends Controller
 {
@@ -56,6 +58,17 @@ class SalesVisitationController extends Controller
         }
 
         $salesVisitationForm = pagination($salesVisitationForm, $request->get('limit'));
+
+        foreach ($salesVisitationForm as $svf) {
+            $photo = CloudStorage::where('feature', 'sales visitation form')
+                ->where('feature_id', $svf->id)
+                ->first();
+            if ($photo) {
+                $base64 = base64_encode(Storage::disk($photo->disk)->get($photo->path));
+                $preview = 'data:' . $photo->mime_type . ';base64,' . $base64;
+                $svf->photo = $preview;
+            }
+        }
 
         return new SalesVisitationCollection($salesVisitationForm);
     }
@@ -227,6 +240,10 @@ class SalesVisitationController extends Controller
                     }
                 }
             }
+        }
+
+        if ($request->has('image')) {
+            \App\Helpers\StorageHelper::uploadFromBase64($request->get('image'), 'sales visitation form', $salesVisitation->id);;
         }
 
         if ($salesVisitation->details->count() > 0) {

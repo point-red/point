@@ -242,7 +242,7 @@ class SalesVisitationController extends Controller
             }
         }
 
-        if ($request->has('image')) {
+        if ($request->get('image')) {
             \App\Helpers\StorageHelper::uploadFromBase64($request->get('image'), 'sales visitation form', $salesVisitation->id);;
         }
 

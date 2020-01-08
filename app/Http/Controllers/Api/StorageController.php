@@ -18,6 +18,10 @@ class StorageController extends Controller
     {
         $cloudStorages = CloudStorage::eloquentFilter($request)->with('project');
 
+        if (!$request->get('is_user_protected')) {
+            $cloudStorages->where('project_id', $request->project->id);
+        }
+
         $cloudStorages->where(function ($query) {
             $query->where(function ($query2) {
                 $query2->where('owner_id', auth()->user()->id)

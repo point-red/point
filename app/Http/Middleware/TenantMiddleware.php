@@ -72,6 +72,8 @@ class TenantMiddleware
                     }
                 }
 
+                $request->project = $project;
+
                 $projectUser = ProjectUser::where('project_id', $project->id)->where('user_id', Auth::guard('api')->user()->id);
                 if (! $projectUser) {
                     return $next($request);

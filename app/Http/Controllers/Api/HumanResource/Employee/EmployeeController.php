@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\HumanResource\Employee\Employee\DeleteRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\StoreEmployeeRequest;
 use App\Http\Requests\HumanResource\Employee\Employee\UpdateEmployeeRequest;
 use App\Http\Resources\ApiCollection;
@@ -361,11 +362,11 @@ class EmployeeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     *
+     * @param DeleteRequest $request
+     * @param int $id
      * @return ApiResource
      */
-    public function destroy($id)
+    public function destroy(DeleteRequest $request, $id)
     {
         $employee = Employee::findOrFail($id);
 
@@ -380,7 +381,7 @@ class EmployeeController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function bulkDelete(Request $request)
+    public function bulkDelete(DeleteRequest $request)
     {
         $employees = $request->get('employees');
         foreach ($employees as $employee) {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0a8a99b953cbc03ae6a74fcbbc8ffe68",
+    "content-hash": "88a6f62250b2099b90235a2d709f044d",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -3020,6 +3020,7 @@
                 "bcmath",
                 "math"
             ],
+            "abandoned": "brick/math",
             "time": "2017-02-16T16:54:46+00:00"
         },
         {
@@ -4296,16 +4297,16 @@
         },
         {
             "name": "spatie/laravel-permission",
-            "version": "3.4.1",
+            "version": "3.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-permission.git",
-                "reference": "fe0573ddb6fd95378eec67e401882564db830312"
+                "reference": "e9c08249ec3c24258531d0f967bd3d5559e0f79e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/fe0573ddb6fd95378eec67e401882564db830312",
-                "reference": "fe0573ddb6fd95378eec67e401882564db830312",
+                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/e9c08249ec3c24258531d0f967bd3d5559e0f79e",
+                "reference": "e9c08249ec3c24258531d0f967bd3d5559e0f79e",
                 "shasum": ""
             },
             "require": {
@@ -4360,7 +4361,7 @@
                 "security",
                 "spatie"
             ],
-            "time": "2019-12-28T13:22:00+00:00"
+            "time": "2020-01-07T16:34:21+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -6028,6 +6029,7 @@
                 "psr",
                 "psr-7"
             ],
+            "abandoned": "laminas/laminas-diactoros",
             "time": "2019-11-13T19:16:13+00:00"
         }
     ],

@@ -16,13 +16,10 @@ class CreatePurchaseRequestsTable extends Migration
         Schema::create('purchase_requests', function (Blueprint $table) {
             $table->increments('id');
             $table->datetime('required_date');
-            $table->unsignedInteger('employee_id');
-            $table->string('employee_name');
             $table->unsignedInteger('supplier_id')->nullable();
             $table->string('supplier_name')->nullable();
             $table->decimal('amount', 65, 30);
 
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('restrict');
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');
         });
     }

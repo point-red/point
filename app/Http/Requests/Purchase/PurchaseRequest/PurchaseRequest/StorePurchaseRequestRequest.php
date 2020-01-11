@@ -30,7 +30,6 @@ class StorePurchaseRequestRequest extends FormRequest
     public function rules(Request $request)
     {
         $validations = [
-            'employee_id' => 'required',
             'date' => 'required',
             'required_date' => 'required',
         ];

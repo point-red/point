@@ -3,7 +3,6 @@
 namespace App\Http\Requests\HumanResource\Employee\Employee;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class DeleteRequest extends FormRequest
 {

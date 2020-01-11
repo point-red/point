@@ -47,9 +47,9 @@ class AlterTable extends Command
             $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-//            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `archived_at` datetime default null');
-//            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `archived_by` integer(10) unsigned default null');
-//            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD CONSTRAINT `employees_archived_by_foreign` FOREIGN KEY (`archived_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
+            DB::connection('tenant')->statement('ALTER TABLE `purchase_requests` DROP FOREIGN KEY `purchase_requests_employee_id_foreign`');
+            DB::connection('tenant')->statement('ALTER TABLE `purchase_requests` DROP COLUMN `employee_id`');
+            DB::connection('tenant')->statement('ALTER TABLE `purchase_requests` DROP COLUMN `employee_name`');
         }
     }
 }

@@ -13,7 +13,11 @@ class UpdatePurchaseRequestRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        if (! tenant(auth()->user()->id)->hasPermissionTo('update purchase request')) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

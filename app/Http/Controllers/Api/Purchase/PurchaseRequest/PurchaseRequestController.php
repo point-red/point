@@ -34,12 +34,6 @@ class PurchaseRequestController extends Controller
                 });
             }
 
-            if (in_array('employee', $fields)) {
-                $purchaseRequests = $purchaseRequests->join(Employee::getTableName(), function ($q) {
-                    $q->on(Employee::getTableName('id'), '=', PurchaseRequest::getTableName('employee_id'));
-                });
-            }
-
             if (in_array('form', $fields)) {
                 $purchaseRequests = $purchaseRequests->join(Form::getTableName(), function ($q) {
                     $q->on(Form::getTableName('formable_id'), '=', PurchaseRequest::getTableName('id'))
@@ -109,7 +103,7 @@ class PurchaseRequestController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::eloquentFilter($request)->with('form')->findOrFail($id);
+        $purchaseRequest = PurchaseRequest::eloquentFilter($request)->with('form.createdBy')->findOrFail($id);
 
         if ($request->has('with_archives')) {
             $purchaseRequest->archives = $purchaseRequest->archives();

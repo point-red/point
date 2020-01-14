@@ -68,6 +68,7 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('read '.$permission);
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
         }
     }
 
@@ -91,6 +92,7 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('read '.$permission);
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
         }
     }
 
@@ -110,6 +112,7 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('read '.$permission);
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
         }
     }
 
@@ -146,6 +149,7 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('read '.$permission);
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
         }
     }
 
@@ -171,6 +175,7 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('read '.$permission);
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
         }
     }
 
@@ -193,6 +198,7 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('read '.$permission);
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
         }
     }
 

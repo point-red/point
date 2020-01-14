@@ -96,7 +96,7 @@ class Form extends PointModel
             $this->increment = $data['old_increment'];
         }
 
-        if(array_key_exists('approver_id', $data)) {
+        if (array_key_exists('approver_id', $data)) {
             $this->setApproval($data['approver_id'] ?? null);
         }
     }

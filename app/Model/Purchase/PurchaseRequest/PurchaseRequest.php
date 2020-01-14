@@ -21,8 +21,6 @@ class PurchaseRequest extends TransactionModel
 
     protected $fillable = [
         'required_date',
-        'employee_id',
-        'employee_name',
         'supplier_id',
         'supplier_name',
     ];

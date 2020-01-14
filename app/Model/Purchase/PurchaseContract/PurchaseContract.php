@@ -18,6 +18,8 @@ class PurchaseContract extends TransactionModel
     protected $fillable = [
         'supplier_id',
         'supplier_name',
+        'supplier_address',
+        'supplier_phone',
         'amount',
     ];
 

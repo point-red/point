@@ -17,6 +17,8 @@ class CreateDeliveryNotesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('customer_id');
             $table->string('customer_name');
+            $table->string('customer_address')->nullable();
+            $table->string('customer_phone')->nullable();
             $table->string('billing_address')->nullable();
             $table->string('billing_phone')->nullable();
             $table->string('billing_email')->nullable();

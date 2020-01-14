@@ -31,6 +31,8 @@ class PurchaseInvoice extends TransactionModel
         'tax',
         'supplier_id',
         'supplier_name',
+        'supplier_address',
+        'supplier_phone',
         'invoice_number',
     ];
 

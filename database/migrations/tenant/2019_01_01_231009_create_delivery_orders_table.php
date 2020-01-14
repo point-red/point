@@ -19,6 +19,8 @@ class CreateDeliveryOrdersTable extends Migration
             $table->unsignedInteger('warehouse_id');
             $table->unsignedInteger('sales_order_id')->nullable();
             $table->string('customer_name');
+            $table->string('customer_address')->nullable();
+            $table->string('customer_phone')->nullable();
             $table->string('billing_address')->nullable();
             $table->string('billing_phone')->nullable();
             $table->string('billing_email')->nullable();

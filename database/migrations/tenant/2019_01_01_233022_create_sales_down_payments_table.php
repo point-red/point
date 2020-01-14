@@ -17,6 +17,8 @@ class CreateSalesDownPaymentsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('customer_id');
             $table->string('customer_name');
+            $table->string('customer_address')->nullable();
+            $table->string('customer_phone')->nullable();
             $table->unsignedInteger('downpaymentable_id')->nullable()->index();
             $table->string('downpaymentable_type')->nullable()->index();
             $table->decimal('amount', 65, 30);

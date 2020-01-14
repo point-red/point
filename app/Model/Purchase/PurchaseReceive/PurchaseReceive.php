@@ -24,6 +24,8 @@ class PurchaseReceive extends TransactionModel
     protected $fillable = [
         'supplier_id',
         'supplier_name',
+        'supplier_address',
+        'supplier_phone',
         'warehouse_id',
         'warehouse_name',
         'purchase_order_id',

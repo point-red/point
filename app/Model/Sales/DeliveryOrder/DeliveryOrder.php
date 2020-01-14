@@ -21,10 +21,12 @@ class DeliveryOrder extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-        'customer_id',
-        'warehouse_id',
         'sales_order_id',
+        'customer_id',
         'customer_name',
+        'customer_address',
+        'customer_phone',
+        'warehouse_id',
         'billing_address',
         'billing_phone',
         'billing_email',

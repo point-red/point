@@ -28,6 +28,8 @@ class SalesOrder extends TransactionModel
         'sales_contract_id',
         'customer_id',
         'customer_name',
+        'customer_address',
+        'customer_phone',
         'warehouse_id',
         'eta',
         'cash_only',

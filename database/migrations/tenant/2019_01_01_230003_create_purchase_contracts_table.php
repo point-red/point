@@ -17,6 +17,8 @@ class CreatePurchaseContractsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('supplier_id');
             $table->string('supplier_name');
+            $table->string('supplier_address')->nullable();
+            $table->string('supplier_phone')->nullable();
             $table->decimal('amount', 65, 30);
 
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');

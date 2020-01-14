@@ -27,6 +27,8 @@ class DeliveryNote extends TransactionModel
         'license_plate',
         'customer_id',
         'customer_name',
+        'customer_address',
+        'customer_phone',
         'billing_address',
         'billing_phone',
         'billing_email',

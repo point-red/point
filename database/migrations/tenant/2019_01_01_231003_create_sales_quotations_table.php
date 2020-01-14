@@ -16,6 +16,9 @@ class CreateSalesQuotationsTable extends Migration
         Schema::create('sales_quotations', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('customer_id')->nullable();
+            $table->string('customer_name');
+            $table->string('customer_address')->nullable();
+            $table->string('customer_phone')->nullable();
             $table->decimal('amount', 65, 30);
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('restrict');

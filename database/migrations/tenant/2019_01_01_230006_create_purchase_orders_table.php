@@ -19,6 +19,8 @@ class CreatePurchaseOrdersTable extends Migration
             $table->unsignedInteger('purchase_contract_id')->nullable();
             $table->unsignedInteger('supplier_id');
             $table->string('supplier_name');
+            $table->string('supplier_address')->nullable();
+            $table->string('supplier_phone')->nullable();
             $table->string('billing_address')->nullable();
             $table->string('billing_phone')->nullable();
             $table->string('billing_email')->nullable();

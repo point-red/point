@@ -23,6 +23,8 @@ class PurchaseRequest extends TransactionModel
         'required_date',
         'supplier_id',
         'supplier_name',
+        'supplier_address',
+        'supplier_phone',
     ];
 
     protected $casts = [

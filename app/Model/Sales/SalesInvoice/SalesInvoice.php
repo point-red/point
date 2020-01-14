@@ -28,6 +28,8 @@ class SalesInvoice extends TransactionModel
     protected $fillable = [
         'customer_id',
         'customer_name',
+        'customer_address',
+        'customer_phone',
         'due_date',
         'delivery_fee',
         'discount_percent',

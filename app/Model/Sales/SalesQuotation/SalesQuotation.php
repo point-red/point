@@ -18,6 +18,9 @@ class SalesQuotation extends TransactionModel
 
     protected $fillable = [
         'customer_id',
+        'customer_name',
+        'customer_address',
+        'customer_phone',
     ];
 
     protected $casts = [

@@ -25,6 +25,8 @@ class PurchaseOrder extends TransactionModel
         'purchase_contract_id',
         'supplier_id',
         'supplier_name',
+        'supplier_address',
+        'supplier_phone',
         'warehouse_id',
         'eta',
         'cash_only',

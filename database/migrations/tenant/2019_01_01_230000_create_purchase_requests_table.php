@@ -18,6 +18,8 @@ class CreatePurchaseRequestsTable extends Migration
             $table->datetime('required_date');
             $table->unsignedInteger('supplier_id')->nullable();
             $table->string('supplier_name')->nullable();
+            $table->string('supplier_address')->nullable();
+            $table->string('supplier_phone')->nullable();
             $table->decimal('amount', 65, 30);
 
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');

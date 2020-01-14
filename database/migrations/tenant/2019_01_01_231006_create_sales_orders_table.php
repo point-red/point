@@ -19,6 +19,8 @@ class CreateSalesOrdersTable extends Migration
             $table->unsignedInteger('sales_contract_id')->nullable();
             $table->unsignedInteger('customer_id');
             $table->string('customer_name');
+            $table->string('customer_address')->nullable();
+            $table->string('customer_phone')->nullable();
             $table->string('billing_address')->nullable();
             $table->string('billing_phone')->nullable();
             $table->string('billing_email')->nullable();

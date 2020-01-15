@@ -625,42 +625,42 @@ trait EloquentFilters
         }
     }
 
-    public function scopeFilterForm($query, $value)
+    public function scopeFilterForm($query, $values)
     {
-        if (is_null($value)) {
-            return;
-        }
+        if ($values) {
+            foreach (explode(';', $values) as $value) {
+                if (is_null($value) || $value == '') {
+                    return;
+                }
 
-        if ($value === 'done') {
-            $query->done();
-        } elseif ($value === 'notDone') {
-            $query->notDone();
-        } elseif ($value === 'approved') {
-            $query->approved();
-        } elseif ($value === 'rejected') {
-            $query->approvalRejected();
-        } elseif ($value === 'approvalPending') {
-            $query->approvalPending();
-        } elseif ($value === 'approvalNotRejected') {
-            $query->notRejected();
-        } elseif ($value === 'cancellationApproved') {
-            $query->cancellationApproved();
-        } elseif ($value === 'cancellationRejected') {
-            $query->cancellationRejected();
-        } elseif ($value === 'cancellationPending') {
-            $query->cancellationPending();
-        } elseif ($value === 'notCancelled') {
-            $query->notCanceled();
-        } elseif ($value === 'notArchived') {
-            $query->notArchived();
-        } elseif ($value === 'archived') {
-            $query->archived();
-        } elseif ($value === 'active') {
-            $query->active();
-        } elseif ($value === 'activePending') {
-            $query->activePending();
-        } elseif ($value === 'activeDone') {
-            $query->activeDone();
+                if ($value === 'done') {
+                    $query->done();
+                } elseif ($value === 'pending') {
+                    $query->pending();
+                } elseif ($value === 'approvalRejected') {
+                    $query->approvalRejected();
+                } elseif ($value === 'approvalPending') {
+                    $query->approvalPending();
+                } elseif ($value === 'approvalApproved') {
+                    $query->approvalApproved();
+                } elseif ($value === 'cancellationApproved') {
+                    $query->cancellationApproved();
+                } elseif ($value === 'cancellationRejected') {
+                    $query->cancellationRejected();
+                } elseif ($value === 'cancellationPending') {
+                    $query->cancellationPending();
+                } elseif ($value === 'notArchived') {
+                    $query->notArchived();
+                } elseif ($value === 'archived') {
+                    $query->archived();
+                } elseif ($value === 'active') {
+                    $query->active();
+                } elseif ($value === 'activePending') {
+                    $query->activePending();
+                } elseif ($value === 'activeDone') {
+                    $query->activeDone();
+                }
+            }
         }
     }
 

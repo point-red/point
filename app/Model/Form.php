@@ -113,7 +113,14 @@ class Form extends PointModel
             $formApproval->expired_at = date('Y-m-d H:i:s', strtotime('+7 days'));
             $formApproval->token = substr(md5(now()), 0, 24);
 
+            if ($formApproval->requested_by == $formApproval->requested_to) {
+                $formApproval->approval_at = $formApproval->requested_at;
+                $formApproval->approved = true;
+                $this->approved = true;
+            }
+
             $this->approvals()->save($formApproval);
+            $this->save();
         } else {
             $this->approved = true;
             $this->save();

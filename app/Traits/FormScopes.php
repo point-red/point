@@ -13,14 +13,14 @@ trait FormScopes
         });
     }
 
-    public function scopeNotDone($query)
+    public function scopePending($query)
     {
         $query->whereHas('form', function ($q) {
             $q->where('done', false);
         });
     }
 
-    public function scopeApproved($query)
+    public function scopeApprovalApproved($query)
     {
         $query->whereHas('form', function ($q) {
             $q->where('approved', true);
@@ -41,16 +41,9 @@ trait FormScopes
         });
     }
 
-    public function scopeNotRejected($query)
-    {
-        $query->whereHas('form', function ($q) {
-            $q->whereNull('approved');
-            $q->orWhere('approved', true);
-        });
-    }
-
     public function scopeCancellationApproved($query)
     {
+        info('ASD');
         $query->whereHas('form', function ($q) {
             $q->where('canceled', true);
         });
@@ -94,12 +87,12 @@ trait FormScopes
 
     public function scopeActive($query)
     {
-        $query->notCanceled()->notRejected()->notArchived();
+        $query->notCanceled()->notArchived()->approvalPending()->approvalApproved();
     }
 
     public function scopeActivePending($query)
     {
-        $query->active()->notDone();
+        $query->active()->pending();
     }
 
     public function scopeActiveDone($query)

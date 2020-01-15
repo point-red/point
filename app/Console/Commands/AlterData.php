@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Model\Master\Item;
+use App\Model\Master\ItemUnit;
 use App\Model\Master\Warehouse;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
@@ -49,12 +51,16 @@ class AlterData extends Command
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
-            $warehouses = Warehouse::all();
-
-            if ($warehouses->count() == 0) {
-                $warehouse = new Warehouse;
-                $warehouse->name = 'DEFAULT';
-                $warehouse->save();
+            $items = Item::all();
+            foreach ($items as $item) {
+                if ($item->units->count() == 0) {
+                    $itemUnit = new ItemUnit;
+                    $itemUnit->item_id = $item->id;
+                    $itemUnit->name = 'PCS';
+                    $itemUnit->label = 'PCS';
+                    $itemUnit->converter = 1;
+                    $itemUnit->save();
+                }
             }
         }
     }

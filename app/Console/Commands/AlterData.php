@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Model\Master\Item;
 use App\Model\Master\ItemUnit;
-use App\Model\Master\Warehouse;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;

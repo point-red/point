@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Tenant\Database;
 
 use App\Model\Auth\Role;
+use App\Model\Master\PricingGroup;
 use App\Model\Master\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -51,6 +52,12 @@ class FirstSeed extends Command
             '--class' => 'TenantDatabaseSeeder',
             '--force' => true,
         ]);
+
+        if (PricingGroup::all()->count() == 0) {
+            $pricingGroup = new PricingGroup;
+            $pricingGroup->label = 'DEFAULT';
+            $pricingGroup->save();
+        }
 
         $this->line('assign default role for owner');
         $this->assignDefaultRoleForOwner();

@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Model\Master\Item;
-use App\Model\Master\ItemUnit;
+use App\Model\Master\PricingGroup;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -50,24 +49,11 @@ class AlterData extends Command
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
-            $items = Item::all();
-            foreach ($items as $item) {
-                if ($item->units->count() == 0) {
-                    $itemUnit = new ItemUnit;
-                    $itemUnit->item_id = $item->id;
-                    $itemUnit->name = 'PCS';
-                    $itemUnit->label = 'PCS';
-                    $itemUnit->converter = 1;
-                    $itemUnit->save();
-                }
+            if (PricingGroup::all()->count() == 0) {
+                $pricingGroup = new PricingGroup;
+                $pricingGroup->label = 'DEFAULT';
+                $pricingGroup->save();
             }
         }
-    }
-
-    public static function update($migration)
-    {
-        DB::connection('tenant')
-            ->table('migrations')
-            ->insert(['migration' => $migration, 'batch' => 1]);
     }
 }

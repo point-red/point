@@ -35,6 +35,7 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::apiResource('employees', 'EmployeeController');
         Route::post('employees/{employee_id}/assign-assessment', 'AssignAssessmentController@store');
         Route::apiResource('employees/{employee_id}/assessment', 'EmployeeAssessmentController');
+        Route::get('employees/{employee_id}/assessment-by/{group}', 'EmployeeAssessmentController@showBy');
         Route::get('employees/{employee_id}/salary/assessment', 'EmployeeSalaryController@assessment');
         Route::get('employees/{employee_id}/salary/achievement', 'EmployeeSalaryController@achievement');
         Route::apiResource('employees/{employee_id}/salary', 'EmployeeSalaryController');

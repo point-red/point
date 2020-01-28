@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
 use App\Model\HumanResource\Kpi\Automated;
@@ -168,6 +169,55 @@ class EmployeeAssessmentController extends Controller
         $kpis->target = (float) $kpis->target;
 
         return new KpiResource($kpis);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param $employeeId
+     * @param $group
+     * @return KpiResource
+     */
+    public function showBy(Request $request, $employeeId, $group)
+    {
+        $type = $request->get('type');
+        $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
+            ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
+            ->select('kpis.*')
+            ->addSelect(DB::raw('sum(kpi_indicators.weight) / count(DISTINCT kpis.id) as weight'))
+            ->addSelect(DB::raw('sum(kpi_indicators.target) / count(DISTINCT kpis.id) as target'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score) / count(DISTINCT kpis.id) as score'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
+            ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'))
+            ->where('employee_id', $employeeId)
+            ->groupBy('kpis.scorer_id');
+        if ($type === 'daily') {
+            $kpis = $kpis->where('kpis.date', $group);
+        }
+        if ($type === 'weekly') {
+            $kpis = $kpis->where(DB::raw('yearweek(kpis.date)'), $group);
+        }
+        if ($type === 'monthly') {
+            $kpis = $kpis->where(DB::raw('EXTRACT(YEAR_MONTH from kpis.date'), $group);
+        }
+        if ($type === 'yearly') {
+            $kpis = $kpis->where(DB::raw('year(kpis.date)'), $group);
+        }
+        $kpis = $kpis->get();
+        // $kpis->score = (float) $kpis->score;
+        // $kpis->target = (float) $kpis->target;
+        // transpose
+        $result = array();
+        $templates = array();
+        foreach($kpis as $kpi) {
+            if (!in_array($kpi->name, $templates)) {
+                array_push($templates, $kpi->name);
+            }
+             
+            $result['data'][array_search($kpi->name, $templates)][] = new KpiResource($kpi);
+        }
+        $result['template'] = $templates;
+        return $result;
     }
 
     /**

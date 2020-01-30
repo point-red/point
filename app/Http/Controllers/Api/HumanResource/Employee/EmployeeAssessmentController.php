@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
+use App\Http\Resources\HumanResource\Kpi\KpiGroup\KpiGroupResource;
 use App\Model\HumanResource\Kpi\Automated;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
@@ -204,20 +205,57 @@ class EmployeeAssessmentController extends Controller
             $kpis = $kpis->where(DB::raw('year(kpis.date)'), $group);
         }
         $kpis = $kpis->get();
-        // $kpis->score = (float) $kpis->score;
-        // $kpis->target = (float) $kpis->target;
-        // transpose
+
         $result = array();
         $templates = array();
+        $scorer = array();
+        // splite based by template
         foreach($kpis as $kpi) {
             if (!in_array($kpi->name, $templates)) {
                 array_push($templates, $kpi->name);
             }
-             
-            $result['data'][array_search($kpi->name, $templates)][] = new KpiResource($kpi);
+            $index = array_search($kpi->name, $templates);
+            $result['data'][$index][] = $kpi;
         }
-        $result['template'] = $templates;
-        return $result;
+        // create data table
+        $response = array();
+        foreach ($templates as $index => $tmp) {
+            $rows = array();
+            $scorer = array();
+            $employee = array();
+            // combine every kpi score into one row per template
+            foreach ( $result['data'][$index] as $index2 => $kpi) {
+                $kpi = new KpiResource($kpi);
+                $employee = $kpi->employee;
+                $scorer[] = $kpi->scorer;
+                foreach ($kpi->groups as $index3 => $group) {
+                        $group = new KpiGroupResource($group);
+                        $rows[$index2][$group->name][] = $group->score;
+                        $rows[$index2][$group->name][] = $group->score_percentage;
+                        foreach ($group->indicators as $indicator) {
+                            $rows[$index2][$indicator->name][] = $indicator->score;
+                            $rows[$index2][$indicator->name][] = $indicator->score_percentage;
+                        }
+                }
+            }
+            // transpose
+            $cols = array();
+            foreach ($rows as $i => $row) {
+                foreach ($row as $key => $col) {
+                    $cols[$key][] = $col;
+                }
+            }
+            $data = array (
+                'template' => $tmp,
+                'employee' => $employee,
+                'scorer' => $scorer,
+                'indicator' => array_keys($cols),
+                'data' => $cols
+            );
+            $response[] = $data;
+        }
+
+        return $response;
     }
 
     /**

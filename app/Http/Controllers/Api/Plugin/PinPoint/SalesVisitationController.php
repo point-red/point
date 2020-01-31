@@ -62,6 +62,8 @@ class SalesVisitationController extends Controller
         foreach ($salesVisitationForm as $svf) {
             $photo = CloudStorage::where('feature', 'sales visitation form')
                 ->where('feature_id', $svf->id)
+                ->where('feature', 'sales visitation form')
+                ->where('owner_id', auth()->user()->id)
                 ->first();
             if ($photo) {
                 $base64 = base64_encode(Storage::disk($photo->disk)->get($photo->path));

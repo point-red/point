@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Http\Resources\HumanResource\Kpi\Kpi\KpiIndicatorResource;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
 use App\Http\Resources\HumanResource\Kpi\KpiGroup\KpiGroupResource;
@@ -230,27 +231,58 @@ class EmployeeAssessmentController extends Controller
                 $scorer[] = $kpi->scorer;
                 foreach ($kpi->groups as $index3 => $group) {
                         $group = new KpiGroupResource($group);
-                        $rows[$index2][$group->name][] = $group->score;
-                        $rows[$index2][$group->name][] = $group->score_percentage;
+                        $sum = array(
+                            'weight' => 0,
+                            'target' => 0,
+                            'score' => 0,
+                            'score_percentage' => 0
+                        );
                         foreach ($group->indicators as $indicator) {
-                            $rows[$index2][$indicator->name][] = $indicator->score;
-                            $rows[$index2][$indicator->name][] = $indicator->score_percentage;
+                            $indicator = new KpiIndicatorResource($indicator);
+                            $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['name'] = $indicator->name;
+                            $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['weight'] = $indicator->weight;
+                            $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['target'] = $indicator->target;
+                            $rows[$index2][$group->name]['indicator'][$indicator->name]['scorer'][] = $indicator->score;
+                            $rows[$index2][$group->name]['indicator'][$indicator->name]['scorer'][] = $indicator->score_percentage;
+                            $sum['weight'] += $indicator->weight;
+                            $sum['target'] += $indicator->target;
+                            $sum['score'] += $indicator->score;
+                            $sum['score_percentage'] += $indicator->score_percentage;
+
                         }
+                        $rows[$index2][$group->name]['group']['weight'] = $sum['weight'];
+                        $rows[$index2][$group->name]['group']['target'] = $sum['target'];
+                        $rows[$index2][$group->name]['group']['scorer'][] = $sum['score'];
+                        $rows[$index2][$group->name]['group']['scorer'][] = $sum['score_percentage'];
                 }
             }
             // transpose
             $cols = array();
             foreach ($rows as $i => $row) {
-                foreach ($row as $key => $col) {
-                    $cols[$key][] = $col;
+                foreach ($row as $group => $col) {
+                    $cols[$group]['data'][0] = $group;
+                    $cols[$group]['data'][1] = $col['group']['weight'];
+                    $cols[$group]['data'][2] = $col['group']['target'];
+                    foreach ($col['group']['scorer'] as $val) {
+                        $cols[$group]['data'][] = $val;
+                    }
+                    $cols[$group]['indicators'] = array_keys($col['indicator']);
+                    foreach ($col['indicator'] as $key => $col) {
+                        $cols[$group]['indicator'][$key][0] = $col['data']['name'];
+                        $cols[$group]['indicator'][$key][1] = $col['data']['weight'];
+                        $cols[$group]['indicator'][$key][2] = $col['data']['target'];
+                        foreach ($col['scorer'] as $val) {
+                            $cols[$group]['indicator'][$key][] = $val;
+                        }
+                    }
                 }
             }
             $data = array (
                 'template' => $tmp,
                 'employee' => $employee,
                 'scorer' => $scorer,
-                'indicator' => array_keys($cols),
-                'data' => $cols
+                'group' => array_keys($cols),
+                'data' => $cols,
             );
             $response[] = $data;
         }

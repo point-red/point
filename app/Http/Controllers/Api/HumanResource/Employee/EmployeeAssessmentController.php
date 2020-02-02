@@ -183,6 +183,23 @@ class EmployeeAssessmentController extends Controller
     public function showBy(Request $request, $employeeId, $group)
     {
         $type = $request->get('type');
+        $date = strtotime(urldecode($group));
+        if ($type == 'weekly') {
+            $year = date('Y', $date);
+            $week = date('W', $date);
+            $week = intval($week) - 1;
+            if ($week < 0 ) {
+                $week = 0;
+            }
+            if($week < 10) {
+                $week = '0' . $week;
+            }
+            $group = $year.$week;
+        }
+        else {
+            $group = date('Ym', $date);
+        }
+        
         $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
             ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
             ->select('kpis.*')
@@ -197,10 +214,10 @@ class EmployeeAssessmentController extends Controller
             $kpis = $kpis->where('kpis.date', $group);
         }
         if ($type === 'weekly') {
-            $kpis = $kpis->where(DB::raw('yearweek(kpis.date)'), $group);
+            $kpis = $kpis->where(DB::raw('yearweek(kpis.date)'),  DB::raw($group));
         }
         if ($type === 'monthly') {
-            $kpis = $kpis->where(DB::raw('EXTRACT(YEAR_MONTH from kpis.date'), $group);
+            $kpis = $kpis->where(DB::raw('EXTRACT(YEAR_MONTH from kpis.date)'), DB::raw($group));
         }
         if ($type === 'yearly') {
             $kpis = $kpis->where(DB::raw('year(kpis.date)'), $group);

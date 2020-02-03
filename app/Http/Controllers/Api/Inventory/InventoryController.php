@@ -109,6 +109,7 @@ class InventoryController extends Controller
                 $inventoryCollection->dateFrom($filterMin['form.date']);
             }
         }
+
         if ($request->filter_date_max) {
             $filterMax = convert_javascript_object_to_array($request->filter_date_max);
             if (array_has($filterMax, 'form.date')) {
@@ -117,5 +118,16 @@ class InventoryController extends Controller
         }
 
         return $inventoryCollection;
+    }
+
+    public function dna(Request $request, $itemId)
+    {
+        $inventories = Inventory::selectRaw('*, sum(quantity) as remaining')
+            ->groupBy(['item_id', 'production_number', 'expiry_date'])
+            ->where('item_id', $itemId)
+            ->having('remaining', '>', 0)
+            ->get();
+
+        return new ApiCollection($inventories);
     }
 }

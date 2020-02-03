@@ -22,6 +22,7 @@ class CreateManufactureFormulaRawMaterialsTable extends Migration
             $table->string('warehouse_name');
             $table->decimal('quantity', 65, 30);
             $table->string('unit');
+            $table->decimal('converter', 65, 30);
 
             $table->foreign('manufacture_formula_id')->references('id')->on('manufacture_formulas')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');

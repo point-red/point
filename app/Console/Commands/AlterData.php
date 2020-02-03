@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
+use App\Model\Manufacture\ManufactureInput\ManufactureInput;
+use App\Model\Manufacture\ManufactureOutput\ManufactureOutput;
 use App\Model\Master\PricingGroup;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
@@ -49,11 +52,20 @@ class AlterData extends Command
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
-            if (PricingGroup::all()->count() == 0) {
-                $pricingGroup = new PricingGroup;
-                $pricingGroup->label = 'DEFAULT';
-                $pricingGroup->save();
-            }
+//            if (PricingGroup::all()->count() == 0) {
+//                $pricingGroup = new PricingGroup;
+//                $pricingGroup->label = 'DEFAULT';
+//                $pricingGroup->save();
+//            }
+
+            $arr = ManufactureFormula::all();
+            $this->line($arr->count());
+
+            $arr = ManufactureInput::all();
+            $this->line($arr->count());
+
+            $arr = ManufactureOutput::all();
+            $this->line($arr->count());
         }
     }
 }

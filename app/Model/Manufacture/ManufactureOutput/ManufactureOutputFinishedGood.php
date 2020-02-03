@@ -5,9 +5,9 @@ namespace App\Model\Manufacture\ManufactureOutput;
 use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
-use App\Model\Manufacture\ManufactureInput\ManufactureInputFinishGood;
+use App\Model\Manufacture\ManufactureInput\ManufactureInputFinishedGood;
 
-class ManufactureOutputFinishGood extends TransactionModel
+class ManufactureOutputFinishedGood extends TransactionModel
 {
     protected $connection = 'tenant';
 
@@ -23,10 +23,12 @@ class ManufactureOutputFinishGood extends TransactionModel
         'expiry_date',
         'production_number',
         'unit',
+        'converter',
     ];
 
     protected $casts = [
         'quantity' => 'double',
+        'converter' => 'double',
     ];
 
     public function setExpiryDateAttribute($value)
@@ -54,8 +56,8 @@ class ManufactureOutputFinishGood extends TransactionModel
         return $this->belongsTo(Warehouse::class);
     }
 
-    public function manufactureInputFinishGood()
+    public function manufactureInputFinishedGood()
     {
-        return $this->belongsTo(ManufactureInputFinishGood::class);
+        return $this->belongsTo(ManufactureInputFinishedGood::class);
     }
 }

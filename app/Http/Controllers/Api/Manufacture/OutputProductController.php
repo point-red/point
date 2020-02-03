@@ -49,7 +49,7 @@ class OutputProductController extends Controller
      *  - manufacture_input_id (Int)
      *  - manufacture_machine_name (String)
      *  -
-     *  - finish_goods (Array) :
+     *  - finished_goods (Array) :
      *      - manufacture_input_finish_good_id (Int)
      *      - item_name (String)
      *      - warehouse_name (String)
@@ -68,7 +68,7 @@ class OutputProductController extends Controller
                 ->load('form')
                 ->load('manufactureMachine')
                 ->load('manufactureInput')
-                ->load('finishGoods.manufactureInputFinishGood');
+                ->load('finishedGoods.manufactureInputFinishedGood');
 
             return new ApiResource($manufactureOutput);
         });
@@ -111,7 +111,7 @@ class OutputProductController extends Controller
                 ->load('form')
                 ->load('manufactureMachine')
                 ->load('manufactureInput')
-                ->load('finishGoods.manufactureInputFinishGood');
+                ->load('finishedGoods.manufactureInputFinishedGood');
 
             return new ApiResource($manufactureOutput);
         });

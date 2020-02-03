@@ -34,9 +34,9 @@ class ManufactureOutput extends TransactionModel
         return $this->morphOne(Form::class, 'formable');
     }
 
-    public function finishGoods()
+    public function finishedGoods()
     {
-        return $this->hasMany(ManufactureOutputFinishGood::class);
+        return $this->hasMany(ManufactureOutputFinishedGood::class);
     }
 
     public function manufactureMachine()
@@ -77,37 +77,37 @@ class ManufactureOutput extends TransactionModel
         $output->manufacture_machine_id = $input->manufacture_machine_id;
         $output->manufacture_machine_name = $input->manufacture_machine_name;
 
-        $finishGoods = self::mapFinishGoods($data['finish_goods'] ?? []);
+        $finishedGoods = self::mapFinishedGoods($data['finished_goods'] ?? []);
 
         $output->save();
 
-        $output->finishGoods()->saveMany($finishGoods);
+        $output->finishedGoods()->saveMany($finishedGoods);
 
         $form = new Form;
         $form->approved = true;
         $form->saveData($data, $output);
 
-        foreach ($finishGoods as $finishGood) {
+        foreach ($finishedGoods as $finishedGood) {
             $options = [];
-            if ($finishGood->expiry_date) {
-                $options['expiry_date'] = $finishGood->expiry_date;
+            if ($finishedGood->expiry_date) {
+                $options['expiry_date'] = $finishedGood->expiry_date;
             }
-            if ($finishGood->production_number) {
-                $options['production_number'] = $finishGood->production_number;
+            if ($finishedGood->production_number) {
+                $options['production_number'] = $finishedGood->production_number;
             }
-            InventoryHelper::increase($form->id, $finishGood->warehouse_id, $finishGood->item_id, $finishGood->quantity, 0, $options);
+            InventoryHelper::increase($form->id, $finishedGood->warehouse_id, $finishedGood->item_id, $finishedGood->quantity, 0, $options);
         }
 
         return $output;
     }
 
-    private static function mapFinishGoods($finishGoods)
+    private static function mapFinishedGoods($finishedGoods)
     {
-        return array_map(function ($finishGood) {
-            $outputFinishGood = new ManufactureOutputFinishGood;
-            $outputFinishGood->fill($finishGood);
+        return array_map(function ($finishedGood) {
+            $outputFinishedGood = new ManufactureOutputFinishedGood;
+            $outputFinishedGood->fill($finishedGood);
 
-            return $outputFinishGood;
-        }, $finishGoods);
+            return $outputFinishedGood;
+        }, $finishedGoods);
     }
 }

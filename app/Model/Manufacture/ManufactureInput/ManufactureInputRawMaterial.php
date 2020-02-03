@@ -21,10 +21,12 @@ class ManufactureInputRawMaterial extends TransactionModel
         'expiry_date',
         'production_number',
         'unit',
+        'converter',
     ];
 
     protected $casts = [
         'quantity' => 'double',
+        'converter' => 'double',
     ];
 
     public function setExpiryDateAttribute($value)

@@ -19,10 +19,12 @@ class ManufactureFormulaRawMaterial extends TransactionModel
         'warehouse_name',
         'quantity',
         'unit',
+        'converter',
     ];
 
     protected $casts = [
         'quantity' => 'double',
+        'converter' => 'double',
     ];
 
     public function manufactureFormula()

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Model\Manufacture\ManufactureInput;
+namespace App\Model\Manufacture\ManufactureFormula;
 
 use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 
-class ManufactureInputFinishGood extends TransactionModel
+class ManufactureFormulaFinishedGood extends TransactionModel
 {
     protected $connection = 'tenant';
 
@@ -19,15 +19,17 @@ class ManufactureInputFinishGood extends TransactionModel
         'warehouse_name',
         'quantity',
         'unit',
+        'converter',
     ];
 
     protected $casts = [
         'quantity' => 'double',
+        'converter' => 'double',
     ];
 
-    public function manufactureInput()
+    public function manufactureFormula()
     {
-        return $this->belongsTo(ManufactureInput::class);
+        return $this->belongsTo(ManufactureFormula::class);
     }
 
     public function item()

@@ -56,7 +56,7 @@ class FormulaController extends Controller
      *      - warehouse_name (String)
      *      - quantity (Decimal)
      *      - unit (String)
-     *  - finish_goods (Array) :
+     *  - finished_goods (Array) :
      *      - item_id (Int)
      *      - warehouse_id (Int)
      *      - item_name (String)
@@ -71,16 +71,16 @@ class FormulaController extends Controller
     public function store(StoreManufactureFormulaRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $manfuactureFormula = ManufactureFormula::create($request->all());
-            $manfuactureFormula
+            $manufactureFormula = ManufactureFormula::create($request->all());
+            $manufactureFormula
                 ->load('form')
                 ->load('manufactureProcess')
                 ->load('rawMaterials.item')
                 ->load('rawMaterials.warehouse')
-                ->load('finishGoods.item')
-                ->load('finishGoods.warehouse');
+                ->load('finishedGoods.item')
+                ->load('finishedGoods.warehouse');
 
-            return new ApiResource($manfuactureFormula);
+            return new ApiResource($manufactureFormula);
         });
 
         return $result;
@@ -95,9 +95,9 @@ class FormulaController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $manfuactureFormula = ManufactureFormula::eloquentFilter($request)->findOrFail($id);
+        $manufactureFormula = ManufactureFormula::eloquentFilter($request)->findOrFail($id);
 
-        return new ApiResource($manfuactureFormula);
+        return new ApiResource($manufactureFormula);
     }
 
     /**
@@ -124,8 +124,8 @@ class FormulaController extends Controller
                 ->load('manufactureProcess')
                 ->load('rawMaterials.item')
                 ->load('rawMaterials.warehouse')
-                ->load('finishGoods.item')
-                ->load('finishGoods.warehouse');
+                ->load('finishedGoods.item')
+                ->load('finishedGoods.warehouse');
 
             return new ApiResource($manufactureFormula);
         });

@@ -227,7 +227,19 @@ class AlterMigration extends Command
             self::update('2019_01_01_900200_create_scale_weight_trucks_table');
             self::update('2019_01_01_900201_create_scale_weight_items_table');
             // Manufacture
+            self::update('2019_12_04_083102_create_manufacture_machines_table');
+            self::update('2019_12_04_083359_create_manufacture_processes_table');
+            self::update('2019_12_05_083638_create_manufacture_formulas_table');
+            self::update('2019_12_05_085229_create_manufacture_formula_raw_materials_table');
+            self::update('2019_12_05_095229_create_manufacture_formula_finished_goods_table');
+            self::update('2019_12_09_065809_create_manufacture_inputs_table');
+            self::update('2019_12_09_070805_create_manufacture_input_raw_materials_table');
+            self::update('2019_12_09_070905_create_manufacture_input_finished_goods_table');
+            self::update('2019_12_09_075809_create_manufacture_outputs_table');
+            self::update('2019_12_09_080905_create_manufacture_output_finished_goods_table');
+
             // UserWarehouse
+            self::update('2019_12_16_034758_create_user_warehouse_table');
         }
     }
 

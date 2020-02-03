@@ -47,9 +47,19 @@ class AlterTable extends Command
             $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_requests` DROP FOREIGN KEY `purchase_requests_employee_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_requests` DROP COLUMN `employee_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_requests` DROP COLUMN `employee_name`');
+            DB::connection('tenant')->statement('RENAME TABLE `manufacture_formula_finished_goods` TO `manufacture_formula_finished_goods`');
+            DB::connection('tenant')->statement('RENAME TABLE `manufacture_input_finished_goods` TO `manufacture_input_finished_goods`');
+            DB::connection('tenant')->statement('RENAME TABLE `manufacture_output_finished_goods` TO `manufacture_output_finished_goods`');
+
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_formula_raw_materials` ADD COLUMN `converter` decimal(65,30) not null');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_formula_finished_goods` ADD COLUMN `converter` decimal(65,30) not null');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_input_raw_materials` ADD COLUMN `converter` decimal(65,30) not null');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_input_finished_goods` ADD COLUMN `converter` decimal(65,30) not null');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` ADD COLUMN `converter` decimal(65,30) not null');
+
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD COLUMN `quantity_reference` decimal(65,30) not null');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD COLUMN `unit_reference` varchar(255) not null');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD COLUMN `converter_reference` decimal(65,30) not null');
         }
     }
 }

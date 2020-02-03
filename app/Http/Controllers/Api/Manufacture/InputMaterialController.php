@@ -57,7 +57,7 @@ class InputMaterialController extends Controller
      *      - warehouse_name (String)
      *      - quantity (Decimal)
      *      - unit (String)
-     *  - finish_goods (Array) :
+     *  - finished_goods (Array) :
      *      - item_id (Int)
      *      - warehouse_id (Int)
      *      - item_name (String)
@@ -79,8 +79,8 @@ class InputMaterialController extends Controller
                 ->load('manufactureProcess')
                 ->load('rawMaterials.item')
                 ->load('rawMaterials.warehouse')
-                ->load('finishGoods.item')
-                ->load('finishGoods.warehouse');
+                ->load('finishedGoods.item')
+                ->load('finishedGoods.warehouse');
 
             return new ApiResource($manufactureInput);
         });
@@ -127,8 +127,8 @@ class InputMaterialController extends Controller
                 ->load('manufactureProcess')
                 ->load('rawMaterials.item')
                 ->load('rawMaterials.warehouse')
-                ->load('finishGoods.item')
-                ->load('finishGoods.warehouse');
+                ->load('finishedGoods.item')
+                ->load('finishedGoods.warehouse');
 
             return new ApiResource($manufactureInput);
         });

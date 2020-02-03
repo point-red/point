@@ -15,9 +15,9 @@ class StoreItemRequest extends FormRequest
      */
     public function authorize()
     {
-        if (! tenant(auth()->user()->id)->hasPermissionTo('create item')) {
-            return false;
-        }
+//        if (! tenant(auth()->user()->id)->hasPermissionTo('create item')) {
+//            return false;
+//        }
 
         return true;
     }

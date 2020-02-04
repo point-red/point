@@ -96,6 +96,8 @@ class Form extends PointModel
             $this->increment = $data['old_increment'];
         }
 
+        $this->save();
+
         if (array_key_exists('approver_id', $data)) {
             $this->setApproval($data['approver_id'] ?? null);
         }
@@ -104,8 +106,6 @@ class Form extends PointModel
     private function setApproval($approverId)
     {
         if ($approverId) {
-            $this->save();
-
             $formApproval = new FormApproval;
             $formApproval->requested_to = $approverId;
             $formApproval->requested_at = now();

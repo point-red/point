@@ -47,9 +47,9 @@ class AlterTable extends Command
             $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('RENAME TABLE `manufacture_formula_finished_goods` TO `manufacture_formula_finished_goods`');
-            DB::connection('tenant')->statement('RENAME TABLE `manufacture_input_finished_goods` TO `manufacture_input_finished_goods`');
-            DB::connection('tenant')->statement('RENAME TABLE `manufacture_output_finished_goods` TO `manufacture_output_finished_goods`');
+            DB::connection('tenant')->statement('RENAME TABLE `manufacture_formula_finish_goods` TO `manufacture_formula_finished_goods`');
+            DB::connection('tenant')->statement('RENAME TABLE `manufacture_input_finish_goods` TO `manufacture_input_finished_goods`');
+            DB::connection('tenant')->statement('RENAME TABLE `manufacture_output_finish_goods` TO `manufacture_output_finished_goods`');
 
             DB::connection('tenant')->statement('ALTER TABLE `manufacture_formula_raw_materials` ADD COLUMN `converter` decimal(65,30) not null');
             DB::connection('tenant')->statement('ALTER TABLE `manufacture_formula_finished_goods` ADD COLUMN `converter` decimal(65,30) not null');

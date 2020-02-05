@@ -17,6 +17,7 @@ use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationNoInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
+use App\Model\Plugin\PinPoint\SimilarProduct;
 use App\Model\Project\Project;
 use App\Wrapper\CarbonWrapper;
 use Carbon\Carbon;
@@ -161,15 +162,13 @@ class SalesVisitationController extends Controller
         // Not Interest Reason
         $arrayNoInterestReason = explode(',', $request->get('no_interest_reason'));
         $countNoInterestReason = 0;
-        if ($arrayNoInterestReason) {
-            for ($i = 0; $i < count($arrayNoInterestReason); $i++) {
-                if ($arrayNoInterestReason[$i]) {
-                    $noInterestReason = new SalesVisitationNoInterestReason;
-                    $noInterestReason->sales_visitation_id = $salesVisitation->id;
-                    $noInterestReason->name = $arrayNoInterestReason[$i];
-                    $noInterestReason->save();
-                    $countNoInterestReason++;
-                }
+        for ($i = 0; $i < count($arrayNoInterestReason); $i++) {
+            if ($arrayNoInterestReason[$i]) {
+                $noInterestReason = new SalesVisitationNoInterestReason;
+                $noInterestReason->sales_visitation_id = $salesVisitation->id;
+                $noInterestReason->name = $arrayNoInterestReason[$i];
+                $noInterestReason->save();
+                $countNoInterestReason++;
             }
         }
 
@@ -177,32 +176,15 @@ class SalesVisitationController extends Controller
             return response()->json([], 422);
         }
 
-        if ($request->get('no_other_interest_reason')) {
-            $noInterestReason = new SalesVisitationNoInterestReason;
-            $noInterestReason->sales_visitation_id = $salesVisitation->id;
-            $noInterestReason->name = $request->get('no_other_interest_reason');
-            $noInterestReason->save();
-        }
-
         // Similar Product
-        $arraySimilarProduct = explode(',', $request->get('similar_product'));
-
-        if ($arraySimilarProduct) {
-            for ($i = 0; $i < count($arraySimilarProduct); $i++) {
-                if ($arraySimilarProduct[$i]) {
-                    $similarProduct = new SalesVisitationSimilarProduct;
-                    $similarProduct->sales_visitation_id = $salesVisitation->id;
-                    $similarProduct->name = $arraySimilarProduct[$i];
-                    $similarProduct->save();
-                }
+        $similarProducts = explode(',', $request->get('similar_product'));
+        for ($i = 0; $i < count($similarProducts); $i++) {
+            if ($similarProducts[$i]['id'] && $similarProducts[$i]['name']) {
+                $similarProduct = new SimilarProduct;
+                $similarProduct->sales_visitation_id = $salesVisitation->id;
+                $similarProduct->name = $similarProducts[$i]['name'];
+                $similarProduct->save();
             }
-        }
-
-        if ($request->get('other_similar_product')) {
-            $similarProduct = new SalesVisitationSimilarProduct;
-            $similarProduct->sales_visitation_id = $salesVisitation->id;
-            $similarProduct->name = $request->get('other_similar_product');
-            $similarProduct->save();
         }
 
         // Details

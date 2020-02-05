@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Model\Master\PricingGroup;
 use App\Model\Plugin\PinPoint\InterestReason;
 use App\Model\Plugin\PinPoint\NoInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;

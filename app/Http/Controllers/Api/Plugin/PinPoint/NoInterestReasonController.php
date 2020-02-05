@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Plugin\PinPoint;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class InterestReasonController extends Controller
+class NoInterestReasonController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,4 +17,5 @@ class InterestReasonController extends Controller
     {
         //
     }
+
 }

@@ -216,11 +216,11 @@ class AlterMigration extends Command
             // Plugin - Pin Point
             self::update('2019_01_01_900100_create_pin_point_similar_products_table');
             self::update('2019_01_01_900101_create_pin_point_interest_reasons_table');
-            self::update('2019_01_01_900102_create_pin_point_not_interest_reasons_table');
+            self::update('2019_01_01_900102_create_pin_point_no_interest_reasons_table');
             self::update('2019_01_01_900103_create_pin_point_sales_visitations_table');
             self::update('2019_01_01_900104_create_pin_point_sales_visitation_details_table');
             self::update('2019_01_01_900105_create_pin_point_sales_visitation_interest_reasons_table');
-            self::update('2019_01_01_900106_create_pin_point_sales_visitation_not_interest_reasons_table');
+            self::update('2019_01_01_900106_create_pin_point_sales_visitation_no_interest_reasons_table');
             self::update('2019_01_01_900107_create_pin_point_sales_visitation_similar_products_table');
             self::update('2019_01_01_900108_create_pin_point_sales_visitation_targets_table');
             // Plugins - Scale Weight

@@ -3,7 +3,7 @@
 namespace App\Exports\PinPoint;
 
 use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
+use App\Model\Plugin\PinPoint\SalesVisitationNoInterestReason;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -18,7 +18,7 @@ use PhpOffice\PhpSpreadsheet\Chart\Legend;
 use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
 use PhpOffice\PhpSpreadsheet\Chart\Title;
 
-class ChartNotInterestReasonExport implements FromView, WithCharts, WithTitle, ShouldAutoSize
+class ChartNoInterestReasonExport implements FromView, WithCharts, WithTitle, ShouldAutoSize
 {
     public function __construct(string $dateFrom, string $dateTo)
     {
@@ -28,12 +28,12 @@ class ChartNotInterestReasonExport implements FromView, WithCharts, WithTitle, S
 
     public function title(): string
     {
-        return 'NotInterestReason';
+        return 'NoInterestReason';
     }
 
     public function view():view
     {
-        $weeklyNotInterest = [];
+        $weeklyNoInterest = [];
 
         $date = Carbon::parse(date('Y-m-01 00:00:00', strtotime($this->dateFrom)));
         $months = $date->daysInMonth;
@@ -44,7 +44,7 @@ class ChartNotInterestReasonExport implements FromView, WithCharts, WithTitle, S
                 $dateFrom = date('Y-m-'.$j.' 00:00:00', strtotime($this->dateFrom));
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
 
-                $weeklyNotInterest[] = (object) [
+                $weeklyNoInterest[] = (object) [
                   'week' => $j.' - '.$i,
                   'reasons' => $this->query($dateFrom, $dateTo),
                 ];
@@ -56,7 +56,7 @@ class ChartNotInterestReasonExport implements FromView, WithCharts, WithTitle, S
                 $dateFrom = date('Y-m-'.$j.' 00:00:00', strtotime($this->dateFrom));
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
 
-                $weeklyNotInterest[] = (object) [
+                $weeklyNoInterest[] = (object) [
                   'week' => $j.' - '.$i,
                   'reasons' => $this->query($dateFrom, $dateTo),
                 ];
@@ -67,9 +67,9 @@ class ChartNotInterestReasonExport implements FromView, WithCharts, WithTitle, S
             $date->addDay(1);
         }
 
-        return view('exports.plugin.pin-point.notInterestReason', [
-            'reasons' => $this->notInterestReasons()->pluck('name')->all(),
-            'notInterestReasons' => $weeklyNotInterest,
+        return view('exports.plugin.pin-point.noInterestReason', [
+            'reasons' => $this->noInterestReasons()->pluck('name')->all(),
+            'noInterestReasons' => $weeklyNoInterest,
         ]);
     }
 
@@ -94,7 +94,7 @@ class ChartNotInterestReasonExport implements FromView, WithCharts, WithTitle, S
     {
         $cellColumns = $this->cellColumns();
         $columnPosition = 0;
-        $lastColumn = $cellColumns[$this->notInterestReasons()->pluck('name')->count()];
+        $lastColumn = $cellColumns[$this->noInterestReasons()->pluck('name')->count()];
         $firstData = 3;
         $charts = [];
 
@@ -126,25 +126,25 @@ class ChartNotInterestReasonExport implements FromView, WithCharts, WithTitle, S
         return $charts;
     }
 
-    protected function notInterestReasons()
+    protected function noInterestReasons()
     {
-        return SalesVisitationNotInterestReason::query()->distinct()
-            ->where(SalesVisitationNotInterestReason::getTableName().'.name', '!=', '')
-             ->select(SalesVisitationNotInterestReason::getTableName().'.name');
+        return SalesVisitationNoInterestReason::query()->distinct()
+            ->where(SalesVisitationNoInterestReason::getTableName().'.name', '!=', '')
+             ->select(SalesVisitationNoInterestReason::getTableName().'.name');
     }
 
     protected function query($dateFrom, $dateTo)
     {
-        $query = SalesVisitationNotInterestReason::query()
-          ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNotInterestReason::getTableName().'.sales_visitation_id')
+        $query = SalesVisitationNoInterestReason::query()
+          ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNoInterestReason::getTableName().'.sales_visitation_id')
           ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
           ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-          ->where(SalesVisitationNotInterestReason::getTableName().'.name', '!=', '')
-          ->selectRaw(SalesVisitationNotInterestReason::getTableName().'.name, count('.SalesVisitationNotInterestReason::getTableName().'.name) as total')
-          ->groupBy(SalesVisitationNotInterestReason::getTableName().'.name');
+          ->where(SalesVisitationNoInterestReason::getTableName().'.name', '!=', '')
+          ->selectRaw(SalesVisitationNoInterestReason::getTableName().'.name, count('.SalesVisitationNoInterestReason::getTableName().'.name) as total')
+          ->groupBy(SalesVisitationNoInterestReason::getTableName().'.name');
 
-        return $this->notInterestReasons()->leftJoinSub($query, 'query', function ($join) {
-            $join->on(SalesVisitationNotInterestReason::getTableName().'.name', '=', 'query.name');
+        return $this->noInterestReasons()->leftJoinSub($query, 'query', function ($join) {
+            $join->on(SalesVisitationNoInterestReason::getTableName().'.name', '=', 'query.name');
         })
               ->addSelect('query.total')
               ->get();

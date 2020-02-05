@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
 use App\Exports\PinPoint\ChartInterestReasonExport;
-use App\Exports\PinPoint\ChartNotInterestReasonExport;
+use App\Exports\PinPoint\ChartNoInterestReasonExport;
 use App\Exports\PinPoint\ChartSimilarProductExport;
 use App\Exports\PinPoint\SalesVisitationFormExport;
 use App\Http\Controllers\Controller;
@@ -25,8 +25,8 @@ class SalesVisitationExportController extends Controller
             case 'ChartInterestReason':
                 $export = new ChartInterestReasonExport($dateFrom, $dateTo);
                 break;
-            case 'ChartNotInterestReason':
-                $export = new ChartNotInterestReasonExport($dateFrom, $dateTo);
+            case 'ChartNoInterestReason':
+                $export = new ChartNoInterestReasonExport($dateFrom, $dateTo);
                 break;
             case 'ChartSimilarProduct':
                 $export = new ChartSimilarProductExport($dateFrom, $dateTo);

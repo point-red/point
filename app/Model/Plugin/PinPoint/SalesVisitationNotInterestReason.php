@@ -4,11 +4,11 @@ namespace App\Model\Plugin\PinPoint;
 
 use App\Model\PointModel;
 
-class SalesVisitationNotInterestReason extends PointModel
+class SalesVisitationNoInterestReason extends PointModel
 {
     protected $connection = 'tenant';
 
-    protected $table = 'pin_point_sales_visitation_not_interest_reasons';
+    protected $table = 'pin_point_sales_visitation_no_interest_reasons';
 
     public $timestamps = false;
 

@@ -3,7 +3,7 @@
 namespace App\Exports\PinPoint;
 
 use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
+use App\Model\Plugin\PinPoint\SalesVisitationNoInterestReason;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -13,7 +13,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeExport;
 
-class NotInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize
+class NoInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize
 {
     /**
      * ScaleWeightItemExport constructor.
@@ -32,11 +32,11 @@ class NotInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wi
      */
     public function query()
     {
-        return SalesVisitationNotInterestReason::query()
-            ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNotInterestReason::getTableName().'.sales_visitation_id')
+        return SalesVisitationNoInterestReason::query()
+            ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNoInterestReason::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-            ->select(SalesVisitationNotInterestReason::getTableName().'.*')
+            ->select(SalesVisitationNoInterestReason::getTableName().'.*')
             ->addSelect(SalesVisitation::getTableName().'.name as customerName');
     }
 

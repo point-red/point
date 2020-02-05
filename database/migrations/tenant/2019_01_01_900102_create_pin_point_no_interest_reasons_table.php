@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePinPointNotInterestReasonsTable extends Migration
+class CreatePinPointNoInterestReasonsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePinPointNotInterestReasonsTable extends Migration
      */
     public function up()
     {
-        Schema::create('pin_point_not_interest_reasons', function (Blueprint $table) {
+        Schema::create('pin_point_no_interest_reasons', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->unsignedInteger('created_by')->index()->nullable();
@@ -32,6 +32,6 @@ class CreatePinPointNotInterestReasonsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pin_point_not_interest_reasons');
+        Schema::dropIfExists('pin_point_no_interest_reasons');
     }
 }

@@ -65,7 +65,6 @@ class AlterData extends Command
             $salesVisitationInterestReasons = SalesVisitationInterestReason::groupBy('name')->get();
             foreach ($salesVisitationInterestReasons as $salesVisitationInterestReason) {
                 $interestReason = InterestReason::where('name', '=', $salesVisitationInterestReason->name)->first();
-                $this->line('a: ' . $interestReason->id);
                 if (!$interestReason) {
                     $interestReason = new InterestReason;
                     $interestReason->name = $salesVisitationInterestReason->name;
@@ -79,7 +78,6 @@ class AlterData extends Command
             $salesVisitationNoInterestReasons = SalesVisitationNoInterestReason::groupBy('name')->get();
             foreach ($salesVisitationNoInterestReasons as $salesVisitationNoInterestReason) {
                 $noInterestReason = NoInterestReason::where('name', '=', $salesVisitationNoInterestReason->name)->first();
-                $this->line('b: ' . $noInterestReason->id);
                 if (!$noInterestReason) {
                     $noInterestReason = new NoInterestReason;
                     $noInterestReason->name = $salesVisitationNoInterestReason->name;
@@ -93,7 +91,6 @@ class AlterData extends Command
             $salesVisitationSimilarProducts = SalesVisitationSimilarProduct::groupBy('name')->get();
             foreach ($salesVisitationSimilarProducts as $salesVisitationSimilarProduct) {
                 $similarProduct = SimilarProduct::where('name', '=', $salesVisitationSimilarProduct->name)->first();
-                $this->line('c: ' . $similarProduct->id);
                 if (!$similarProduct) {
                     $similarProduct = new SimilarProduct;
                     $similarProduct->name = $salesVisitationSimilarProduct->name;

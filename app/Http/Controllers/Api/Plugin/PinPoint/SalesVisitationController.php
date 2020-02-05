@@ -86,10 +86,6 @@ class SalesVisitationController extends Controller
     {
         DB::connection('tenant')->beginTransaction();
 
-        if ($request->get('interest_reason') == '' && $request->get('no_interest_reason') == '') {
-            return response()->json([], 422);
-        }
-
         if ($request->get('group_id')) {
             $group = CustomerGroup::findOrFail($request->get('group_id'));
         } else {
@@ -150,29 +146,21 @@ class SalesVisitationController extends Controller
         $salesVisitation->save();
 
         // Interest Reason
-        $arrayInterestReason = explode(',', $request->get('interest_reason'));
-
-        if ($arrayInterestReason) {
-            for ($i = 0; $i < count($arrayInterestReason); $i++) {
-                if ($arrayInterestReason[$i]) {
-                    $interestReason = new SalesVisitationInterestReason;
-                    $interestReason->sales_visitation_id = $salesVisitation->id;
-                    $interestReason->name = $arrayInterestReason[$i];
-                    $interestReason->save();
-                }
+        $interestReasons = $request->get('interest_reasons');
+        $countInterestReason = 0;
+        for ($i = 0; $i < count($interestReasons); $i++) {
+            if ($interestReasons[$i]['id'] && $interestReasons[$i]['name']) {
+                $interestReason = new SalesVisitationInterestReason;
+                $interestReason->sales_visitation_id = $salesVisitation->id;
+                $interestReason->name = $interestReasons[$i]['name'];
+                $interestReason->save();
+                $countInterestReason++;
             }
-        }
-
-        if ($request->get('other_interest_reason')) {
-            $interestReason = new SalesVisitationInterestReason;
-            $interestReason->sales_visitation_id = $salesVisitation->id;
-            $interestReason->name = $request->get('other_interest_reason');
-            $interestReason->save();
         }
 
         // Not Interest Reason
         $arrayNoInterestReason = explode(',', $request->get('no_interest_reason'));
-
+        $countNoInterestReason = 0;
         if ($arrayNoInterestReason) {
             for ($i = 0; $i < count($arrayNoInterestReason); $i++) {
                 if ($arrayNoInterestReason[$i]) {
@@ -180,14 +168,19 @@ class SalesVisitationController extends Controller
                     $noInterestReason->sales_visitation_id = $salesVisitation->id;
                     $noInterestReason->name = $arrayNoInterestReason[$i];
                     $noInterestReason->save();
+                    $countNoInterestReason++;
                 }
             }
         }
 
-        if ($request->get('not_other_interest_reason')) {
+        if ($countInterestReason + $countNoInterestReason == 0) {
+            return response()->json([], 422);
+        }
+
+        if ($request->get('no_other_interest_reason')) {
             $noInterestReason = new SalesVisitationNoInterestReason;
             $noInterestReason->sales_visitation_id = $salesVisitation->id;
-            $noInterestReason->name = $request->get('not_other_interest_reason');
+            $noInterestReason->name = $request->get('no_other_interest_reason');
             $noInterestReason->save();
         }
 

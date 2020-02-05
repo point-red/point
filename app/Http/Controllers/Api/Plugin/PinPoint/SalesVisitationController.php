@@ -17,7 +17,6 @@ use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationNoInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
-use App\Model\Plugin\PinPoint\SimilarProduct;
 use App\Model\Project\Project;
 use App\Wrapper\CarbonWrapper;
 use Carbon\Carbon;
@@ -160,13 +159,13 @@ class SalesVisitationController extends Controller
         }
 
         // Not Interest Reason
-        $arrayNoInterestReason = explode(',', $request->get('no_interest_reason'));
+        $noInterestReasons = $request->get('no_interest_reasons');
         $countNoInterestReason = 0;
-        for ($i = 0; $i < count($arrayNoInterestReason); $i++) {
-            if ($arrayNoInterestReason[$i]) {
+        for ($i = 0; $i < count($noInterestReasons); $i++) {
+            if ($noInterestReasons[$i]['id'] && $noInterestReasons[$i]['name']) {
                 $noInterestReason = new SalesVisitationNoInterestReason;
                 $noInterestReason->sales_visitation_id = $salesVisitation->id;
-                $noInterestReason->name = $arrayNoInterestReason[$i];
+                $noInterestReason->name = $noInterestReasons[$i]['name'];
                 $noInterestReason->save();
                 $countNoInterestReason++;
             }
@@ -177,10 +176,10 @@ class SalesVisitationController extends Controller
         }
 
         // Similar Product
-        $similarProducts = explode(',', $request->get('similar_product'));
+        $similarProducts = $request->get('similar_products');
         for ($i = 0; $i < count($similarProducts); $i++) {
             if ($similarProducts[$i]['id'] && $similarProducts[$i]['name']) {
-                $similarProduct = new SimilarProduct;
+                $similarProduct = new SalesVisitationSimilarProduct;
                 $similarProduct->sales_visitation_id = $salesVisitation->id;
                 $similarProduct->name = $similarProducts[$i]['name'];
                 $similarProduct->save();

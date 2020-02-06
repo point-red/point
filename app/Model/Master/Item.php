@@ -81,6 +81,7 @@ class Item extends MasterModel
         $item->save();
 
         $units = $data['units'];
+        $unitDefault = '';
         foreach ($units as $key => $unit) {
             if ($unit['converter'] <= 0 || $unit['name'] == '') {
                 continue;
@@ -93,6 +94,7 @@ class Item extends MasterModel
 
             if ($key == 0) {
                 $item->unit_default = $itemUnit->id;
+                $unitDefault = $itemUnit->label;
                 $item->save();
             }
 
@@ -135,6 +137,9 @@ class Item extends MasterModel
                         $openingStockWarehouse->production_number = $osWarehouse['production_number'];
                         $options['production_number'] = $openingStockWarehouse->production_number;
                     }
+                    $options['quantity_reference'] = $openingStockWarehouse->quantity;
+                    $options['unit_reference'] = $unitDefault;
+                    $options['converter_reference'] = 1;
                     $openingStockWarehouse->save();
 
                     InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price'], $options);

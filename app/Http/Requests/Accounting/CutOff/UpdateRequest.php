@@ -4,7 +4,7 @@ namespace App\Http\Requests\Accounting\CutOff;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCutOffRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class StoreCutOffRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**

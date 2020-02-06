@@ -16,6 +16,14 @@ class CutOffDetail extends Model
     ];
 
     /**
+     * Get the cut off that owns the cut off detail.
+     */
+    public function cutOff()
+    {
+        return $this->belongsTo(CutOff::class, 'cut_off_id');
+    }
+
+    /**
      * Get the chart of account that owns the cut off detail.
      */
     public function chartOfAccount()

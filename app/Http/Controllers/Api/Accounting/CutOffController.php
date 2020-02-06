@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Api\Accounting;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Accounting\CutOff\StoreRequest;
 use App\Http\Resources\Accounting\CutOff\CutOffCollection;
 use App\Http\Resources\Accounting\CutOff\CutOffResource;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
 use App\Model\Accounting\CutOff;
 use App\Model\Accounting\CutOffDetail;
 use App\Model\Accounting\Journal;
 use App\Model\Form;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,11 +21,25 @@ class CutOffController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \App\Http\Resources\Accounting\CutOff\CutOffCollection
+     * @param Request $request
+     * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new CutOffCollection(CutOff::all());
+        $cutOffs = CutOff::eloquentFilter($request);
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+            if (in_array('form', $fields)) {
+                $cutOffs = $cutOffs->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', CutOff::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), CutOff::$morphName);
+                });
+            }
+        }
+
+        $cutOffs = pagination($cutOffs, $request->get('limit'));
+
+        return new ApiCollection($cutOffs);
     }
 
     /**
@@ -31,22 +49,27 @@ class CutOffController extends Controller
      *
      * @return \App\Http\Resources\Accounting\CutOff\CutOffResource
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         DB::connection('tenant')->beginTransaction();
 
-        $fromDate = date('Y-m-01 00:00:00', strtotime($request->get('date')));
-        $untilDate = date('Y-m-t 23:59:59', strtotime($request->get('date')));
-        $date = date('Y-m-d 23:59:59', strtotime($request->get('date')));
-        $increment = CutOff::where('date', '>=', $fromDate)->where('date', '<=', $untilDate)->count();
+        // cannot have more than one cutoff in single day
+        if (CutOff::join(Form::getTableName(), function ($q) {
+            $q->on(Form::getTableName('formable_id'), '=', CutOff::getTableName('id'))
+                ->where(Form::getTableName('formable_type'), CutOff::$morphName);
+            })->where('forms.date', '=', convert_to_server_timezone($request->get('date')))->first()) {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'cutoff already exists in this date'
+            ], 422);
+        }
 
         $cutOff = new CutOff;
-        $cutOff->date = $date;
-        $cutOff->number = 'CUTOFF/'.date('ym', strtotime($request->get('date'))).'/'.sprintf('%04d', ++$increment);
         $cutOff->save();
 
         $form = new Form;
-        $form->saveData($request->all(), $cutOff);
+        $form->saveData($request->all(), $cutOff, ['auto_approve' => false]);
 
         $details = $request->get('details');
         for ($i = 0; $i < count($details); $i++) {
@@ -57,12 +80,12 @@ class CutOffController extends Controller
             $cutOffDetail->credit = $request->get('details')[$i]['credit'] ?? 0;
             $cutOffDetail->save();
 
-            $journal = new Journal;
-            $journal->form_id = $form->id;
-            $journal->chart_of_account_id = $cutOffDetail->chart_of_account_id;
-            $journal->debit = $cutOffDetail->debit;
-            $journal->credit = $cutOffDetail->credit;
-            $journal->save();
+//            $journal = new Journal;
+//            $journal->form_id = $form->id;
+//            $journal->chart_of_account_id = $cutOffDetail->chart_of_account_id;
+//            $journal->debit = $cutOffDetail->debit;
+//            $journal->credit = $cutOffDetail->credit;
+//            $journal->save();
         }
 
         DB::connection('tenant')->commit();
@@ -73,13 +96,23 @@ class CutOffController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     *
-     * @return \App\Http\Resources\Accounting\CutOff\CutOffResource
+     * @param Request $request
+     * @param int $id
+     * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return new CutOffResource(CutOff::findOrFail($id));
+        $cutOff = CutOff::eloquentFilter($request)->with('form.createdBy')->findOrFail($id);
+
+        if ($request->has('with_archives')) {
+            $cutOff->archives = $cutOff->archives();
+        }
+
+        if ($request->has('with_origin')) {
+            $cutOff->origin = $cutOff->origin();
+        }
+
+        return new ApiResource($cutOff);
     }
 
     /**

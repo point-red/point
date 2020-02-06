@@ -38,7 +38,7 @@ class AlterTable extends Command
      */
     public function handle()
     {
-        $projects = Project::all();
+        $projects = Project::where('id', '>', 7)->get();
         foreach ($projects as $project) {
             $db = env('DB_DATABASE').'_'.strtolower($project->code);
 
@@ -49,7 +49,6 @@ class AlterTable extends Command
             DB::connection('tenant')->reconnect();
 
             // TODO: REMOVE FIELD CREATED BY AND UPDATED BY IN CUTOFF
-            DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP FOREIGN KEY `cut_offs_created_by_foreign`');
             DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP FOREIGN KEY `cut_offs_updated_by_foreign`');
             DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `date`');
             DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `number`');

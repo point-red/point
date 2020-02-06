@@ -38,7 +38,7 @@ class AlterTable extends Command
      */
     public function handle()
     {
-        $projects = Project::where('id', '>', 12)->get();
+        $projects = Project::where('id', '>', 15)->get();
         foreach ($projects as $project) {
             $db = env('DB_DATABASE').'_'.strtolower($project->code);
 
@@ -53,8 +53,6 @@ class AlterTable extends Command
             DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP FOREIGN KEY `cut_offs_updated_by_foreign`');
             DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `date`');
             DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `number`');
-            DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP INDEX `cut_offs_created_by_index`');
-            DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP INDEX `cut_offs_updated_by_index`');
             DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `created_by`');
             DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `updated_by`');
             DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `created_at`');

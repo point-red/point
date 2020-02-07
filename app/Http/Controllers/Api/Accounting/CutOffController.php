@@ -54,14 +54,10 @@ class CutOffController extends Controller
         DB::connection('tenant')->beginTransaction();
 
         // cannot have more than one cutoff in single day
-        if (CutOff::join(Form::getTableName(), function ($q) {
-            $q->on(Form::getTableName('formable_id'), '=', CutOff::getTableName('id'))
-                ->where(Form::getTableName('formable_type'), CutOff::$morphName);
-            })->where('forms.date', '=', convert_to_server_timezone($request->get('date')))->first()) {
-
+        if (CutOff::all()->count() > 1) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'cutoff already exists in this date'
+                'message' => 'cutoff already exists'
             ], 422);
         }
 

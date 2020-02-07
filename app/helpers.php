@@ -76,8 +76,8 @@ if (! function_exists('pagination')) {
             return $query->paginate(100);
         }
 
-        // limit call maximum 100 item per page
-        $limit = $limit > 100 ? 100 : $limit;
+        // limit call maximum 1000 item per page
+        $limit = $limit > 1000 ? 1000 : $limit;
 
         return $query->paginate($limit);
     }

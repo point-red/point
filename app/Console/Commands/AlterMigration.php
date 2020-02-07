@@ -91,7 +91,8 @@ class AlterMigration extends Command
             // Chart of Account
             self::update('2019_01_01_110000_create_chart_of_account_types_table');
             self::update('2019_01_01_110001_create_chart_of_account_groups_table');
-            self::update('2019_01_01_110002_create_chart_of_accounts_table');
+            self::update('2019_01_01_110002_create_chart_of_account_sub_ledgers_table');
+            self::update('2019_01_01_111000_create_chart_of_accounts_table');
             // ======================================================================
             // MASTER
             // ======================================================================

@@ -17,6 +17,7 @@ class ChartOfAccountSeeder extends Seeder
         $this->chartAccountTypes();
         $this->chartAccountSubLedger();
         $this->chartOfAccount();
+        $this->attachSubLedger();
     }
 
     private function chartAccountTypes()
@@ -447,6 +448,54 @@ class ChartOfAccountSeeder extends Seeder
             $chartOfAccount->name = $otherExpense[$i];
             $chartOfAccount->alias = $otherExpense[$i];
             $chartOfAccount->save();
+        }
+    }
+
+    private function attachSubLedger () {
+        $arrInventory = ['sediaan bahan baku', 'sediaan bahan pembantu', 'sediaan barang dalam proses', 'sediaan barang jadi (manufaktur)', 'sediaan dalam perjalanan', 'sediaan lain-lain'];
+        $arrAcReceivable = ['piutang usaha', 'piutang direksi', 'piutang karyawan'];
+        $arrDpSales = ['uang muka penjualan'];
+        $arrAcPayable = ['utang usaha'];
+        $arrDpPurchase = ['uang muka pembelian'];
+
+        foreach ($arrInventory as $acc) {
+            $account = ChartOfAccount::where('name', $acc)->first();
+            if ($account) {
+                $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'inventory')->first()->id;
+                $account->save();
+            }
+        }
+
+        foreach ($arrAcReceivable as $acc) {
+            $account = ChartOfAccount::where('name', $acc)->first();
+            if ($account) {
+                $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'account receivable')->first()->id;
+                $account->save();
+            }
+        }
+
+        foreach ($arrDpSales as $acc) {
+            $account = ChartOfAccount::where('name', $acc)->first();
+            if ($account) {
+                $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'sales down payment')->first()->id;
+                $account->save();
+            }
+        }
+
+        foreach ($arrAcPayable as $acc) {
+            $account = ChartOfAccount::where('name', $acc)->first();
+            if ($account) {
+                $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'account payable')->first()->id;
+                $account->save();
+            }
+        }
+
+        foreach ($arrDpPurchase as $acc) {
+            $account = ChartOfAccount::where('name', $acc)->first();
+            if ($account) {
+                $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'purchase down payment')->first()->id;
+                $account->save();
+            }
         }
     }
 }

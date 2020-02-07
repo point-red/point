@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\ChartOfAccountSubLedger;
 use App\Model\Master\PricingGroup;
 use App\Model\Plugin\PinPoint\InterestReason;
 use App\Model\Plugin\PinPoint\NoInterestReason;
@@ -61,42 +63,72 @@ class AlterData extends Command
                 $pricingGroup->save();
             }
 
-            $this->line('interest reason');
-            $salesVisitationInterestReasons = SalesVisitationInterestReason::groupBy('name')->get();
-            foreach ($salesVisitationInterestReasons as $salesVisitationInterestReason) {
-                $interestReason = InterestReason::where('name', '=', $salesVisitationInterestReason->name)->first();
-                if (!$interestReason) {
-                    $interestReason = new InterestReason;
-                    $interestReason->name = $salesVisitationInterestReason->name;
-                    $interestReason->created_by = $salesVisitationInterestReason->salesVisitation->form->created_by;
-                    $interestReason->updated_by = $salesVisitationInterestReason->salesVisitation->form->updated_by;
-                    $interestReason->save();
+            $subLedger = [
+                'inventory',
+                'account payable',
+                'purchase down payment',
+                'account receivable',
+                'sales down payment',
+            ];
+
+            $subLedgerAlias = [
+                'sediaan',
+                'utang usaha',
+                'uang muka pembelian',
+                'piutang usaha',
+                'uang muka penjualan',
+            ];
+
+            for ($i = 0; $i < count($subLedger); $i++) {
+                $chartOfAccountSubLedger = new ChartOfAccountSubLedger;
+                $chartOfAccountSubLedger->name = $subLedger[$i];
+                $chartOfAccountSubLedger->alias = $subLedgerAlias[$i];
+                $chartOfAccountSubLedger->save();
+            }
+
+            $arrInventory = ['sediaan bahan baku', 'sediaan bahan pembantu', 'sediaan barang dalam proses', 'sediaan barang jadi (manufaktur)', 'sediaan dalam perjalanan', 'sediaan lain-lain'];
+            $arrAcReceivable = ['piutang usaha', 'piutang direksi', 'piutang karyawan'];
+            $arrDpSales = ['uang muka penjualan'];
+            $arrAcPayable = ['utang usaha'];
+            $arrDpPurchase = ['uang muka pembelian'];
+
+            foreach ($arrInventory as $acc) {
+                $account = ChartOfAccount::where('name', $acc)->first();
+                if ($account) {
+                    $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'inventory')->first()->id;
+                    $account->save();
                 }
             }
 
-            $this->line('no interest reason');
-            $salesVisitationNoInterestReasons = SalesVisitationNoInterestReason::groupBy('name')->get();
-            foreach ($salesVisitationNoInterestReasons as $salesVisitationNoInterestReason) {
-                $noInterestReason = NoInterestReason::where('name', '=', $salesVisitationNoInterestReason->name)->first();
-                if (!$noInterestReason) {
-                    $noInterestReason = new NoInterestReason;
-                    $noInterestReason->name = $salesVisitationNoInterestReason->name;
-                    $noInterestReason->created_by = $salesVisitationNoInterestReason->salesVisitation->form->created_by;
-                    $noInterestReason->updated_by = $salesVisitationNoInterestReason->salesVisitation->form->updated_by;
-                    $noInterestReason->save();
+            foreach ($arrAcReceivable as $acc) {
+                $account = ChartOfAccount::where('name', $acc)->first();
+                if ($account) {
+                    $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'account receivable')->first()->id;
+                    $account->save();
                 }
             }
 
-            $this->line('similar product');
-            $salesVisitationSimilarProducts = SalesVisitationSimilarProduct::groupBy('name')->get();
-            foreach ($salesVisitationSimilarProducts as $salesVisitationSimilarProduct) {
-                $similarProduct = SimilarProduct::where('name', '=', $salesVisitationSimilarProduct->name)->first();
-                if (!$similarProduct) {
-                    $similarProduct = new SimilarProduct;
-                    $similarProduct->name = $salesVisitationSimilarProduct->name;
-                    $similarProduct->created_by = $salesVisitationSimilarProduct->salesVisitation->form->created_by;
-                    $similarProduct->updated_by = $salesVisitationSimilarProduct->salesVisitation->form->updated_by;
-                    $similarProduct->save();
+            foreach ($arrDpSales as $acc) {
+                $account = ChartOfAccount::where('name', $acc)->first();
+                if ($account) {
+                    $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'sales down payment')->first()->id;
+                    $account->save();
+                }
+            }
+
+            foreach ($arrAcPayable as $acc) {
+                $account = ChartOfAccount::where('name', $acc)->first();
+                if ($account) {
+                    $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'account payable')->first()->id;
+                    $account->save();
+                }
+            }
+
+            foreach ($arrDpPurchase as $acc) {
+                $account = ChartOfAccount::where('name', $acc)->first();
+                if ($account) {
+                    $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'purchase down payment')->first()->id;
+                    $account->save();
                 }
             }
         }

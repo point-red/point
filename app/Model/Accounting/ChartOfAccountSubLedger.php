@@ -2,11 +2,12 @@
 
 namespace App\Model\Accounting;
 
-use App\Model\MasterModel;
+use Illuminate\Database\Eloquent\Model;
 
-class ChartOfAccountSubLedger extends MasterModel
+class ChartOfAccountSubLedger extends Model
 {
     protected $connection = 'tenant';
 
     protected $table = 'chart_of_account_sub_ledgers';
+
 }

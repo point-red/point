@@ -38,7 +38,7 @@ class AlterTable extends Command
      */
     public function handle()
     {
-        $projects = Project::where('id', '>', 15)->get();
+        $projects = Project::all();
         foreach ($projects as $project) {
             $db = env('DB_DATABASE').'_'.strtolower($project->code);
 
@@ -48,15 +48,9 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            // TODO: REMOVE FIELD CREATED BY AND UPDATED BY IN CUTOFF
-            DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP FOREIGN KEY `cut_offs_created_by_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP FOREIGN KEY `cut_offs_updated_by_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `date`');
-            DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `number`');
-            DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `created_by`');
-            DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `updated_by`');
-            DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `created_at`');
-            DB::connection('tenant')->statement('ALTER TABLE `cut_offs` DROP COLUMN `updated_at`');
+            // TODO: ALTER SET NULL ON DELETE COA GROUP & TYPE
+            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD COLUMN `sub_ledger_id` integer(10) unsigned after `group_id`');
+            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD CONSTRAINT `chart_of_accounts_chart_of_account_sub_ledgers_id_foreign` FOREIGN KEY (`sub_ledger_id`) REFERENCES chart_of_account_sub_ledgers (`id`) ON DELETE SET NULL');
 
 //            DB::connection('tenant')->statement('RENAME TABLE `manufacture_formula_finish_goods` TO `manufacture_formula_finished_goods`');
 //            DB::connection('tenant')->statement('RENAME TABLE `manufacture_input_finish_goods` TO `manufacture_input_finished_goods`');

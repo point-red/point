@@ -17,6 +17,7 @@ class CreateChartOfAccountsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('type_id')->index();
             $table->unsignedInteger('group_id')->nullable()->index();
+            $table->unsignedInteger('sub_ledger_id')->nullable()->index();
             $table->string('number', 20)->nullable()->unique();
             $table->string('name');
             $table->string('alias');
@@ -30,8 +31,9 @@ class CreateChartOfAccountsTable extends Migration
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('archived_by')->references('id')->on('users')->onDelete('restrict');
-            $table->foreign('type_id')->references('id')->on('chart_of_account_types')->onDelete('cascade');
-            $table->foreign('group_id')->references('id')->on('chart_of_account_groups')->onDelete('cascade');
+            $table->foreign('type_id')->references('id')->on('chart_of_account_types')->onDelete('set null');
+            $table->foreign('group_id')->references('id')->on('chart_of_account_groups')->onDelete('set null');
+            $table->foreign('sub_ledger_id')->references('id')->on('chart_of_account_sub_ledgers')->onDelete('set null');
         });
     }
 

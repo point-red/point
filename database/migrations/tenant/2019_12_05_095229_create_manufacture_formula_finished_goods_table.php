@@ -24,7 +24,7 @@ class CreateManufactureFormulaFinishedGoodsTable extends Migration
             $table->string('unit');
             $table->decimal('converter', 65, 30);
 
-            $table->foreign('manufacture_formula_id')->references('id')->on('manufacture_formulas')->onDelete('cascade');
+            $table->foreign('manufacture_formula_id', 'manufacture_formula_finished_goods_formula_id_foreign')->references('id')->on('manufacture_formulas')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');
             $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('restrict');
         });

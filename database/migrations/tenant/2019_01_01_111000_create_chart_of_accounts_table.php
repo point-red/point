@@ -31,7 +31,7 @@ class CreateChartOfAccountsTable extends Migration
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('archived_by')->references('id')->on('users')->onDelete('restrict');
-            $table->foreign('type_id')->references('id')->on('chart_of_account_types')->onDelete('set null');
+            $table->foreign('type_id')->references('id')->on('chart_of_account_types')->onDelete('restrict');
             $table->foreign('group_id')->references('id')->on('chart_of_account_groups')->onDelete('set null');
             $table->foreign('sub_ledger_id')->references('id')->on('chart_of_account_sub_ledgers')->onDelete('set null');
         });

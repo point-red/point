@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api\Accounting;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Model\Accounting\ChartOfAccountType;
+use App\Model\Accounting\ChartOfAccountSubLedger;
 use Illuminate\Http\Request;
 
-class ChartOfAccountTypeController extends Controller
+class ChartOfAccountSubLedgerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +17,7 @@ class ChartOfAccountTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $types = ChartOfAccountType::eloquentFilter($request);
+        $types = ChartOfAccountSubLedger::eloquentFilter($request);
 
         $types = pagination($types, $request->get('limit'));
 

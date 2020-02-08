@@ -2,9 +2,9 @@
 
 namespace App\Model\Accounting;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\PointModel;
 
-class ChartOfAccountSubLedger extends Model
+class ChartOfAccountSubLedger extends PointModel
 {
     protected $connection = 'tenant';
 

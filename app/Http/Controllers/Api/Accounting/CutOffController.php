@@ -67,14 +67,14 @@ class CutOffController extends Controller
         $form = new Form;
         $form->saveData($request->all(), $cutOff, ['auto_approve' => false]);
 
-        $details = $request->get('details');
-        for ($i = 0; $i < count($details); $i++) {
-            $cutOffDetail = new CutOffDetail;
-            $cutOffDetail->cut_off_id = $cutOff->id;
-            $cutOffDetail->chart_of_account_id = $request->get('details')[$i]['id'];
-            $cutOffDetail->debit = $request->get('details')[$i]['debit'] ?? 0;
-            $cutOffDetail->credit = $request->get('details')[$i]['credit'] ?? 0;
-            $cutOffDetail->save();
+//        $details = $request->get('details');
+//        for ($i = 0; $i < count($details); $i++) {
+//            $cutOffDetail = new CutOffDetail;
+//            $cutOffDetail->cut_off_id = $cutOff->id;
+//            $cutOffDetail->chart_of_account_id = $request->get('details')[$i]['id'];
+//            $cutOffDetail->debit = $request->get('details')[$i]['debit'] ?? 0;
+//            $cutOffDetail->credit = $request->get('details')[$i]['credit'] ?? 0;
+//            $cutOffDetail->save();
 
 //            $journal = new Journal;
 //            $journal->form_id = $form->id;
@@ -82,7 +82,7 @@ class CutOffController extends Controller
 //            $journal->debit = $cutOffDetail->debit;
 //            $journal->credit = $cutOffDetail->credit;
 //            $journal->save();
-        }
+//        }
 
         DB::connection('tenant')->commit();
 

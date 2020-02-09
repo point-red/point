@@ -29,12 +29,14 @@ class SettingJournalSeeder extends Seeder
         ];
 
         foreach ($accounts as $key => $value) {
-            $settingJournal = new SettingJournal;
-            $settingJournal->feature = 'opening balance inventory';
-            $settingJournal->name = $key;
-            $settingJournal->description = '';
-            $settingJournal->chart_of_account_id = $value;
-            $settingJournal->save();
+            if (!$this->isExists('opening balance inventory', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'opening balance inventory';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
         }
     }
 
@@ -48,12 +50,14 @@ class SettingJournalSeeder extends Seeder
         ];
 
         foreach ($accounts as $key => $value) {
-            $settingJournal = new SettingJournal;
-            $settingJournal->feature = 'purchase';
-            $settingJournal->name = $key;
-            $settingJournal->description = '';
-            $settingJournal->chart_of_account_id = $value;
-            $settingJournal->save();
+            if (!$this->isExists('purchase', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'purchase';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
         }
     }
 
@@ -69,12 +73,14 @@ class SettingJournalSeeder extends Seeder
         ];
 
         foreach ($accounts as $key => $value) {
-            $settingJournal = new SettingJournal;
-            $settingJournal->feature = 'sales';
-            $settingJournal->name = $key;
-            $settingJournal->description = '';
-            $settingJournal->chart_of_account_id = $value;
-            $settingJournal->save();
+            if (!$this->isExists('sales', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'sales';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
         }
     }
 
@@ -85,5 +91,13 @@ class SettingJournalSeeder extends Seeder
                 return $chartOfAccount->id;
             }
         }
+    }
+
+    private function isExists ($feature, $key) {
+        if (SettingJournal::where('feature', $feature)->where('name', $key)->first()) {
+            return true;
+        }
+
+        return false;
     }
 }

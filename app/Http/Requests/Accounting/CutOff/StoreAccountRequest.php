@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Accounting\ChartOfAccount;
+namespace App\Http\Requests\Accounting\CutOff;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateChartOfAccountRequest extends FormRequest
+class StoreAccountRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class UpdateChartOfAccountRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**

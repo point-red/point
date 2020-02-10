@@ -17,6 +17,7 @@ use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
+use App\Model\Project\Project;
 use App\Wrapper\CarbonWrapper;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -62,6 +63,8 @@ class SalesVisitationController extends Controller
         foreach ($salesVisitationForm as $svf) {
             $photo = CloudStorage::where('feature', 'sales visitation form')
                 ->where('feature_id', $svf->id)
+                ->where('feature', 'sales visitation form')
+                ->where('project_id', Project::where('code', strtolower($request->header('Tenant')))->first()->id)
                 ->first();
             if ($photo) {
                 $base64 = base64_encode(Storage::disk($photo->disk)->get($photo->path));

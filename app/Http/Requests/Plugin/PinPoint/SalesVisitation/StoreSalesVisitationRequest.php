@@ -30,6 +30,7 @@ class StoreSalesVisitationRequest extends FormRequest
             'phone' => 'required',
             'similar_product' => 'required',
             'payment_method' => 'required',
+            'image' => 'required',
         ];
     }
 }

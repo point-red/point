@@ -12,7 +12,6 @@ use App\Model\Accounting\ChartOfAccountSubLedger;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\CutOff;
 use App\Model\Accounting\CutOffAccount;
-use App\Model\Form;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -26,25 +25,27 @@ class CutOffAccountController extends Controller
      */
     public function index(Request $request)
     {
-        $cutOffs = CutOff::eloquentFilter($request);
+        $cutOffAccounts = CutOffAccount::eloquentFilter($request);
+
         if ($request->get('join')) {
             $fields = explode(',', $request->get('join'));
-            if (in_array('form', $fields)) {
-                $cutOffs = $cutOffs->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', CutOff::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), CutOff::$morphName);
+
+            if (in_array('chartOfAccount', $fields)) {
+                $cutOffAccounts = $cutOffAccounts->join(ChartOfAccount::getTableName(), function ($q) {
+                    $q->on(ChartOfAccount::getTableName('id'), '=', CutOffAccount::getTableName('chart_of_account_id'));
                 });
             }
         }
 
-        $cutOffs = pagination($cutOffs, $request->get('limit'));
+        $cutOffAccounts = pagination($cutOffAccounts, $request->get('limit'));
 
-        return new ApiCollection($cutOffs);
+        return new ApiCollection($cutOffAccounts);
     }
 
     /**
      * Store a newly created resource in storage.
      *
+     * @param StoreAccountRequest $request
      * @return ApiResource
      */
     public function store(StoreAccountRequest $request)
@@ -101,20 +102,22 @@ class CutOffAccountController extends Controller
         $chartOfAccount->save();
 
         // create cut off account
-        $cutOffAccount = new CutOffAccount;
-        $cutOffAccount->chart_of_account_id = $chartOfAccount->id;
-        $cutOffAccount->cut_off_id = CutOff::where('id', '>', 0)->first()->id;
-        if ($chartOfAccount->type->is_debit == true) {
-            $cutOffAccount->debit = $request->get('balance');
-        } else {
-            $cutOffAccount->credit = $request->get('balance');
+        if (CutOffAccount::where('chart_of_account_id', $chartOfAccount->id)->where('cut_off_id', CutOff::where('id', '>', 0)->first()->id)->first()) {
+            $cutOffAccount = new CutOffAccount;
+            $cutOffAccount->chart_of_account_id = $chartOfAccount->id;
+            $cutOffAccount->cut_off_id = CutOff::where('id', '>', 0)->orderBy('id', 'desc')->first()->id;
+            if ($chartOfAccount->type->is_debit == true) {
+                $cutOffAccount->debit = $request->get('balance');
+            } else {
+                $cutOffAccount->credit = $request->get('balance');
+            }
+
+            $cutOffAccount->save();
+
+            DB::connection('tenant')->commit();
+
+            return new ApiResource($cutOffAccount);
         }
-
-        $cutOffAccount->save();
-
-        DB::connection('tenant')->commit();
-
-        return new ApiResource($cutOffAccount);
     }
 
     /**
@@ -145,7 +148,7 @@ class CutOffAccountController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return ApiResource
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
@@ -153,6 +156,6 @@ class CutOffAccountController extends Controller
 
         $cutOffAccount->delete();
 
-        return new ApiResource($cutOffAccount);
+        return response()->json([], 204);
     }
 }

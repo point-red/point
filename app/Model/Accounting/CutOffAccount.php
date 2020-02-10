@@ -2,9 +2,9 @@
 
 namespace App\Model\Accounting;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\PointModel;
 
-class CutOffAccount extends Model
+class CutOffAccount extends PointModel
 {
     protected $connection = 'tenant';
 
@@ -16,5 +16,13 @@ class CutOffAccount extends Model
     public function cutOff()
     {
         return $this->belongsTo(CutOff::class, 'cut_off_id');
+    }
+
+    /**
+     * Get the account that owns the cut off account.
+     */
+    public function chartOfAccount()
+    {
+        return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
     }
 }

@@ -10,6 +10,11 @@ class CutOffAccount extends PointModel
 
     protected $table = 'cut_off_accounts';
 
+    protected $casts = [
+        'debit' => 'double',
+        'credit' => 'double',
+    ];
+
     /**
      * Get the cut off that owns the cut off account.
      */

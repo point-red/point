@@ -17,6 +17,7 @@ class CreateCutOffAccountPayablesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('cut_off_id')->index();
             $table->unsignedInteger('supplier_id')->index();
+            $table->unsignedInteger('chart_of_account_id')->index();
             $table->text('notes');
             $table->decimal('amount', 65, 30)->default(0);
             $table->timestamps();

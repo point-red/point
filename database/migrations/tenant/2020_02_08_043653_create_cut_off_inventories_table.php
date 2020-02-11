@@ -17,6 +17,7 @@ class CreateCutOffInventoriesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('cut_off_id')->index();
             $table->unsignedInteger('item_id')->index();
+            $table->unsignedInteger('chart_of_account_id')->index();
             $table->unsignedInteger('warehouse_id')->index();
             $table->datetime('expiry_date')->nullable();
             $table->string('production_number')->nullable();

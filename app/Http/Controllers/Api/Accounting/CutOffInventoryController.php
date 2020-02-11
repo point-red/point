@@ -66,6 +66,7 @@ class CutOffInventoryController extends Controller
         foreach ($request->get('opening_stocks') as $openingStock) {
             $cutOffInventory = new CutOffInventory;
             $cutOffInventory->cut_off_id = $cutOffId;
+            $cutOffInventory->chart_of_account_id = $item->chart_of_account_id;
             $cutOffInventory->item_id = $item->id;
             $cutOffInventory->warehouse_id = $openingStock['warehouse_id'];
             $cutOffInventory->unit = $request->get('unit');
@@ -107,6 +108,7 @@ class CutOffInventoryController extends Controller
         DB::connection('tenant')->beginTransaction();
 
         $cutOffInventory = CutOffInventory::findOrFail($id);
+        $cutOffInventory->chart_of_account_id = $request->get('chart_of_account_id');
         $cutOffInventory->warehouse_id = $request->get('warehouse_id');
         $cutOffInventory->unit = $request->get('unit');
         $cutOffInventory->converter = $request->get('converter');

@@ -34,7 +34,7 @@ class ChartOfAccountGeneratorController extends Controller
 
         $accounts = ChartOfAccount::all();
         foreach ($accounts as $account) {
-            if (CutOffAccount::where('chart_of_account_id', $account->id)->where('cut_off_id', CutOff::where('id', '>', 0)->first()->id)->first()) {
+            if (!CutOffAccount::where('chart_of_account_id', $account->id)->where('cut_off_id', CutOff::where('id', '>', 0)->first()->id)->first()) {
                 $cutOffAccount = new CutOffAccount;
                 $cutOffAccount->chart_of_account_id = $account->id;
                 $cutOffAccount->cut_off_id = CutOff::where('id', '>', 0)->first()->id;

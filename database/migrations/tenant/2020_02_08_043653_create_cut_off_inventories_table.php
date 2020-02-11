@@ -17,6 +17,9 @@ class CreateCutOffInventoriesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('cut_off_id')->index();
             $table->unsignedInteger('item_id')->index();
+            $table->unsignedInteger('warehouse_id')->index();
+            $table->datetime('expiry_date')->nullable();
+            $table->string('production_number')->nullable();
             $table->decimal('quantity', 65, 30);
             $table->string('unit');
             $table->decimal('converter', 65, 30);
@@ -32,6 +35,11 @@ class CreateCutOffInventoriesTable extends Migration
             $table->foreign('item_id')
                 ->references('id')
                 ->on('items')
+                ->onDelete('restrict');
+
+            $table->foreign('warehouse_id')
+                ->references('id')
+                ->on('warehouses')
                 ->onDelete('restrict');
         });
     }

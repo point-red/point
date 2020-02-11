@@ -7,9 +7,9 @@ use App\Http\Requests\Accounting\CutOff\StoreAccountPayableRequest;
 use App\Http\Requests\Accounting\CutOff\UpdateAccountPayableRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\CutOff;
 use App\Model\Accounting\CutOffAccountPayable;
-use App\Model\Master\Item;
 use App\Model\Master\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,27 +24,33 @@ class CutOffAccountPayableController extends Controller
      */
     public function index(Request $request)
     {
-        $cutOffInventories = CutOffAccountPayable::eloquentFilter($request);
+        $cutOffAccountPayables = CutOffAccountPayable::eloquentFilter($request);
 
         if ($request->get('join')) {
             $fields = explode(',', $request->get('join'));
 
-            if (in_array('item', $fields)) {
-                $cutOffInventories = $cutOffInventories->join(Item::getTableName(), function ($q) {
-                    $q->on(Item::getTableName('id'), '=', CutOffAccountPayable::getTableName('item_id'));
+            if (in_array('supplier', $fields)) {
+                $cutOffAccountPayables = $cutOffAccountPayables->join(Supplier::getTableName(), function ($q) {
+                    $q->on(Supplier::getTableName('id'), '=', CutOffAccountPayable::getTableName('supplier_id'));
+                });
+            }
+
+            if (in_array('chartOfAccount', $fields)) {
+                $cutOffAccountPayables = $cutOffAccountPayables->join(ChartOfAccount::getTableName(), function ($q) {
+                    $q->on(ChartOfAccount::getTableName('id'), '=', CutOffAccountPayable::getTableName('chart_of_account_id'));
                 });
             }
 
             if (in_array('cutOff', $fields)) {
-                $cutOffInventories = $cutOffInventories->join(CutOff::getTableName(), function ($q) {
+                $cutOffAccountPayables = $cutOffAccountPayables->join(CutOff::getTableName(), function ($q) {
                     $q->on(CutOff::getTableName('id'), '=', CutOffAccountPayable::getTableName('cut_off_id'));
                 });
             }
         }
 
-        $cutOffInventories = pagination($cutOffInventories, $request->get('limit'));
+        $cutOffAccountPayables = pagination($cutOffAccountPayables, $request->get('limit'));
 
-        return new ApiCollection($cutOffInventories);
+        return new ApiCollection($cutOffAccountPayables);
     }
 
     /**
@@ -57,9 +63,7 @@ class CutOffAccountPayableController extends Controller
     {
         DB::connection('tenant')->beginTransaction();
 
-        $supplier = new Supplier;
-        $supplier->fill($request->all());
-        $supplier->save();
+        $supplier = Supplier::findOrFail($request->get('supplier_id'));
 
         $cutOffId = CutOff::where('id', '>', 0)->orderBy('id', 'desc')->first()->id;
 

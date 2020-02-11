@@ -33,6 +33,13 @@ class ChartOfAccountController extends Controller
             });
         }
 
+        if ($request->has('filter_sub_ledger')) {
+            $subLedgers = explode(',', $request->get('filter_sub_ledger'));
+            $accounts->whereHas('subLedger', function ($query) use ($subLedgers) {
+                $query->whereIn('name', $subLedgers);
+            });
+        }
+
         if ($request->get('is_archived')) {
             $accounts = $accounts->whereNotNull('archived_at');
         } else {

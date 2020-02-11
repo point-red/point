@@ -9,7 +9,7 @@ Route::prefix('accounting')->namespace('Accounting')->group(function () {
     Route::apiResource('cut-offs', 'CutOffController');
     Route::apiResource('cut-off-accounts', 'CutOffAccountController');
     Route::apiResource('cut-off-inventories', 'CutOffInventoryController');
-    Route::apiResource('cut-off-account-payable', 'CutOffAccountPayableController');
+    Route::apiResource('cut-off-account-payables', 'CutOffAccountPayableController');
     Route::apiResource('balance-sheets', 'BalanceSheetController');
     Route::apiResource('journals', 'JournalController');
     // Route::apiResource('memo-journals', 'MemoJournalController');

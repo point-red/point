@@ -52,7 +52,8 @@ class SalesVisitationExportController extends Controller
             .date('dMY', strtotime($request->get('date_to')));
         $fileExt = 'xlsx';
         $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
-        $result = Excel::store($this->exportFile($fileExport, $request->get('date_from'), $request->get('date_to')), $path, env('STORAGE_DISK'));
+
+        $result = Excel::store($this->exportFile($fileExport, convert_to_server_timezone($request->get('date_from')), convert_to_server_timezone($request->get('date_to'))), $path, env('STORAGE_DISK'));
 
         if (! $result) {
             return response()->json([

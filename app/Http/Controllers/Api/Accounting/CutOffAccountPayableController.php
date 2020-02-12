@@ -110,8 +110,6 @@ class CutOffAccountPayableController extends Controller
         $cutOffAccountPayable->amount = $request->get('amount');
         $cutOffAccountPayable->save();
 
-        $cutOffAccountPayable->supplier->name = $request->get('name');
-
         DB::connection('tenant')->commit();
 
         return new ApiResource($cutOffAccountPayable);

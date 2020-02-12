@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\HumanResource\Kpi\Kpi\KpiIndicatorResource;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
+use App\Http\Resources\HumanResource\Kpi\KpiGroup\KpiGroupResource;
 use App\Model\HumanResource\Kpi\Automated;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
@@ -168,6 +171,140 @@ class EmployeeAssessmentController extends Controller
         $kpis->target = (float) $kpis->target;
 
         return new KpiResource($kpis);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param $employeeId
+     * @param $group
+     * @return KpiResource
+     */
+    public function showBy(Request $request, $employeeId, $group)
+    {
+        $type = $request->get('type');
+        $date = strtotime(urldecode($group));
+        if ($type == 'weekly') {
+            $year = date('Y', $date);
+            $week = date('W', $date);
+            $week = intval($week) - 1;
+            if ($week < 0 ) {
+                $week = 0;
+            }
+            if($week < 10) {
+                $week = '0' . $week;
+            }
+            $group = $year.$week;
+        }
+        else {
+            $group = date('Ym', $date);
+        }
+        
+        $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
+            ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
+            ->select('kpis.*')
+            ->addSelect(DB::raw('sum(kpi_indicators.weight) / count(DISTINCT kpis.id) as weight'))
+            ->addSelect(DB::raw('sum(kpi_indicators.target) / count(DISTINCT kpis.id) as target'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score) / count(DISTINCT kpis.id) as score'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
+            ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'))
+            ->where('employee_id', $employeeId)
+            ->groupBy('kpis.scorer_id');
+        if ($type === 'daily') {
+            $kpis = $kpis->where('kpis.date', $group);
+        }
+        if ($type === 'weekly') {
+            $kpis = $kpis->where(DB::raw('yearweek(kpis.date)'),  DB::raw($group));
+        }
+        if ($type === 'monthly') {
+            $kpis = $kpis->where(DB::raw('EXTRACT(YEAR_MONTH from kpis.date)'), DB::raw($group));
+        }
+        if ($type === 'yearly') {
+            $kpis = $kpis->where(DB::raw('year(kpis.date)'), $group);
+        }
+        $kpis = $kpis->get();
+
+        $result = array();
+        $templates = array();
+        $scorer = array();
+        // splite based by template
+        foreach($kpis as $kpi) {
+            if (!in_array($kpi->name, $templates)) {
+                array_push($templates, $kpi->name);
+            }
+            $index = array_search($kpi->name, $templates);
+            $result['data'][$index][] = $kpi;
+        }
+        // create data table
+        $response = array();
+        foreach ($templates as $index => $tmp) {
+            $rows = array();
+            $scorer = array();
+            $employee = array();
+            // combine every kpi score into one row per template
+            foreach ( $result['data'][$index] as $index2 => $kpi) {
+                $kpi = new KpiResource($kpi);
+                $employee = $kpi->employee;
+                $scorer[] = $kpi->scorer;
+                foreach ($kpi->groups as $index3 => $group) {
+                        $group = new KpiGroupResource($group);
+                        $sum = array(
+                            'weight' => 0,
+                            'target' => 0,
+                            'score' => 0,
+                            'score_percentage' => 0
+                        );
+                        foreach ($group->indicators as $indicator) {
+                            $indicator = new KpiIndicatorResource($indicator);
+                            $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['name'] = $indicator->name;
+                            $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['weight'] = $indicator->weight;
+                            $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['target'] = $indicator->target;
+                            $rows[$index2][$group->name]['indicator'][$indicator->name]['scorer'][] = $indicator->score;
+                            $rows[$index2][$group->name]['indicator'][$indicator->name]['scorer'][] = $indicator->score_percentage;
+                            $sum['weight'] += $indicator->weight;
+                            $sum['target'] += $indicator->target;
+                            $sum['score'] += $indicator->score;
+                            $sum['score_percentage'] += $indicator->score_percentage;
+
+                        }
+                        $rows[$index2][$group->name]['group']['weight'] = $sum['weight'];
+                        $rows[$index2][$group->name]['group']['target'] = $sum['target'];
+                        $rows[$index2][$group->name]['group']['scorer'][] = $sum['score'];
+                        $rows[$index2][$group->name]['group']['scorer'][] = $sum['score_percentage'];
+                }
+            }
+            // transpose
+            $cols = array();
+            foreach ($rows as $i => $row) {
+                foreach ($row as $group => $col) {
+                    $cols[$group]['data'][0] = $group;
+                    $cols[$group]['data'][1] = $col['group']['weight'];
+                    $cols[$group]['data'][2] = $col['group']['target'];
+                    foreach ($col['group']['scorer'] as $val) {
+                        $cols[$group]['data'][] = $val;
+                    }
+                    $cols[$group]['indicators'] = array_keys($col['indicator']);
+                    foreach ($col['indicator'] as $key => $col) {
+                        $cols[$group]['indicator'][$key][0] = $col['data']['name'];
+                        $cols[$group]['indicator'][$key][1] = $col['data']['weight'];
+                        $cols[$group]['indicator'][$key][2] = $col['data']['target'];
+                        foreach ($col['scorer'] as $val) {
+                            $cols[$group]['indicator'][$key][] = $val;
+                        }
+                    }
+                }
+            }
+            $data = array (
+                'template' => $tmp,
+                'employee' => $employee,
+                'scorer' => $scorer,
+                'group' => array_keys($cols),
+                'data' => $cols,
+            );
+            $response[] = $data;
+        }
+
+        return $response;
     }
 
     /**

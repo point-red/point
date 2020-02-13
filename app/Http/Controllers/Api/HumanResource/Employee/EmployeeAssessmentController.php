@@ -185,21 +185,11 @@ class EmployeeAssessmentController extends Controller
         $type = $request->get('type');
         $date = strtotime(urldecode($group));
         if ($type == 'weekly') {
-            $year = date('Y', $date);
-            $week = date('W', $date);
-            $week = intval($week) - 1;
-            if ($week < 0 ) {
-                $week = 0;
-            }
-            if($week < 10) {
-                $week = '0' . $week;
-            }
-            $group = $year.$week;
+            $group = date('oW', $date);
         }
         else {
             $group = date('Ym', $date);
         }
-        
         $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
             ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
             ->select('kpis.*')
@@ -209,12 +199,12 @@ class EmployeeAssessmentController extends Controller
             ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
             ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'))
             ->where('employee_id', $employeeId)
-            ->groupBy('kpis.scorer_id');
+            ->groupBy('kpis.id');
         if ($type === 'daily') {
             $kpis = $kpis->where('kpis.date', $group);
         }
         if ($type === 'weekly') {
-            $kpis = $kpis->where(DB::raw('yearweek(kpis.date)'),  DB::raw($group));
+            $kpis = $kpis->where(DB::raw('yearweek(kpis.date,3)'),  DB::raw($group));
         }
         if ($type === 'monthly') {
             $kpis = $kpis->where(DB::raw('EXTRACT(YEAR_MONTH from kpis.date)'), DB::raw($group));
@@ -275,6 +265,7 @@ class EmployeeAssessmentController extends Controller
             }
             // transpose
             $cols = array();
+            $colsSum = array();
             foreach ($rows as $i => $row) {
                 foreach ($row as $group => $col) {
                     $cols[$group]['data'][0] = $group;
@@ -294,12 +285,29 @@ class EmployeeAssessmentController extends Controller
                     }
                 }
             }
+            $groupNames = array_keys($cols);
+            $colsSum[0] = ''; 
+            foreach($groupNames as $i => $group) {
+                foreach($cols[$group]['indicators'] as $indicator) {
+                    $it = 0;
+                    foreach($cols[$group]['indicator'][$indicator] as $val) {
+                        if ($it == 0) {
+                            $it++;
+                            continue;
+                        }
+                        $col = (isset($colsSum[$it]) ? $colsSum[$it] : 0);
+                        $colsSum[$it] = $col + $val;
+                        $it++;
+                    }
+                }
+            }
             $data = array (
                 'template' => $tmp,
                 'employee' => $employee,
                 'scorer' => $scorer,
                 'group' => array_keys($cols),
                 'data' => $cols,
+                'total' => $colsSum
             );
             $response[] = $data;
         }

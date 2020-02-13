@@ -27,9 +27,9 @@ class CreateCutOffSalesDownPaymentsTable extends Migration
                 ->on('cut_offs')
                 ->onDelete('cascade');
 
-            $table->foreign('supplier_id')
+            $table->foreign('customer_id')
                 ->references('id')
-                ->on('suppliers')
+                ->on('customers')
                 ->onDelete('restrict');
         });
     }

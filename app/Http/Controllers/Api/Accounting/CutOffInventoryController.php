@@ -10,6 +10,7 @@ use App\Http\Resources\ApiResource;
 use App\Model\Accounting\CutOff;
 use App\Model\Accounting\CutOffInventory;
 use App\Model\Master\Item;
+use App\Model\Master\ItemUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -56,9 +57,7 @@ class CutOffInventoryController extends Controller
     {
         DB::connection('tenant')->beginTransaction();
 
-        $item = new Item;
-        $item->fill($request->all());
-        $item->save();
+        $item = Item::create($request->all());
 
         $cutOffId = CutOff::where('id', '>', 0)->orderBy('id', 'desc')->first()->id;
 
@@ -78,6 +77,20 @@ class CutOffInventoryController extends Controller
             $cutOffInventory->total = $openingStock['price'] * $openingStock['quantity'];
             $cutOffInventory->save();
         }
+
+        $itemUnit = new ItemUnit();
+        $itemUnit->item_id = $cutOffInventory->item_id;
+        $itemUnit->label = $cutOffInventory->unit;
+        $itemUnit->name = $cutOffInventory->unit;
+        $itemUnit->converter = $cutOffInventory->converter;
+        $itemUnit->created_by = $cutOffInventory->cutOff->form->created_by;
+        $itemUnit->updated_by = $cutOffInventory->cutOff->form->updated_by;
+        $itemUnit->save();
+
+        $cutOffInventory->item->unit_default = $itemUnit->id;
+        $cutOffInventory->item->unit_default_purchase = $itemUnit->id;
+        $cutOffInventory->item->unit_default_sales = $itemUnit->id;
+        $cutOffInventory->item->save();
 
         DB::connection('tenant')->commit();
 
@@ -122,6 +135,20 @@ class CutOffInventoryController extends Controller
         $cutOffInventory->item->name = $request->get('name');
         $cutOffInventory->item->code = $request->get('code');
         $cutOffInventory->item->chart_of_account_id = $request->get('chart_of_account_id');
+        $cutOffInventory->item->save();
+
+        $itemUnit = new ItemUnit();
+        $itemUnit->item_id = $cutOffInventory->item_id;
+        $itemUnit->label = $cutOffInventory->unit;
+        $itemUnit->name = $cutOffInventory->unit;
+        $itemUnit->converter = $cutOffInventory->converter;
+        $itemUnit->created_by = $cutOffInventory->cutOff->form->created_by;
+        $itemUnit->updated_by = $cutOffInventory->cutOff->form->updated_by;
+        $itemUnit->save();
+
+        $cutOffInventory->item->unit_default = $itemUnit->id;
+        $cutOffInventory->item->unit_default_purchase = $itemUnit->id;
+        $cutOffInventory->item->unit_default_sales = $itemUnit->id;
         $cutOffInventory->item->save();
 
         DB::connection('tenant')->commit();

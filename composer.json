@@ -21,7 +21,8 @@
         "league/flysystem-aws-s3-v3": "~1.0",
         "maatwebsite/excel": "^3.1",
         "point-red/laravel-database-management": "^1.0",
-        "spatie/laravel-permission": "^3.5"
+        "spatie/laravel-permission": "^3.5",
+        "xendit/xendit-php": "^2.0"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

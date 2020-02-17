@@ -39,19 +39,19 @@ return [
 
         'single' => [
             'driver' => 'single',
-            'path' => storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/' . php_sapi_name() . '-laravel.log'),
             'level' => 'debug',
         ],
 
         'testing' => [
             'driver' => 'single',
-            'path' => storage_path('logs/testing.log'),
+            'path' => storage_path('logs/' . php_sapi_name() . '-testing.log'),
             'level' => 'debug',
         ],
 
         'daily' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/' . php_sapi_name() . '-laravel.log'),
             'level' => 'debug',
             'days' => 7,
         ],

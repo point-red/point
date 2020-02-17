@@ -30,6 +30,13 @@ class ProjectController extends Controller
             ->where('project_user.user_id', auth()->user()->id)
             ->select('projects.*', 'user_id', 'user_name', 'user_email', 'joined', 'request_join_at', 'project_user.id as user_invitation_id');
 
+        if ($request->get('search')) {
+            $projects = $projects->where(function ($q) use ($request) {
+                $q->where('code', 'like', '%'.$request->get('search').'%')
+                    ->orWhere('name', 'like', '%'.$request->get('search').'%');
+            });
+        }
+
         $projects = pagination($projects, $request->input('limit'));
 
         return new ApiCollection($projects);

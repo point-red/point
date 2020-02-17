@@ -49,6 +49,13 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::apiResource('storage', 'StorageController');
         require base_path('routes/api/reward.php');
 
+        //
+        Route::prefix('account')->namespace('Account')->group(function () {
+            Route::get('wallets', 'WalletController@index');
+            Route::get('wallets/amount', 'WalletController@amount');
+            Route::post('wallets/top-up', 'WalletController@topUp');
+        });
+
         // Tenant
         require base_path('routes/api/master.php');
         require base_path('routes/api/purchase.php');

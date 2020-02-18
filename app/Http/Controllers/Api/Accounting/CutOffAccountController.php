@@ -27,15 +27,16 @@ class CutOffAccountController extends Controller
     {
         $cutOffAccounts = CutOffAccount::eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('chartOfAccount', $fields)) {
-                $cutOffAccounts = $cutOffAccounts->join(ChartOfAccount::getTableName(), function ($q) {
-                    $q->on(ChartOfAccount::getTableName('id'), '=', CutOffAccount::getTableName('chart_of_account_id'));
-                });
-            }
-        }
+        $cutOffAccounts = $cutOffAccounts->join(ChartOfAccount::getTableName(), function ($q) {
+            $q->on(ChartOfAccount::getTableName('id'), '=', CutOffAccount::getTableName('chart_of_account_id'));
+        })->join(ChartOfAccountType::getTableName(), function ($q) {
+            $q->on(ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'));
+        })->whereIn(ChartOfAccountType::getTableName('name'), [
+            'cash', 'bank', 'note receivable', 'inventory', 'account receivable', 'other account receivable',
+            'fixed asset', 'fixed asset depreciation', 'other asset', 'other asset amortization', 'sales down payment',
+            'current liability', 'note payable', 'other current liability', 'long term liability', 'purchase down payment',
+            'owner equity', 'shareholder distribution', 'retained earning'
+        ]);
 
         $cutOffAccounts = pagination($cutOffAccounts, $request->get('limit'));
 

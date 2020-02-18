@@ -183,7 +183,8 @@ class EmployeeAssessmentController extends Controller
     public function showBy(Request $request, $employeeId, $group)
     {
         $type = $request->get('type');
-        $date = strtotime(urldecode($group));
+        $kpi = Kpi::find($group);
+        $date = strtotime($kpi->date);
         if ($type == 'weekly') {
             $group = date('oW', $date);
         }

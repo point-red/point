@@ -49,7 +49,7 @@ class WalletController extends Controller
         if ($count == 0) {
             // create new invoice
             $params = [
-                'external_id' => 'user-1',
+                'external_id' => 'user-' . auth()->user()->id,
                 'payer_email' => auth()->user()->email,
                 'description' => 'Top-up',
                 'amount' => $request->get('amount')

@@ -33,6 +33,7 @@ class FetchController extends Controller
                 $response->tenant_name = $project->name;
                 $response->tenant_address = $project->address;
                 $response->tenant_phone = $project->phone;
+                $response->is_owner = $project->owner_id == $request->user()->id;
                 $response->permissions = tenant($request->user()->id)->getPermissions();
             }
         }

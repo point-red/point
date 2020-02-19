@@ -24,7 +24,6 @@ class StoreWarehouseRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|unique:tenant.warehouses',
             'name' => 'required|unique:tenant.warehouses',
         ];
     }

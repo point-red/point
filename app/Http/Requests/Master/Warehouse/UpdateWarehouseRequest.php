@@ -24,7 +24,6 @@ class UpdateWarehouseRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|unique:tenant.warehouses,code,'.$this->id,
             'name' => 'required|unique:tenant.warehouses,name,'.$this->id,
         ];
     }

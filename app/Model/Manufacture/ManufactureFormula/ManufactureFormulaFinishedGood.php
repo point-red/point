@@ -14,9 +14,7 @@ class ManufactureFormulaFinishedGood extends TransactionModel
 
     protected $fillable = [
         'item_id',
-        'warehouse_id',
         'item_name',
-        'warehouse_name',
         'quantity',
         'unit',
         'converter',
@@ -35,10 +33,5 @@ class ManufactureFormulaFinishedGood extends TransactionModel
     public function item()
     {
         return $this->belongsTo(Item::class);
-    }
-
-    public function warehouse()
-    {
-        return $this->belongsTo(Warehouse::class);
     }
 }

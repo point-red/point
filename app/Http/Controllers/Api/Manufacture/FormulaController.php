@@ -76,9 +76,7 @@ class FormulaController extends Controller
                 ->load('form')
                 ->load('manufactureProcess')
                 ->load('rawMaterials.item')
-                ->load('rawMaterials.warehouse')
-                ->load('finishedGoods.item')
-                ->load('finishedGoods.warehouse');
+                ->load('finishedGoods.item');
 
             return new ApiResource($manufactureFormula);
         });
@@ -123,9 +121,7 @@ class FormulaController extends Controller
                 ->load('form')
                 ->load('manufactureProcess')
                 ->load('rawMaterials.item')
-                ->load('rawMaterials.warehouse')
-                ->load('finishedGoods.item')
-                ->load('finishedGoods.warehouse');
+                ->load('finishedGoods.item');
 
             return new ApiResource($manufactureFormula);
         });
@@ -143,9 +139,8 @@ class FormulaController extends Controller
     public function destroy(Request $request, $id)
     {
         $manufactureFormula = ManufactureFormula::findOrFail($id);
-        $manufactureFormula->isAllowedToDelete();
 
-        $response = $manufactureFormula->requestCancel($request);
+        $manufactureFormula->delete();
 
         return response()->json([], 204);
     }

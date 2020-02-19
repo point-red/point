@@ -121,7 +121,6 @@ class Form extends PointModel
                 }
             }
 
-
             $this->approvals()->save($formApproval);
             $this->save();
         } else {

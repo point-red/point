@@ -199,7 +199,7 @@
                         <br>
                         This is an automated message, please do not reply directly to this email.
                         <br>
-                        Copyright &copy; 2018 RED Point. All Rights Reserved.
+                        Copyright &copy; 2020 RED Point. All Rights Reserved.
                         <br>
                         <a href="https://www.point.red">www.point.red</a><br>
                     </td>

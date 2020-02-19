@@ -27,6 +27,9 @@ class CreateInventoriesTable extends Migration
             $table->decimal('total_value', 65, 30)->default(0);
             $table->boolean('need_recalculate')->default(false);
             $table->boolean('is_audit')->default(false);
+            $table->decimal('quantity_reference', 65, 30);
+            $table->string('unit_reference');
+            $table->decimal('converter_reference', 65, 30);
             $table->timestamps();
 
             $table->foreign('warehouse_id')

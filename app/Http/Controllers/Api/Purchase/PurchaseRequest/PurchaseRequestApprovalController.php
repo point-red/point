@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
+use App\Exceptions\ApprovalNotFoundException;
+use App\Exceptions\UnauthorizedException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
@@ -13,6 +15,8 @@ class PurchaseRequestApprovalController extends Controller
      * @param Request $request
      * @param $id
      * @return ApiResource
+     * @throws UnauthorizedException
+     * @throws ApprovalNotFoundException
      */
     public function approve(Request $request, $id)
     {
@@ -21,7 +25,7 @@ class PurchaseRequestApprovalController extends Controller
         $approvalMatch = null;
 
         if ($purchaseRequest->form->approvals->count() == 0) {
-            // approval not found exception
+            throw new ApprovalNotFoundException();
         }
 
         foreach ($purchaseRequest->form->approvals as $approval) {
@@ -31,14 +35,14 @@ class PurchaseRequestApprovalController extends Controller
                     break;
                 }
             }
-            if ($approval->request_to == auth()->user()->id) {
+            if ($approval->requested_to == auth()->user()->id) {
                 $approvalMatch = $approval;
                 break;
             }
         }
 
         if ($approvalMatch == null) {
-            // unauthorized exception
+            throw new UnauthorizedException();
         } else {
             $purchaseRequest->form->approved = true;
             $purchaseRequest->form->save();
@@ -54,6 +58,8 @@ class PurchaseRequestApprovalController extends Controller
      * @param Request $request
      * @param $id
      * @return ApiResource
+     * @throws ApprovalNotFoundException
+     * @throws UnauthorizedException
      */
     public function reject(Request $request, $id)
     {
@@ -62,7 +68,7 @@ class PurchaseRequestApprovalController extends Controller
         $approvalMatch = null;
 
         if ($purchaseRequest->form->approvals->count() == 0) {
-            // approval not found exception
+            throw new ApprovalNotFoundException();
         }
 
         foreach ($purchaseRequest->form->approvals as $approval) {
@@ -72,14 +78,14 @@ class PurchaseRequestApprovalController extends Controller
                     break;
                 }
             }
-            if ($approval->request_to == auth()->user()->id) {
+            if ($approval->requested_to == auth()->user()->id) {
                 $approvalMatch = $approval;
                 break;
             }
         }
 
         if ($approvalMatch == null) {
-            // unauthorized exception
+            throw new UnauthorizedException();
         } else {
             $purchaseRequest->form->approved = false;
             $purchaseRequest->form->save();

@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\UserInvitation\StoreUserInvitationRequest;
 use App\Http\Resources\Master\UserInvitation\UserInvitationCollection;
 use App\Http\Resources\Master\UserInvitation\UserInvitationResource;
+use App\Mail\ResetPasswordRequestMail;
+use App\Mail\UserInvitationMail;
 use App\Model\Auth\Role;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class UserInvitationController extends Controller
 {
@@ -40,6 +43,7 @@ class UserInvitationController extends Controller
      */
     public function store(StoreUserInvitationRequest $request)
     {
+        DB::beginTransaction();
         // Check if invited user already registered
         $user = User::where('email', $request->get('user_email'))->first();
         $project = Project::where('code', $request->header('Tenant'))->first();
@@ -62,6 +66,9 @@ class UserInvitationController extends Controller
             $projectUser->joined = false;
             $projectUser->save();
         }
+        DB::commit();
+
+        Mail::to([$request->get('user_email')])->queue(new UserInvitationMail($project, User::findOrFail(auth()->user()->id), $projectUser->name));
 
         return new UserInvitationResource($projectUser);
     }

@@ -47,6 +47,17 @@ class UserInvitationController extends Controller
         // Check if invited user already registered
         $user = User::where('email', $request->get('user_email'))->first();
         $project = Project::where('code', $request->header('Tenant'))->first();
+        $isInviteExists = ProjectUser::where('user_email', $request->get('user_email'))
+            ->where('project_id', $project->id)
+            ->first();
+
+        if ($isInviteExists) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $request->get('user_email') . ' already invited to this project'
+            ], 422);
+        }
+
         if ($user) {
             // If user registered
             $projectUser = new ProjectUser;

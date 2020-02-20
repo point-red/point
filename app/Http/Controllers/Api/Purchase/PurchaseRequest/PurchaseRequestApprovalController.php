@@ -75,6 +75,8 @@ class PurchaseRequestApprovalController extends Controller
             if (!auth()->user()) {
                 if ($request->get('token') == $approval->token) {
                     $approvalMatch = $approval;
+                    $approval->reason = $request->get('reason');
+                    $approval->save();
                     break;
                 }
             }

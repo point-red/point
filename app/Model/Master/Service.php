@@ -23,7 +23,7 @@ class Service extends MasterModel
     {
         $label = '';
         if ($this->code) {
-            $label = $this->code . ' - ';
+            $label = '[' . $this->code . '] ';
         }
         return $label . $this->name;
     }

@@ -17,7 +17,7 @@ class ChartOfAccount extends MasterModel
     {
         $label = '';
         if ($this->number) {
-            $label = $this->number . ' - ';
+            $label = '[' . $this->number . '] ';
         }
         return $label . $this->alias;
     }

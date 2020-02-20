@@ -83,7 +83,6 @@ class ManufactureFormula extends TransactionModel
         $formula->finishedGoods()->saveMany($finishedGoods);
 
         $form = new Form;
-        $form->approved = true;
         $form->saveData($data, $formula);
 
         return $formula;

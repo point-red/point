@@ -184,7 +184,7 @@ class EmployeeAssessmentController extends Controller
     {
         $type = $request->get('type');
         $kpi = Kpi::find($group);
-        $date = strtotime($kpi->date);
+        $date = strtotime($kpi->getOriginal('date'));
         if ($type == 'weekly') {
             $group = date('oW', $date);
         }

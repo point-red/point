@@ -47,9 +47,14 @@ class AlterTable extends Command
             $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_requests` DROP FOREIGN KEY `purchase_requests_employee_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_requests` DROP COLUMN `employee_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_requests` DROP COLUMN `employee_name`');
+
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_formula_raw_materials` DROP FOREIGN KEY IF EXISTS `manufacture_formula_raw_materials_warehouse_id_foreign`');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_formula_raw_materials` DROP IF EXISTS `warehouse_id`');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_formula_raw_materials` DROP IF EXISTS `warehouse_name`');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_formula_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_formula_finished_goods_warehouse_id_foreign`');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_formula_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_formula_finish_goods_warehouse_id_foreign`');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_formula_finished_goods` DROP IF EXISTS `warehouse_id`');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_formula_finished_goods` DROP IF EXISTS `warehouse_name`');
         }
     }
 }

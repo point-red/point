@@ -43,9 +43,9 @@ class SalesVisitation extends PointModel
         return $this->hasMany(SalesVisitationInterestReason::class);
     }
 
-    public function notInterestReasons()
+    public function noInterestReasons()
     {
-        return $this->hasMany(SalesVisitationNotInterestReason::class);
+        return $this->hasMany(SalesVisitationNoInterestReason::class);
     }
 
     public function similarProducts()

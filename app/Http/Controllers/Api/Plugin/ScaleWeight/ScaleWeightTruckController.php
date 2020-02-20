@@ -29,7 +29,7 @@ class ScaleWeightTruckController extends Controller
             || $request->has('filter_max')
             || $request->has('filter_date_min')
             || $request->has('filter_date_max')) {
-            return new ApiCollection(ScaleWeightTruck::where('id', '<', 1)->get());
+//            return new ApiCollection(ScaleWeightTruck::where('id', '<', 1)->get());
         }
 
         $scaleWeightTruck = ScaleWeightTruck::eloquentFilter($request);

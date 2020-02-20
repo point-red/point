@@ -32,7 +32,7 @@ class StoreManufactureInputRequest extends FormRequest
             'manufacture_machine_name' => 'required|string',
             'manufacture_process_name' => 'required|string',
             'raw_materials' => 'required|array',
-            'finish_goods' => 'required|array',
+            'finished_goods' => 'required|array',
         ];
 
         $rulesManufactureInputRawMaterials = [
@@ -44,15 +44,15 @@ class StoreManufactureInputRequest extends FormRequest
             'raw_materials.*.unit' => ValidationRule::unit(),
         ];
 
-        $rulesManufactureInputFinishGoods = [
-            'finish_goods.*.item_id' => ValidationRule::foreignKey('items'),
-            'finish_goods.*.warehouse_id' => ValidationRule::foreignKey('warehouses'),
-            'finish_goods.*.item_name' => 'required|string',
-            'finish_goods.*.warehouse_name' => 'required|string',
-            'finish_goods.*.quantity' => ValidationRule::quantity(),
-            'finish_goods.*.unit' => ValidationRule::unit(),
+        $rulesManufactureInputFinishedGoods = [
+            'finished_goods.*.item_id' => ValidationRule::foreignKey('items'),
+            'finished_goods.*.warehouse_id' => ValidationRule::foreignKey('warehouses'),
+            'finished_goods.*.item_name' => 'required|string',
+            'finished_goods.*.warehouse_name' => 'required|string',
+            'finished_goods.*.quantity' => ValidationRule::quantity(),
+            'finished_goods.*.unit' => ValidationRule::unit(),
         ];
 
-        return array_merge($rulesForm, $rulesManufacturInput, $rulesManufactureInputRawMaterials, $rulesManufactureInputFinishGoods);
+        return array_merge($rulesForm, $rulesManufacturInput, $rulesManufactureInputRawMaterials, $rulesManufactureInputFinishedGoods);
     }
 }

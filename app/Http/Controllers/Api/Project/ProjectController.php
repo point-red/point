@@ -30,6 +30,13 @@ class ProjectController extends Controller
             ->where('project_user.user_id', auth()->user()->id)
             ->select('projects.*', 'user_id', 'user_name', 'user_email', 'joined', 'request_join_at', 'project_user.id as user_invitation_id');
 
+        if ($request->get('search')) {
+            $projects = $projects->where(function ($q) use ($request) {
+                $q->where('code', 'like', '%'.$request->get('search').'%')
+                    ->orWhere('name', 'like', '%'.$request->get('search').'%');
+            });
+        }
+
         $projects = pagination($projects, $request->input('limit'));
 
         return new ApiCollection($projects);
@@ -46,7 +53,7 @@ class ProjectController extends Controller
         // User only allowed to create max 1 project
         $numberOfProject = Project::where('owner_id', auth()->user()->id)->count();
         // TODO: disable new project creation
-        if ($numberOfProject >= 1) {
+        if ($numberOfProject >= 100) {
             return response()->json([
                 'code' => 422,
                 'message' => 'We are updating our server, currently you cannot create new project',

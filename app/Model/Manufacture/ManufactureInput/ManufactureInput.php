@@ -43,9 +43,9 @@ class ManufactureInput extends TransactionModel
         return $this->hasMany(ManufactureInputRawMaterial::class);
     }
 
-    public function finishGoods()
+    public function finishedGoods()
     {
-        return $this->hasMany(ManufactureInputFinishGood::class);
+        return $this->hasMany(ManufactureInputFinishedGood::class);
     }
 
     public function manufactureMachine()
@@ -91,12 +91,12 @@ class ManufactureInput extends TransactionModel
         $input->fill($data);
 
         $rawMaterials = self::mapRawMaterials($data['raw_materials'] ?? []);
-        $finishGoods = self::mapFinishGoods($data['finish_goods'] ?? []);
+        $finishedGoods = self::mapFinishedGoods($data['finished_goods'] ?? []);
 
         $input->save();
 
         $input->rawMaterials()->saveMany($rawMaterials);
-        $input->finishGoods()->saveMany($finishGoods);
+        $input->finishedGoods()->saveMany($finishedGoods);
 
         $form = new Form;
         $form->approved = true;
@@ -110,7 +110,10 @@ class ManufactureInput extends TransactionModel
             if ($rawMaterial->production_number) {
                 $options['production_number'] = $rawMaterial->production_number;
             }
-            InventoryHelper::decrease($form->id, $rawMaterial->warehouse_id, $rawMaterial->item_id, $rawMaterial->quantity, $options);
+            $options['quantity_reference'] = $rawMaterial->quantity;
+            $options['unit_reference'] = $rawMaterial->unit;
+            $options['converter_reference'] = $rawMaterial->converter;
+            InventoryHelper::decrease($form->id, $rawMaterial->warehouse_id, $rawMaterial->item_id, $rawMaterial->quantity * $rawMaterial->converter, $options);
         }
 
         return $input;
@@ -126,14 +129,14 @@ class ManufactureInput extends TransactionModel
         }, $rawMaterials);
     }
 
-    private static function mapFinishGoods($finishGoods)
+    private static function mapFinishedGoods($finishedGoods)
     {
-        return array_map(function ($finishGood) {
-            $inputFinishGood = new ManufactureInputFinishGood;
-            $inputFinishGood->fill($finishGood);
+        return array_map(function ($finishedGood) {
+            $inputFinishedGood = new ManufactureInputFinishedGood;
+            $inputFinishedGood->fill($finishedGood);
 
-            return $inputFinishGood;
-        }, $finishGoods);
+            return $inputFinishedGood;
+        }, $finishedGoods);
     }
 
     private function isNotReferenced()

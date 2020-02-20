@@ -17,6 +17,16 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         return response()->json(['message' => 'welcome']);
     });
 
+    Route::prefix('payment-gateway/xendit-callback')->namespace('PaymentGateway\\Xendit')->group(function () {
+        Route::post('/invoice-paid', 'XenditCallbackController@invoicePaid');
+        Route::post('/fva-created', 'XenditCallbackController@fvaCreated');
+        Route::post('/fva-paid', 'XenditCallbackController@fvaPaid');
+        Route::post('/retail-outlet-paid', 'XenditCallbackController@retailOutletPaid');
+        Route::post('/card-refunded', 'XenditCallbackController@cardRefunded');
+        Route::post('/disbursement-sent', 'XenditCallbackController@disbursementSent');
+        Route::post('/batch-disbursement-sent', 'XenditCallbackController@batchDisbursementSent');
+    });
+
     Route::prefix('auth')->namespace('Auth')->group(function () {
         Route::post('login', 'LoginController@index');
         Route::post('logout', 'LogoutController@index');
@@ -38,6 +48,13 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::post('storage/upload', 'StorageController@upload');
         Route::apiResource('storage', 'StorageController');
         require base_path('routes/api/reward.php');
+
+        //
+        Route::prefix('account')->namespace('Account')->group(function () {
+            Route::get('wallets', 'WalletController@index');
+            Route::get('wallets/amount', 'WalletController@amount');
+            Route::post('wallets/top-up', 'WalletController@topUp');
+        });
 
         // Tenant
         require base_path('routes/api/master.php');

@@ -5,6 +5,7 @@ namespace App\Console\Commands\Tenant\Database;
 use App\Model\Auth\Role;
 use App\Model\Master\PricingGroup;
 use App\Model\Master\User;
+use App\Model\Master\Warehouse;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -58,6 +59,11 @@ class FirstSeed extends Command
             $pricingGroup->label = 'DEFAULT';
             $pricingGroup->save();
         }
+
+        // seed warehouse
+        $warehouse = new Warehouse;
+        $warehouse->name = 'DEFAULT';
+        $warehouse->save();
 
         $this->line('assign default role for owner');
         $this->assignDefaultRoleForOwner();

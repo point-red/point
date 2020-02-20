@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Master\Customer\StoreCustomerRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Plugin\PinPoint\InterestReason;
 use Illuminate\Http\Request;
 
 class InterestReasonController extends Controller
@@ -10,55 +14,30 @@ class InterestReasonController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $interestReasons = InterestReason::eloquentFilter($request);
+
+        $interestReasons = pagination($interestReasons, $request->get('limit'));
+
+        return new ApiCollection($interestReasons);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return ApiResource
      */
     public function store(Request $request)
     {
-        //
-    }
+        $interestReason = new InterestReason;
+        $interestReason->fill($request->all());
+        $interestReason->save();
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return new ApiResource($interestReason);
     }
 }

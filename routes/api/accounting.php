@@ -2,9 +2,17 @@
 
 Route::prefix('accounting')->namespace('Accounting')->group(function () {
     Route::apiResource('chart-of-account-groups', 'ChartOfAccountGroupController');
-    Route::apiResource('chart-of-account-types', 'ChartOfAccountTypeController');
+    Route::get('chart-of-account-types', 'ChartOfAccountTypeController@index');
+    Route::get('chart-of-account-sub-ledgers', 'ChartOfAccountSubLedgerController@index');
+    Route::post('chart-of-account-generators', 'ChartOfAccountGeneratorController@store');
     Route::apiResource('chart-of-accounts', 'ChartOfAccountController');
     Route::apiResource('cut-offs', 'CutOffController');
+    Route::apiResource('cut-off-accounts', 'CutOffAccountController');
+    Route::apiResource('cut-off-inventories', 'CutOffInventoryController');
+    Route::apiResource('cut-off-account-payables', 'CutOffAccountPayableController');
+    Route::apiResource('cut-off-account-receivables', 'CutOffAccountReceivableController');
+    Route::apiResource('cut-off-purchase-down-payments', 'CutOffPurchaseDownPaymentController');
+    Route::apiResource('cut-off-sales-down-payments', 'CutOffSalesDownPaymentController');
     Route::apiResource('balance-sheets', 'BalanceSheetController');
     Route::apiResource('journals', 'JournalController');
     // Route::apiResource('memo-journals', 'MemoJournalController');

@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
@@ -124,11 +125,8 @@ class CustomerController extends Controller
         $customer->save();
 
         if ($request->has('groups')) {
-            $group = null;
             foreach ($request->get('groups') as $arrGroups) {
-                if (! empty($arrGroups['id'])) {
-                    $group = CustomerGroup::findOrFail($arrGroups['id']);
-                } elseif (! empty($arrGroups['name'])) {
+                if (! empty($arrGroups['name'])) {
                     $group = CustomerGroup::where('name', $arrGroups['name'])->first();
                     if (! $group) {
                         $group = new CustomerGroup;
@@ -136,10 +134,10 @@ class CustomerController extends Controller
                         $group->save();
                     }
                 }
-                if ($group) {
-                    $group->customers()->syncWithoutDetaching([$customer->id], ['created_at' => Carbon::now()]);
-                }
             }
+            $groups = Arr::pluck($request->get('groups'), 'id');
+            $groups = array_filter($groups, 'strlen');
+            $customer->groups()->sync($groups);
         }
 
         Address::saveFromRelation($customer, $request->get('addresses'));
@@ -191,16 +189,19 @@ class CustomerController extends Controller
         $customer->save();
 
         if ($request->has('groups')) {
-            $groups = $request->get('groups');
-            foreach ($groups as $group) {
-                if (! $group['id'] && $group['name']) {
-                    $newGroup = new Group;
-                    $newGroup->name = $group['name'];
-                    $newGroup->save();
-                    $group['id'] = $newGroup->id;
+            foreach ($request->get('groups') as $arrGroups) {
+                if (! empty($arrGroups['name'])) {
+                    $group = CustomerGroup::where('name', $arrGroups['name'])->first();
+                    if (! $group) {
+                        $group = new CustomerGroup;
+                        $group->name = $arrGroups['name'];
+                        $group->save();
+                    }
                 }
             }
-            $customer->groups()->sync(array_column($groups, 'id'));
+            $groups = Arr::pluck($request->get('groups'), 'id');
+            $groups = array_filter($groups, 'strlen');
+            $customer->groups()->sync($groups);
         }
 
         Address::saveFromRelation($customer, $request->get('addresses'));

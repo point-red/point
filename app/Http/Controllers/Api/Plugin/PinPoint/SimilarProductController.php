@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Plugin\PinPoint\SimilarProduct;
 use Illuminate\Http\Request;
 
 class SimilarProductController extends Controller
@@ -10,55 +13,30 @@ class SimilarProductController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $similarProducts = SimilarProduct::eloquentFilter($request);
+
+        $similarProducts = pagination($similarProducts, $request->get('limit'));
+
+        return new ApiCollection($similarProducts);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return ApiResource
      */
     public function store(Request $request)
     {
-        //
-    }
+        $similarProduct = new SimilarProduct;
+        $similarProduct->fill($request->all());
+        $similarProduct->save();
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return new ApiResource($similarProduct);
     }
 }

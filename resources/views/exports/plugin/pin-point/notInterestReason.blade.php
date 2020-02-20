@@ -12,10 +12,10 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($notInterestReasons as $notInterestReason)
+    @foreach($noInterestReasons as $noInterestReason)
         <tr>
-            <td>{{ $notInterestReason->week }}</td>
-            @foreach ($notInterestReason->reasons as $item)
+            <td>{{ $noInterestReason->week }}</td>
+            @foreach ($noInterestReason->reasons as $item)
                 <td>{{ !empty($item->total) ? $item->total : 0 }}</td>
             @endforeach
         </tr>

@@ -15,6 +15,8 @@ class User extends MasterModel
 
     protected $user_logs = false;
 
+    protected $appends = ['full_name'];
+
     use HasRoles;
 
     protected $casts = [
@@ -22,6 +24,11 @@ class User extends MasterModel
         'effective_call' => 'double',
         'value' => 'double',
     ];
+
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
 
     public function getPermissions()
     {

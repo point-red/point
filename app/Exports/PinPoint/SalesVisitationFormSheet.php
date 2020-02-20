@@ -43,6 +43,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
     public function headings(): array
     {
         return [
+            'Created At',
             'Date',
             'Time',
             'Sales',
@@ -64,6 +65,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
     public function map($row): array
     {
         return [
+            date('Y-m-d H:i', strtotime($row->form->created_at)),
             date('Y-m-d', strtotime($row->form->date)),
             date('H:i', strtotime($row->form->date)),
             $row->form->createdBy->first_name.' '.$row->form->createdBy->last_name,

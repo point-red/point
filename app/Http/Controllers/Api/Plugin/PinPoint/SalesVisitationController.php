@@ -15,7 +15,7 @@ use App\Model\Master\Item;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
-use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
+use App\Model\Plugin\PinPoint\SalesVisitationNoInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
 use App\Model\Project\Project;
 use App\Wrapper\CarbonWrapper;
@@ -40,7 +40,7 @@ class SalesVisitationController extends Controller
             ->join('users', 'users.id', '=', 'forms.created_by')
             ->with('form.createdBy')
             ->with('interestReasons')
-            ->with('notInterestReasons')
+            ->with('noInterestReasons')
             ->with('similarProducts')
             ->with('details.item')
             ->eloquentFilter($request);
@@ -85,10 +85,6 @@ class SalesVisitationController extends Controller
     public function store(StoreSalesVisitationRequest $request)
     {
         DB::connection('tenant')->beginTransaction();
-
-        if ($request->get('interest_reason') == '' && $request->get('not_interest_reason') == '') {
-            return response()->json([], 422);
-        }
 
         if ($request->get('group_id')) {
             $group = CustomerGroup::findOrFail($request->get('group_id'));
@@ -150,66 +146,44 @@ class SalesVisitationController extends Controller
         $salesVisitation->save();
 
         // Interest Reason
-        $arrayInterestReason = explode(',', $request->get('interest_reason'));
-
-        if ($arrayInterestReason) {
-            for ($i = 0; $i < count($arrayInterestReason); $i++) {
-                if ($arrayInterestReason[$i]) {
-                    $interestReason = new SalesVisitationInterestReason;
-                    $interestReason->sales_visitation_id = $salesVisitation->id;
-                    $interestReason->name = $arrayInterestReason[$i];
-                    $interestReason->save();
-                }
+        $interestReasons = $request->get('interest_reasons');
+        $countInterestReason = 0;
+        for ($i = 0; $i < count($interestReasons); $i++) {
+            if ($interestReasons[$i]['id'] && $interestReasons[$i]['name']) {
+                $interestReason = new SalesVisitationInterestReason;
+                $interestReason->sales_visitation_id = $salesVisitation->id;
+                $interestReason->name = $interestReasons[$i]['name'];
+                $interestReason->save();
+                $countInterestReason++;
             }
-        }
-
-        if ($request->get('other_interest_reason')) {
-            $interestReason = new SalesVisitationInterestReason;
-            $interestReason->sales_visitation_id = $salesVisitation->id;
-            $interestReason->name = $request->get('other_interest_reason');
-            $interestReason->save();
         }
 
         // Not Interest Reason
-        $arrayNotInterestReason = explode(',', $request->get('not_interest_reason'));
-
-        if ($arrayNotInterestReason) {
-            for ($i = 0; $i < count($arrayNotInterestReason); $i++) {
-                if ($arrayNotInterestReason[$i]) {
-                    $notInterestReason = new SalesVisitationNotInterestReason;
-                    $notInterestReason->sales_visitation_id = $salesVisitation->id;
-                    $notInterestReason->name = $arrayNotInterestReason[$i];
-                    $notInterestReason->save();
-                }
+        $noInterestReasons = $request->get('no_interest_reasons');
+        $countNoInterestReason = 0;
+        for ($i = 0; $i < count($noInterestReasons); $i++) {
+            if ($noInterestReasons[$i]['id'] && $noInterestReasons[$i]['name']) {
+                $noInterestReason = new SalesVisitationNoInterestReason;
+                $noInterestReason->sales_visitation_id = $salesVisitation->id;
+                $noInterestReason->name = $noInterestReasons[$i]['name'];
+                $noInterestReason->save();
+                $countNoInterestReason++;
             }
         }
 
-        if ($request->get('not_other_interest_reason')) {
-            $notInterestReason = new SalesVisitationNotInterestReason;
-            $notInterestReason->sales_visitation_id = $salesVisitation->id;
-            $notInterestReason->name = $request->get('not_other_interest_reason');
-            $notInterestReason->save();
+        if ($countInterestReason + $countNoInterestReason == 0) {
+            return response()->json([], 422);
         }
 
         // Similar Product
-        $arraySimilarProduct = explode(',', $request->get('similar_product'));
-
-        if ($arraySimilarProduct) {
-            for ($i = 0; $i < count($arraySimilarProduct); $i++) {
-                if ($arraySimilarProduct[$i]) {
-                    $similarProduct = new SalesVisitationSimilarProduct;
-                    $similarProduct->sales_visitation_id = $salesVisitation->id;
-                    $similarProduct->name = $arraySimilarProduct[$i];
-                    $similarProduct->save();
-                }
+        $similarProducts = $request->get('similar_products');
+        for ($i = 0; $i < count($similarProducts); $i++) {
+            if ($similarProducts[$i]['id'] && $similarProducts[$i]['name']) {
+                $similarProduct = new SalesVisitationSimilarProduct;
+                $similarProduct->sales_visitation_id = $salesVisitation->id;
+                $similarProduct->name = $similarProducts[$i]['name'];
+                $similarProduct->save();
             }
-        }
-
-        if ($request->get('other_similar_product')) {
-            $similarProduct = new SalesVisitationSimilarProduct;
-            $similarProduct->sales_visitation_id = $salesVisitation->id;
-            $similarProduct->name = $request->get('other_similar_product');
-            $similarProduct->save();
         }
 
         // Details

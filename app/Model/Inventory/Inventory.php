@@ -17,6 +17,7 @@ class Inventory extends PointModel
     protected $casts = [
         'price' => 'double',
         'quantity' => 'double',
+        'remaining' => 'double',
         'cogs' => 'double',
         'total_quantity' => 'double',
         'total_value' => 'double',
@@ -24,12 +25,14 @@ class Inventory extends PointModel
 
     public function setExpiryDateAttribute($value)
     {
-        $this->attributes['expiry_date'] = convert_to_server_timezone($value);
+        if ($this->item->require_expiry_date) {
+            $this->attributes['expiry_date'] = convert_to_server_timezone($value);
+        }
     }
 
     public function getExpiryDateAttribute($value)
     {
-        return convert_to_local_timezone($value);
+        return !$value ? null : convert_to_local_timezone($value);
     }
 
     /**

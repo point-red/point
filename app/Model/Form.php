@@ -79,7 +79,7 @@ class Form extends PointModel
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function saveData($data, $transaction)
+    public function saveData($data, $transaction, $options = [])
     {
         $defaultNumberPostfix = '{y}{m}{increment=4}';
 
@@ -96,16 +96,16 @@ class Form extends PointModel
             $this->increment = $data['old_increment'];
         }
 
+        $this->save();
+
         if (array_key_exists('approver_id', $data)) {
-            $this->setApproval($data['approver_id'] ?? null);
+            $this->setApproval($data['approver_id'] ?? null, $options);
         }
     }
 
-    private function setApproval($approverId)
+    private function setApproval($approverId, $options = [])
     {
         if ($approverId) {
-            $this->save();
-
             $formApproval = new FormApproval;
             $formApproval->requested_to = $approverId;
             $formApproval->requested_at = now();
@@ -113,10 +113,12 @@ class Form extends PointModel
             $formApproval->expired_at = date('Y-m-d H:i:s', strtotime('+7 days'));
             $formApproval->token = substr(md5(now()), 0, 24);
 
-            if ($formApproval->requested_by == $formApproval->requested_to) {
-                $formApproval->approval_at = $formApproval->requested_at;
-                $formApproval->approved = true;
-                $this->approved = true;
+            if (array_key_exists('auto_approve', $options)) {
+                if ($formApproval->requested_by == $formApproval->requested_to && $options['auto_approve'] == true) {
+                    $formApproval->approval_at = $formApproval->requested_at;
+                    $formApproval->approved = true;
+                    $this->approved = true;
+                }
             }
 
             $this->approvals()->save($formApproval);

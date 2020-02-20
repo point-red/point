@@ -28,7 +28,7 @@ class StoreSalesVisitationRequest extends FormRequest
             'group_name' => 'required',
             'address' => 'required',
             'phone' => 'required',
-            'similar_product' => 'required',
+            'similar_products' => 'required',
             'payment_method' => 'required',
             'image' => 'required',
         ];

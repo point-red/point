@@ -37,9 +37,9 @@ class ManufactureFormula extends TransactionModel
         return $this->hasMany(ManufactureFormulaRawMaterial::class);
     }
 
-    public function finishGoods()
+    public function finishedGoods()
     {
-        return $this->hasMany(ManufactureFormulaFinishGood::class);
+        return $this->hasMany(ManufactureFormulaFinishedGood::class);
     }
 
     public function manufactureProcess()
@@ -75,15 +75,14 @@ class ManufactureFormula extends TransactionModel
         $formula->fill($data);
 
         $rawMaterials = self::mapRawMaterials($data['raw_materials'] ?? []);
-        $finishGoods = self::mapFinishGoods($data['finish_goods'] ?? []);
+        $finishedGoods = self::mapFinishedGoods($data['finished_goods'] ?? []);
 
         $formula->save();
 
         $formula->rawMaterials()->saveMany($rawMaterials);
-        $formula->finishGoods()->saveMany($finishGoods);
+        $formula->finishedGoods()->saveMany($finishedGoods);
 
         $form = new Form;
-        $form->approved = true;
         $form->saveData($data, $formula);
 
         return $formula;
@@ -99,14 +98,14 @@ class ManufactureFormula extends TransactionModel
         }, $rawMaterials);
     }
 
-    private static function mapFinishGoods($finishGoods)
+    private static function mapFinishedGoods($finishedGoods)
     {
-        return array_map(function ($finishGood) {
-            $formulaFinishGood = new ManufactureFormulaFinishGood;
-            $formulaFinishGood->fill($finishGood);
+        return array_map(function ($finishedGood) {
+            $formulaFinishedGood = new ManufactureFormulaFinishedGood;
+            $formulaFinishedGood->fill($finishedGood);
 
-            return $formulaFinishGood;
-        }, $finishGoods);
+            return $formulaFinishedGood;
+        }, $finishedGoods);
     }
 
     private function isNotReferenced()

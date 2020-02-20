@@ -1,6 +1,7 @@
 <?php
 
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\ChartOfAccountSubLedger;
 use App\Model\Accounting\ChartOfAccountType;
 use Illuminate\Database\Seeder;
 
@@ -13,129 +14,8 @@ class ChartOfAccountSeeder extends Seeder
      */
     public function run()
     {
-        $this->chartAccountTypes();
         $this->chartOfAccount();
-    }
-
-    private function chartAccountTypes()
-    {
-        $assets = [
-            'cash',
-            'bank',
-            'note receivable',
-            'account receivable',
-            'other account receivable',
-            'inventory',
-            'fixed asset',
-            'fixed asset depreciation',
-            'other asset',
-            'other asset amortization',
-            'sales down payment',
-        ];
-
-        $assetsAlias = [
-            'kas',
-            'bank',
-            'wesel tagih',
-            'sediaan',
-            'piutang usaha',
-            'piutang lain lain',
-            'aset tetap',
-            'penyusutan aset tetap',
-            'aset lain lain',
-            'amortisasi aset lain',
-            'uang muka penjualan',
-        ];
-
-        $liabilities = [
-            'current liability',
-            'note payable',
-            'other current liability',
-            'long term liability',
-            'purchase down payment',
-        ];
-
-        $liabilitiesAlias = [
-            'utang dagang',
-            'wesel bayar',
-            'utang lain lain',
-            'utang jangka panjang',
-            'uang muka pembelian',
-        ];
-
-        $equities = [
-            'owner equity',
-            'shareholder distribution',
-            'retained earning',
-        ];
-
-        $equitiesAlias = [
-            'modal pemilik',
-            'dividen',
-            'laba ditahan',
-        ];
-
-        $incomes = [
-            'sales income',
-            'other income',
-        ];
-
-        $incomesAlias = [
-            'penjualan',
-            'pendapatan non operasional',
-        ];
-
-        $expenses = [
-            'cost of sales',
-            'direct expense',
-            'other expense',
-        ];
-
-        $expensesAlias = [
-            'beban pokok penjualan',
-            'beban operasional',
-            'beban non operasional',
-        ];
-
-        for ($i = 0; $i < count($assets); $i++) {
-            $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = $assets[$i];
-            $chartOfAccountType->alias = $assetsAlias[$i];
-            $chartOfAccountType->is_debit = true;
-            $chartOfAccountType->save();
-        }
-
-        for ($i = 0; $i < count($liabilities); $i++) {
-            $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = $liabilities[$i];
-            $chartOfAccountType->alias = $liabilitiesAlias[$i];
-            $chartOfAccountType->is_debit = false;
-            $chartOfAccountType->save();
-        }
-
-        for ($i = 0; $i < count($equities); $i++) {
-            $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = $equities[$i];
-            $chartOfAccountType->alias = $equitiesAlias[$i];
-            $chartOfAccountType->is_debit = false;
-            $chartOfAccountType->save();
-        }
-
-        for ($i = 0; $i < count($incomes); $i++) {
-            $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = $incomes[$i];
-            $chartOfAccountType->alias = $incomesAlias[$i];
-            $chartOfAccountType->is_debit = false;
-            $chartOfAccountType->save();
-        }
-
-        for ($i = 0; $i < count($expenses); $i++) {
-            $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = $expenses[$i];
-            $chartOfAccountType->alias = $expensesAlias[$i];
-            $chartOfAccountType->is_debit = true;
-            $chartOfAccountType->save();
-        }
+        $this->attachSubLedger();
     }
 
     private function chartOfAccount()
@@ -419,6 +299,54 @@ class ChartOfAccountSeeder extends Seeder
             $chartOfAccount->name = $otherExpense[$i];
             $chartOfAccount->alias = $otherExpense[$i];
             $chartOfAccount->save();
+        }
+    }
+
+    private function attachSubLedger () {
+        $arrInventory = ['sediaan bahan baku', 'sediaan bahan pembantu', 'sediaan barang dalam proses', 'sediaan barang jadi (manufaktur)', 'sediaan dalam perjalanan', 'sediaan lain-lain'];
+        $arrAcReceivable = ['piutang usaha', 'piutang direksi', 'piutang karyawan'];
+        $arrDpSales = ['uang muka penjualan'];
+        $arrAcPayable = ['utang usaha'];
+        $arrDpPurchase = ['uang muka pembelian'];
+
+        foreach ($arrInventory as $acc) {
+            $account = ChartOfAccount::where('name', $acc)->first();
+            if ($account) {
+                $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'inventory')->first()->id;
+                $account->save();
+            }
+        }
+
+        foreach ($arrAcReceivable as $acc) {
+            $account = ChartOfAccount::where('name', $acc)->first();
+            if ($account) {
+                $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'account receivable')->first()->id;
+                $account->save();
+            }
+        }
+
+        foreach ($arrDpSales as $acc) {
+            $account = ChartOfAccount::where('name', $acc)->first();
+            if ($account) {
+                $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'sales down payment')->first()->id;
+                $account->save();
+            }
+        }
+
+        foreach ($arrAcPayable as $acc) {
+            $account = ChartOfAccount::where('name', $acc)->first();
+            if ($account) {
+                $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'account payable')->first()->id;
+                $account->save();
+            }
+        }
+
+        foreach ($arrDpPurchase as $acc) {
+            $account = ChartOfAccount::where('name', $acc)->first();
+            if ($account) {
+                $account->sub_ledger_id = ChartOfAccountSubLedger::where('name', 'purchase down payment')->first()->id;
+                $account->save();
+            }
         }
     }
 }

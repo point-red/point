@@ -44,6 +44,9 @@ class InventoryHelper
         $inventory->quantity = $quantity;
         $inventory->price = $price;
         $inventory->total_quantity = $quantity;
+        $inventory->quantity_reference = $options['quantity_reference'];
+        $inventory->unit_reference = $options['unit_reference'];
+        $inventory->converter_reference = $options['converter_reference'];
 
         if (array_key_exists('expiry_date', $options)) {
             if ($item->require_expiry_date) {

@@ -95,6 +95,14 @@ class FormulaController extends Controller
     {
         $manufactureFormula = ManufactureFormula::eloquentFilter($request)->findOrFail($id);
 
+        if ($request->has('with_archives')) {
+            $manufactureFormula->archives = $manufactureFormula->archives();
+        }
+
+        if ($request->has('with_origin')) {
+            $manufactureFormula->origin = $manufactureFormula->origin();
+        }
+
         return new ApiResource($manufactureFormula);
     }
 
@@ -134,13 +142,19 @@ class FormulaController extends Controller
      *
      * @param Request $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Request $request, $id)
     {
         $manufactureFormula = ManufactureFormula::findOrFail($id);
 
+        DB::connection('tenant')->beginTransaction();
+
+        $manufactureFormula->form->delete();
+
         $manufactureFormula->delete();
+
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

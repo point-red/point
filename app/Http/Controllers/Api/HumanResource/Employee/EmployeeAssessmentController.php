@@ -176,15 +176,15 @@ class EmployeeAssessmentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Request $request
      * @param $employeeId
      * @param $group
-     * @return array
+     * @return KpiResource
      */
     public function showBy(Request $request, $employeeId, $group)
     {
         $type = $request->get('type');
-        $date = strtotime(urldecode($group));
+        $kpi = Kpi::find($group);
+        $date = strtotime($kpi->getOriginal('date'));
         if ($type == 'weekly') {
             $group = date('oW', $date);
         }

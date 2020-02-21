@@ -13,7 +13,14 @@ class User extends Authenticatable
 {
     protected $connection = 'mysql';
 
+    protected $appends = ['full_name'];
+
     use Notifiable, HasApiTokens, HasRoles;
+
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
 
     /**
      * The users that belong to the project.

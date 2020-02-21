@@ -43,7 +43,16 @@ class ItemController extends Controller
 
         $items = pagination($items, $request->get('limit'));
 
-        return new ApiCollection($items);
+        $id = DB::table('INFORMATION_SCHEMA.TABLES')
+            ->select('AUTO_INCREMENT as id')
+            ->where('TABLE_SCHEMA', env('DB_DATABASE', 'point').'_'.$request->header('Tenant'))
+            ->where('TABLE_NAME', 'items')
+            ->first();
+
+        return (new ApiCollection($items))
+            ->additional([
+                'next_id' => $id->id
+            ]);
     }
 
     /**

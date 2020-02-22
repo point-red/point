@@ -32,6 +32,7 @@ class StorePurchaseRequestRequest extends FormRequest
         $validations = [
             'date' => 'required',
             'required_date' => 'required',
+            'supplier_id' => 'required',
             'items.0.item_id' => 'required',
             'items.0.quantity' => 'required',
             'items.0.unit' => 'required',

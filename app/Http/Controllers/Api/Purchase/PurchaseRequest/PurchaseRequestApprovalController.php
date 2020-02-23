@@ -82,6 +82,8 @@ class PurchaseRequestApprovalController extends Controller
             }
             if ($approval->requested_to == auth()->user()->id) {
                 $approvalMatch = $approval;
+                $approval->reason = $request->get('reason');
+                $approval->save();
                 break;
             }
         }

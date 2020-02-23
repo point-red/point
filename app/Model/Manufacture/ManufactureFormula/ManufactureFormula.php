@@ -47,11 +47,6 @@ class ManufactureFormula extends TransactionModel
         return $this->belongsTo(ManufactureProcess::class);
     }
 
-    public function approvers()
-    {
-        return $this->hasManyThrough(FormApproval::class, Form::class, 'formable_id', 'form_id')->where('formable_type', self::$morphName);
-    }
-
     public function inputMaterials()
     {
         return $this->hasMany(ManufactureInput::class)->active();

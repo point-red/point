@@ -26,6 +26,8 @@ class PermissionSeeder extends Seeder
         $this->setHumanResourcePermission();
         $this->setPluginPermission();
 
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
         $permissions = Permission::all();
         $role->syncPermissions($permissions);
     }
@@ -101,10 +103,10 @@ class PermissionSeeder extends Seeder
         Permission::createIfNotExists('menu manufacture');
 
         $allPermission = [
+            'manufacture processing',
             'manufacture machine',
             'manufacture process',
-            'manufacture formula',
-            'manufacture',
+            'manufacture formula'
         ];
 
         foreach ($allPermission as $permission) {

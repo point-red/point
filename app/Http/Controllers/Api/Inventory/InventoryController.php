@@ -8,6 +8,7 @@ use App\Http\Resources\Inventory\InventoryCollection;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
+use App\Model\Master\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -57,7 +58,7 @@ class InventoryController extends Controller
             $inventoryOut = $inventoryOut->where('warehouse_id', '=', $warehouseId);
         }
 
-        $items = Item::leftJoinSub($inventoryIn, 'subQueryInventoryIn', function ($join) {
+        $items = Item::eloquentFilter($request)->leftJoinSub($inventoryIn, 'subQueryInventoryIn', function ($join) {
                 $join->on('items.id', '=', 'subQueryInventoryIn.item_id');
             })->leftJoinSub($inventoryOut, 'subQueryInventoryOut', function ($join) {
                 $join->on('items.id', '=', 'subQueryInventoryOut.item_id');
@@ -65,12 +66,59 @@ class InventoryController extends Controller
                 $join->on('items.id', '=', 'subQueryInventoryStart.item_id');
             })
             ->select('items.*')
-            ->addSelect('subQueryInventoryStart.totalQty as opening_balance')
-            ->addSelect('subQueryInventoryIn.totalQty as stock_in')
-            ->addSelect('subQueryInventoryOut.totalQty as stock_out')
-            ->addSelect(DB::raw('subQueryInventoryStart.totalQty + subQueryInventoryIn.totalQty as ending_balance'));
+            ->addSelect(DB::raw('COALESCE(subQueryInventoryStart.totalQty, 0) as opening_balance'))
+            ->addSelect(DB::raw('COALESCE(subQueryInventoryIn.totalQty, 0) as stock_in'))
+            ->addSelect(DB::raw('COALESCE(subQueryInventoryOut.totalQty, 0) as stock_out'))
+            ->addSelect(DB::raw('COALESCE(subQueryInventoryStart.totalQty, 0) + COALESCE(subQueryInventoryIn.totalQty, 0) + COALESCE(subQueryInventoryOut.totalQty, 0) as ending_balance'));
 
         $items = pagination($items, $request->get('limit'));
+
+        return new ApiCollection($items);
+    }
+
+    public function indexDetail(Request $request)
+    {
+        $dateFrom = convert_to_server_timezone($request->get('date_from'));
+        $dateTo = convert_to_server_timezone($request->get('date_to'));
+        $itemId = $request->get('item_id');
+
+        $inventoryStart = Inventory::join('forms', 'forms.id', '=', 'inventories.form_id')
+            ->select('inventories.*')
+            ->addSelect(DB::raw('sum(inventories.quantity) as totalQty'))
+            ->where('forms.date', '<', $dateFrom)
+            ->where('item_id', '=', $itemId)
+            ->groupBy('inventories.warehouse_id');
+
+        $inventoryIn = Inventory::join('forms', 'forms.id', '=', 'inventories.form_id')
+            ->select('inventories.*')
+            ->addSelect(DB::raw('sum(inventories.quantity) as totalQty'))
+            ->whereBetween('forms.date', [$dateFrom, $dateTo])
+            ->where('quantity', '>', 0)
+            ->where('item_id', '=', $itemId)
+            ->groupBy('inventories.warehouse_id');
+
+        $inventoryOut = Inventory::join('forms', 'forms.id', '=', 'inventories.form_id')
+            ->select('inventories.*')
+            ->addSelect(DB::raw('sum(inventories.quantity) as totalQty'))
+            ->whereBetween('forms.date', [$dateFrom, $dateTo])
+            ->where('quantity', '<', 0)
+            ->where('item_id', '=', $itemId)
+            ->groupBy('inventories.warehouse_id');
+
+        $items = Warehouse::eloquentFilter($request)->leftJoinSub($inventoryIn, 'subQueryInventoryIn', function ($join) {
+            $join->on('warehouses.id', '=', 'subQueryInventoryIn.warehouse_id');
+        })->leftJoinSub($inventoryOut, 'subQueryInventoryOut', function ($join) {
+            $join->on('warehouses.id', '=', 'subQueryInventoryOut.warehouse_id');
+        })->leftJoinSub($inventoryStart, 'subQueryInventoryStart', function ($join) {
+            $join->on('warehouses.id', '=', 'subQueryInventoryStart.warehouse_id');
+        })->select('warehouses.*')
+            ->addSelect(DB::raw('COALESCE(subQueryInventoryStart.totalQty, 0) as opening_balance'))
+            ->addSelect(DB::raw('COALESCE(subQueryInventoryIn.totalQty, 0) as stock_in'))
+            ->addSelect(DB::raw('COALESCE(subQueryInventoryOut.totalQty, 0) as stock_out'))
+            ->addSelect(DB::raw('COALESCE(subQueryInventoryStart.totalQty, 0) + COALESCE(subQueryInventoryIn.totalQty, 0) + COALESCE(subQueryInventoryOut.totalQty, 0) as ending_balance'));
+
+
+        $items = pagination($items, 10);
 
         return new ApiCollection($items);
     }

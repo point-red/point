@@ -2,6 +2,7 @@
 
 namespace App\Model\Master;
 
+use App\Model\Inventory\Inventory;
 use App\Model\MasterModel;
 
 class Warehouse extends MasterModel
@@ -32,5 +33,10 @@ class Warehouse extends MasterModel
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_warehouse', 'warehouse_id', 'user_id');
+    }
+
+    public function inventories()
+    {
+        return $this->hasMany(Inventory::class, 'warehouse_id');
     }
 }

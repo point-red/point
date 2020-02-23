@@ -33,6 +33,7 @@ class UpdateManufactureInputRequest extends FormRequest
             'manufacture_process_name' => 'required|string',
             'raw_materials' => 'required|array',
             'finished_goods' => 'required|array',
+            'approver_id' => 'required',
         ];
 
         $rulesManufactureInputRawMaterials = [

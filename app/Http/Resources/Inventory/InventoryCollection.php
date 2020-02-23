@@ -23,18 +23,16 @@ class InventoryCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        $openingBalance = $this->getOpeningBalance($request->item_id);
-        $stockIn = $this->getTotalStockIn($request->item_id);
-        $stockOut = $this->getTotalStockOut($request->item_id);
+        $openingBalance = $this->getOpeningBalance($request->item_id, $request->warehouse_id, $request->page);
+        $stockIn = $this->getTotalStockIn($request->item_id, $request->warehouse_id, $request->page);
+        $stockOut = $this->getTotalStockOut($request->item_id, $request->warehouse_id, $request->page);
 
         return [
             'opening_balance' => $openingBalance['opening_balance'],
             'opening_balance_current_page' => $openingBalance['opening_balance_current_page'],
-            'ending_balance' => $this->getEndingBalance($request->item_id),
+            'ending_balance' => $this->getEndingBalance($request->item_id, $request->warehouse_id),
             'stock_in' => $stockIn['total'],
-            'stock_in_current_page' => $stockIn['total_current_page'],
             'stock_out' => $stockOut['total'],
-            'stock_out_current_page' => $stockOut['total_current_page'],
             'data' => $this->collection
         ];
     }
@@ -49,17 +47,12 @@ class InventoryCollection extends ResourceCollection
         $this->dateTo = convert_to_server_timezone($value);
     }
 
-    public function currentPage($value)
-    {
-        $this->currentPage = $value;
-    }
-
     public function limit($value)
     {
         $this->limit = $value;
     }
 
-    private function getOpeningBalance($itemId)
+    private function getOpeningBalance($itemId, $warehouseId, $page)
     {
         if (!$this->dateFrom) {
             return 0;
@@ -67,14 +60,16 @@ class InventoryCollection extends ResourceCollection
 
         $openingBalance = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
             ->where('item_id', $itemId)
+            ->where('warehouse_id', $warehouseId)
             ->where('forms.date', '<', $this->dateFrom)
             ->sum('quantity');
 
         $previousBalance = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
             ->where('item_id', $itemId)
+            ->where('warehouse_id', $warehouseId)
             ->where('forms.date', '>=', $this->dateFrom)
             ->where('forms.date', '<=', $this->dateTo)
-            ->take(($this->currentPage - 1) * $this->limit)
+            ->take(($page - 1) * $this->limit)
             ->orderBy('forms.date', 'asc')
             ->get()
             ->sum('quantity');
@@ -85,14 +80,15 @@ class InventoryCollection extends ResourceCollection
         ];
     }
 
-    private function getTotalStockIn($itemId)
+    private function getTotalStockIn($itemId, $warehouseId, $page)
     {
         if (!$this->dateFrom) {
             return 0;
         }
 
-        $in = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
+        $total = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
             ->where('item_id', $itemId)
+            ->where('warehouse_id', $warehouseId)
             ->where('forms.date', '>=', $this->dateFrom)
             ->where('forms.date', '<=', $this->dateTo)
             ->where('quantity', '>', 0)
@@ -100,31 +96,18 @@ class InventoryCollection extends ResourceCollection
             ->get()
             ->sum('quantity');
 
-        $inCurrentPage = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
-            ->where('item_id', $itemId)
-            ->where('forms.date', '>=', $this->dateFrom)
-            ->where('forms.date', '<=', $this->dateTo)
-            ->where('quantity', '>', 0)
-            ->take(($this->currentPage - 1) * $this->limit)
-            ->limit($this->limit)
-            ->orderBy('forms.date', 'asc')
-            ->get()
-            ->sum('quantity');
-
-        return [
-            'total' => (double) $in,
-            'total_current_page' => (double) $inCurrentPage
-        ];
+        return ['total' => (double) $total];
     }
 
-    private function getTotalStockOut($itemId)
+    private function getTotalStockOut($itemId, $warehouseId, $page)
     {
         if (!$this->dateFrom) {
             return 0;
         }
 
-        $out = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
+        $total = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
             ->where('item_id', $itemId)
+            ->where('warehouse_id', $warehouseId)
             ->where('forms.date', '>=', $this->dateFrom)
             ->where('forms.date', '<=', $this->dateTo)
             ->where('quantity', '<', 0)
@@ -132,27 +115,14 @@ class InventoryCollection extends ResourceCollection
             ->get()
             ->sum('quantity');
 
-        $outCurrentPage = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
-            ->where('item_id', $itemId)
-            ->where('forms.date', '>=', $this->dateFrom)
-            ->where('forms.date', '<=', $this->dateTo)
-            ->where('quantity', '<', 0)
-            ->take(($this->currentPage - 1) * $this->limit)
-            ->limit($this->limit)
-            ->orderBy('forms.date', 'asc')
-            ->get()
-            ->sum('quantity');
-
-        return [
-            'total' => (double) $out,
-            'total_current_page' => (double) $outCurrentPage
-        ];
+        return ['total' => (double) $total];
     }
 
-    private function getEndingBalance($itemId)
+    private function getEndingBalance($itemId, $warehouseId)
     {
         $query = Inventory::join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
-            ->where('item_id', $itemId);
+            ->where('item_id', $itemId)
+            ->where('warehouse_id', $warehouseId);
 
         if (!$this->dateTo) {
             return (double) $query->sum('quantity');

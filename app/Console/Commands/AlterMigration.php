@@ -51,7 +51,7 @@ class AlterMigration extends Command
             DB::connection('tenant')->table('migrations')->truncate();
 
             // USER & ROLE - PERMISSION
-            // self::update('2014_10_11_000000_create_branches_table');
+            self::update('2014_10_11_000000_create_branches_table');
             self::update('2014_10_12_000000_create_tenant_users_table');
             self::update('2014_10_12_100000_create_permission_tables');
             // KPI TEMPLATES

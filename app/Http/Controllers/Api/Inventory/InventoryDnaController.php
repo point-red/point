@@ -18,9 +18,11 @@ class InventoryDnaController extends Controller
      */
     public function index(Request $request, $itemId)
     {
+        $warehouseId = $request->get('warehouse_id');
         $inventories = Inventory::selectRaw('*, sum(quantity) as remaining')
             ->groupBy(['item_id', 'production_number', 'expiry_date'])
             ->where('item_id', $itemId)
+            ->where('warehouse_id', $warehouseId)
             ->having('remaining', '>', 0)
             ->get();
 

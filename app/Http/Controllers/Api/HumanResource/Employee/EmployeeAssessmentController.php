@@ -184,13 +184,8 @@ class EmployeeAssessmentController extends Controller
     {
         $type = $request->get('type');
         $kpi = Kpi::find($group);
-        $date = strtotime($kpi->getOriginal('date'));
-        if ($type == 'weekly') {
-            $group = date('oW', $date);
-        }
-        else {
-            $group = date('Ym', $date);
-        }
+        $dateFilter = $kpi->date;
+        $date = $kpi->getOriginal('date');
         $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
             ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
             ->select('kpis.*')
@@ -205,10 +200,10 @@ class EmployeeAssessmentController extends Controller
             $kpis = $kpis->where('kpis.date', $group);
         }
         if ($type === 'weekly') {
-            $kpis = $kpis->where(DB::raw('yearweek(kpis.date,3)'),  DB::raw($group));
+            $kpis = $kpis->where(DB::raw('yearweek(kpis.date)'),  DB::raw("yearweek('$date')"));
         }
         if ($type === 'monthly') {
-            $kpis = $kpis->where(DB::raw('EXTRACT(YEAR_MONTH from kpis.date)'), DB::raw($group));
+            $kpis = $kpis->where(DB::raw('EXTRACT(YEAR_MONTH from kpis.date)'), DB::raw("EXTRACT(YEAR_MONTH from '$date')"));
         }
         if ($type === 'yearly') {
             $kpis = $kpis->where(DB::raw('year(kpis.date)'), $group);
@@ -304,6 +299,7 @@ class EmployeeAssessmentController extends Controller
             }
             $data = array (
                 'template' => $tmp,
+                'date' => $dateFilter,
                 'employee' => $employee,
                 'scorer' => $scorer,
                 'group' => array_keys($cols),

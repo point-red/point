@@ -9,6 +9,7 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Form;
 use App\Model\Manufacture\ManufactureInput\ManufactureInput;
+use App\Model\Manufacture\ManufactureInput\ManufactureInputRawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -97,9 +98,11 @@ class InputMaterialController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $manufactureInput = ManufactureInput::eloquentFilter($request)->findOrFail($id);
+        $input = ManufactureInput::eloquentFilter($request);
 
-        return new ApiResource($manufactureInput);
+        $input = $input->where(ManufactureInput::getTableName('id'), '=', $id)->first();
+
+        return new ApiResource($input);
     }
 
     /**

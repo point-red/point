@@ -4,15 +4,12 @@ namespace App\Http\Controllers\Api\Accounting;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Accounting\CutOff\StoreRequest;
-use App\Http\Resources\Accounting\CutOff\CutOffCollection;
 use App\Http\Resources\Accounting\CutOff\CutOffResource;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Accounting\CutOff;
-use App\Model\Accounting\CutOffDetail;
 use App\Model\Accounting\Journal;
 use App\Model\Form;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -69,18 +66,18 @@ class CutOffController extends Controller
 
 //        $details = $request->get('details');
 //        for ($i = 0; $i < count($details); $i++) {
-//            $cutOffDetail = new CutOffDetail;
-//            $cutOffDetail->cut_off_id = $cutOff->id;
-//            $cutOffDetail->chart_of_account_id = $request->get('details')[$i]['id'];
-//            $cutOffDetail->debit = $request->get('details')[$i]['debit'] ?? 0;
-//            $cutOffDetail->credit = $request->get('details')[$i]['credit'] ?? 0;
-//            $cutOffDetail->save();
+//            $cutOffAccount = new CutOffAccount;
+//            $cutOffAccount->cut_off_id = $cutOff->id;
+//            $cutOffAccount->chart_of_account_id = $request->get('details')[$i]['id'];
+//            $cutOffAccount->debit = $request->get('details')[$i]['debit'] ?? 0;
+//            $cutOffAccount->credit = $request->get('details')[$i]['credit'] ?? 0;
+//            $cutOffAccount->save();
 
 //            $journal = new Journal;
 //            $journal->form_id = $form->id;
-//            $journal->chart_of_account_id = $cutOffDetail->chart_of_account_id;
-//            $journal->debit = $cutOffDetail->debit;
-//            $journal->credit = $cutOffDetail->credit;
+//            $journal->chart_of_account_id = $cutOffAccount->chart_of_account_id;
+//            $journal->debit = $cutOffAccount->debit;
+//            $journal->credit = $cutOffAccount->credit;
 //            $journal->save();
 //        }
 

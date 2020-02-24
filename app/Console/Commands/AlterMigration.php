@@ -51,6 +51,7 @@ class AlterMigration extends Command
             DB::connection('tenant')->table('migrations')->truncate();
 
             // USER & ROLE - PERMISSION
+            // self::update('2014_10_11_000000_create_branches_table');
             self::update('2014_10_12_000000_create_tenant_users_table');
             self::update('2014_10_12_100000_create_permission_tables');
             // KPI TEMPLATES
@@ -146,7 +147,12 @@ class AlterMigration extends Command
             self::update('2019_01_01_200012_create_allocation_reports_table');
             // Accounting
             self::update('2019_01_01_210000_create_cut_offs_table');
-            self::update('2019_01_01_210001_create_cut_off_details_table');
+            self::update('2019_01_01_211000_create_cut_off_accounts_table');
+            self::update('2019_01_01_212000_create_cut_off_inventories_table');
+            self::update('2019_01_01_213000_create_cut_off_account_payables_table');
+            self::update('2019_01_01_214000_create_cut_off_account_receivables_table');
+            self::update('2019_01_01_215000_create_cut_off_purchase_down_payments_table');
+            self::update('2019_01_01_216000_create_cut_off_sales_down_payments_table');
             self::update('2019_01_01_219999_create_setting_journals_table');
             // Inventory
             self::update('2019_01_01_220000_create_opening_stocks_table');

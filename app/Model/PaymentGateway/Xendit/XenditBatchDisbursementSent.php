@@ -32,7 +32,8 @@ class XenditBatchDisbursementSent extends Model
         'total_upload_amount' => 'double',
     ];
 
-    public function details() {
+    public function details()
+    {
         return $this->hasMany(XenditBatchDisbursementSentDetail::class, 'xendit_batch_disbursement_sent_id');
     }
 }

@@ -107,8 +107,14 @@ class ChartSimilarProductExport implements FromView, WithCharts, WithTitle, Shou
         $categories = [new DataSeriesValues('String', $this->title().'!$B$'.($firstData - 1).':$'.$lastColumn.'$'.($firstData - 1), null, 5)]; //products
         $values = [new DataSeriesValues('Number', $this->title().'!$B$'.$cellRow.':$'.$lastColumn.'$'.$cellRow, null, 5)]; //value
 
-        $series = new DataSeries(DataSeries::TYPE_PIECHART, DataSeries::GROUPING_STANDARD,
-        range(0, \count($values) - 1), $label, $categories, $values);
+        $series = new DataSeries(
+            DataSeries::TYPE_PIECHART,
+            DataSeries::GROUPING_STANDARD,
+            range(0, \count($values) - 1),
+            $label,
+            $categories,
+            $values
+        );
 
             $layout = new Layout();
             $layout->setShowVal(true);

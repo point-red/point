@@ -32,7 +32,8 @@ class ScaleWeightMergeExportController extends Controller
                 $request->get('header'),
                 $cat
             ),
-            $path, env('STORAGE_DISK')
+            $path,
+            env('STORAGE_DISK')
         );
 
         if (! $result) {

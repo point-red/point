@@ -60,7 +60,8 @@ class InventoryAudit extends TransactionModel
     private static function updateStock($inventoryAudit)
     {
         foreach ($inventoryAudit->items as $inventoryAuditItem) {
-            InventoryHelper::audit($inventoryAudit->form->id,
+            InventoryHelper::audit(
+                $inventoryAudit->form->id,
                 $inventoryAudit->warehouse_id,
                 $inventoryAuditItem->item_id,
                 $inventoryAuditItem->quantity,
@@ -68,7 +69,8 @@ class InventoryAudit extends TransactionModel
                 [
                     'expiry_date' => $inventoryAuditItem->expiry_date,
                     'production_number' => $inventoryAuditItem->production_number
-                ]);
+                ]
+            );
         }
     }
 }

@@ -25,7 +25,7 @@ class ProcessController extends Controller
 
         $processes = pagination($processes, $request->get('limit'));
 
-        return new ApiCollection($processes);;
+        return new ApiCollection($processes);
     }
 
     /**

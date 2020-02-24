@@ -106,7 +106,6 @@ class CutOffInventoryController extends Controller
      */
     public function show(Request $request, $id)
     {
-
     }
 
     /**

@@ -22,7 +22,7 @@ class ManufactureInput extends TransactionModel
     protected $connection = 'tenant';
 
     protected $fillable = [
-    	'manufacture_machine_id',
+        'manufacture_machine_id',
         'manufacture_process_id',
         'manufacture_formula_id',
         'manufacture_machine_name',

@@ -89,7 +89,6 @@ class CutOffPurchaseDownPaymentController extends Controller
      */
     public function show(Request $request, $id)
     {
-
     }
 
     /**

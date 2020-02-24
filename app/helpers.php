@@ -311,9 +311,10 @@ if (! function_exists('base64_to_jpeg')) {
      * @param $output_file
      * @return array
      */
-    function base64_to_jpeg($base64_string, $output_file) {
+    function base64_to_jpeg($base64_string, $output_file)
+    {
         // open the output file for writing
-        $ifp = fopen($output_file,'wb');
+        $ifp = fopen($output_file, 'wb');
 
         // split the string on commas
         // $data[ 0 ] == "data:image/png;base64"

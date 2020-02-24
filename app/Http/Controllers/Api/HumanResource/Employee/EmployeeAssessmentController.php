@@ -200,7 +200,7 @@ class EmployeeAssessmentController extends Controller
             $kpis = $kpis->where('kpis.date', $group);
         }
         if ($type === 'weekly') {
-            $kpis = $kpis->where(DB::raw('yearweek(kpis.date)'),  DB::raw("yearweek('$date')"));
+            $kpis = $kpis->where(DB::raw('yearweek(kpis.date)'), DB::raw("yearweek('$date')"));
         }
         if ($type === 'monthly') {
             $kpis = $kpis->where(DB::raw('EXTRACT(YEAR_MONTH from kpis.date)'), DB::raw("EXTRACT(YEAR_MONTH from '$date')"));
@@ -214,7 +214,7 @@ class EmployeeAssessmentController extends Controller
         $templates = array();
         $scorer = array();
         // splite based by template
-        foreach($kpis as $kpi) {
+        foreach ($kpis as $kpi) {
             if (!in_array($kpi->name, $templates)) {
                 array_push($templates, $kpi->name);
             }
@@ -228,35 +228,34 @@ class EmployeeAssessmentController extends Controller
             $scorer = array();
             $employee = array();
             // combine every kpi score into one row per template
-            foreach ( $result['data'][$index] as $index2 => $kpi) {
+            foreach ($result['data'][$index] as $index2 => $kpi) {
                 $kpi = new KpiResource($kpi);
                 $employee = $kpi->employee;
                 $scorer[] = $kpi->scorer;
                 foreach ($kpi->groups as $index3 => $group) {
-                        $group = new KpiGroupResource($group);
-                        $sum = array(
+                    $group = new KpiGroupResource($group);
+                    $sum = array(
                             'weight' => 0,
                             'target' => 0,
                             'score' => 0,
                             'score_percentage' => 0
                         );
-                        foreach ($group->indicators as $indicator) {
-                            $indicator = new KpiIndicatorResource($indicator);
-                            $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['name'] = $indicator->name;
-                            $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['weight'] = $indicator->weight;
-                            $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['target'] = $indicator->target;
-                            $rows[$index2][$group->name]['indicator'][$indicator->name]['scorer'][] = $indicator->score;
-                            $rows[$index2][$group->name]['indicator'][$indicator->name]['scorer'][] = $indicator->score_percentage;
-                            $sum['weight'] += $indicator->weight;
-                            $sum['target'] += $indicator->target;
-                            $sum['score'] += $indicator->score;
-                            $sum['score_percentage'] += $indicator->score_percentage;
-
-                        }
-                        $rows[$index2][$group->name]['group']['weight'] = $sum['weight'];
-                        $rows[$index2][$group->name]['group']['target'] = $sum['target'];
-                        $rows[$index2][$group->name]['group']['scorer'][] = $sum['score'];
-                        $rows[$index2][$group->name]['group']['scorer'][] = $sum['score_percentage'];
+                    foreach ($group->indicators as $indicator) {
+                        $indicator = new KpiIndicatorResource($indicator);
+                        $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['name'] = $indicator->name;
+                        $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['weight'] = $indicator->weight;
+                        $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['target'] = $indicator->target;
+                        $rows[$index2][$group->name]['indicator'][$indicator->name]['scorer'][] = $indicator->score;
+                        $rows[$index2][$group->name]['indicator'][$indicator->name]['scorer'][] = $indicator->score_percentage;
+                        $sum['weight'] += $indicator->weight;
+                        $sum['target'] += $indicator->target;
+                        $sum['score'] += $indicator->score;
+                        $sum['score_percentage'] += $indicator->score_percentage;
+                    }
+                    $rows[$index2][$group->name]['group']['weight'] = $sum['weight'];
+                    $rows[$index2][$group->name]['group']['target'] = $sum['target'];
+                    $rows[$index2][$group->name]['group']['scorer'][] = $sum['score'];
+                    $rows[$index2][$group->name]['group']['scorer'][] = $sum['score_percentage'];
                 }
             }
             // transpose
@@ -282,11 +281,11 @@ class EmployeeAssessmentController extends Controller
                 }
             }
             $groupNames = array_keys($cols);
-            $colsSum[0] = ''; 
-            foreach($groupNames as $i => $group) {
-                foreach($cols[$group]['indicators'] as $indicator) {
+            $colsSum[0] = '';
+            foreach ($groupNames as $i => $group) {
+                foreach ($cols[$group]['indicators'] as $indicator) {
                     $it = 0;
-                    foreach($cols[$group]['indicator'][$indicator] as $val) {
+                    foreach ($cols[$group]['indicator'][$indicator] as $val) {
                         if ($it == 0) {
                             $it++;
                             continue;
@@ -297,7 +296,7 @@ class EmployeeAssessmentController extends Controller
                     }
                 }
             }
-            $data = array (
+            $data = array(
                 'template' => $tmp,
                 'date' => $dateFilter,
                 'employee' => $employee,

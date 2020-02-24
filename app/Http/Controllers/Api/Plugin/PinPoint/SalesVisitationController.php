@@ -110,7 +110,7 @@ class SalesVisitationController extends Controller
             $limit = 10;
             $wait = $limit - CarbonWrapper::diffInMinute($a, $b);
 
-            if($limit > CarbonWrapper::diffInMinute($a, $b)) {
+            if ($limit > CarbonWrapper::diffInMinute($a, $b)) {
                 return response()->json([
                     'code' => 422,
                     'message' => 'form kunjungan sales hanya bisa di isi setiap 10 menit sekali, anda harus menunggu '
@@ -191,8 +191,12 @@ class SalesVisitationController extends Controller
         $array_price = $request->get('price');
         $array_quantity = $request->get('quantity');
 
-        $totalVisitation = SalesVisitation::rightJoin(SalesVisitationDetail::getTableName(),
-            SalesVisitationDetail::getTableName('sales_visitation_id'), '=', SalesVisitation::getTableName('id'))
+        $totalVisitation = SalesVisitation::rightJoin(
+            SalesVisitationDetail::getTableName(),
+            SalesVisitationDetail::getTableName('sales_visitation_id'),
+            '=',
+            SalesVisitation::getTableName('id')
+        )
             ->where(SalesVisitation::getTableName('name'), $customer->name)->get()->count();
 
         if ($array_item) {
@@ -220,7 +224,8 @@ class SalesVisitationController extends Controller
         }
 
         if ($request->get('image')) {
-            \App\Helpers\StorageHelper::uploadFromBase64($request->get('image'), 'sales visitation form', $salesVisitation->id);;
+            \App\Helpers\StorageHelper::uploadFromBase64($request->get('image'), 'sales visitation form', $salesVisitation->id);
+            ;
         }
 
         if ($salesVisitation->details->count() > 0) {

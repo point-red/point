@@ -203,7 +203,7 @@ class InventoryHelper
 
         if (array_key_exists('production_number', $options)) {
             $inventory = $inventory->where('inventories.production_number', '=', $options['production_number']);
-        } 
+        }
 
         $inventory = $inventory->first();
 

@@ -44,12 +44,12 @@ class InventoryRecapitulationController extends Controller
             ->groupBy('inventories.item_id');
 
         $items = Item::eloquentFilter($request)->leftJoinSub($inventoryIn, 'subQueryInventoryIn', function ($join) {
-                $join->on('items.id', '=', 'subQueryInventoryIn.item_id');
-            })->leftJoinSub($inventoryOut, 'subQueryInventoryOut', function ($join) {
-                $join->on('items.id', '=', 'subQueryInventoryOut.item_id');
-            })->leftJoinSub($inventoryStart, 'subQueryInventoryStart', function ($join) {
-                $join->on('items.id', '=', 'subQueryInventoryStart.item_id');
-            })
+            $join->on('items.id', '=', 'subQueryInventoryIn.item_id');
+        })->leftJoinSub($inventoryOut, 'subQueryInventoryOut', function ($join) {
+            $join->on('items.id', '=', 'subQueryInventoryOut.item_id');
+        })->leftJoinSub($inventoryStart, 'subQueryInventoryStart', function ($join) {
+            $join->on('items.id', '=', 'subQueryInventoryStart.item_id');
+        })
             ->select('items.*')
             ->addSelect(DB::raw('COALESCE(subQueryInventoryStart.totalQty, 0) as opening_balance'))
             ->addSelect(DB::raw('COALESCE(subQueryInventoryIn.totalQty, 0) as stock_in'))

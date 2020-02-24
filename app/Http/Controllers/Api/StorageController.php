@@ -108,7 +108,9 @@ class StorageController extends Controller
         $key = Str::random(16);
         $path = 'tenant/'.$tenant.'/upload/'.$featureSlug.'/';
         Storage::disk(env('STORAGE_DISK'))->putFileAs(
-            $path, $file, $key.'.'.$file->getClientOriginalExtension()
+            $path,
+            $file,
+            $key.'.'.$file->getClientOriginalExtension()
         );
 
         $cloudStorage = new CloudStorage;

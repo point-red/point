@@ -39,5 +39,4 @@ class NoInterestReasonController extends Controller
 
         return new ApiResource($noInterestReason);
     }
-
 }

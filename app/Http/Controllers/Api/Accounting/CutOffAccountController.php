@@ -130,7 +130,6 @@ class CutOffAccountController extends Controller
      */
     public function show(Request $request, $id)
     {
-
     }
 
     /**

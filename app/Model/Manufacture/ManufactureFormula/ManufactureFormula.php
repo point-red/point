@@ -19,7 +19,7 @@ class ManufactureFormula extends TransactionModel
     protected $connection = 'tenant';
 
     protected $fillable = [
-    	'manufacture_process_id',
+        'manufacture_process_id',
         'manufacture_process_name',
         'name',
         'notes',

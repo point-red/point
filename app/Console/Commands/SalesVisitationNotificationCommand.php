@@ -126,7 +126,8 @@ class SalesVisitationNotificationCommand extends Command
                         $call,
                         $effective_call,
                         $items,
-                        $value));
+                        $value
+                    ));
                 }
             }
         }

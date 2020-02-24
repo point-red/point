@@ -47,68 +47,68 @@ class MaskingData extends Command
         if (env('APP_ENV') == 'local') {
             $projects = Project::all();
             foreach ($projects as $project) {
-            $this->line('Clone '.$project->code);
-            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
-            $this->line('Alter '.$project->code);
-            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
-            DB::connection('tenant')->reconnect();
+                $this->line('Clone '.$project->code);
+                Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+                $this->line('Alter '.$project->code);
+                config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
+                DB::connection('tenant')->reconnect();
 
-            $users = \App\Model\Master\User::all();
-            foreach ($users as $key => $user) {
-                $user->email = $key . 'mail@mail.mail';
-                $user->name = 'user' . $key;
-                $user->address = 'address' . $key;
-                $user->phone = 'phone' . $key;
-                $user->first_name = 'user' . $key;
-                $user->last_name = 'user' . $key;
-                $user->save();
-            }
+                $users = \App\Model\Master\User::all();
+                foreach ($users as $key => $user) {
+                    $user->email = $key . 'mail@mail.mail';
+                    $user->name = 'user' . $key;
+                    $user->address = 'address' . $key;
+                    $user->phone = 'phone' . $key;
+                    $user->first_name = 'user' . $key;
+                    $user->last_name = 'user' . $key;
+                    $user->save();
+                }
 
-            $employees = Employee::all();
-            foreach ($employees as $key => $employee) {
-                $employee->personal_identity = rand(10000000, 99990000) . '-' . $key;
-                $employee->name = 'user' . $key;
-                $employee->last_education = 'last_education' . $key;
-                $employee->married_with = 'married_with' . $key;
-                $employee->save();
-            }
+                $employees = Employee::all();
+                foreach ($employees as $key => $employee) {
+                    $employee->personal_identity = rand(10000000, 99990000) . '-' . $key;
+                    $employee->name = 'user' . $key;
+                    $employee->last_education = 'last_education' . $key;
+                    $employee->married_with = 'married_with' . $key;
+                    $employee->save();
+                }
 
-            $addresses = Employee\EmployeeAddress::all();
-            foreach ($addresses as $key => $address) {
-                $address->address = 'address-' . $key;
-                $address->save();
-            }
+                $addresses = Employee\EmployeeAddress::all();
+                foreach ($addresses as $key => $address) {
+                    $address->address = 'address-' . $key;
+                    $address->save();
+                }
 
-            $phones = Employee\EmployeePhone::all();
-            foreach ($phones as $key => $phone) {
-                $phone->phone = 'phone-' . $key;
-                $phone->save();
-            }
+                $phones = Employee\EmployeePhone::all();
+                foreach ($phones as $key => $phone) {
+                    $phone->phone = 'phone-' . $key;
+                    $phone->save();
+                }
 
-            $emails = Employee\EmployeeCompanyEmail::all();
-            foreach ($emails as $key => $email) {
-                $email->email = 'email-' . $key . '@a.cm';
-                $email->save();
-            }
+                $emails = Employee\EmployeeCompanyEmail::all();
+                foreach ($emails as $key => $email) {
+                    $email->email = 'email-' . $key . '@a.cm';
+                    $email->save();
+                }
 
-            $emails = EmployeeEmail::all();
-            foreach ($emails as $key => $email) {
-                $email->email = 'email-' . $key . '@a.cm';
-                $email->save();
-            }
+                $emails = EmployeeEmail::all();
+                foreach ($emails as $key => $email) {
+                    $email->email = 'email-' . $key . '@a.cm';
+                    $email->save();
+                }
 
-            $groups = EmployeeGroup::all();
-            foreach ($groups as $key => $group) {
-                $group->name = 'group-' . $key;
-                $group->save();
-            }
+                $groups = EmployeeGroup::all();
+                foreach ($groups as $key => $group) {
+                    $group->name = 'group-' . $key;
+                    $group->save();
+                }
 
-            $medias = EmployeeSocialMedia::all();
-            foreach ($medias as $key => $media) {
-                $media->account = 'account-' . $key;
-                $media->save();
+                $medias = EmployeeSocialMedia::all();
+                foreach ($medias as $key => $media) {
+                    $media->account = 'account-' . $key;
+                    $media->save();
+                }
             }
-        }
         }
     }
 }

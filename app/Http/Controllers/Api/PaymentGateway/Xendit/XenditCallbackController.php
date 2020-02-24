@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 
 class XenditCallbackController extends Controller
 {
-
     public function invoicePaid(Request $request)
     {
         $verifyToken = $request->header('x-callback-token');
@@ -100,5 +99,4 @@ class XenditCallbackController extends Controller
             return response()->json([], 200);
         }
     }
-
 }

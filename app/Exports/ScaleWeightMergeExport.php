@@ -65,12 +65,21 @@ class ScaleWeightMergeExport implements FromQuery, WithHeadings, WithMapping, Wi
                 WHERE license_number = scale_weight_trucks.license_number AND time BETWEEN scale_weight_trucks.time_in AND scale_weight_trucks.time_out ) as';
         $merge = ScaleWeightTruck::whereRaw("time_in >= '$this->dateFrom'")
             ->whereRaw("time_in <= '$this->dateTo'")
-            ->select('license_number', DB::raw("DATE_FORMAT(time_in, '%d/%m/%Y') as date_in"),
+            ->select(
+                'license_number',
+                DB::raw("DATE_FORMAT(time_in, '%d/%m/%Y') as date_in"),
                 DB::raw("DATE_FORMAT(time_out, '%d/%m/%Y') as date_out"),
                 DB::raw("DATE_FORMAT(time_in, '%H.%i') as time_in"),
                 DB::raw("DATE_FORMAT(time_out, '%H.%i') as time_out"),
-                'gross_weight', 'net_weight', 'tare_weight', 'machine_code', 'vendor', 'driver', 'form_number',
-                'item', 'user',
+                'gross_weight',
+                'net_weight',
+                'tare_weight',
+                'machine_code',
+                'vendor',
+                'driver',
+                'form_number',
+                'item',
+                'user',
                 DB::raw("(SELECT COUNT(*) $from_sub_q box"),
                 DB::raw("(SELECT SUM(gross_weight) $from_sub_q item_gross_weight"),
                 DB::raw("(SELECT SUM(net_weight) $from_sub_q item_net_weight"),

@@ -28,7 +28,8 @@ class XenditBatchDisbursementSentDetail extends Model
         'amount' => 'double',
     ];
 
-    public function xenditBatchDisbursementSent() {
+    public function xenditBatchDisbursementSent()
+    {
         return $this->belongsTo(XenditBatchDisbursementSent::class, 'xendit_batch_disbursement_sent_id');
     }
 }

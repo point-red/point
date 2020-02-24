@@ -1,10 +1,10 @@
 <?php
 
 Route::prefix('inventory')->namespace('Inventory')->group(function () {
-    Route::get('inventories', 'InventoryController@index');
-    Route::get('inventories/{itemId}/warehouses', 'InventoryController@indexDetail');
-    Route::get('inventories/{itemId}', 'InventoryController@show');
-    Route::get('inventories/{itemId}/dna', 'InventoryController@dna');
+    Route::get('inventory-recapitulations', 'InventoryRecapitulationController@index');
+    Route::get('inventory-warehouse-recapitulations/{itemId}', 'InventoryWarehouseRecapitulationController@index');
+    Route::get('inventory-details/{itemId}', 'InventoryDetailController@index');
+    Route::get('inventory-dna/{itemId}', 'InventoryDnaController@index');
     Route::apiResource('inventory-audits', 'InventoryAudit\\InventoryAuditController');
     // Route::apiResource('inventory-usages', 'InventoryUsageController');
     // Route::apiResource('inventory-corrections', 'InventoryCorrectionController');

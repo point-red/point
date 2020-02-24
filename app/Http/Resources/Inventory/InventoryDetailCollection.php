@@ -4,15 +4,12 @@ namespace App\Http\Resources\Inventory;
 
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
-use App\Model\Master\Item;
-use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class InventoryCollection extends ResourceCollection
+class InventoryDetailCollection extends ResourceCollection
 {
     protected $dateFrom;
     protected $dateTo;
-    protected $currentPage;
     protected $limit;
 
     /**
@@ -23,14 +20,14 @@ class InventoryCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        $openingBalance = $this->getOpeningBalance($request->item_id, $request->warehouse_id, $request->page);
-        $stockIn = $this->getTotalStockIn($request->item_id, $request->warehouse_id, $request->page);
-        $stockOut = $this->getTotalStockOut($request->item_id, $request->warehouse_id, $request->page);
+        $openingBalance = $this->getOpeningBalance($request->route('itemId'), $request->warehouse_id, $request->page);
+        $stockIn = $this->getTotalStockIn($request->route('itemId'), $request->warehouse_id, $request->page);
+        $stockOut = $this->getTotalStockOut($request->route('itemId'), $request->warehouse_id, $request->page);
 
         return [
             'opening_balance' => $openingBalance['opening_balance'],
             'opening_balance_current_page' => $openingBalance['opening_balance_current_page'],
-            'ending_balance' => $this->getEndingBalance($request->item_id, $request->warehouse_id),
+            'ending_balance' => $this->getEndingBalance($request->route('itemId'), $request->warehouse_id),
             'stock_in' => $stockIn['total'],
             'stock_out' => $stockOut['total'],
             'data' => $this->collection

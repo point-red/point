@@ -53,6 +53,7 @@ class AlterMigration extends Command
             // USER & ROLE - PERMISSION
             self::update('2014_10_11_000000_create_branches_table');
             self::update('2014_10_12_000000_create_tenant_users_table');
+            self::update('2014_10_12_010000_create_branch_user_tables');
             self::update('2014_10_12_100000_create_permission_tables');
             // KPI TEMPLATES
             self::update('2019_01_01_100000_create_kpi_templates_table');

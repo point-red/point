@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBranchUsersTable extends Migration
+class CreateBranchUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateBranchUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('branch_users', function (Blueprint $table) {
+        Schema::create('branch_user', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id')->index();
             $table->unsignedInteger('branch_id')->index();
@@ -32,6 +32,6 @@ class CreateBranchUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('branch_users');
+        Schema::dropIfExists('branch_user');
     }
 }

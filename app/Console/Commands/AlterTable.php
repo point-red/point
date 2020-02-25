@@ -48,7 +48,7 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('DROP TABLE `cut_off_details`');
+            DB::connection('tenant')->statement('DROP TABLE `branch_users`');
         }
     }
 }

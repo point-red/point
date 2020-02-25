@@ -113,11 +113,15 @@ class CutOffController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
-        //
+        $cutOff = CutOff::findOrFail($id);
+        $cutOff->form->date = $request->get('date');
+        $cutOff->form->save();
+
+        return new ApiResource($cutOff);
     }
 
     /**

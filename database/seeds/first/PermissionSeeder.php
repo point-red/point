@@ -13,6 +13,8 @@ class PermissionSeeder extends Seeder
      */
     public function run()
     {
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
         $role = Role::createIfNotExists('super admin');
 
         $this->setMasterPermission();

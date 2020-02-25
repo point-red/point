@@ -4,6 +4,7 @@ namespace App\Model\Master;
 
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\MasterModel;
+use App\Models\Master\Branch;
 use Illuminate\Support\Arr;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -52,5 +53,13 @@ class User extends MasterModel
     public function warehouses()
     {
         return $this->belongsToMany(Warehouse::class, 'user_warehouse');
+    }
+
+    /**
+     * The branches that belong to the user.
+     */
+    public function branches()
+    {
+        return $this->belongsToMany(Branch::class, 'branch_user', 'branch_id', 'user_id');
     }
 }

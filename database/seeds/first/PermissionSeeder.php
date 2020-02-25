@@ -40,7 +40,7 @@ class PermissionSeeder extends Seeder
             'user', 'role',
             'customer', 'supplier', 'expedition',
             'item', 'service',
-            'allocation', 'warehouse',
+            'allocation', 'warehouse', 'branch',
         ];
 
         foreach ($allPermission as $permission) {

@@ -15,6 +15,7 @@ Route::prefix('master')->namespace('Master')->group(function () {
     // Master
     Route::apiResource('groups', 'GroupController');
     Route::apiResource('warehouses', 'WarehouseController');
+    Route::apiResource('branches', 'BranchController');
     // Item
     Route::post('item-groups/attach', 'ItemGroupController@attach');
     Route::post('item-groups/detach', 'ItemGroupController@detach');

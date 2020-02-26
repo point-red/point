@@ -48,7 +48,10 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `item_groups` ADD `type` varchar(255) after `id`');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN `price`');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN `cogs`');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN `total_quantity`');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN `total_value`');
         }
     }
 }

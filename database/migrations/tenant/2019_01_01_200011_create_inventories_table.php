@@ -21,10 +21,6 @@ class CreateInventoriesTable extends Migration
             $table->decimal('quantity', 65, 30)->default(0);
             $table->datetime('expiry_date')->nullable();
             $table->string('production_number')->nullable();
-            $table->unsignedDecimal('price', 65, 30)->default(0);
-            $table->decimal('cogs', 65, 30)->default(0);
-            $table->decimal('total_quantity', 65, 30)->default(0);
-            $table->decimal('total_value', 65, 30)->default(0);
             $table->boolean('need_recalculate')->default(false);
             $table->boolean('is_audit')->default(false);
             $table->decimal('quantity_reference', 65, 30);

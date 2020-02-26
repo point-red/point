@@ -46,6 +46,15 @@ trait FormScopes
         });
     }
 
+    // Form approval pending & form approval approved combined.
+    public function scopeApprovalNotRejected($query)	
+    {	
+        $query->whereHas('form', function ($q) {	
+            $q->whereNull('approved');	
+            $q->orWhere('approved', true);	
+        });	
+    }
+
     public function scopeCancellationApproved($query)
     {
         $query->whereHas('form', function ($q) {
@@ -91,7 +100,7 @@ trait FormScopes
 
     public function scopeActive($query)
     {
-        $query->notCanceled()->notArchived();
+        $query->notCanceled()->notArchived()->approvalNotRejected();
     }
 
     public function scopeActivePending($query)

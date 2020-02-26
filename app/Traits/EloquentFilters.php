@@ -643,12 +643,16 @@ trait EloquentFilters
                     $query->approvalPending();
                 } elseif ($value === 'approvalApproved') {
                     $query->approvalApproved();
+                } elseif ($value === 'approvalNotRejected') {
+                    $query->approvalNotRejected();
                 } elseif ($value === 'cancellationApproved') {
                     $query->cancellationApproved();
                 } elseif ($value === 'cancellationRejected') {
                     $query->cancellationRejected();
                 } elseif ($value === 'cancellationPending') {
                     $query->cancellationPending();
+                } elseif ($value === 'notCanceled') {
+                    $query->notCanceled();
                 } elseif ($value === 'notArchived') {
                     $query->notArchived();
                 } elseif ($value === 'archived') {

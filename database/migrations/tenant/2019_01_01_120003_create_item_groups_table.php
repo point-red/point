@@ -14,7 +14,7 @@ class CreateItemGroupsTable extends Migration
     public function up()
     {
         Schema::create('item_groups', function (Blueprint $table) {
-            $table->increments('id');ß
+            $table->increments('id');
             $table->string('name')->unique();
             $table->string('type')->nullable();
             $table->unsignedInteger('created_by')->index()->nullable();

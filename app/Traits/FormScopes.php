@@ -6,6 +6,7 @@ use App\Model\Form;
 
 trait FormScopes
 {
+    // Form don't need another follow up or already completed by another form
     public function scopeDone($query)
     {
         $query->whereHas('form', function ($q) {
@@ -13,6 +14,7 @@ trait FormScopes
         });
     }
 
+    // Form waiting to be completed by another form
     public function scopePending($query)
     {
         $query->whereHas('form', function ($q) {
@@ -20,6 +22,7 @@ trait FormScopes
         });
     }
 
+    // Form approval approved (inventory and journal is posted)
     public function scopeApprovalApproved($query)
     {
         $query->whereHas('form', function ($q) {
@@ -27,6 +30,7 @@ trait FormScopes
         });
     }
 
+    // Form approval rejected and need revision
     public function scopeApprovalRejected($query)
     {
         $query->whereHas('form', function ($q) {
@@ -34,6 +38,7 @@ trait FormScopes
         });
     }
 
+    // Form approval pending (inventory and journal is not posted yet until approved)
     public function scopeApprovalPending($query)
     {
         $query->whereHas('form', function ($q) {
@@ -43,7 +48,6 @@ trait FormScopes
 
     public function scopeCancellationApproved($query)
     {
-        info('ASD');
         $query->whereHas('form', function ($q) {
             $q->where('canceled', true);
         });
@@ -87,7 +91,7 @@ trait FormScopes
 
     public function scopeActive($query)
     {
-        $query->notCanceled()->notArchived()->approvalPending()->approvalApproved();
+        $query->notCanceled()->notArchived();
     }
 
     public function scopeActivePending($query)

@@ -23,6 +23,12 @@ class CreateBranchUserTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
         });
+
+        Schema::table('branches', function (Blueprint $table) {
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('archived_by')->references('id')->on('users')->onDelete('restrict');
+        });
     }
 
     /**
@@ -32,6 +38,12 @@ class CreateBranchUserTable extends Migration
      */
     public function down()
     {
+        Schema::table('branches', function (Blueprint $table) {
+            $table->dropForeign('branches_created_by_foreign');
+            $table->dropForeign('branches_updated_by_foreign');
+            $table->dropForeign('branches_archived_by_foreign');
+        });
+        
         Schema::dropIfExists('branch_user');
     }
 }

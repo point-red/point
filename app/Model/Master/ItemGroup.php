@@ -8,7 +8,7 @@ class ItemGroup extends MasterModel
 {
     protected $connection = 'tenant';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'type'];
 
     /**
      * get all of the items that are assigned this group.

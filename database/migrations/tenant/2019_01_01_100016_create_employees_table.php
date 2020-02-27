@@ -37,6 +37,7 @@ class CreateEmployeesTable extends Migration
             $table->unsignedDecimal('daily_transport_allowance', 65, 30)->default(0);
             $table->unsignedDecimal('functional_allowance', 65, 30)->default(0);
             $table->unsignedDecimal('communication_allowance', 65, 30)->default(0);
+            $table->unsignedInteger('branch_id')->index()->nullable();
             $table->unsignedInteger('user_id')->index()->nullable();
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
@@ -45,6 +46,7 @@ class CreateEmployeesTable extends Migration
             $table->timestamp('archived_at')->nullable();
 
             // Relationship
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('restrict');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');

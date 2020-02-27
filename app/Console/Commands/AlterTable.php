@@ -48,10 +48,29 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN `price`');
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN `cogs`');
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN `total_quantity`');
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN `total_value`');
+            DB::connection('tenant')->statement('ALTER TABLE `users` ADD COLUMN `branch_id` int(10) unsigned');
+            DB::connection('tenant')->statement('ALTER TABLE `users` ADD CONSTRAINT `users_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES branches (`id`) ON DELETE SET NULL');
+
+            DB::connection('tenant')->statement('ALTER TABLE `users` ADD COLUMN `warehouse_id` int(10) unsigned');
+            DB::connection('tenant')->statement('ALTER TABLE `users` ADD CONSTRAINT `users_warehouse_id_foreign` FOREIGN KEY (`warehouse_id`) REFERENCES warehouses (`id`) ON DELETE SET NULL');
+
+            DB::connection('tenant')->statement('ALTER TABLE `warehouses` ADD COLUMN `branch_id` int(10) unsigned');
+            DB::connection('tenant')->statement('ALTER TABLE `warehouses` ADD CONSTRAINT `warehouses_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES branches (`id`) ON DELETE SET NULL');
+
+            DB::connection('tenant')->statement('ALTER TABLE `suppliers` ADD COLUMN `branch_id` int(10) unsigned');
+            DB::connection('tenant')->statement('ALTER TABLE `suppliers` ADD CONSTRAINT `suppliers_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES branches (`id`) ON DELETE SET NULL');
+
+            DB::connection('tenant')->statement('ALTER TABLE `customers` ADD COLUMN `branch_id` int(10) unsigned');
+            DB::connection('tenant')->statement('ALTER TABLE `customers` ADD CONSTRAINT `customers_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES branches (`id`) ON DELETE SET NULL');
+
+            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `branch_id` int(10) unsigned');
+            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD CONSTRAINT `employees_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES branches (`id`) ON DELETE SET NULL');
+
+            DB::connection('tenant')->statement('ALTER TABLE `allocations` ADD COLUMN `branch_id` int(10) unsigned');
+            DB::connection('tenant')->statement('ALTER TABLE `allocations` ADD CONSTRAINT `allocations_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES branches (`id`) ON DELETE SET NULL');
+
+            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `branch_id` int(10) unsigned');
+            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD CONSTRAINT `forms_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES branches (`id`) ON DELETE RESTRICT');
         }
     }
 }

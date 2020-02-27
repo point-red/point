@@ -4,7 +4,6 @@ namespace App\Model\Master;
 
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\MasterModel;
-use App\Models\Master\Branch;
 use Illuminate\Support\Arr;
 use Spatie\Permission\Traits\HasRoles;
 

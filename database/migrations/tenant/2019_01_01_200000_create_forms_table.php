@@ -15,6 +15,7 @@ class CreateFormsTable extends Migration
     {
         Schema::create('forms', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('branch_id')->index()->nullable();
             $table->datetime('date');
             $table->string('number')->nullable()->unique();
             $table->string('edited_number')->nullable();
@@ -39,6 +40,7 @@ class CreateFormsTable extends Migration
             // null = pending, true = approved, false = rejected
             $table->boolean('canceled')->nullable()->default(null);
 
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('restrict');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
 

@@ -57,7 +57,7 @@ class AlterData extends Command
                 $pricingGroup->save();
             }
 
-            if (Branch::all()->count == 0) {
+            if (Branch::all()->count() == 0) {
                 $branch = new Branch;
             } else {
                 $branch = Branch::find(1);
@@ -66,7 +66,7 @@ class AlterData extends Command
             $branch->name = 'CENTRAL';
             $branch->save();
 
-            if (Warehouse::all()->count == 0) {
+            if (Warehouse::all()->count() == 0) {
                 $warehouse = new Warehouse;
             } else {
                 $warehouse = Warehouse::find(1);

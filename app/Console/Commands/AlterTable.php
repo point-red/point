@@ -48,10 +48,8 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `users` DROP FOREIGN KEY `users_branch_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `users` DROP FOREIGN KEY `users_warehouse_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `users` DROP COLUMN `branch_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `users` DROP COLUMN `warehouse_id`');
+            DB::connection('tenant')->statement('ALTER TABLE `branch_user` ADD COLUMN `is_default` bool default false');
+            DB::connection('tenant')->statement('ALTER TABLE `user_warehouse` ADD COLUMN `is_default` bool default false');
         }
     }
 }

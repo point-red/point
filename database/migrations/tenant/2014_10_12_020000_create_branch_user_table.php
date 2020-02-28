@@ -17,6 +17,7 @@ class CreateBranchUserTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id')->index();
             $table->unsignedInteger('branch_id')->index();
+            $table->boolean('is_default')->default(false);
             $table->timestamp('created_at');
 
             $table->unique(['user_id', 'branch_id']);

@@ -59,6 +59,6 @@ class User extends MasterModel
      */
     public function branches()
     {
-        return $this->belongsToMany(Branch::class, 'branch_user', 'branch_id', 'user_id');
+        return $this->belongsToMany(Branch::class, 'branch_user', 'user_id', 'branch_id');
     }
 }

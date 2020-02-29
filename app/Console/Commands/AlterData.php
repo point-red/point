@@ -72,8 +72,14 @@ class AlterData extends Command
                 $warehouse = Warehouse::find(1);
             }
 
+            $warehouse->branch_id = $branch->id;
             $warehouse->name = 'MAIN WAREHOUSE';
             $warehouse->save();
+
+            foreach (Warehouse::all() as $warehouse) {
+                $warehouse->branch_id = $branch->id;
+                $warehouse->save();
+            }
         }
     }
 }

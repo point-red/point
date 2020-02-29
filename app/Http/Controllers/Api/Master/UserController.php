@@ -71,7 +71,10 @@ class UserController extends ApiController
     public function update(UpdateUserRequest $request, $id)
     {
         $tenantUser = TenantUser::findOrFail($id);
-        $tenantUser->name = $request->name;
+        $tenantUser->first_name = $request->first_name;
+        $tenantUser->last_name = $request->last_name;
+        $tenantUser->address = $request->address;
+        $tenantUser->phone = $request->phone;
         $tenantUser->email = $request->email;
         $tenantUser->save();
 

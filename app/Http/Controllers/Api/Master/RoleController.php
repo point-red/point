@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Auth\Role;
+use App\Model\Master\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
@@ -21,6 +23,12 @@ class RoleController extends Controller
         $roles = Role::eloquentFilter($request);
 
         $roles = pagination($roles, $request->get('limit'));
+
+        foreach ($roles as $role) {
+            $role->users = User::whereHas('roles', function (Builder $query) use ($role) {
+                $query->where('role_id', '=', $role->id);
+            })->get();
+        }
 
         return new ApiCollection($roles);
     }

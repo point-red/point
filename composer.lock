@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8cca346221fc3a0762f1896dce8f3dac",
+    "content-hash": "794a0dedb691ad195361e40f5e3b89a9",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -4521,16 +4521,16 @@
         },
         {
             "name": "spatie/laravel-permission",
-            "version": "3.6.0",
+            "version": "3.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-permission.git",
-                "reference": "0a063ce206c7545737d19c1beda12003fc66e4e9"
+                "reference": "ac0fc4cd809b1fe7ecbe9876e03bb5849601bf66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/0a063ce206c7545737d19c1beda12003fc66e4e9",
-                "reference": "0a063ce206c7545737d19c1beda12003fc66e4e9",
+                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/ac0fc4cd809b1fe7ecbe9876e03bb5849601bf66",
+                "reference": "ac0fc4cd809b1fe7ecbe9876e03bb5849601bf66",
                 "shasum": ""
             },
             "require": {
@@ -4585,7 +4585,7 @@
                 "security",
                 "spatie"
             ],
-            "time": "2020-01-17T16:18:51+00:00"
+            "time": "2020-02-26T16:23:16+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",

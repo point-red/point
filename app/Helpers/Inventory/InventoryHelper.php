@@ -85,25 +85,6 @@ class InventoryHelper
             throw new StockNotEnoughException($item);
         }
 
-        $lastTotalValue = 0;
-        if ($lastInventory) {
-            $inventory->total_quantity += $lastInventory->total_quantity;
-            $lastTotalValue = $lastInventory->total_value;
-        }
-
-        // if quantity > increase stock else decrease stock
-        if ($quantity > 0) {
-            $inventory->total_value = $lastTotalValue + ($quantity * $inventory->price);
-        } else {
-            $inventory->total_value = $inventory->total_quantity * $lastInventory->cogs;
-        }
-
-        if ($inventory->quantity > 0) {
-            $inventory->cogs = $inventory->total_value / $inventory->total_quantity;
-        } else {
-            $inventory->cogs = $lastInventory->cogs;
-        }
-
         $inventory->save();
     }
 
@@ -228,14 +209,13 @@ class InventoryHelper
 
         $lastInventory = self::getLastReference($itemId, $warehouseId, $options);
 
-        if (! $lastInventory && ! $price) {
+        if (! $lastInventory) {
             throw new ItemQuantityInvalidException($item);
         }
 
-        $item->stock = $quantity;
-        $item->save();
-
-        $cogs = $price ?? $lastInventory->cogs;
+        // TODO: update quantity difference
+        // $item->stock = $quantity;
+        // $item->save();
 
         $inventory = new Inventory;
         $inventory->form_id = $formId;
@@ -243,9 +223,6 @@ class InventoryHelper
         $inventory->item_id = $itemId;
         $inventory->quantity = $quantity;
         $inventory->price = 0;
-        $inventory->cogs = $cogs;
-        $inventory->total_quantity = $quantity;
-        $inventory->total_value = $quantity * $cogs;
         $inventory->is_audit = true;
         $inventory->save();
     }

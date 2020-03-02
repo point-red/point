@@ -54,19 +54,6 @@ class Form extends PointModel
     }
 
     /**
-     * The approvals that belong to the form.
-     */
-    public function approvals()
-    {
-        return $this->hasMany(FormApproval::class);
-    }
-
-    public function cancellations()
-    {
-        return $this->hasMany(FormCancellation::class);
-    }
-
-    /**
      * Get all of the owning formable models.
      */
     public function formable()
@@ -77,6 +64,16 @@ class Form extends PointModel
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function requestApprovalTo()
+    {
+        return $this->belongsTo(User::class, 'request_approval_to');
+    }
+
+    public function approvalBy()
+    {
+        return $this->belongsTo(User::class, 'approval_by');
     }
 
     public function saveData($data, $transaction, $options = [])
@@ -96,37 +93,11 @@ class Form extends PointModel
             $this->increment = $data['old_increment'];
         }
 
+        if (array_key_exists('request_approval_to', $data)) {
+            $this->request_approval_to = $data['request_approval_to'];
+        }
+
         $this->save();
-
-        if (array_key_exists('approver_id', $data)) {
-            $this->setApproval($data['approver_id'] ?? null, $options);
-        }
-    }
-
-    private function setApproval($approverId, $options = [])
-    {
-        if ($approverId) {
-            $formApproval = new FormApproval;
-            $formApproval->requested_to = $approverId;
-            $formApproval->requested_at = now();
-            $formApproval->requested_by = auth()->user()->id;
-            $formApproval->expired_at = date('Y-m-d H:i:s', strtotime('+7 days'));
-            $formApproval->token = substr(md5(now()), 0, 24);
-
-            if (array_key_exists('auto_approve', $options)) {
-                if ($formApproval->requested_by == $formApproval->requested_to && $options['auto_approve'] == true) {
-                    $formApproval->approval_at = $formApproval->requested_at;
-                    $formApproval->approved = true;
-                    $this->approved = true;
-                }
-            }
-
-            $this->approvals()->save($formApproval);
-            $this->save();
-        } else {
-            $this->approved = true;
-            $this->save();
-        }
     }
 
     public function archive($editedNotes = '')
@@ -145,7 +116,7 @@ class Form extends PointModel
     public function cancel()
     {
         // Cancel form
-        $this->canceled = true;
+        $this->cancellation_status = 1;
         $this->save();
 
         // Remove relationship with journal and inventory

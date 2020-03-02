@@ -2,15 +2,12 @@
 
 namespace App\Model\Manufacture\ManufactureOutput;
 
-use App\Exceptions\IsReferencedException;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
-use App\Model\FormApproval;
 use App\Model\Manufacture\ManufactureMachine\ManufactureMachine;
 use App\Model\Manufacture\ManufactureProcess\ManufactureProcess;
 use App\Model\Manufacture\ManufactureInput\ManufactureInput;
 use App\Model\TransactionModel;
-use Carbon\Carbon;
 
 class ManufactureOutput extends TransactionModel
 {
@@ -54,11 +51,6 @@ class ManufactureOutput extends TransactionModel
         return $this->belongsTo(ManufactureInput::class);
     }
 
-    public function approvers()
-    {
-        return $this->hasManyThrough(FormApproval::class, Form::class, 'formable_id', 'form_id')->where('formable_type', self::$morphName);
-    }
-
     public function isAllowedToUpdate()
     {
         $this->updatedFormNotArchived();
@@ -84,7 +76,7 @@ class ManufactureOutput extends TransactionModel
         $output->finishedGoods()->saveMany($finishedGoods);
 
         $form = new Form;
-        $form->approved = true;
+        $form->approval_status = 1;
         $form->saveData($data, $output);
 
         foreach ($finishedGoods as $finishedGood) {

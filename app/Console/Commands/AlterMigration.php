@@ -140,8 +140,6 @@ class AlterMigration extends Command
             // Transaction
             // ===============================================================
             self::update('2019_01_01_200000_create_forms_table');
-            self::update('2019_01_01_200001_create_form_approvals_table');
-            self::update('2019_01_01_200002_create_form_cancellations_table');
             // Mutation Table
             self::update('2019_01_01_200010_create_journals_table');
             self::update('2019_01_01_200011_create_inventories_table');

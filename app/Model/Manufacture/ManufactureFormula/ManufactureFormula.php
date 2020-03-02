@@ -4,11 +4,9 @@ namespace App\Model\Manufacture\ManufactureFormula;
 
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
-use App\Model\FormApproval;
 use App\Model\Manufacture\ManufactureProcess\ManufactureProcess;
 use App\Model\Manufacture\ManufactureInput\ManufactureInput;
 use App\Model\TransactionModel;
-use Carbon\Carbon;
 
 class ManufactureFormula extends TransactionModel
 {

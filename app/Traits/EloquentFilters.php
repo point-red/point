@@ -150,7 +150,7 @@ trait EloquentFilters
      * @param $values
      *
      * Example to show only active form
-     * ?filter_not_equal[form.canceled]=1
+     * ?filter_not_equal[form.cancellation_status]=1
      */
     public function scopeFilterNotEqual($query, $values)
     {

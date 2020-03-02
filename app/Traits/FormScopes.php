@@ -26,7 +26,7 @@ trait FormScopes
     public function scopeApprovalApproved($query)
     {
         $query->whereHas('form', function ($q) {
-            $q->where('approved', true);
+            $q->where('approval_status', 1);
         });
     }
 
@@ -34,7 +34,7 @@ trait FormScopes
     public function scopeApprovalRejected($query)
     {
         $query->whereHas('form', function ($q) {
-            $q->where('approved', false);
+            $q->where('approval_status', -1);
         });
     }
 
@@ -42,36 +42,35 @@ trait FormScopes
     public function scopeApprovalPending($query)
     {
         $query->whereHas('form', function ($q) {
-            $q->whereNull('approved');
+            $q->where('approval_status', 0);
         });
     }
 
     public function scopeCancellationApproved($query)
     {
         $query->whereHas('form', function ($q) {
-            $q->where('canceled', true);
+            $q->where('cancellation_status', 1);
         });
     }
 
     public function scopeCancellationRejected($query)
     {
         $query->whereHas('form', function ($q) {
-            $q->where('canceled', false);
+            $q->where('cancellation_status', -1);
         });
     }
 
     public function scopeCancellationPending($query)
     {
         $query->whereHas('form', function ($q) {
-            $q->whereNull('canceled');
+            $q->where('cancellation_status', 0);
         });
     }
 
     public function scopeNotCanceled($query)
     {
         $query->whereHas('form', function ($q) {
-            $q->whereNull('canceled');
-            $q->orWhere('canceled', false);
+            $q->where('cancellation_status', '!=', '-1');
         });
     }
 

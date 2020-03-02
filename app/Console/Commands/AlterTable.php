@@ -43,7 +43,7 @@ class AlterTable extends Command
             $db = env('DB_DATABASE').'_'.strtolower($project->code);
 
             $this->line('Clone '.$project->code);
-//            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
             $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();

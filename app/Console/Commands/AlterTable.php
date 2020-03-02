@@ -48,34 +48,12 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `forms` DROP COLUMN `approved`');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` DROP COLUMN `canceled`');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP FOREIGN KEY `manufacture_output_finished_goods_input_finish_good_id_foreign`');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP COLUMN `input_finish_good_id`');
 
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `request_approval_to` int(10) unsigned');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD INDEX (`request_approval_to`)');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD CONSTRAINT `forms_request_approval_to_foreign` FOREIGN KEY (`request_approval_to`) REFERENCES users (`id`) ON DELETE RESTRICT');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `approval_by` int(10) unsigned');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD INDEX (`approval_by`)');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD CONSTRAINT `forms_approval_by_foreign` FOREIGN KEY (`approval_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `approval_at` datetime default null');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `approval_reason` text');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `approval_status` tinyint(4) default 0');
-
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `request_cancellation_to` int(10) unsigned');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD INDEX (`request_cancellation_to`)');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD CONSTRAINT `forms_request_cancellation_to_foreign` FOREIGN KEY (`request_cancellation_to`) REFERENCES users (`id`) ON DELETE RESTRICT');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `request_cancellation_by` int(10) unsigned');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD INDEX (`request_cancellation_by`)');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD CONSTRAINT `forms_request_cancellation_by_foreign` FOREIGN KEY (`request_cancellation_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `request_cancellation_at` datetime default null');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `request_cancellation_reason` text');
-
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `cancellation_approval_by` int(10) unsigned');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD INDEX (`cancellation_approval_by`)');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD CONSTRAINT `forms_cancellation_approval_by_foreign` FOREIGN KEY (`cancellation_approval_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `cancellation_approval_at` datetime default null');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `cancellation_approval_reason` text');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `cancellation_status` tinyint(4) default 0');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` ADD COLUMN `input_finished_good_id` int(10) unsigned after `manufacture_output_id`');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` ADD INDEX (`input_finished_good_id`)');
+            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` ADD CONSTRAINT `forms_input_finished_good_id_foreign` FOREIGN KEY (`input_finished_good_id`) REFERENCES manufacture_input_finished_goods (`id`) ON DELETE RESTRICT');
         }
     }
 }

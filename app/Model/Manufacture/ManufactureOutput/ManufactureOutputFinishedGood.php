@@ -16,7 +16,7 @@ class ManufactureOutputFinishedGood extends TransactionModel
     protected $fillable = [
         'item_id',
         'warehouse_id',
-        'input_finish_good_id',
+        'input_finished_good_id',
         'item_name',
         'warehouse_name',
         'quantity',

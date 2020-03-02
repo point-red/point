@@ -2,10 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Model\Accounting\CutOff;
+use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
 use App\Model\Master\Branch;
 use App\Model\Master\PricingGroup;
+use App\Model\Master\User;
 use App\Model\Master\Warehouse;
 use App\Model\Project\Project;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -50,6 +54,30 @@ class AlterData extends Command
             $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
+
+            $formulas = ManufactureFormula::all();
+            foreach ($formulas as $formula) {
+                if ($formula->form->request_approval_to == null) {
+                    $formula->form->request_approval_to = User::first()->id;
+                    $formula->form->save();
+                }
+            }
+
+            $cutOffs = CutOff::all();
+            foreach ($cutOffs as $cutOff) {
+                if ($cutOff->form->request_approval_to == null) {
+                    $cutOff->form->request_approval_to = User::first()->id;
+                    $cutOff->form->save();
+                }
+            }
+
+            $purchaseRequests = PurchaseRequest::all();
+            foreach ($purchaseRequests as $purchaseRequest) {
+                if ($purchaseRequest->form->request_approval_to == null) {
+                    $purchaseRequest->form->request_approval_to = User::first()->id;
+                    $purchaseRequest->form->save();
+                }
+            }
 
             if (PricingGroup::all()->count() == 0) {
                 $pricingGroup = new PricingGroup;

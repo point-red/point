@@ -222,8 +222,10 @@ class InventoryHelper
         $inventory->warehouse_id = $warehouseId;
         $inventory->item_id = $itemId;
         $inventory->quantity = $quantity;
-        $inventory->price = 0;
         $inventory->is_audit = true;
+        $inventory->quantity_reference = $options['quantity_reference'];
+        $inventory->unit_reference = $options['unit_reference'];
+        $inventory->converter_reference = $options['converter_reference'];
         $inventory->save();
     }
 

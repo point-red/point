@@ -2,10 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Model\Master\Item;
-use App\Model\Master\ItemUnit;
+use App\Model\Accounting\CutOff;
+use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
+use App\Model\Master\Branch;
 use App\Model\Master\PricingGroup;
+use App\Model\Master\User;
+use App\Model\Master\Warehouse;
 use App\Model\Project\Project;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -51,47 +55,59 @@ class AlterData extends Command
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
 
+            $formulas = ManufactureFormula::all();
+            foreach ($formulas as $formula) {
+                if ($formula->form->request_approval_to == null) {
+                    $formula->form->request_approval_to = User::first()->id;
+                    $formula->form->save();
+                }
+            }
+
+            $cutOffs = CutOff::all();
+            foreach ($cutOffs as $cutOff) {
+                if ($cutOff->form->request_approval_to == null) {
+                    $cutOff->form->request_approval_to = User::first()->id;
+                    $cutOff->form->save();
+                }
+            }
+
+            $purchaseRequests = PurchaseRequest::all();
+            foreach ($purchaseRequests as $purchaseRequest) {
+                if ($purchaseRequest->form->request_approval_to == null) {
+                    $purchaseRequest->form->request_approval_to = User::first()->id;
+                    $purchaseRequest->form->save();
+                }
+            }
+
             if (PricingGroup::all()->count() == 0) {
                 $pricingGroup = new PricingGroup;
                 $pricingGroup->label = 'DEFAULT';
                 $pricingGroup->save();
             }
 
-            foreach (Item::all() as $item) {
-                $this->line($item->name . ' = ' . $item->units->count());
-                if ($item->units->count() == 0) {
-                    $unit = new ItemUnit;
-                    $unit->name = 'PCS';
-                    $unit->label = 'PCS';
-                    $unit->converter = 1;
-                    $unit->item_id = $item->id;
-                    $unit->save();
-
-                    $item->unit_default = $unit->id;
-                    $item->unit_default_purchase = $unit->id;
-                    $item->unit_default_sales = $unit->id;
-                    $item->save();
-                }
+            if (Branch::all()->count() == 0) {
+                $branch = new Branch;
+            } else {
+                $branch = Branch::find(1);
             }
 
-//            $cutOffInventories = CutOffInventory::all();
-//            foreach ($cutOffInventories as $cutOffInventory) {
-//                if (!ItemUnit::where('item_id', $cutOffInventory->item_id)->first()) {
-//                    $itemUnit = new ItemUnit();
-//                    $itemUnit->item_id = $cutOffInventory->item_id;
-//                    $itemUnit->label = $cutOffInventory->unit;
-//                    $itemUnit->name = $cutOffInventory->unit;
-//                    $itemUnit->converter = $cutOffInventory->converter;
-//                    $itemUnit->created_by = $cutOffInventory->cutOff->form->created_by;
-//                    $itemUnit->updated_by = $cutOffInventory->cutOff->form->updated_by;
-//                    $itemUnit->save();
-//
-//                    $cutOffInventory->item->unit_default = $itemUnit->id;
-//                    $cutOffInventory->item->unit_default_purchase = $itemUnit->id;
-//                    $cutOffInventory->item->unit_default_sales = $itemUnit->id;
-//                    $cutOffInventory->item->save();
-//                }
-//            }
+            $branch->name = 'CENTRAL';
+            $branch->save();
+
+            if (Warehouse::all()->count() == 0) {
+                $warehouse = new Warehouse;
+            } else {
+                $warehouse = Warehouse::find(1);
+            }
+
+            $warehouse->branch_id = $branch->id;
+            $warehouse->name = 'MAIN WAREHOUSE';
+            $warehouse->save();
+
+            foreach (Warehouse::all() as $warehouse) {
+                $warehouse->branch_id = $branch->id;
+                $warehouse->save();
+            }
         }
     }
 }

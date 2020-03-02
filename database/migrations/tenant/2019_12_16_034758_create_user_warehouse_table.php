@@ -17,6 +17,7 @@ class CreateUserWarehouseTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id')->index();
             $table->unsignedInteger('warehouse_id')->index();
+            $table->boolean('is_default')->default(false);
             $table->timestamp('created_at');
 
             $table->unique(['user_id', 'warehouse_id']);

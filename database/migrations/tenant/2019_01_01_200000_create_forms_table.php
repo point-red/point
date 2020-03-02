@@ -15,6 +15,7 @@ class CreateFormsTable extends Migration
     {
         Schema::create('forms', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('branch_id')->index()->nullable();
             $table->datetime('date');
             $table->string('number')->nullable()->unique();
             $table->string('edited_number')->nullable();
@@ -31,14 +32,37 @@ class CreateFormsTable extends Migration
             $table->unsignedInteger('formable_id')->index();
             $table->string('formable_type');
 
-            // Status approval
-            // null = pending, true = approved, false = rejected
-            $table->boolean('approved')->nullable()->default(null);
+            // approval status
+            // 0 = pending, 1 = approved, -1 = rejected
+            // when form created
+            $table->unsignedInteger('request_approval_to')->nullable()->index();
+            // when approve / rejected
+            $table->unsignedInteger('approval_by')->nullable()->index();
+            $table->datetime('approval_at')->nullable();
+            $table->string('approval_reason')->nullable();
+            $table->tinyInteger('approval_status')->default(0);
 
-            // Status cancellation
-            // null = pending, true = approved, false = rejected
-            $table->boolean('canceled')->nullable()->default(null);
+            $table->foreign('request_approval_to')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('approval_by')->references('id')->on('users')->onDelete('restrict');
 
+            // cancellation status
+            // 0 = pending, 1 = approved, -1 = rejected
+            // when request cancel
+            $table->unsignedInteger('request_cancellation_to')->nullable()->index();
+            $table->unsignedInteger('request_cancellation_by')->nullable()->index();
+            $table->datetime('request_cancellation_at')->nullable();
+            $table->string('request_cancellation_reason')->nullable();
+            // when approve / rejected
+            $table->datetime('cancellation_approval_at')->nullable();
+            $table->unsignedInteger('cancellation_approval_by')->nullable()->index();
+            $table->unsignedInteger('cancellation_approval_reason')->nullable()->index();
+            $table->tinyInteger('cancellation_status')->default(0);
+
+            $table->foreign('request_cancellation_to')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('request_cancellation_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('cancellation_approval_by')->references('id')->on('users')->onDelete('restrict');
+
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('restrict');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
 

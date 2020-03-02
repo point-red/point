@@ -4,7 +4,6 @@ namespace App\Model\Purchase\PurchaseRequest;
 
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
-use App\Model\FormApproval;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
@@ -66,11 +65,6 @@ class PurchaseRequest extends TransactionModel
     public function employee()
     {
         return $this->belongsTo(Employee::class);
-    }
-
-    public function approvers()
-    {
-        return $this->hasManyThrough(FormApproval::class, Form::class, 'formable_id', 'form_id')->where('formable_type', self::$morphName);
     }
 
     public function purchaseOrders()

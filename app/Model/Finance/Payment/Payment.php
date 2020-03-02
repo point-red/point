@@ -77,7 +77,7 @@ class Payment extends TransactionModel
         $form = new Form;
         $form->fill($data);
         $form->done = true;
-        $form->approved = true;
+        $form->approval_status = 1;
 
         $form->formable_id = $payment->id;
         $form->formable_type = self::$morphName;

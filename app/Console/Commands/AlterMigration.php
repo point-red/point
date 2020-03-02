@@ -53,7 +53,7 @@ class AlterMigration extends Command
             // USER & ROLE - PERMISSION
             self::update('2014_10_12_000000_create_tenant_users_table');
             self::update('2014_10_12_010000_create_branches_table');
-            self::update('2014_10_12_020000_create_branch_user_tables');
+            self::update('2014_10_12_020000_create_branch_user_table');
             self::update('2014_10_12_100000_create_permission_tables');
             // KPI TEMPLATES
             self::update('2019_01_01_100000_create_kpi_templates_table');
@@ -140,8 +140,6 @@ class AlterMigration extends Command
             // Transaction
             // ===============================================================
             self::update('2019_01_01_200000_create_forms_table');
-            self::update('2019_01_01_200001_create_form_approvals_table');
-            self::update('2019_01_01_200002_create_form_cancellations_table');
             // Mutation Table
             self::update('2019_01_01_200010_create_journals_table');
             self::update('2019_01_01_200011_create_inventories_table');

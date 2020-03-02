@@ -12,6 +12,7 @@ class Warehouse extends MasterModel
     protected $appends = ['label'];
 
     protected $fillable = [
+        'branch_id',
         'code',
         'name',
         'address',
@@ -38,5 +39,10 @@ class Warehouse extends MasterModel
     public function inventories()
     {
         return $this->hasMany(Inventory::class, 'warehouse_id');
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

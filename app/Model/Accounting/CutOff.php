@@ -3,7 +3,6 @@
 namespace App\Model\Accounting;
 
 use App\Model\Form;
-use App\Model\FormApproval;
 use App\Model\TransactionModel;
 
 class CutOff extends TransactionModel

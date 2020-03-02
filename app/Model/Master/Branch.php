@@ -16,6 +16,6 @@ class Branch extends MasterModel
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'branch_user', 'user_id', 'branch_id');
+        return $this->belongsToMany(User::class, 'branch_user', 'branch_id', 'user_id')->withPivot(['is_default']);
     }
 }

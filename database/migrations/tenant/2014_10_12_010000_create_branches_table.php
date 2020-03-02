@@ -26,6 +26,11 @@ class CreateBranchesTable extends Migration
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('archived_by')->references('id')->on('users')->onDelete('restrict');
         });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->unsignedInteger('branch_id')->index()->nullable();
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('set null');
+        });
     }
 
     /**
@@ -35,6 +40,10 @@ class CreateBranchesTable extends Migration
      */
     public function down()
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign('users_branch_id_foreign');
+            $table->dropColumn('branch_id');
+        });
         Schema::dropIfExists('branches');
     }
 }

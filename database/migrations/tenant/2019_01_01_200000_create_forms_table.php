@@ -55,8 +55,8 @@ class CreateFormsTable extends Migration
             // when approve / rejected
             $table->datetime('cancellation_approval_at')->nullable();
             $table->unsignedInteger('cancellation_approval_by')->nullable()->index();
-            $table->unsignedInteger('cancellation_approval_reason')->nullable()->index();
-            $table->tinyInteger('cancellation_status')->default(0);
+            $table->string('cancellation_approval_reason')->nullable();
+            $table->tinyInteger('cancellation_status')->nullable();
 
             $table->foreign('request_cancellation_to')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('request_cancellation_by')->references('id')->on('users')->onDelete('restrict');

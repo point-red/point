@@ -70,7 +70,7 @@ trait FormScopes
     public function scopeNotCanceled($query)
     {
         $query->whereHas('form', function ($q) {
-            $q->where('cancellation_status', '!=', '-1');
+            $q->whereNull('cancellation_status')->orWhere('cancellation_status', '!=', '1');
         });
     }
 

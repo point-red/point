@@ -649,6 +649,8 @@ trait EloquentFilters
                     $query->cancellationRejected();
                 } elseif ($value === 'cancellationPending') {
                     $query->cancellationPending();
+                } elseif ($value === 'notCanceled') {
+                    $query->notCanceled();
                 } elseif ($value === 'notArchived') {
                     $query->notArchived();
                 } elseif ($value === 'archived') {

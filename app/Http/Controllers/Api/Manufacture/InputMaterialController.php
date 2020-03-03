@@ -9,7 +9,6 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Form;
 use App\Model\Manufacture\ManufactureInput\ManufactureInput;
-use App\Model\Manufacture\ManufactureInput\ManufactureInputRawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -144,15 +143,20 @@ class InputMaterialController extends Controller
      *
      * @param Request $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return ApiResource
      */
     public function destroy(Request $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $manufactureInput = ManufactureInput::findOrFail($id);
+
         $manufactureInput->isAllowedToDelete();
 
-        $response = $manufactureInput->requestCancel($request);
+        $manufactureInput->requestCancel($request)
 
-        return response()->json([], 204);
+        DB::connection('tenant')->commit();;
+
+        return new ApiResource($manufactureInput);
     }
 }

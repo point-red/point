@@ -174,4 +174,9 @@ class InventoryHelper
 
         return $inventories->first()->remaining;
     }
+
+    public static function delete($formId)
+    {
+        Inventory::where('form_id', '=', $formId)->delete();
+    }
 }

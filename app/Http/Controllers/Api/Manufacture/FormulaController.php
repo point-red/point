@@ -142,20 +142,20 @@ class FormulaController extends Controller
      *
      * @param Request $request
      * @param  int $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return ApiResource
      */
     public function destroy(Request $request, $id)
     {
-        $manufactureFormula = ManufactureFormula::findOrFail($id);
-
         DB::connection('tenant')->beginTransaction();
 
-        $manufactureFormula->form->delete();
+        $formula = ManufactureFormula::findOrFail($id);
 
-        $manufactureFormula->delete();
+        $formula->isAllowedToDelete();
+
+        $formula->requestCancel($request);
 
         DB::connection('tenant')->commit();
 
-        return response()->json([], 204);
+        return new ApiResource($formula);
     }
 }

@@ -36,6 +36,20 @@ class FetchController extends Controller
                 $response->tenant_owner_id = $project->owner_id;
                 $response->is_owner = $project->owner_id == $request->user()->id;
                 $response->permissions = tenant($request->user()->id)->getPermissions();
+                $response->branches = tenant($request->user()->id)->branches;
+                $response->branch = null;
+                $response->warehouses = tenant($request->user()->id)->warehouses;
+                $response->warehouse = null;
+                foreach ($response->branches as $branch) {
+                    if ($branch->pivot->is_default) {
+                        $response->branch = $branch;
+                    }
+                }
+                foreach ($response->warehouses as $warehouse) {
+                    if ($warehouse->pivot->is_default) {
+                        $response->warehouse = $warehouse;
+                    }
+                }
             }
         }
 

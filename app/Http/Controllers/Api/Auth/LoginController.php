@@ -62,6 +62,20 @@ class LoginController extends Controller
                 $response->tenant_code = $project->code;
                 $response->tenant_name = $project->name;
                 $response->permissions = tenant($user->id)->getPermissions();
+                $response->branches = tenant($user->id)->branches;
+                $response->branch = null;
+                $response->warehouses = tenant($user->id)->warehouses;
+                $response->warehouse = null;
+                foreach ($response->branches as $branch) {
+                    if ($branch->pivot->is_default) {
+                        $response->branch = $branch;
+                    }
+                }
+                foreach ($response->warehouses as $warehouse) {
+                    if ($warehouse->pivot->is_default) {
+                        $response->warehouse = $warehouse;
+                    }
+                }
             }
         }
 

@@ -12,6 +12,8 @@ class Branch extends MasterModel
 
     protected $fillable = [
         'name',
+        'address',
+        'phone',
     ];
 
     public function users()

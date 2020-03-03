@@ -33,7 +33,7 @@ class Warehouse extends MasterModel
      */
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_warehouse', 'warehouse_id', 'user_id');
+        return $this->belongsToMany(User::class, 'user_warehouse')->withPivot(['is_default']);;
     }
 
     public function inventories()

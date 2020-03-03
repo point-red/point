@@ -51,7 +51,7 @@ class User extends MasterModel
      */
     public function warehouses()
     {
-        return $this->belongsToMany(Warehouse::class, 'user_warehouse');
+        return $this->belongsToMany(Warehouse::class, 'user_warehouse')->withPivot(['is_default']);
     }
 
     /**

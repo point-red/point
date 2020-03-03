@@ -61,7 +61,7 @@ class InventoryAudit extends TransactionModel
     {
         foreach ($inventoryAudit->items as $inventoryAuditItem) {
             InventoryHelper::audit(
-                $inventoryAudit->form->id,
+                $inventoryAudit->form,
                 $inventoryAudit->warehouse_id,
                 $inventoryAuditItem->item_id,
                 $inventoryAuditItem->quantity,

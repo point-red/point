@@ -123,22 +123,15 @@ class InventoryHelper
     {
         $item = Item::where('id', $itemId)->first();
 
-        if (! $lastInventory) {
-            throw new ItemQuantityInvalidException($item);
+        $stock = self::getCurrentStock($item, $form->date, $warehouseId, $options);
+
+        $diff = $quantity - $stock;
+
+        if ($quantity > $stock) {
+            self::insert($form, $warehouseId, $itemId, abs($diff), $price, $options);
+        } else if ($quantity < $stock) {
+            self::insert($form, $warehouseId, $itemId, abs($diff) * -1, 0, $options);
         }
-
-        // TODO: update quantity difference
-        // $item->stock = $quantity;
-        // $item->save();
-
-        $inventory = new Inventory;
-        $inventory->form_id = $form->id;
-        $inventory->warehouse_id = $warehouseId;
-        $inventory->item_id = $itemId;
-        $inventory->quantity = $quantity;
-        $inventory->price = 0;
-        $inventory->is_audit = true;
-        $inventory->save();
     }
 
     /**

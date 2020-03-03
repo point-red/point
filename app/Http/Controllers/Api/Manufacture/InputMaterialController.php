@@ -153,9 +153,9 @@ class InputMaterialController extends Controller
 
         $manufactureInput->isAllowedToDelete();
 
-        $manufactureInput->requestCancel($request)
+        $manufactureInput->requestCancel($request);
 
-        DB::connection('tenant')->commit();;
+        DB::connection('tenant')->commit();
 
         return new ApiResource($manufactureInput);
     }

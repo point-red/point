@@ -106,7 +106,7 @@ class ManufactureInput extends TransactionModel
             $options['quantity_reference'] = $rawMaterial->quantity;
             $options['unit_reference'] = $rawMaterial->unit;
             $options['converter_reference'] = $rawMaterial->converter;
-            InventoryHelper::decrease($form->id, $rawMaterial->warehouse_id, $rawMaterial->item_id, $rawMaterial->quantity * $rawMaterial->converter, $options);
+            InventoryHelper::decrease($form, $rawMaterial->warehouse_id, $rawMaterial->item_id, $rawMaterial->quantity * $rawMaterial->converter, $options);
         }
 
         return $input;

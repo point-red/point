@@ -39,7 +39,7 @@ class CreateFormsTable extends Migration
             // when approve / rejected
             $table->unsignedInteger('approval_by')->nullable()->index();
             $table->datetime('approval_at')->nullable();
-            $table->string('approval_reason')->nullable();
+            $table->text('approval_reason')->nullable();
             $table->tinyInteger('approval_status')->default(0);
 
             $table->foreign('request_approval_to')->references('id')->on('users')->onDelete('restrict');
@@ -51,12 +51,12 @@ class CreateFormsTable extends Migration
             $table->unsignedInteger('request_cancellation_to')->nullable()->index();
             $table->unsignedInteger('request_cancellation_by')->nullable()->index();
             $table->datetime('request_cancellation_at')->nullable();
-            $table->string('request_cancellation_reason')->nullable();
+            $table->text('request_cancellation_reason')->nullable();
             // when approve / rejected
             $table->datetime('cancellation_approval_at')->nullable();
             $table->unsignedInteger('cancellation_approval_by')->nullable()->index();
-            $table->unsignedInteger('cancellation_approval_reason')->nullable()->index();
-            $table->tinyInteger('cancellation_status')->default(0);
+            $table->text('cancellation_approval_reason')->nullable();
+            $table->tinyInteger('cancellation_status')->nullable();
 
             $table->foreign('request_cancellation_to')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('request_cancellation_by')->references('id')->on('users')->onDelete('restrict');

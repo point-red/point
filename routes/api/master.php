@@ -4,6 +4,7 @@ Route::prefix('master')->namespace('Master')->group(function () {
     // User, Role and Permission
     Route::post('user-warehouses/attach', 'UserWarehouseController@attach');
     Route::post('user-warehouses/detach', 'UserWarehouseController@detach');
+    Route::patch('user-warehouses/update-default', 'UserWarehouseController@updateDefault');
     Route::apiResource('users', 'UserController');
     Route::get('roles/{roles_id}/permissions', 'RolePermissionController@index');
     Route::patch('roles/{roles_id}/permissions', 'RolePermissionController@togglePermission');

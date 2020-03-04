@@ -12,10 +12,12 @@ class Branch extends MasterModel
 
     protected $fillable = [
         'name',
+        'address',
+        'phone',
     ];
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'branch_user', 'branch_id', 'user_id')->withPivot(['is_default']);
+        return $this->belongsToMany(User::class, 'branch_user')->withPivot(['is_default']);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Model;
 
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
+use App\Model\Master\Branch;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\Master\User;
@@ -66,9 +67,29 @@ class Form extends PointModel
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
     public function requestApprovalTo()
     {
         return $this->belongsTo(User::class, 'request_approval_to');
+    }
+
+    public function requestCancellationTo()
+    {
+        return $this->belongsTo(User::class, 'request_cancellation_to');
+    }
+
+    public function requestCancellationBy()
+    {
+        return $this->belongsTo(User::class, 'request_cancellation_by');
+    }
+
+    public function cancellationBy()
+    {
+        return $this->belongsTo(User::class, 'cancellation_by');
     }
 
     public function approvalBy()
@@ -83,6 +104,15 @@ class Form extends PointModel
         $this->fill($data);
         $this->formable_id = $transaction->id;
         $this->formable_type = $transaction::$morphName;
+        // set branch
+        $branches = tenant(auth()->user()->id)->branches;
+        $this->branch_id = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $this->branch_id = $branch->id;
+            }
+        }
+
         $this->generateFormNumber(
             $data['number'] ?? $transaction->defaultNumberPrefix.$defaultNumberPostfix,
             $transaction->customer_id,

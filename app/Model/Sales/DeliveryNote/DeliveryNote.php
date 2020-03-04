@@ -129,7 +129,7 @@ class DeliveryNote extends TransactionModel
             $options['quantity_reference'] = $item->quantity;
             $options['unit_reference'] = $item->unit;
             $options['converter_reference'] = $item->converter;
-            InventoryHelper::decrease($form->id, $deliveryNote->warehouse_id, $item->item_id, $item->quantity, $options);
+            InventoryHelper::decrease($form, $deliveryNote->warehouse_id, $item->item_id, $item->quantity, $options);
         }
 
         return $deliveryNote;

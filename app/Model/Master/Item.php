@@ -142,7 +142,7 @@ class Item extends MasterModel
                     $options['converter_reference'] = 1;
                     $openingStockWarehouse->save();
 
-                    InventoryHelper::increase($form->id, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price'], $options);
+                    InventoryHelper::increase($form, $osWarehouse['warehouse_id'], $item->id, $osWarehouse['quantity'], $osWarehouse['price'], $options);
                 }
             }
         }

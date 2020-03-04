@@ -92,22 +92,7 @@ class ManufactureInput extends TransactionModel
         $input->finishedGoods()->saveMany($finishedGoods);
 
         $form = new Form;
-        $form->approval_status = 1;
         $form->saveData($data, $input);
-
-        foreach ($rawMaterials as $rawMaterial) {
-            $options = [];
-            if ($rawMaterial->expiry_date) {
-                $options['expiry_date'] = $rawMaterial->expiry_date;
-            }
-            if ($rawMaterial->production_number) {
-                $options['production_number'] = $rawMaterial->production_number;
-            }
-            $options['quantity_reference'] = $rawMaterial->quantity;
-            $options['unit_reference'] = $rawMaterial->unit;
-            $options['converter_reference'] = $rawMaterial->converter;
-            InventoryHelper::decrease($form->id, $rawMaterial->warehouse_id, $rawMaterial->item_id, $rawMaterial->quantity * $rawMaterial->converter, $options);
-        }
 
         return $input;
     }

@@ -176,7 +176,7 @@ class PurchaseReceive extends TransactionModel
                 $options['quantity_reference'] = $item->quantity;
                 $options['unit_reference'] = $item->unit;
                 $options['converter_reference'] = $item->converter;
-                InventoryHelper::increase($form->id, $purchaseReceive->warehouse_id, $item->item_id, $item->quantity, $price, $options);
+                InventoryHelper::increase($form, $purchaseReceive->warehouse_id, $item->item_id, $item->quantity, $price, $options);
             }
         }
     }

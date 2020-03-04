@@ -14,24 +14,11 @@ class TransactionModel extends PointModel
 
     public function requestCancel(Request $request)
     {
-        if ($request->has('approver_id')) {
-            // send request cancel
-            $formCancellation = new FormCancellation;
-            $formCancellation->requested_to = $request->approver_id;
-            $formCancellation->requested_at = now();
-            $formCancellation->requested_by = auth()->user()->id;
-            $formCancellation->expired_at = date('Y-m-d H:i:s', strtotime('+7 days'));
-            $formCancellation->token = substr(md5(now()), 0, 24);
-
-            $this->form->cancellations()->save($formCancellation);
-
-            return true;
-        } else {
-            // not request a cancellation form instead direct cancel
-            $this->form->cancel();
-
-            return false;
-        }
+        $this->form->request_cancellation_to = $this->form->request_approval_to;
+        $this->form->request_cancellation_at = now();
+        $this->form->request_cancellation_reason = $request->get('request_cancellation_reason');
+        $this->form->cancellation_status = 0;
+        $this->form->save();
     }
 
     /**

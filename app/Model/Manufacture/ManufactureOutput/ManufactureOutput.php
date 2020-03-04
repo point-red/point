@@ -87,7 +87,7 @@ class ManufactureOutput extends TransactionModel
             if ($finishedGood->production_number) {
                 $options['production_number'] = $finishedGood->production_number;
             }
-            InventoryHelper::increase($form->id, $finishedGood->warehouse_id, $finishedGood->item_id, $finishedGood->quantity, 0, $options);
+            InventoryHelper::increase($form, $finishedGood->warehouse_id, $finishedGood->item_id, $finishedGood->quantity, 0, $options);
         }
 
         return $output;

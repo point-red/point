@@ -30,7 +30,7 @@ class StoreManufactureFormulaRequest extends FormRequest
             'manufacture_process_id' => ValidationRule::foreignKey('manufacture_processes'),
             'manufacture_process_name' => 'required|string',
             'name' => 'required|string',
-            'approver_id' => 'required',
+            'request_approval_to' => 'required',
             'raw_materials' => 'required|array',
             'finished_goods' => 'required|array',
         ];

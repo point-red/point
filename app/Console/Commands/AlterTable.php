@@ -48,27 +48,10 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_output_finished_goods_input_finish_good_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_output_finished_goods_input_finished_good_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_output_finished_goods_item_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_output_finished_goods_manufacture_output_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_output_finished_goods_warehouse_id_foreign`');
-
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_output_finish_goods_input_finish_good_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_output_finish_goods_input_finished_good_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_output_finish_goods_item_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_output_finish_goods_manufacture_output_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP FOREIGN KEY IF EXISTS `manufacture_output_finish_goods_warehouse_id_foreign`');
-
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP COLUMN IF EXISTS `input_finish_good_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` DROP COLUMN IF EXISTS `input_finished_good_id`');
-
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` ADD COLUMN `input_finished_good_id` int(10) unsigned after `manufacture_output_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` ADD INDEX (`input_finished_good_id`)');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` ADD CONSTRAINT `manufacture_output_finished_goods_input_finished_good_id_foreign` FOREIGN KEY (`input_finished_good_id`) REFERENCES manufacture_input_finished_goods (`id`) ON DELETE RESTRICT');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` ADD CONSTRAINT `manufacture_output_finished_goods_item_id_foreign` FOREIGN KEY (`item_id`) REFERENCES items (`id`) ON DELETE RESTRICT');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` ADD CONSTRAINT `manufacture_output_finished_goods_manufacture_output_id_foreign` FOREIGN KEY (`manufacture_output_id`) REFERENCES manufacture_outputs (`id`) ON DELETE RESTRICT');
-            DB::connection('tenant')->statement('ALTER TABLE `manufacture_output_finished_goods` ADD CONSTRAINT `manufacture_output_finished_goods_warehouse_id_foreign` FOREIGN KEY (`warehouse_id`) REFERENCES warehouses (`id`) ON DELETE RESTRICT');
+            DB::connection('tenant')->statement('ALTER TABLE `forms` DROP COLUMN `cancellation_reason`');
+            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `cancellation_reason` text');
+            DB::connection('tenant')->statement('ALTER TABLE `forms` DROP COLUMN `cancellation_status`');
+            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `cancellation_status` tinyint(4) default null');
         }
     }
 }

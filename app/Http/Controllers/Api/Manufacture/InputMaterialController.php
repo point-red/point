@@ -97,9 +97,7 @@ class InputMaterialController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $input = ManufactureInput::eloquentFilter($request);
-
-        $input = $input->where(ManufactureInput::getTableName('id'), '=', $id)->first();
+        $input = ManufactureInput::eloquentFilter($request)->findOrFail($id);
 
         return new ApiResource($input);
     }

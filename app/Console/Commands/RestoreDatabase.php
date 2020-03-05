@@ -48,7 +48,7 @@ class RestoreDatabase extends Command
 
         $this->line($mySqlDump);
 
-        $process = new Process($mySqlDump.' '.$dbName);
+        $process = Process::fromShellCommandline($mySqlDump.' '.$dbName);
 
         $process->setPTY(true);
         $process->run();

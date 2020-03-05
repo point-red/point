@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Exceptions\FormActiveException;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Branch;
@@ -132,6 +133,10 @@ class Form extends PointModel
 
     public function archive($editedNotes = '')
     {
+        if ($this->cancellation_status == null || $this->cancellation_status != 1) {
+            throw new FormActiveException();
+        }
+
         // Archive form number
         $this->edited_number = $this->number;
         $this->edited_notes = $editedNotes;

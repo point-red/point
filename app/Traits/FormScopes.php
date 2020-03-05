@@ -50,8 +50,7 @@ trait FormScopes
     public function scopeApprovalNotRejected($query)	
     {	
         $query->whereHas('form', function ($q) {	
-            $q->whereNull('approved');	
-            $q->orWhere('approved', true);	
+            $q->where('approval_status', '>=', 0);
         });	
     }
 

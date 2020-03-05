@@ -18,14 +18,13 @@ class InventoryHelper
      * @param $warehouseId
      * @param $itemId
      * @param $quantity
-     * @param $price
      * @param array $options
      * @throws ExpiryDateNotFoundException
      * @throws ItemQuantityInvalidException
      * @throws ProductionNumberNotFoundException
      * @throws StockNotEnoughException
      */
-    private static function insert($form, $warehouseId, $itemId, $quantity, $price, $options = [])
+    private static function insert($form, $warehouseId, $itemId, $quantity, $options = [])
     {
         $item = Item::findOrFail($itemId);
 
@@ -38,7 +37,6 @@ class InventoryHelper
         $inventory->warehouse_id = $warehouseId;
         $inventory->item_id = $itemId;
         $inventory->quantity = $quantity;
-        $inventory->price = $price;
         $inventory->quantity_reference = $options['quantity_reference'];
         $inventory->unit_reference = $options['unit_reference'];
         $inventory->converter_reference = $options['converter_reference'];
@@ -87,11 +85,11 @@ class InventoryHelper
         $inventory->save();
     }
 
-    public static function increase($form, $warehouseId, $itemId, $quantity, $price, $options = [])
+    public static function increase($form, $warehouseId, $itemId, $quantity, $options = [])
     {
         Item::where('id', $itemId)->increment('stock', $quantity);
 
-        self::insert($form, $warehouseId, $itemId, abs($quantity), $price, $options);
+        self::insert($form, $warehouseId, $itemId, abs($quantity), $options);
     }
 
     public static function decrease($form, $warehouseId, $itemId, $quantity, $options = [])
@@ -108,7 +106,7 @@ class InventoryHelper
             }
         }
 
-        self::insert($form, $warehouseId, $itemId, abs($quantity) * -1, 0, $options);
+        self::insert($form, $warehouseId, $itemId, abs($quantity) * -1, $options);
     }
 
     /**
@@ -116,10 +114,13 @@ class InventoryHelper
      * @param $warehouseId
      * @param $itemId
      * @param $quantity
-     * @param $price
+     * @param array $options
+     * @throws ExpiryDateNotFoundException
      * @throws ItemQuantityInvalidException
+     * @throws ProductionNumberNotFoundException
+     * @throws StockNotEnoughException
      */
-    public static function audit($form, $warehouseId, $itemId, $quantity, $price, $options = [])
+    public static function audit($form, $warehouseId, $itemId, $quantity, $options = [])
     {
         $item = Item::where('id', $itemId)->first();
 
@@ -128,9 +129,9 @@ class InventoryHelper
         $diff = $quantity - $stock;
 
         if ($quantity > $stock) {
-            self::insert($form, $warehouseId, $itemId, abs($diff), $price, $options);
+            self::insert($form, $warehouseId, $itemId, abs($diff), $options);
         } else if ($quantity < $stock) {
-            self::insert($form, $warehouseId, $itemId, abs($diff) * -1, 0, $options);
+            self::insert($form, $warehouseId, $itemId, abs($diff) * -1, $options);
         }
     }
 
@@ -166,6 +167,15 @@ class InventoryHelper
         }
 
         return $inventories->first()->remaining;
+    }
+
+    public static function posting($formId)
+    {
+        $inventories = Inventory::where('form_id', '=', $formId)->get();
+        foreach ($inventories as $inventory) {
+            $inventory->is_posted = true;
+            $inventory->save();
+        }
     }
 
     public static function delete($formId)

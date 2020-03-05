@@ -26,6 +26,7 @@ class CreateInventoriesTable extends Migration
             $table->decimal('quantity_reference', 65, 30);
             $table->string('unit_reference');
             $table->decimal('converter_reference', 65, 30);
+            $table->boolean('is_posted')->default(false);
             $table->timestamps();
 
             $table->foreign('warehouse_id')

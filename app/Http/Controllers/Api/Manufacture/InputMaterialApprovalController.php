@@ -28,19 +28,7 @@ class InputMaterialApprovalController extends Controller
         $input->form->approval_status = 1;
         $input->form->save();
 
-        foreach ($input->rawMaterials as $rawMaterial) {
-            $options = [];
-            if ($rawMaterial->expiry_date) {
-                $options['expiry_date'] = $rawMaterial->expiry_date;
-            }
-            if ($rawMaterial->production_number) {
-                $options['production_number'] = $rawMaterial->production_number;
-            }
-            $options['quantity_reference'] = $rawMaterial->quantity;
-            $options['unit_reference'] = $rawMaterial->unit;
-            $options['converter_reference'] = $rawMaterial->converter;
-            InventoryHelper::decrease($input->form, $rawMaterial->warehouse_id, $rawMaterial->item_id, $rawMaterial->quantity * $rawMaterial->converter, $options);
-        }
+        InventoryHelper::posting($input->form->id);
 
         DB::connection('tenant')->commit();
 

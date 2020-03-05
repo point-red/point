@@ -48,10 +48,8 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `forms` DROP COLUMN `cancellation_reason`');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `cancellation_reason` text');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` DROP COLUMN `cancellation_status`');
-            DB::connection('tenant')->statement('ALTER TABLE `forms` ADD COLUMN `cancellation_status` tinyint(4) default null');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD COLUMN `is_posted` bool default false');
+            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD COLUMN `is_posted` bool default false');
         }
     }
 }

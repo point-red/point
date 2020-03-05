@@ -43,7 +43,7 @@ class Delete extends Command
         $dbName = $this->argument('db_name');
 
         // drop tenant database if exists
-        $process = new Process('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "drop database if exists '.$dbName.'"');
+        $process = Process::fromShellCommandline('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "drop database if exists '.$dbName.'"');
         $process->run();
 
         // executes after the command finishes

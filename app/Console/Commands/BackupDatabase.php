@@ -102,7 +102,7 @@ class BackupDatabase extends Command
 
         $mySqlDump = 'mysqldump -u '.env('DB_USERNAME').' -p'.env('DB_PASSWORD');
 
-        $process = new Process($mySqlDump.' '.$dbName.' --quick | gzip > "'.$path.'/'.$file.'"');
+        $process = Process::fromShellCommandline($mySqlDump.' '.$dbName.' --quick | gzip > "'.$path.'/'.$file.'"');
 
         $process->setPTY(true);
         $process->run();

@@ -64,7 +64,7 @@ class InventoryAudit extends TransactionModel
                 $inventoryAudit->form,
                 $inventoryAudit->warehouse_id,
                 $inventoryAuditItem->item_id,
-                $inventoryAuditItem->quantity,
+                $inventoryAuditItem->quantity * $inventoryAuditItem->converter,
                 [
                     'expiry_date' => $inventoryAuditItem->expiry_date,
                     'production_number' => $inventoryAuditItem->production_number,

@@ -48,8 +48,8 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `inventories` ADD COLUMN `is_posted` bool default false');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD COLUMN `is_posted` bool default false');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN IF EXISTS `price`');
+            DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN IF EXISTS `is_audit`');
         }
     }
 }

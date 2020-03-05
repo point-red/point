@@ -97,7 +97,7 @@ class PosBill extends TransactionModel
                 if ($item->production_number) {
                     $options['production_number'] = $item->production_number;
                 }
-                InventoryHelper::decrease($form, $bill->warehouse_id, $item->item_id, ($item->quantity * $item->converter), $options);
+                InventoryHelper::decrease($form, $bill->warehouse_id, $item, $item->quantity, $item->unit, $item->converter, $options);
             }
         }
 

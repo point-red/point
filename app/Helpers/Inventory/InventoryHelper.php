@@ -7,6 +7,7 @@ use App\Exceptions\ItemQuantityInvalidException;
 use App\Exceptions\ProductionNumberNotExistException;
 use App\Exceptions\ProductionNumberNotFoundException;
 use App\Exceptions\StockNotEnoughException;
+use App\Model\Form;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
@@ -16,18 +17,21 @@ class InventoryHelper
     /**
      * @param $form
      * @param $warehouseId
-     * @param $itemId
+     * @param $item
      * @param $quantity
+     * @param $unit
+     * @param $converter
      * @param array $options
      * @throws ExpiryDateNotFoundException
      * @throws ItemQuantityInvalidException
      * @throws ProductionNumberNotFoundException
      * @throws StockNotEnoughException
      */
-    private static function insert($form, $warehouseId, $itemId, $quantity, $options = [])
+    private static function insert(Form $form, $warehouseId, Item $item, $quantity, $unit, $converter, $options = [
+        'expiry_date' => null,
+        'production_number' => null,
+    ])
     {
-        $item = Item::findOrFail($itemId);
-
         if ($quantity == 0) {
             throw new ItemQuantityInvalidException($item);
         }
@@ -35,11 +39,11 @@ class InventoryHelper
         $inventory = new Inventory;
         $inventory->form_id = $form->id;
         $inventory->warehouse_id = $warehouseId;
-        $inventory->item_id = $itemId;
-        $inventory->quantity = $quantity;
-        $inventory->quantity_reference = $options['quantity_reference'];
-        $inventory->unit_reference = $options['unit_reference'];
-        $inventory->converter_reference = $options['converter_reference'];
+        $inventory->item_id = $item->id;
+        $inventory->quantity = $quantity * $converter;
+        $inventory->quantity_reference = $quantity;
+        $inventory->unit_reference = $unit;
+        $inventory->converter_reference = $converter;
 
         if (array_key_exists('expiry_date', $options)) {
             if ($item->require_expiry_date) {
@@ -85,16 +89,22 @@ class InventoryHelper
         $inventory->save();
     }
 
-    public static function increase($form, $warehouseId, $itemId, $quantity, $options = [])
+    public static function increase($form, $warehouseId, $item, $quantity, $unit, $converter, $options = [
+        'expiry_date' => null,
+        'production_number' => null,
+    ])
     {
-        Item::where('id', $itemId)->increment('stock', $quantity);
+        Item::where('id', $item->id)->increment('stock', $quantity * $converter);
 
-        self::insert($form, $warehouseId, $itemId, abs($quantity), $options);
+        self::insert($form, $warehouseId, $item, abs($quantity), $unit, $converter, $options);
     }
 
-    public static function decrease($form, $warehouseId, $itemId, $quantity, $options = [])
+    public static function decrease($form, $warehouseId, $item, $quantity, $unit, $converter, $options = [
+        'expiry_date' => null,
+        'production_number' => null,
+    ])
     {
-        Item::where('id', $itemId)->decrement('stock', $quantity);
+        Item::where('id', $item->id)->decrement('stock', $quantity * $converter);
 
         if (array_key_exists('production_number', $options)) {
             // Check production number exist in inventory
@@ -102,36 +112,39 @@ class InventoryHelper
                         ->where('warehouse_id', $warehouseId)
                         ->first();
             if (!$exist) {
-                throw new ProductionNumberNotExistException(Item::findOrFail($itemId), $options['production_number'], Warehouse::findOrFail($warehouseId));
+                throw new ProductionNumberNotExistException($item, $options['production_number'], Warehouse::findOrFail($warehouseId));
             }
         }
 
-        self::insert($form, $warehouseId, $itemId, abs($quantity) * -1, $options);
+        self::insert($form, $warehouseId, $item, abs($quantity) * -1, $unit, $converter, $options);
     }
 
     /**
      * @param $form
      * @param $warehouseId
-     * @param $itemId
+     * @param $item
      * @param $quantity
+     * @param $unit
+     * @param $converter
      * @param array $options
      * @throws ExpiryDateNotFoundException
      * @throws ItemQuantityInvalidException
      * @throws ProductionNumberNotFoundException
      * @throws StockNotEnoughException
      */
-    public static function audit($form, $warehouseId, $itemId, $quantity, $options = [])
+    public static function audit($form, $warehouseId, $item, $quantity, $unit, $converter, $options = [
+        'expiry_date' => null,
+        'production_number' => null,
+    ])
     {
-        $item = Item::where('id', $itemId)->first();
-
         $stock = self::getCurrentStock($item, $form->date, $warehouseId, $options);
 
         $diff = $quantity - $stock;
 
         if ($quantity > $stock) {
-            self::insert($form, $warehouseId, $itemId, abs($diff), $options);
+            self::insert($form, $warehouseId, $item, abs($diff), $unit, $converter, $options);
         } else if ($quantity < $stock) {
-            self::insert($form, $warehouseId, $itemId, abs($diff) * -1, $options);
+            self::insert($form, $warehouseId, $item, abs($diff) * -1, $unit, $converter, $options);
         }
     }
 

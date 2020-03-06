@@ -8,7 +8,6 @@ use App\Http\Requests\Accounting\CutOff\UpdateAccountRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Accounting\ChartOfAccount;
-use App\Model\Accounting\ChartOfAccountSubLedger;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\CutOff;
 use App\Model\Accounting\CutOffAccount;
@@ -53,51 +52,10 @@ class CutOffAccountController extends Controller
     {
         DB::connection('tenant')->beginTransaction();
 
-        // create chart of account
-        if ($request->get('sub_ledger_id')) {
-            $type = ChartOfAccountType::find($request->get('type_id'));
-            $subLedger = ChartOfAccountSubLedger::find($request->get('sub_ledger_id'));
-
-            if ($subLedger->name == 'inventory' && $type->name != 'inventory') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "inventory"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'account payable' && $type->name != 'current liability') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "current liability"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'purchase down payment' && $type->name != 'current liability') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "current liability"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'account receivable' && $type->name != 'account receivable') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "account receivable"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'sales down payment' && $type->name != 'account receivable') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "account receivable"',
-                ], 422);
-            }
-        }
-
         $chartOfAccount = new ChartOfAccount;
         $chartOfAccount->type_id = $request->get('type_id');
         $chartOfAccount->number = $request->get('number') ?? null;
-        $chartOfAccount->sub_ledger_id = $request->get('sub_ledger_id') ?? null;
+        $chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
         $chartOfAccount->name = $request->get('name');
         $chartOfAccount->alias = $request->get('name');
         $chartOfAccount->save();
@@ -143,47 +101,6 @@ class CutOffAccountController extends Controller
     {
         DB::connection('tenant')->beginTransaction();
 
-        // create chart of account
-        if ($request->get('sub_ledger_id')) {
-            $type = ChartOfAccountType::find($request->get('type_id'));
-            $subLedger = ChartOfAccountSubLedger::find($request->get('sub_ledger_id'));
-
-            if ($subLedger->name == 'inventory' && $type->name != 'inventory') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "inventory"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'account payable' && $type->name != 'current liability') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "current liability"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'purchase down payment' && $type->name != 'current liability') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "current liability"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'account receivable' && $type->name != 'account receivable') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "account receivable"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'sales down payment' && $type->name != 'account receivable') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "account receivable"',
-                ], 422);
-            }
-        }
-
         // create cut off account
         $cutOffAccount = CutOffAccount::findOrFail($id);
         if ($cutOffAccount->chartOfAccount->type->is_debit == true) {
@@ -196,7 +113,7 @@ class CutOffAccountController extends Controller
 
         $cutOffAccount->chartOfAccount->type_id = $request->get('type_id');
         $cutOffAccount->chartOfAccount->number = $request->get('number') ?? null;
-        $cutOffAccount->chartOfAccount->sub_ledger_id = $request->get('sub_ledger_id') ?? null;
+        $cutOffAccount->chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
         $cutOffAccount->chartOfAccount->name = $request->get('name');
         $cutOffAccount->chartOfAccount->alias = $request->get('alias');
         $cutOffAccount->chartOfAccount->save();

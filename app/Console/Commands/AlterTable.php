@@ -50,6 +50,11 @@ class AlterTable extends Command
 
             DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN IF EXISTS `price`');
             DB::connection('tenant')->statement('ALTER TABLE `inventories` DROP COLUMN IF EXISTS `is_audit`');
+
+            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD COLUMN `is_sub_ledger` bool default false');
+
+            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` DROP FOREIGN KEY IF EXISTS `chart_of_accounts_sub_ledger_id_foreign`');
+            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` DROP COLUMN IF EXISTS `sub_ledger_id`');
         }
     }
 }

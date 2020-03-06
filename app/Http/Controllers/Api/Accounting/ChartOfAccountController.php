@@ -8,7 +8,6 @@ use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Accounting\ChartOfAccount;
-use App\Model\Accounting\ChartOfAccountSubLedger;
 use App\Model\Accounting\ChartOfAccountType;
 use Illuminate\Http\Request;
 
@@ -33,13 +32,6 @@ class ChartOfAccountController extends Controller
             });
         }
 
-        if ($request->has('filter_sub_ledger')) {
-            $subLedgers = explode(',', $request->get('filter_sub_ledger'));
-            $accounts->whereHas('subLedger', function ($query) use ($subLedgers) {
-                $query->whereIn('name', $subLedgers);
-            });
-        }
-
         if ($request->get('is_archived')) {
             $accounts = $accounts->whereNotNull('archived_at');
         } else {
@@ -59,50 +51,10 @@ class ChartOfAccountController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->get('sub_ledger_id')) {
-            $type = ChartOfAccountType::find($request->get('type_id'));
-            $subLedger = ChartOfAccountSubLedger::find($request->get('sub_ledger_id'));
-
-            if ($subLedger->name == 'inventory' && $type->name != 'inventory') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "inventory"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'account payable' && $type->name != 'current liability') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "current liability"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'purchase down payment' && $type->name != 'current liability') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "current liability"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'account receivable' && $type->name != 'account receivable') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "account receivable"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'sales down payment' && $type->name != 'account receivable') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "account receivable"',
-                ], 422);
-            }
-        }
-
         $chartOfAccount = new ChartOfAccount;
         $chartOfAccount->type_id = $request->get('type_id');
         $chartOfAccount->number = $request->get('number') ?? null;
-        $chartOfAccount->sub_ledger_id = $request->get('sub_ledger_id') ?? null;
+        $chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
         $chartOfAccount->name = $request->get('name');
         $chartOfAccount->alias = $request->get('name');
         $chartOfAccount->save();
@@ -118,7 +70,7 @@ class ChartOfAccountController extends Controller
      */
     public function show($id)
     {
-        $chartOfAccount = ChartOfAccount::findOrFail($id)->load(['type', 'subLedger', 'group']);
+        $chartOfAccount = ChartOfAccount::findOrFail($id)->load(['type', 'group']);
 
         return new ApiResource($chartOfAccount);
     }
@@ -132,49 +84,9 @@ class ChartOfAccountController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if ($request->get('sub_ledger_id')) {
-            $type = ChartOfAccountType::find($request->get('type_id'));
-            $subLedger = ChartOfAccountSubLedger::find($request->get('sub_ledger_id'));
-
-            if ($subLedger->name == 'inventory' && $type->name != 'inventory') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "inventory"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'account payable' && $type->name != 'current liability') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "current liability"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'purchase down payment' && $type->name != 'current liability') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "current liability"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'account receivable' && $type->name != 'account receivable') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "account receivable"',
-                ], 422);
-            }
-
-            if ($subLedger->name == 'sales down payment' && $type->name != 'account receivable') {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'sub ledger "' . $subLedger->name . '" should be match with account type "account receivable"',
-                ], 422);
-            }
-        }
-        
         $chartOfAccount = ChartOfAccount::findOrFail($id);
         $chartOfAccount->type_id = $request->get('type_id');
-        $chartOfAccount->sub_ledger_id = $request->get('sub_ledger_id') ?? null;
+        $chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
         $chartOfAccount->number = $request->get('number') ?? null;
         $chartOfAccount->name = $request->get('name');
         $chartOfAccount->alias = $request->get('name');

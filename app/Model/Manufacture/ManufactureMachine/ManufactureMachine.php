@@ -18,10 +18,8 @@ class ManufactureMachine extends MasterModel
 
     public function getLabelAttribute()
     {
-        $label = '';
-        if ($this->code) {
-            $label = '[' . $this->code . '] ';
-        }
+        $label = $this->code ? '[' . $this->number . '] ' : '';
+
         return $label . $this->name;
     }
 }

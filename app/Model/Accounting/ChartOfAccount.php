@@ -15,10 +15,8 @@ class ChartOfAccount extends MasterModel
 
     public function getLabelAttribute()
     {
-        $label = '';
-        if ($this->number) {
-            $label = '[' . $this->number . '] ';
-        }
+        $label = $this->number ? '[' . $this->number . '] ' : '';
+
         return $label . $this->alias;
     }
 
@@ -36,14 +34,6 @@ class ChartOfAccount extends MasterModel
     public function group()
     {
         return $this->belongsTo(ChartOfAccountGroup::class, 'group_id');
-    }
-
-    /**
-     * Get the sub ledger that owns the chart of account.
-     */
-    public function subLedger()
-    {
-        return $this->belongsTo(ChartOfAccountSubLedger::class, 'sub_ledger_id');
     }
 
     public function journals($date)

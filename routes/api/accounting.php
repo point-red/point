@@ -3,7 +3,6 @@
 Route::prefix('accounting')->namespace('Accounting')->group(function () {
     Route::apiResource('chart-of-account-groups', 'ChartOfAccountGroupController');
     Route::get('chart-of-account-types', 'ChartOfAccountTypeController@index');
-    Route::get('chart-of-account-sub-ledgers', 'ChartOfAccountSubLedgerController@index');
     Route::post('chart-of-account-generators', 'ChartOfAccountGeneratorController@store');
     Route::apiResource('chart-of-accounts', 'ChartOfAccountController');
     Route::apiResource('cut-offs', 'CutOffController');

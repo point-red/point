@@ -1,7 +1,6 @@
 <?php
 
 use App\Model\Accounting\ChartOfAccount;
-use App\Model\Accounting\ChartOfAccountSubLedger;
 use App\Model\Accounting\ChartOfAccountType;
 use Illuminate\Database\Seeder;
 
@@ -15,7 +14,6 @@ class ChartOfAccountTypeSeeder extends Seeder
     public function run()
     {
         $this->chartAccountTypes();
-        $this->chartAccountSubLedger();
     }
 
     private function chartAccountTypes()
@@ -136,32 +134,6 @@ class ChartOfAccountTypeSeeder extends Seeder
             $chartOfAccountType->alias = $expensesAlias[$i];
             $chartOfAccountType->is_debit = true;
             $chartOfAccountType->save();
-        }
-    }
-
-    private function chartAccountSubLedger()
-    {
-        $subLedger = [
-            'inventory',
-            'account payable',
-            'purchase down payment',
-            'account receivable',
-            'sales down payment',
-        ];
-
-        $subLedgerAlias = [
-            'sediaan',
-            'utang usaha',
-            'uang muka pembelian',
-            'piutang usaha',
-            'uang muka penjualan',
-        ];
-
-        for ($i = 0; $i < count($subLedger); $i++) {
-            $chartOfAccountSubLedger = new ChartOfAccountSubLedger;
-            $chartOfAccountSubLedger->name = $subLedger[$i];
-            $chartOfAccountSubLedger->alias = $subLedgerAlias[$i];
-            $chartOfAccountSubLedger->save();
         }
     }
 }

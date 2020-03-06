@@ -62,15 +62,14 @@ class InventoryAudit extends TransactionModel
         foreach ($inventoryAudit->items as $inventoryAuditItem) {
             InventoryHelper::audit(
                 $inventoryAudit->form,
-                $inventoryAudit->warehouse_id,
-                $inventoryAuditItem->item_id,
-                $inventoryAuditItem->quantity * $inventoryAuditItem->converter,
+                $inventoryAudit->warehouse,
+                $inventoryAuditItem->item,
+                $inventoryAuditItem->quantity,
+                $inventoryAuditItem->unit,
+                $inventoryAuditItem->converter,
                 [
                     'expiry_date' => $inventoryAuditItem->expiry_date,
                     'production_number' => $inventoryAuditItem->production_number,
-                    'quantity_reference' => $inventoryAuditItem->quantity,
-                    'unit_reference' => $inventoryAuditItem->unit,
-                    'converter_reference' => $inventoryAuditItem->converter,
                 ]
             );
         }

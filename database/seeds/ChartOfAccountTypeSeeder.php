@@ -20,11 +20,17 @@ class ChartOfAccountTypeSeeder extends Seeder
     {
         $assets = [
             'cash',
+            'cash-bank transfer',
             'bank',
+            'supplies',
             'note receivable',
+            'input vat',
             'inventory',
             'account receivable',
+            'account receivable of management',
+            'account receivable of employee',
             'other account receivable',
+            'purchase down payment',
             'fixed asset',
             'fixed asset depreciation',
             'other asset',
@@ -34,11 +40,17 @@ class ChartOfAccountTypeSeeder extends Seeder
 
         $assetsAlias = [
             'kas',
+            'ayat silang kas bank',
             'bank',
+            'perlengkapan',
             'wesel tagih',
+            'ppn masukan',
             'sediaan',
             'piutang usaha',
+            'piutang manajemen',
+            'piutang karyawan',
             'piutang lain lain',
+            'uang muka pembelian',
             'aset tetap',
             'penyusutan aset tetap',
             'aset lain lain',
@@ -50,6 +62,8 @@ class ChartOfAccountTypeSeeder extends Seeder
             'current liability',
             'note payable',
             'other current liability',
+            'sales down payment',
+            'output vat',
             'long term liability',
             'purchase down payment',
         ];
@@ -58,6 +72,8 @@ class ChartOfAccountTypeSeeder extends Seeder
             'utang dagang',
             'wesel bayar',
             'utang lain lain',
+            'uang muka penjualan',
+            'ppn keluaran',
             'utang jangka panjang',
             'uang muka pembelian',
         ];
@@ -88,12 +104,14 @@ class ChartOfAccountTypeSeeder extends Seeder
             'cost of sales',
             'direct expense',
             'other expense',
+            'factory overhead cost',
         ];
 
         $expensesAlias = [
             'beban pokok penjualan',
             'beban operasional',
             'beban non operasional',
+            'biaya overhead pabrik',
         ];
 
         for ($i = 0; $i < count($assets); $i++) {

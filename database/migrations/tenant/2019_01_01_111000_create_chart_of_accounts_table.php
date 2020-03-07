@@ -17,7 +17,22 @@ class CreateChartOfAccountsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('type_id')->index();
             $table->unsignedInteger('group_id')->nullable()->index();
+            /**
+             * is_sub_ledger bool
+             * ==================
+             * if an account is a sub ledger
+             * that account should have detail / master data
+             * to be able filter or grouping
+             */
             $table->boolean('is_sub_ledger')->default(false);
+            /**
+             * is_locked bool
+             * ==================
+             * if an account is locked that means that account cannot be deleted
+             * because it used to calculate or automate feature
+             * but you still be able to rename the account to match your language
+             */
+            $table->boolean('is_locked')->default(false);
             $table->string('number', 20)->nullable()->unique();
             $table->string('name');
             $table->string('alias');

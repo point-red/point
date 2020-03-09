@@ -25,6 +25,7 @@ class CreateChartOfAccountsTable extends Migration
              * to be able filter or grouping
              */
             $table->boolean('is_sub_ledger')->default(false);
+            $table->string('sub_ledger')->nullable();
             /**
              * is_locked bool
              * ==================

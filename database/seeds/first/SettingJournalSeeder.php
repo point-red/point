@@ -25,7 +25,7 @@ class SettingJournalSeeder extends Seeder
     private function openingBalanceInventory()
     {
         $accounts = [
-            'retained earning' => $this->getAccountId('retained earning'),
+            'capital' => $this->getAccountId('capital'),
         ];
 
         foreach ($accounts as $key => $value) {
@@ -83,7 +83,27 @@ class SettingJournalSeeder extends Seeder
         }
     }
 
-    private function getAccountId($account)
+     private function expedition()
+    {
+        $accounts = [
+            'account expedition payable' => $this->getAccountId('account expedition payable'),
+            'expedition down payment' => $this->getAccountId('expedition down payment'),
+            'income tax receivable' => $this->getAccountId('income tax receivable'),
+        ];
+
+        foreach ($accounts as $key => $value) {
+            if (!$this->isExists('expedition', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'expedition';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
+        }
+    }
+    
+     private function getAccountId($account)
     {
         foreach ($this->chartOfAccounts as $chartOfAccount) {
             if ($chartOfAccount->name == $account) {

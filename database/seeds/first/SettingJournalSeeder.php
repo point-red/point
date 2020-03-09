@@ -20,6 +20,9 @@ class SettingJournalSeeder extends Seeder
         $this->openingBalanceInventory();
         $this->purchase();
         $this->sales();
+        $this->stockCorrection();
+        $this->transferItem();
+        $this->manufacture();
     }
 
     private function openingBalanceInventory()
@@ -40,7 +43,7 @@ class SettingJournalSeeder extends Seeder
         }
     }
 
-    private function transfer item()
+    private function transferItem()
     {
         $accounts = [
             'inventory in distribution' => $this->getAccountId('inventory in distribution'),
@@ -58,7 +61,7 @@ class SettingJournalSeeder extends Seeder
         }
     }
     
-    private function stock correction()
+    private function stockCorrection()
     {
         $accounts = [
             'difference stock expenses' => $this->getAccountId('difference stock expenses'),

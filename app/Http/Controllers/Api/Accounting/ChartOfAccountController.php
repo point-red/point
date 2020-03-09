@@ -54,7 +54,7 @@ class ChartOfAccountController extends Controller
         $chartOfAccount = new ChartOfAccount;
         $chartOfAccount->type_id = $request->get('type_id');
         $chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
-        $chartOfAccount->sub_ledger = $request->get('sub_ledger');
+        $chartOfAccount->sub_ledger = $chartOfAccount->is_sub_ledger ? $request->get('sub_ledger') : null;
         $chartOfAccount->position = $request->get('position');
         $chartOfAccount->number = $request->get('number') ?? null;
         $chartOfAccount->name = $request->get('name');

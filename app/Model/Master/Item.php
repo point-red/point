@@ -4,6 +4,7 @@ namespace App\Model\Master;
 
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\Journal;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
 use App\Model\Inventory\OpeningStock\OpeningStock;
@@ -44,6 +45,14 @@ class Item extends MasterModel
         $label = $this->code ? '[' . $this->number . '] ' : '';
 
         return $label . $this->name;
+    }
+
+    /**
+     * Get all of the item's journals.
+     */
+    public function journals()
+    {
+        return $this->morphMany(Journal::class, 'journalable');
     }
 
     public function inventories()

@@ -48,7 +48,8 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD COLUMN IF NOT EXISTS `position` varchar(255) default "debit"');
+            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD COLUMN IF NOT EXISTS `sub_ledger_type` varchar(255) default null');
+            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD COLUMN IF NOT EXISTS `sub_ledger_id` integer(10) unsigned default null');
         }
     }
 }

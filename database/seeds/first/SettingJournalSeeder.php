@@ -90,7 +90,7 @@ class SettingJournalSeeder extends Seeder
     private function expedition()
     {
         $accounts = [
-            'account expedition payable' => $this->getAccountId('account expedition payable'),
+            'account payable expedition' => $this->getAccountId('account payable expedition'),
             'expedition down payment' => $this->getAccountId('expedition down payment'),
             'income tax receivable' => $this->getAccountId('income tax receivable'),
         ];

@@ -24,7 +24,7 @@ class ChartOfAccountGeneratorController extends Controller
     public function store(Request $request)
     {
         DB::connection('tenant')->beginTransaction();
-        Excel::import(new ChartOfAccountImport(), storage_path('app/template/chart_of_accounts_manufacture.xlsx'));
+        Excel::import(new ChartOfAccountImport(), storage_path('template/chart_of_accounts_manufacture.xlsx'));
 
         Artisan::call('db:seed', [
             '--database' => 'tenant',

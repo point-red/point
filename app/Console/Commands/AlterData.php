@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Imports\Template\ChartOfAccountImport;
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\CutOff;
 use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
 use App\Model\Master\Branch;
@@ -54,7 +55,7 @@ class AlterData extends Command
         $projects = Project::all();
         foreach ($projects as $project) {
             $this->line('Clone '.$project->code);
-            //Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
             $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
@@ -65,6 +66,7 @@ class AlterData extends Command
 
             SettingJournal::query()->truncate();
             ChartOfAccount::query()->truncate();
+            ChartOfAccountType::query()->truncate();
 
             Excel::import(new ChartOfAccountImport(), storage_path('app/template/chart_of_accounts_manufacture.xlsx'));
 

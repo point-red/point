@@ -32,15 +32,6 @@ class ChartOfAccountController extends Controller
             }
         }
 
-        // Filter account by type
-        // ex : filter_type = 'cash,bank'
-        if ($request->has('filter_type')) {
-            $types = explode(',', $request->get('filter_type'));
-            $accounts->whereHas('type', function ($query) use ($types) {
-                $query->whereIn('name', $types);
-            });
-        }
-
         if ($request->get('is_archived')) {
             $accounts = $accounts->whereNotNull('archived_at');
         } else {
@@ -62,8 +53,10 @@ class ChartOfAccountController extends Controller
     {
         $chartOfAccount = new ChartOfAccount;
         $chartOfAccount->type_id = $request->get('type_id');
-        $chartOfAccount->number = $request->get('number') ?? null;
         $chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
+        $chartOfAccount->sub_ledger = $request->get('sub_ledger');
+        $chartOfAccount->position = $request->get('position');
+        $chartOfAccount->number = $request->get('number') ?? null;
         $chartOfAccount->name = $request->get('name');
         $chartOfAccount->alias = $request->get('name');
         $chartOfAccount->save();
@@ -96,6 +89,8 @@ class ChartOfAccountController extends Controller
         $chartOfAccount = ChartOfAccount::findOrFail($id);
         $chartOfAccount->type_id = $request->get('type_id');
         $chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
+        $chartOfAccount->sub_ledger = $request->get('sub_ledger');
+        $chartOfAccount->position = $request->get('position');
         $chartOfAccount->number = $request->get('number') ?? null;
         $chartOfAccount->name = $request->get('name');
         $chartOfAccount->alias = $request->get('name');

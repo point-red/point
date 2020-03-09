@@ -20,6 +20,7 @@ class SettingJournalSeeder extends Seeder
         $this->openingBalanceInventory();
         $this->purchase();
         $this->sales();
+        $this->expedition();
         $this->stockCorrection();
         $this->transferItem();
         $this->manufacture();
@@ -43,43 +44,6 @@ class SettingJournalSeeder extends Seeder
         }
     }
 
-    private function transferItem()
-    {
-        $accounts = [
-            'inventory in distribution' => $this->getAccountId('inventory in distribution'),
-        ];
-
-        foreach ($accounts as $key => $value) {
-            if (!$this->isExists('transfer item', $key)) {
-                $settingJournal = new SettingJournal;
-                $settingJournal->feature = 'transfer item';
-                $settingJournal->name = $key;
-                $settingJournal->description = '';
-                $settingJournal->chart_of_account_id = $value;
-                $settingJournal->save();
-            }
-        }
-    }
-    
-    private function stockCorrection()
-    {
-        $accounts = [
-            'difference stock expenses' => $this->getAccountId('difference stock expenses'),
-            'other income' => $this->getAccountId('other income'),
-        ];
-
-        foreach ($accounts as $key => $value) {
-            if (!$this->isExists('stock correction', $key)) {
-                $settingJournal = new SettingJournal;
-                $settingJournal->feature = 'stock correction';
-                $settingJournal->name = $key;
-                $settingJournal->description = '';
-                $settingJournal->chart_of_account_id = $value;
-                $settingJournal->save();
-            }
-        }
-    }
-    
     private function purchase()
     {
         $accounts = [
@@ -123,7 +87,7 @@ class SettingJournalSeeder extends Seeder
         }
     }
 
-     private function expedition()
+    private function expedition()
     {
         $accounts = [
             'account expedition payable' => $this->getAccountId('account expedition payable'),
@@ -143,7 +107,7 @@ class SettingJournalSeeder extends Seeder
         }
     }
     
-      private function manufacture()
+    private function manufacture()
     {
         $accounts = [
             'work in process inventory' => $this->getAccountId('work in process inventory'),
@@ -160,17 +124,55 @@ class SettingJournalSeeder extends Seeder
             }
         }
     }
+
+    private function transferItem()
+    {
+        $accounts = [
+            'inventory in distribution' => $this->getAccountId('inventory in distribution'),
+        ];
+
+        foreach ($accounts as $key => $value) {
+            if (!$this->isExists('transfer item', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'transfer item';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
+        }
+    }
+
+    private function stockCorrection()
+    {
+        $accounts = [
+            'difference stock expenses' => $this->getAccountId('difference stock expenses'),
+            'other income' => $this->getAccountId('other income'),
+        ];
+
+        foreach ($accounts as $key => $value) {
+            if (!$this->isExists('stock correction', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'stock correction';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
+        }
+    }
     
-      private function getAccountId($account)
+    private function getAccountId($account)
     {
         foreach ($this->chartOfAccounts as $chartOfAccount) {
-            if ($chartOfAccount->name == $account) {
+            if (strtolower($chartOfAccount->name) == strtolower($account)) {
                 return $chartOfAccount->id;
             }
         }
     }
 
-    private function isExists ($feature, $key) {
+    private function isExists($feature, $key)
+    {
         if (SettingJournal::where('feature', $feature)->where('name', $key)->first()) {
             return true;
         }

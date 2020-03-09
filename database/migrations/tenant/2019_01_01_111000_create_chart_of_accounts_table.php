@@ -27,6 +27,12 @@ class CreateChartOfAccountsTable extends Migration
             $table->boolean('is_sub_ledger')->default(false);
             $table->string('sub_ledger')->nullable();
             /**
+             * position string
+             * ==================
+             * position surplus is on debit or credit
+             */
+            $table->string('position');
+            /**
              * is_locked bool
              * ==================
              * if an account is locked that means that account cannot be deleted

@@ -112,40 +112,40 @@ class ChartOfAccountTypeSeeder extends Seeder
 
         for ($i = 0; $i < count($assets); $i++) {
             $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = $assets[$i];
-            $chartOfAccountType->alias = $assetsAlias[$i];
+            $chartOfAccountType->name = strtoupper($assets[$i]);
+            $chartOfAccountType->alias = strtoupper($assetsAlias[$i]);
             $chartOfAccountType->is_debit = true;
             $chartOfAccountType->save();
         }
 
         for ($i = 0; $i < count($liabilities); $i++) {
             $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = $liabilities[$i];
-            $chartOfAccountType->alias = $liabilitiesAlias[$i];
+            $chartOfAccountType->name = strtoupper($liabilities[$i]);
+            $chartOfAccountType->alias = strtoupper($liabilitiesAlias[$i]);
             $chartOfAccountType->is_debit = false;
             $chartOfAccountType->save();
         }
 
         for ($i = 0; $i < count($equities); $i++) {
             $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = $equities[$i];
-            $chartOfAccountType->alias = $equitiesAlias[$i];
+            $chartOfAccountType->name = strtoupper($equities[$i]);
+            $chartOfAccountType->alias = strtoupper($equitiesAlias[$i]);
             $chartOfAccountType->is_debit = false;
             $chartOfAccountType->save();
         }
 
         for ($i = 0; $i < count($incomes); $i++) {
             $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = $incomes[$i];
-            $chartOfAccountType->alias = $incomesAlias[$i];
+            $chartOfAccountType->name = strtoupper($incomes[$i]);
+            $chartOfAccountType->alias = strtoupper($incomesAlias[$i]);
             $chartOfAccountType->is_debit = false;
             $chartOfAccountType->save();
         }
 
         for ($i = 0; $i < count($expenses); $i++) {
             $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = $expenses[$i];
-            $chartOfAccountType->alias = $expensesAlias[$i];
+            $chartOfAccountType->name = strtoupper($expenses[$i]);
+            $chartOfAccountType->alias = strtoupper($expensesAlias[$i]);
             $chartOfAccountType->is_debit = true;
             $chartOfAccountType->save();
         }

@@ -68,13 +68,13 @@ class AlterData extends Command
             ChartOfAccount::query()->truncate();
             ChartOfAccountType::query()->truncate();
 
-            Excel::import(new ChartOfAccountImport(), storage_path('template/chart_of_accounts_manufacture.xlsx'));
-
             Artisan::call('db:seed', [
                 '--database' => 'tenant',
-                '--class' => 'TenantDatabaseSeeder',
+                '--class' => 'ChartOfAccountTypeSeeder',
                 '--force' => true,
             ]);
+
+            Excel::import(new ChartOfAccountImport(), storage_path('template/chart_of_accounts_manufacture.xlsx'));
 
             Artisan::call('db:seed', [
                 '--database' => 'tenant',

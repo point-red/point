@@ -35,7 +35,6 @@ class ChartOfAccountTypeSeeder extends Seeder
             'fixed asset depreciation',
             'other asset',
             'other asset amortization',
-            'sales down payment',
         ];
 
         $assetsAlias = [
@@ -55,7 +54,6 @@ class ChartOfAccountTypeSeeder extends Seeder
             'penyusutan aset tetap',
             'aset lain lain',
             'amortisasi aset lain',
-            'uang muka penjualan',
         ];
 
         $liabilities = [
@@ -65,7 +63,6 @@ class ChartOfAccountTypeSeeder extends Seeder
             'sales down payment',
             'output vat',
             'long term liability',
-            'purchase down payment',
         ];
 
         $liabilitiesAlias = [
@@ -75,7 +72,6 @@ class ChartOfAccountTypeSeeder extends Seeder
             'uang muka penjualan',
             'ppn keluaran',
             'utang jangka panjang',
-            'uang muka pembelian',
         ];
 
         $equities = [

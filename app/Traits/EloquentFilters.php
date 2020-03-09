@@ -188,7 +188,7 @@ trait EloquentFilters
                 $relation = explode('.', $key);
                 $column = array_pop($relation);
                 $relation = implode('.', $relation);
-                if (! empty($relation)) {
+                if (! empty($relation) && $this->getTable() !== $relation) {
                     $query->orWhereHas($relation, function ($query) use ($value, $column) {
                         $words = explode(' ', $value);
                         foreach ($words as $word) {

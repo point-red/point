@@ -31,10 +31,33 @@ class CutOffAccountController extends Controller
         })->join(ChartOfAccountType::getTableName(), function ($q) {
             $q->on(ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'));
         })->whereIn(ChartOfAccountType::getTableName('name'), [
-            'cash', 'bank', 'note receivable', 'inventory', 'account receivable', 'other account receivable',
-            'fixed asset', 'fixed asset depreciation', 'other asset', 'other asset amortization', 'sales down payment',
-            'current liability', 'note payable', 'other current liability', 'long term liability', 'purchase down payment',
-            'owner equity', 'shareholder distribution', 'retained earning'
+            'cash',
+            'cash-bank transfer',
+            'bank',
+            'supplies',
+            'note receivable',
+            'account receivable',
+            'account receivable of management',
+            'account receivable of employee',
+            'other account receivable',
+            'purchase down payment',
+            'income tax receivable',
+            'inventory',
+            'other current asset',
+            'fixed asset',
+            'fixed asset depreciation',
+            'other asset',
+            'other asset amortization',
+            'current liability',
+            'other current liability',
+            'long term liability',
+            'note payable',
+            'account payable',
+            'sales down payment',
+            'income tax payable',
+            'owner equity',
+            'shareholder distribution',
+            'retained earning'
         ]);
 
         $cutOffAccounts = pagination($cutOffAccounts, $request->get('limit'));

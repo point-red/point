@@ -43,8 +43,7 @@ class CutOffController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     *
-     * @return \App\Http\Resources\Accounting\CutOff\CutOffResource
+     * @return ApiResource
      */
     public function store(StoreRequest $request)
     {
@@ -83,7 +82,7 @@ class CutOffController extends Controller
 
         DB::connection('tenant')->commit();
 
-        return new CutOffResource($cutOff);
+        return new ApiResource($cutOff);
     }
 
     /**

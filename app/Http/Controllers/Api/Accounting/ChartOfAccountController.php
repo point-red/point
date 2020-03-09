@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Accounting;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountCollection;
 use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
@@ -22,6 +21,16 @@ class ChartOfAccountController extends Controller
     public function index(Request $request)
     {
         $accounts = ChartOfAccount::eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $fields = explode(',', $request->get('join'));
+
+            if (in_array('type', $fields)) {
+                $accounts = $accounts->leftjoin(ChartOfAccountType::getTableName(), function ($q) {
+                    $q->on(ChartOfAccount::getTableName('type_id'), '=', ChartOfAccountType::getTableName('id'));
+                });
+            }
+        }
 
         // Filter account by type
         // ex : filter_type = 'cash,bank'
@@ -106,7 +115,9 @@ class ChartOfAccountController extends Controller
     {
         $chartOfAccount = ChartOfAccount::findOrFail($id);
 
-        $chartOfAccount->delete();
+        if (!$chartOfAccount->is_locked) {
+            $chartOfAccount->delete();
+        }
 
         return new ChartOfAccountResource($chartOfAccount);
     }

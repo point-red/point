@@ -15,12 +15,10 @@ class CutOffResource extends JsonResource
      */
     public function toArray($request)
     {
-        $resource = array_merge(parent::toArray($request), [
+        return array_merge(parent::toArray($request), [
             'details' => new ApiCollection($this->details),
             'totalDebit' => $this->details->sum('debit'),
             'totalCredit' => $this->details->sum('credit'),
         ]);
-
-        return $resource;
     }
 }

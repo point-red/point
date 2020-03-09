@@ -25,7 +25,7 @@ class SettingJournalSeeder extends Seeder
     private function openingBalanceInventory()
     {
         $accounts = [
-            'retained earning' => $this->getAccountId('modal disetor'),
+            'retained earning' => $this->getAccountId('retained earning'),
         ];
 
         foreach ($accounts as $key => $value) {
@@ -43,10 +43,9 @@ class SettingJournalSeeder extends Seeder
     private function purchase()
     {
         $accounts = [
-            'account payable' => $this->getAccountId('utang usaha'),
-            'down payment' => $this->getAccountId('uang muka pembelian'),
-            'discount' => $this->getAccountId('potongan pembelian'),
-            'income tax receivable' => $this->getAccountId('ppn masukan'),
+            'account payable' => $this->getAccountId('account payable'),
+            'down payment' => $this->getAccountId('purchase down payment'),
+            'income tax receivable' => $this->getAccountId('income tax receivable'),
         ];
 
         foreach ($accounts as $key => $value) {
@@ -64,12 +63,12 @@ class SettingJournalSeeder extends Seeder
     private function sales()
     {
         $accounts = [
-            'account receivable' => $this->getAccountId('piutang usaha'),
-            'down payment' => $this->getAccountId('uang muka penjualan'),
-            'discount' => $this->getAccountId('potongan penjualan'),
-            'income tax payable' => $this->getAccountId('ppn keluaran'),
-            'sales income' => $this->getAccountId('penjualan'),
-            'cost of sales' => $this->getAccountId('beban pokok penjualan'),
+            'account receivable' => $this->getAccountId('account receivable'),
+            'down payment' => $this->getAccountId('sales down payment'),
+            'discount' => $this->getAccountId('sales discount'),
+            'income tax payable' => $this->getAccountId('income tax payable'),
+            'sales income' => $this->getAccountId('sales'),
+            'cost of sales' => $this->getAccountId('cost of sales'),
         ];
 
         foreach ($accounts as $key => $value) {

@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Laravel\Passport\Exceptions\OAuthServerException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 trait ApiExceptionHandler
 {
-    public function apiExceptions($request, Exception $exception)
+    public function apiExceptions($request, Throwable $exception)
     {
         /* Resource not found */
         if ($exception instanceof NotFoundHttpException) {

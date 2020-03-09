@@ -42,7 +42,7 @@ class Item extends MasterModel
 
     public function getLabelAttribute()
     {
-        $label = $this->code ? '[' . $this->number . '] ' : '';
+        $label = $this->code ? '[' . $this->code . '] ' : '';
 
         return $label . $this->name;
     }

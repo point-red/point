@@ -40,6 +40,43 @@ class SettingJournalSeeder extends Seeder
         }
     }
 
+    private function transfer item()
+    {
+        $accounts = [
+            'inventory in distribution' => $this->getAccountId('inventory in distribution'),
+        ];
+
+        foreach ($accounts as $key => $value) {
+            if (!$this->isExists('transfer item', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'transfer item';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
+        }
+    }
+    
+    private function stock correction()
+    {
+        $accounts = [
+            'difference stock expenses' => $this->getAccountId('difference stock expenses'),
+            'capital' => $this->getAccountId('capital'),
+        ];
+
+        foreach ($accounts as $key => $value) {
+            if (!$this->isExists('stock correction', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'stock correction';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
+        }
+    }
+    
     private function purchase()
     {
         $accounts = [
@@ -103,7 +140,25 @@ class SettingJournalSeeder extends Seeder
         }
     }
     
-     private function getAccountId($account)
+      private function manufacture()
+    {
+        $accounts = [
+            'work in process inventory' => $this->getAccountId('work in process inventory'),
+        ];
+
+        foreach ($accounts as $key => $value) {
+            if (!$this->isExists('manufacture', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'manufacture';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
+        }
+    }
+    
+      private function getAccountId($account)
     {
         foreach ($this->chartOfAccounts as $chartOfAccount) {
             if ($chartOfAccount->name == $account) {

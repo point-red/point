@@ -2,6 +2,7 @@
 
 namespace App\Model\Inventory\OpeningStock;
 
+use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 
 class OpeningStockWarehouse extends TransactionModel
@@ -28,6 +29,11 @@ class OpeningStockWarehouse extends TransactionModel
     public function getExpiryDateAttribute($value)
     {
         return convert_to_local_timezone($value);
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 
     public function openingStock()

@@ -1,6 +1,5 @@
 <?php
 
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
 use Illuminate\Database\Seeder;
 
@@ -19,133 +18,89 @@ class ChartOfAccountTypeSeeder extends Seeder
     private function chartAccountTypes()
     {
         $assets = [
-            'cash',
-            'cash-bank transfer',
-            'bank',
-            'supplies',
-            'note receivable',
-            'input vat',
-            'inventory',
-            'account receivable',
-            'account receivable of management',
-            'account receivable of employee',
-            'other account receivable',
-            'purchase down payment',
-            'fixed asset',
-            'fixed asset depreciation',
-            'other asset',
-            'other asset amortization',
-        ];
-
-        $assetsAlias = [
-            'kas',
-            'ayat silang kas bank',
-            'bank',
-            'perlengkapan',
-            'wesel tagih',
-            'ppn masukan',
-            'sediaan',
-            'piutang usaha',
-            'piutang manajemen',
-            'piutang karyawan',
-            'piutang lain lain',
-            'uang muka pembelian',
-            'aset tetap',
-            'penyusutan aset tetap',
-            'aset lain lain',
-            'amortisasi aset lain',
+            ['CASH','KAS'],
+            ['CASH-BANK TRANSFER', 'AYAT SILANG KAS BANK'],
+            ['BANK', 'BANK'],
+            ['SUPPLIES', 'PERLENGKAPAN'],
+            ['INVENTORY', 'PERSEDIAAN'],
+            ['NOTE RECEIVABLE', 'WESEL TAGIH'],
+            ['ACCOUNT RECEIVABLE', 'PIUTANG USAHA'],
+            ['ACCOUNT RECEIVABLE OF MANAGEMENT', 'PIUTANG MANAJEMEN'],
+            ['ACCOUNT RECEIVABLE OF EMPLOYEE', 'PIUTANG KARYAWAN'],
+            ['OTHER ACCOUNT RECEIVABLE', 'PIUTANG LAIN'],
+            ['PURCHASE DOWN PAYMENT', 'UANG MUKA PEMBELIAN'],
+            ['INCOME TAX RECEIVABLE', 'PPN MASUKAN'],
+            ['OTHER CURRENT ASSET', 'ASET LANCAR LAIN-LAIN'],
+            ['FIXED ASSET', 'ASET TETAP'],
+            ['FIXED ASSET DEPRECIATION', 'DEPRESIASI ASET TETAP'],
+            ['OTHER ASSETS', 'ASET LAIN'],
+            ['OTHER ASSETS AMORTIZATION', 'AMORTISASI ASET LAIN'],
         ];
 
         $liabilities = [
-            'current liability',
-            'note payable',
-            'other current liability',
-            'sales down payment',
-            'output vat',
-            'long term liability',
-        ];
-
-        $liabilitiesAlias = [
-            'utang dagang',
-            'wesel bayar',
-            'utang lain lain',
-            'uang muka penjualan',
-            'ppn keluaran',
-            'utang jangka panjang',
+            ['NOTE PAYABLE', 'WESEL BAYAR'],
+            ['ACCOUNT PAYABLE', 'HUTANG USAHA'],
+            ['SALES DOWN PAYMENT', 'UANG MUKA PENJUALAN'],
+            ['INCOME TAX PAYABLE', 'PPN KELUARAN'],
+            ['OTHER CURRENT LIABILITY', 'LIABILITAS JANGKA PENDEK LAIN-LAIN'],
+            ['LONG TERM LIABILITY', 'LIABILITAS JANGKA PANJANG'],
         ];
 
         $equities = [
-            'owner equity',
-            'shareholder distribution',
-            'retained earning',
-        ];
-
-        $equitiesAlias = [
-            'modal pemilik',
-            'dividen',
-            'laba ditahan',
+            ['OWNER EQUITY', 'MODAL PEMILIK'],
+            ['SHAREHOLER DISTRIBUTION', 'DISTRIBUSI PEMEGANG SAHAM'],
+            ['RETAINED EARNING', 'LABA DITAHAN'],
+            ['NET INCOME', 'NET INCOME'],
         ];
 
         $incomes = [
-            'sales income',
-            'other income',
-        ];
-
-        $incomesAlias = [
-            'penjualan',
-            'pendapatan non operasional',
+            ['SALES INCOME', 'PENDAPATAN PENJUALAN'],
+            ['OTHER INCOME', 'PENDAPATAN LAIN-LAIN'],
         ];
 
         $expenses = [
-            'cost of sales',
-            'direct expense',
-            'other expense',
-            'factory overhead cost',
-        ];
-
-        $expensesAlias = [
-            'beban pokok penjualan',
-            'beban operasional',
-            'beban non operasional',
-            'biaya overhead pabrik',
+            ['COST OF SALES', 'BEBAN POKOK PENJUALAN'],
+            ['DIRECT EXPENSE', 'BEBAN OPERASIONAL'],
+            ['OTHER EXPENSE', 'BEBAN NON OPERASIONAL'],
+            ['FACTORY OVERHEAD COST', 'BIAYA OVERHEAD PABRIK'],
         ];
 
         for ($i = 0; $i < count($assets); $i++) {
             $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = strtoupper($assets[$i]);
-            $chartOfAccountType->alias = strtoupper($assetsAlias[$i]);
+            $chartOfAccountType->name = strtoupper($assets[$i][0]);
+            $chartOfAccountType->alias = strtoupper($assets[$i][1]);
             $chartOfAccountType->is_debit = true;
             $chartOfAccountType->save();
         }
 
         for ($i = 0; $i < count($liabilities); $i++) {
             $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = strtoupper($liabilities[$i]);
-            $chartOfAccountType->alias = strtoupper($liabilitiesAlias[$i]);
+            $chartOfAccountType->name = strtoupper($liabilities[$i][0]);
+            $chartOfAccountType->alias = strtoupper($liabilities[$i][1]);
             $chartOfAccountType->is_debit = false;
             $chartOfAccountType->save();
         }
 
         for ($i = 0; $i < count($equities); $i++) {
             $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = strtoupper($equities[$i]);
-            $chartOfAccountType->alias = strtoupper($equitiesAlias[$i]);
+            $chartOfAccountType->name = strtoupper($equities[$i][0]);
+            $chartOfAccountType->alias = strtoupper($equities[$i][1]);
             $chartOfAccountType->is_debit = false;
             $chartOfAccountType->save();
         }
 
         for ($i = 0; $i < count($incomes); $i++) {
             $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = strtoupper($incomes[$i]);
-            $chartOfAccountType->alias = strtoupper($incomesAlias[$i]);
+            $chartOfAccountType->name = strtoupper($incomes[$i][0]);
+            $chartOfAccountType->alias = strtoupper($incomes[$i][1]);
             $chartOfAccountType->is_debit = false;
             $chartOfAccountType->save();
         }
 
         for ($i = 0; $i < count($expenses); $i++) {
             $chartOfAccountType = new ChartOfAccountType;
-            $chartOfAccountType->name = strtoupper($expenses[$i]);
-            $chartOfAccountType->alias = strtoupper($expensesAlias[$i]);
+            $chartOfAccountType->name = strtoupper($expenses[$i][0]);
+            $chartOfAccountType->alias = strtoupper($expenses[$i][1]);
             $chartOfAccountType->is_debit = true;
             $chartOfAccountType->save();
         }

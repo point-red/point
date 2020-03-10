@@ -15,6 +15,11 @@ class BalanceSheetController extends Controller
      */
     public function index()
     {
-        return new BalanceSheetCollection(ChartOfAccount::orderBy('type_id')->orderBy('number')->orderBy('alias')->get());
+        $accounts = ChartOfAccount::orderBy('type_id')
+            ->orderBy('number')
+            ->orderBy('alias')
+            ->get();
+
+        return new BalanceSheetCollection($accounts);
     }
 }

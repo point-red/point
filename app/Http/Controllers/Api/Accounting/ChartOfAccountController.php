@@ -92,8 +92,7 @@ class ChartOfAccountController extends Controller
         $chartOfAccount->sub_ledger = $chartOfAccount->is_sub_ledger ? $request->get('sub_ledger') : null;
         $chartOfAccount->position = $request->get('position');
         $chartOfAccount->number = $request->get('number') ?? null;
-        $chartOfAccount->name = $request->get('name');
-        $chartOfAccount->alias = $request->get('name');
+        $chartOfAccount->alias = $request->get('alias');
         $chartOfAccount->save();
 
         return new ApiResource($chartOfAccount->load(['type', 'group']));

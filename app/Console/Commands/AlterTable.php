@@ -48,8 +48,10 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD COLUMN IF NOT EXISTS `sub_ledger_type` varchar(255) default null');
-            DB::connection('tenant')->statement('ALTER TABLE `journals` ADD COLUMN IF NOT EXISTS `sub_ledger_id` integer(10) unsigned default null');
+            DB::connection('tenant')->statement('ALTER TABLE `inventory_usage_items` ADD COLUMN IF NOT EXISTS `allocation_id` integer(10) unsigned default null');
+            DB::connection('tenant')->statement('ALTER TABLE `inventory_usage_items` ADD CONSTRAINT `inventory_usage_items_allocation_id_foreign` FOREIGN KEY (`allocation_id`) REFERENCES allocations (`id`) ON DELETE RESTRICT');
+            DB::connection('tenant')->statement('ALTER TABLE `inventory_usage_items` DROP COLUMN IF EXISTS `price`');
+
         }
     }
 }

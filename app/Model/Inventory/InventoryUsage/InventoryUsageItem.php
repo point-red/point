@@ -2,6 +2,7 @@
 
 namespace App\Model\Inventory\InventoryUsage;
 
+use App\Model\Master\Allocation;
 use App\Model\Master\Item;
 use App\Model\TransactionModel;
 
@@ -23,6 +24,7 @@ class InventoryUsageItem extends TransactionModel
         'production_number',
         'unit',
         'notes',
+        'allocation_id',
     ];
 
     public function setExpiryDateAttribute($value)
@@ -38,5 +40,10 @@ class InventoryUsageItem extends TransactionModel
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    public function allocation()
+    {
+        return $this->belongsTo(Allocation::class);
     }
 }

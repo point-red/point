@@ -7,7 +7,11 @@ use App\Model\Finance\Payment\Payment;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Inventory\InventoryAudit\InventoryAudit;
+use App\Model\Inventory\InventoryUsage\InventoryUsage;
 use App\Model\Inventory\OpeningStock\OpeningStock;
+use App\Model\Inventory\StockCorrection\StockCorrection;
+use App\Model\Inventory\TransferItem\ReceiveItem;
+use App\Model\Inventory\TransferItem\TransferItem;
 use App\Model\Master\Customer;
 use App\Model\Master\Item;
 use App\Model\Master\Service;
@@ -53,6 +57,10 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             // Inventory
             InventoryAudit::$morphName => InventoryAudit::class,
             OpeningStock::$morphName => OpeningStock::class,
+            InventoryUsage::$morphName => InventoryUsage::class,
+            StockCorrection::$morphName => StockCorrection::class,
+            TransferItem::$morphName => TransferItem::class,
+            ReceiveItem::$morphName => ReceiveItem::class,
             // Pos
             PosBill::$morphName => PosBill::class,
             // Purchase

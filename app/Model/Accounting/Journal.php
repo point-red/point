@@ -54,12 +54,4 @@ class Journal extends PointModel
     {
         return $this->morphTo();
     }
-
-    /**
-     * Get all of the owning subLedgerable models.
-     */
-    public function subLedgerable()
-    {
-        return $this->morphTo();
-    }
 }

@@ -48,10 +48,14 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `inventory_usage_items` ADD COLUMN IF NOT EXISTS `allocation_id` integer(10) unsigned default null');
-            DB::connection('tenant')->statement('ALTER TABLE `inventory_usage_items` ADD CONSTRAINT `inventory_usage_items_allocation_id_foreign` FOREIGN KEY (`allocation_id`) REFERENCES allocations (`id`) ON DELETE RESTRICT');
-            DB::connection('tenant')->statement('ALTER TABLE `inventory_usage_items` DROP COLUMN IF EXISTS `price`');
+            DB::connection('tenant')->statement('ALTER TABLE `stock_correction_items` DROP COLUMN IF EXISTS `price`');
+            DB::connection('tenant')->statement('ALTER TABLE `transfer_item_items` DROP COLUMN IF EXISTS `price`');
+            DB::connection('tenant')->statement('ALTER TABLE `receive_item_items` DROP COLUMN IF EXISTS `price`');
+            DB::connection('tenant')->statement('ALTER TABLE `journals` DROP COLUMN IF EXISTS `sub_ledger_id`');
+            DB::connection('tenant')->statement('ALTER TABLE `journals` DROP COLUMN IF EXISTS `sub_ledger_type`');
 
+            DB::connection('tenant')->statement('ALTER TABLE `inventory_usage_items` ADD COLUMN `chart_of_account_id` integer(10) unsigned default null');
+            DB::connection('tenant')->statement('ALTER TABLE `inventory_usage_items` ADD CONSTRAINT `inventory_usage_items_chart_of_account_id_foreign` FOREIGN KEY (`chart_of_account_id`) REFERENCES chart_of_accounts (`id`) ON DELETE RESTRICT');
         }
     }
 }

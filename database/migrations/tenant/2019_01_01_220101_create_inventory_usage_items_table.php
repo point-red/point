@@ -18,6 +18,7 @@ class CreateInventoryUsageItemsTable extends Migration
             $table->unsignedInteger('inventory_usage_id')->index();
             $table->unsignedInteger('item_id')->index();
             $table->unsignedInteger('allocation_id')->nullable()->index();
+            $table->unsignedInteger('chart_of_account_id')->index();
             $table->unsignedDecimal('quantity', 65, 30);
             $table->datetime('expiry_date')->nullable();
             $table->string('production_number')->nullable();
@@ -37,6 +38,11 @@ class CreateInventoryUsageItemsTable extends Migration
 
             $table->foreign('allocation_id')
                 ->references('id')->on('allocations')
+                ->onUpdate('restrict')
+                ->onDelete('restrict');
+
+            $table->foreign('chart_of_account_id')
+                ->references('id')->on('chart_of_accounts')
                 ->onUpdate('restrict')
                 ->onDelete('restrict');
         });

@@ -80,7 +80,7 @@ class CutOffAccountController extends Controller
         $chartOfAccount->number = $request->get('number') ?? null;
         $chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
         $chartOfAccount->name = $request->get('name');
-        $chartOfAccount->alias = $request->get('name');
+        $chartOfAccount->alias = $request->get('alias');
         $chartOfAccount->save();
 
         // create cut off account
@@ -137,7 +137,6 @@ class CutOffAccountController extends Controller
         $cutOffAccount->chartOfAccount->type_id = $request->get('type_id');
         $cutOffAccount->chartOfAccount->number = $request->get('number') ?? null;
         $cutOffAccount->chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
-        $cutOffAccount->chartOfAccount->name = $request->get('name');
         $cutOffAccount->chartOfAccount->alias = $request->get('alias');
         $cutOffAccount->chartOfAccount->save();
 

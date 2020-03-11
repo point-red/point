@@ -22,8 +22,6 @@ class CreateJournalsTable extends Migration
             $table->decimal('credit', 65, 30)->default(0);
             $table->unsignedInteger('journalable_id')->index()->nullable();
             $table->string('journalable_type')->nullable();
-            $table->unsignedInteger('sub_ledger_id')->index()->nullable();
-            $table->string('sub_ledger_type')->nullable();
             $table->text('notes')->nullable();
             $table->boolean('is_posted')->default(false);
             $table->timestamps();

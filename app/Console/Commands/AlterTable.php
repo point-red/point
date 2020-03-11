@@ -54,7 +54,7 @@ class AlterTable extends Command
             DB::connection('tenant')->statement('ALTER TABLE `journals` DROP COLUMN IF EXISTS `sub_ledger_id`');
             DB::connection('tenant')->statement('ALTER TABLE `journals` DROP COLUMN IF EXISTS `sub_ledger_type`');
 
-            DB::connection('tenant')->statement('ALTER TABLE `inventory_usage_items` ADD COLUMN `chart_of_account_id` integer(10) unsigned default null');
+            DB::connection('tenant')->statement('ALTER TABLE `inventory_usage_items` ADD COLUMN `chart_of_account_id` integer(10) unsigned');
             DB::connection('tenant')->statement('ALTER TABLE `inventory_usage_items` ADD CONSTRAINT `inventory_usage_items_chart_of_account_id_foreign` FOREIGN KEY (`chart_of_account_id`) REFERENCES chart_of_accounts (`id`) ON DELETE RESTRICT');
         }
     }

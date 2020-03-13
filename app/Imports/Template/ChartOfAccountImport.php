@@ -17,7 +17,6 @@ class ChartOfAccountImport implements ToCollection, WithHeadingRow
     */
     public function collection(Collection $collection)
     {
-        DB::connection('tenant')->beginTransaction();
         foreach ($collection as $row) {
             $type = ChartOfAccountType::where('name', $row['type'])->first();
             if (!$type) {
@@ -52,6 +51,5 @@ class ChartOfAccountImport implements ToCollection, WithHeadingRow
                 $account->save();
             }
         }
-        DB::connection('tenant')->commit();
     }
 }

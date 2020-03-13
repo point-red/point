@@ -43,7 +43,8 @@
             "App\\": "app/"
         },
         "files": [
-            "app/helpers.php"
+            "app/helpers.php",
+            "app/helpers-eloquent.php"
         ]
     },
     "autoload-dev": {

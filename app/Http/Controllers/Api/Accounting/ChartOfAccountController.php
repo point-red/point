@@ -22,16 +22,6 @@ class ChartOfAccountController extends Controller
     {
         $accounts = ChartOfAccount::eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('type', $fields)) {
-                $accounts = $accounts->leftjoin(ChartOfAccountType::getTableName(), function ($q) {
-                    $q->on(ChartOfAccount::getTableName('type_id'), '=', ChartOfAccountType::getTableName('id'));
-                });
-            }
-        }
-
         if ($request->get('is_archived')) {
             $accounts = $accounts->whereNotNull('archived_at');
         } else {

@@ -2,6 +2,7 @@
 
 namespace App\Model\Inventory\InventoryUsage;
 
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Allocation;
 use App\Model\Master\Item;
 use App\Model\TransactionModel;
@@ -19,6 +20,7 @@ class InventoryUsageItem extends TransactionModel
 
     protected $fillable = [
         'item_id',
+        'chart_of_account_id',
         'quantity',
         'expiry_date',
         'production_number',
@@ -40,6 +42,11 @@ class InventoryUsageItem extends TransactionModel
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
     }
 
     public function allocation()

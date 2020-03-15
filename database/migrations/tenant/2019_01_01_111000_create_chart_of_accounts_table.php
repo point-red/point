@@ -40,6 +40,13 @@ class CreateChartOfAccountsTable extends Migration
              * but you still be able to rename the account to match your language
              */
             $table->boolean('is_locked')->default(false);
+            /**
+             * cash_flow string
+             * cash_flow_position string
+             * ==================
+             */
+            $table->string('cash_flow')->nullable();
+            $table->string('cash_flow_position')->nullable();
             $table->string('number', 20)->nullable()->unique();
             $table->string('name');
             $table->string('alias');

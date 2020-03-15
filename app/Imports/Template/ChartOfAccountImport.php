@@ -42,6 +42,8 @@ class ChartOfAccountImport implements ToCollection, WithHeadingRow
                     $account->group_id = $group->id;
                 }
                 $account->position = strtoupper($row['position']);
+                $account->cash_flow = strtoupper($row['cash_flow']);
+                $account->cash_flow_position = strtoupper($row['cash_flow_position']);
                 $account->number = strtoupper($row['number']);
                 $account->name = strtoupper($row['name']);
                 $account->alias = strtoupper($row['alias']);

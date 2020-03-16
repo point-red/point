@@ -46,6 +46,10 @@ class ChartOfAccountController extends Controller
         $chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
         $chartOfAccount->sub_ledger = $chartOfAccount->is_sub_ledger ? $request->get('sub_ledger') : null;
         $chartOfAccount->position = $request->get('position');
+        $chartOfAccount->cash_flow = $request->get('cash_flow');
+        if ($request->get('cash_flow')) {
+            $chartOfAccount->cash_flow_position = $request->get('cash_flow_position');
+        }
         $chartOfAccount->number = $request->get('number') ?? null;
         $chartOfAccount->name = $request->get('name');
         $chartOfAccount->alias = $request->get('name');
@@ -81,6 +85,10 @@ class ChartOfAccountController extends Controller
         $chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
         $chartOfAccount->sub_ledger = $chartOfAccount->is_sub_ledger ? $request->get('sub_ledger') : null;
         $chartOfAccount->position = $request->get('position');
+        $chartOfAccount->cash_flow = $request->get('cash_flow');
+        if ($request->get('cash_flow')) {
+            $chartOfAccount->cash_flow_position = $request->get('cash_flow_position');
+        }
         $chartOfAccount->number = $request->get('number') ?? null;
         $chartOfAccount->alias = $request->get('alias');
         $chartOfAccount->save();

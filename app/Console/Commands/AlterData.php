@@ -84,7 +84,7 @@ class AlterData extends Command
             ]);
 
             $items = Item::all();
-            $account = ChartOfAccount::where('name', 'PERSEDIAAN BAHAN BAKU')->first();
+            $account = ChartOfAccount::where('alias', 'PERSEDIAAN BAHAN BAKU')->first();
 
             foreach ($items as $item) {
                 $item->chart_of_account_id = $account->id;

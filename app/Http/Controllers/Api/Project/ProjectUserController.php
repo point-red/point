@@ -19,9 +19,6 @@ class ProjectUserController extends Controller
      */
     public function destroy(Request $request)
     {
-        info('project ' . $request->get('project_id'));
-        info('user ' . $request->get('user_id'));
-
         $project = Project::findOrFail($request->get('project_id'));
         $user = User::findOrFail($request->get('user_id'));
 

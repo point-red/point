@@ -47,7 +47,6 @@ class ChartOfAccountImport implements ToCollection, WithHeadingRow
                 $account->number = strtoupper($row['number']);
                 $account->name = strtoupper($row['name']);
                 $account->alias = strtoupper($row['alias']);
-                $account->is_sub_ledger = strtoupper($row['is_sub_ledger']);
                 $account->sub_ledger = strtoupper($row['sub_ledger']);
                 $account->is_locked = strtoupper($row['is_locked']);
                 $account->save();

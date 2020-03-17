@@ -29,14 +29,14 @@ class FetchController extends Controller
         if ($request->header('Tenant')) {
             $project = Project::where('code', $request->header('Tenant'))->first();
 
-            if (!ProjectUser::where('user_id', $request->user()->id)->where('project_id', $project->id)->first()) {
-                return response()->json([
-                    'code' => 401,
-                    'message' => 'Unauthenticated',
-                ], 401);
-            }
-
             if ($project) {
+                if (!ProjectUser::where('user_id', $request->user()->id)->where('project_id', $project->id)->first()) {
+                    return response()->json([
+                        'code' => 401,
+                        'message' => 'Unauthenticated',
+                    ], 401);
+                }
+
                 $response->tenant_code = $project->code;
                 $response->tenant_name = $project->name;
                 $response->tenant_address = $project->address;

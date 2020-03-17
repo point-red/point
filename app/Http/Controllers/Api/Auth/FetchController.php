@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Model\Project\Project;
+use App\Model\Project\ProjectUser;
 use Illuminate\Http\Request;
 
 class FetchController extends Controller
@@ -27,6 +28,13 @@ class FetchController extends Controller
         $response = $request->user();
         if ($request->header('Tenant')) {
             $project = Project::where('code', $request->header('Tenant'))->first();
+
+            if (!ProjectUser::where('user_id', $request->user()->id)->where('project_id', $project->id)->first()) {
+                return response()->json([
+                    'code' => 401,
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
 
             if ($project) {
                 $response->tenant_code = $project->code;

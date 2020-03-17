@@ -10,6 +10,8 @@ use App\Http\Resources\ApiResource;
 use App\Http\Resources\Master\User\UserCollection;
 use App\Http\Resources\Master\User\UserResource;
 use App\Model\Master\User as TenantUser;
+use App\Model\Project\Project;
+use App\Model\Project\ProjectUser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -84,12 +86,17 @@ class UserController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param int $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         TenantUser::findOrFail($id)->delete();
+
+        $project = Project::where('code', $request->header('Tenant'))->first();
+        
+        ProjectUser::where('user_id', $id)->where('project_id', $project->id)->delete();
 
         return response(null, 204);
     }

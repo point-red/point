@@ -24,7 +24,7 @@ class UpdateAccountRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'position' => 'required'
         ];
     }
 }

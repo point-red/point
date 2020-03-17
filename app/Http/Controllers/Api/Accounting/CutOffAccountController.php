@@ -24,41 +24,31 @@ class CutOffAccountController extends Controller
      */
     public function index(Request $request)
     {
+        $chartOfAccounts = ChartOfAccount::all();
+
+        // create cut off account
+        foreach ($chartOfAccounts as $chartOfAccount) {
+            if (!CutOffAccount::where('chart_of_account_id', $chartOfAccount->id)->first()) {
+                $cutOffAccount = new CutOffAccount;
+                $cutOffAccount->chart_of_account_id = $chartOfAccount->id;
+                $cutOffAccount->cut_off_id = CutOff::where('id', '>', 0)->orderBy('id', 'desc')->first()->id;
+                if ($chartOfAccount->type->is_debit == true) {
+                    $cutOffAccount->debit = 0;
+                } else {
+                    $cutOffAccount->credit = 0;
+                }
+
+                $cutOffAccount->save();
+            }
+        }
+
         $cutOffAccounts = CutOffAccount::eloquentFilter($request);
 
         $cutOffAccounts = $cutOffAccounts->join(ChartOfAccount::getTableName(), function ($q) {
             $q->on(ChartOfAccount::getTableName('id'), '=', CutOffAccount::getTableName('chart_of_account_id'));
         })->join(ChartOfAccountType::getTableName(), function ($q) {
             $q->on(ChartOfAccountType::getTableName('id'), '=', ChartOfAccount::getTableName('type_id'));
-        })->whereIn(ChartOfAccountType::getTableName('name'), [
-            'cash',
-            'cash-bank transfer',
-            'bank',
-            'supplies',
-            'note receivable',
-            'account receivable',
-            'account receivable of management',
-            'account receivable of employee',
-            'other account receivable',
-            'purchase down payment',
-            'income tax receivable',
-            'inventory',
-            'other current asset',
-            'fixed asset',
-            'fixed asset depreciation',
-            'other asset',
-            'other asset amortization',
-            'current liability',
-            'other current liability',
-            'long term liability',
-            'note payable',
-            'account payable',
-            'sales down payment',
-            'income tax payable',
-            'owner equity',
-            'shareholder distribution',
-            'retained earning'
-        ]);
+        });
 
         $cutOffAccounts = pagination($cutOffAccounts, $request->get('limit'));
 
@@ -78,7 +68,12 @@ class CutOffAccountController extends Controller
         $chartOfAccount = new ChartOfAccount;
         $chartOfAccount->type_id = $request->get('type_id');
         $chartOfAccount->number = $request->get('number') ?? null;
-        $chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
+        $chartOfAccount->sub_ledger = $request->get('sub_ledger') ?? null;
+        $chartOfAccount->position = $request->get('position');
+        $chartOfAccount->cash_flow = $request->get('cash_flow');
+        if ($request->get('cash_flow')) {
+            $chartOfAccount->cash_flow_position = $request->get('cash_flow_position');
+        }
         $chartOfAccount->name = $request->get('name');
         $chartOfAccount->alias = $request->get('alias');
         $chartOfAccount->save();
@@ -126,19 +121,25 @@ class CutOffAccountController extends Controller
 
         // create cut off account
         $cutOffAccount = CutOffAccount::findOrFail($id);
-        if ($cutOffAccount->chartOfAccount->type->is_debit == true) {
+
+        $cutOffAccount->chartOfAccount->type_id = $request->get('type_id');
+        $cutOffAccount->chartOfAccount->number = $request->get('number') ?? null;
+        $cutOffAccount->chartOfAccount->sub_ledger = $request->get('sub_ledger') ?? null;
+        $cutOffAccount->chartOfAccount->position = $request->get('position');
+        $cutOffAccount->chartOfAccount->cash_flow = $request->get('cash_flow');
+        $cutOffAccount->chartOfAccount->cash_flow_position = $request->get('cash_flow_position');
+        $cutOffAccount->chartOfAccount->alias = $request->get('alias');
+        $cutOffAccount->chartOfAccount->save();
+
+        if ($cutOffAccount->chartOfAccount->position == 'DEBIT') {
             $cutOffAccount->debit = $request->get('balance');
+            $cutOffAccount->credit = 0;
         } else {
+            $cutOffAccount->debit = 0;
             $cutOffAccount->credit = $request->get('balance');
         }
 
         $cutOffAccount->save();
-
-        $cutOffAccount->chartOfAccount->type_id = $request->get('type_id');
-        $cutOffAccount->chartOfAccount->number = $request->get('number') ?? null;
-        $cutOffAccount->chartOfAccount->is_sub_ledger = $request->get('is_sub_ledger');
-        $cutOffAccount->chartOfAccount->alias = $request->get('alias');
-        $cutOffAccount->chartOfAccount->save();
 
         DB::connection('tenant')->commit();
 

@@ -8,6 +8,7 @@ use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\CutOff;
 use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
 use App\Model\Master\Branch;
+use App\Model\Master\Item;
 use App\Model\Master\PricingGroup;
 use App\Model\Master\User;
 use App\Model\Master\Warehouse;
@@ -81,6 +82,14 @@ class AlterData extends Command
                 '--class' => 'SettingJournalSeeder',
                 '--force' => true,
             ]);
+
+            $items = Item::all();
+            $account = ChartOfAccount::where('name', 'PERSEDIAAN BAHAN BAKU')->first();
+
+            foreach ($items as $item) {
+                $item->chart_of_account_id = $account->id;
+                $item->save();
+            }
 
             DB::connection('tenant')->commit();
             DB::connection('tenant')->statement('SET FOREIGN_KEY_CHECKS=1;');

@@ -17,7 +17,7 @@ class JournalController extends Controller
      */
     public function index(Request $request)
     {
-        $journals = Journal::where('chart_of_account_id', $request->get('chart_of_account_id'));
+        $journals = Journal::eloquentFilter($request);
 
         $journals = pagination($journals, $request->get('limit'));
 

@@ -1,1 +1,28 @@
-- Empty Menu
+- Prologue
+  - [Release Notes](/en/prologue/release-notes.md)
+  - [Contribution Guide](/en/prologue/contribution-guide.md)
+  - [API Documentation](https://docs.point.red)
+  - [Github](https://github.com/point-red/point)
+- Getting Started
+  - [Introduction](/en/getting-started/introduction.md)
+  - [Installation](/en/getting-started/installation.md)
+- Develop
+  - [Directory Structure](/en/develop/directory-structure.md)
+  - [Scaffolding](/en/develop/scaffolding.md)
+  - [Dummy Data](/en/develop/dummy-data.md)
+  - [Commands](/en/develop/commands.md)
+- Modules
+  - [User & Role](/en/modules/user-and-role.md)
+  - Master
+      - [Person](/en/modules/person.md)
+      - [Warehouse](/en/modules/warehouse.md)
+  - [Inventory & Services](/en/modules)
+  - [Asset](/en/modules)
+  - [Pembelian](/id/modules/pembelian/permintaan-pembelian.md)
+  - [Point of Sale](/en/modules)
+  - [Service](/en/modules)
+  - [Accounting](/en/modules)
+- Testing
+  - [Intro](/en/testing/intro.md)
+  - [Test Master](/en/testing/testing-master.md)
+

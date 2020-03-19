@@ -1,0 +1,19 @@
+# PINDAH BARANG
+
+
+Pindah barang merupakan kegiatan perpindahan persediaan dari gudang satu ke gudang dua dan seterusnya.
+
+Pindah barang memiliki fungsi sebagai perantara barang saat barang sedang dalam perjalanan. Dan agar user tidak keliru saat melihat stock gudang dalam sistem.
+
+Dalam sistem pindah barang terdapat pengakuan pengurangan stock yang akan dipindahkan dan menambahkan stock dalam perjalanan. Oleh karena itu akan terjadi penjurnalan.
+
+Contoh : Barang jadi A dari gudang Surabaya akan dipindahkan ke gudang di Mojokerto. Jumlah dari barang tersebut sebanyak 25.000 pcs dengan harga per pcs = Rp.3.500 jadi nominal atas perpindahan barang tersebut sebesar Rp.87.500.000
+
+Jurnal yang akan terjadi :
+
+| No. Akun | Nama Akun                   | Debit         | Kredit        |
+| -------- | --------------------------- | ------------- | ------------- |
+| 10405    | Persediaan Dalam Perjalanan | Rp.87.500.000 |               |
+| 10404    | Persediaan Barang Jadi      |               | Rp.87.500.000 |
+
+Persediaan diakui dalam akun persediaan dalam perjalanan agar departemen gudang tidak salah dalam melihat stock dalam sistem dan akun neraca akan tetap seimbang antara Aktiva dan Passivanya.

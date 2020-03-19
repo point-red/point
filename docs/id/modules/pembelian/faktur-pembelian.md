@@ -3,7 +3,7 @@
 
 Faktur Pembelian merupakan penerimaan sejumlah tagihan yang harus dibayarkan oleh perusahaan atas barang yang telah diterima. 
 
-Faktur Pembelian memiliki fungsi untuk input transaksi hutang perusahaan berdasarkan faktur yang diterima. Sehingga perusahaan dapat melihat jumlah daftar hutang yang masih harus dibayar kepada supplier
+Faktur Pembelian memiliki fungsi untuk input transaksi hutang perusahaan berdasarkan faktur yang diterima. Sehingga perusahaan dapat melihat jumlah daftar hutang yang masih harus dibayar kepada supplier serta masa jatuh temponya.
 
 Contoh : Perusahaan menerima Faktur Pembelian atas barang yang telah diterima pada tanggal 1 dan 5 Januari 2020 sejumlah Rp. 45.000.000
 

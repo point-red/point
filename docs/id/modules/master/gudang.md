@@ -1,14 +1,14 @@
-# Warehouse
+# GUDANG
 
-Warehouse is a building to storage goods
+Gudang adalah bangunan tempat menyimpan persediaan barang. 
 
 ## Database
 
 ![](_media/erd/warehouses.jpg)
 
-### Warehouse
+### Gudang
 
-Table : `warehouses`
+Table : `gudang`
 
 Properties :
 

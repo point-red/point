@@ -18,7 +18,7 @@
       - [Gudang](/id/modules/master/gudang.md)
       - [Pelanggan](id/modules/master/pelanggan.md)
       - [Pemasok](id/modules/master/pemasok.md)
-  - [Asset](/id/modules)
+      - [Asset](/id/modules)
   - Pembelian
       - [Permintaan Pembelian](/id/modules/pembelian/permintaan-pembelian.md)
       - [Pesanan Pembelian](id/modules/pembelian/pesanan-pembelian.md)
@@ -48,4 +48,3 @@
 - Testing
   - [Intro](/id/testing/intro.md)
   - [Test Master](/id/testing/testing-master.md)
-

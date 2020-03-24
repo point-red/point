@@ -31,8 +31,18 @@ class ItemController extends Controller
                 ->where('groupables.group_id', '=', $request->get('group_id'));
         }
 
-        if ($request->get('below_stock_reminder') == true) {
-            $items = $items->whereRaw('items.stock < items.stock_reminder');
+        if ($request->has('with_stock')) {
+            $items = $items->leftJoin('inventories', 'inventories.item_id', '=', 'items.id')
+                ->selectRaw('SUM(IFNULL(inventories.quantity, 0)) as stock')
+                ->groupBy('items.id');
+
+            if ($request->has('stock_below_stock_reminder')) {
+                $items = $items->havingRaw('SUM(IFNULL(inventories.quantity, 0)) < stock_reminder');
+            }
+
+            if ($request->has('stock_above_zero')) {
+                $items = $items->havingRaw('SUM(IFNULL(inventories.quantity, 0)) > 0');
+            }
         }
 
         if ($request->get('is_archived')) {

@@ -18,7 +18,9 @@
       - [Gudang](/id/modules/master/gudang.md)
       - [Pelanggan](id/modules/master/pelanggan.md)
       - [Pemasok](id/modules/master/pemasok.md)
-  - [Asset](/id/modules)
+  - Aset Tetap
+      - [Metode Penyusutan](/id/modules/aset-tetap/metode-penyusutan.md)
+      - [Tipe Aset]()
   - Pembelian
       - [Permintaan Pembelian](/id/modules/pembelian/permintaan-pembelian.md)
       - [Pesanan Pembelian](id/modules/pembelian/pesanan-pembelian.md)

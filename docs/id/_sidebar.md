@@ -38,9 +38,9 @@
       - [Uang Muka Penjualan](id/modules/penjualan/uang-muka-penjualan.md)
       - [Retur Penjualan](id/modules/penjualan/retur-penjualan.md)
   - Persediaan
-      - [Koreksi Stock](id/modules/persediaan/koreksi-stock.md)
       - [Pemakaian Persediaan](id/modules/persediaan/pemakaian-persediaan.md)
       - [Pindah Barang](id/modules/persediaan/pindah-barang.md)
+      - [Koreksi Stock](id/modules/persediaan/koreksi-stock.md)
   - Akuntansi
       - [Daftar Akun](id/modules/akuntansi/daftar-akun.md)
       - [Laporan Neraca](id/modules/akuntansi/laporan-neraca.md)

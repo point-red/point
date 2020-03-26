@@ -20,7 +20,7 @@
       - [Pemasok](id/modules/master/pemasok.md)
   - Aset Tetap
       - [Metode Penyusutan](/id/modules/aset-tetap/metode-penyusutan.md)
-      - [Tipe Aset]()
+      - [Tipe Aset tetap](id/modules/aset-tetap/tipe-aset-tetap.md)
   - Pembelian
       - [Permintaan Pembelian](/id/modules/pembelian/permintaan-pembelian.md)
       - [Pesanan Pembelian](id/modules/pembelian/pesanan-pembelian.md)
@@ -50,4 +50,3 @@
 - Testing
   - [Intro](/id/testing/intro.md)
   - [Test Master](/id/testing/testing-master.md)
-

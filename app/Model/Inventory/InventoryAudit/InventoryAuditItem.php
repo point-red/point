@@ -25,6 +25,7 @@ class InventoryAuditItem extends TransactionModel
         'price',
         'unit',
         'notes',
+        'converter',
     ];
 
     public function setExpiryDateAttribute($value)

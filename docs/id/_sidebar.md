@@ -18,7 +18,9 @@
       - [Gudang](/id/modules/master/gudang.md)
       - [Pelanggan](id/modules/master/pelanggan.md)
       - [Pemasok](id/modules/master/pemasok.md)
-      - [Asset](/id/modules)
+  - Aset Tetap
+      - [Metode Penyusutan](/id/modules/aset-tetap/metode-penyusutan.md)
+      - [Tipe Aset tetap](id/modules/aset-tetap/tipe-aset-tetap.md)
   - Pembelian
       - [Permintaan Pembelian](/id/modules/pembelian/permintaan-pembelian.md)
       - [Pesanan Pembelian](id/modules/pembelian/pesanan-pembelian.md)
@@ -36,9 +38,9 @@
       - [Uang Muka Penjualan](id/modules/penjualan/uang-muka-penjualan.md)
       - [Retur Penjualan](id/modules/penjualan/retur-penjualan.md)
   - Persediaan
-      - [Koreksi Stock](id/modules/persediaan/koreksi-stock.md)
       - [Pemakaian Persediaan](id/modules/persediaan/pemakaian-persediaan.md)
       - [Pindah Barang](id/modules/persediaan/pindah-barang.md)
+      - [Koreksi Stock](id/modules/persediaan/koreksi-stock.md)
   - Akuntansi
       - [Daftar Akun](id/modules/akuntansi/daftar-akun.md)
       - [Laporan Neraca](id/modules/akuntansi/laporan-neraca.md)

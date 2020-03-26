@@ -1,9 +1,13 @@
 # PERMINTAAN PEMBELIAN
 
+![](_media/id/pembelian/permintaan-pembelian.jpg)
 
-Permintaan Pembelian adalah pengajuan dari departemen yang memerlukan adanya pengadaan barang tertentu yang berhubungan dengan kegiatan operasional maupun non operasional.
+## DEFINISI
+Pengajuan dari departemen yang memerlukan adanya pengadaan barang yang berhubungan dengan kegiatan operasional maupun non operasional.
 
-Permintaan Pembelian memiliki fungsi untuk menghubungkan departemen yang mengajukan dengan user yang memiliki wewenang dalam memberikan persetujuan kemudian masuk ke dalam departemen pembelian untuk diproses ke tahap pembelian selanjutnya. Sehingga dapat dilihat daftar riwayat permintaan barangnya.
+## KEGUNAAN
+Sebagai penghubung antara departemen yang mengajukan dengan user yang memiliki wewenang untuk memberikan persetujuan agar dapat diproses oleh departemen pembelian. Sehingga dapat dilihat daftar riwayat permintaan barangnya.
 
-Contoh : Bagian gudang melakukan input data permintaan pembelian untuk beberapa item persediaan barang yang akan habis yang ditujukan kepada user penanggung jawab stock. Saat form telah disetujui oleh penanggung jawab stock, maka form akan masuk dalam daftar tunggu departemen purchasing untuk selanjutnya dibuatkan purchase ordernya.
+## CONTOH
+Bagian gudang melakukan input data permintaan pembelian untuk beberapa item persediaan barang yang akan habis, untuk ditujukan kepada user penanggung jawab stock. Saat form telah disetujui oleh penanggung jawab stock, maka form akan masuk dalam daftar tunggu departemen pembelian untuk diproses pembeliannya.
 

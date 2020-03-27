@@ -10,5 +10,6 @@ Sebagai pemberi informasi dari departemen pembelian ke departemen keuangan bahwa
 
 !> **Dalam sistem uang muka pembelian** hanya berisi informasi atas uang muka yang harus dibayarkan oleh pihak keuangan. Sehingga tidak terjadi jurnal karena jurnal akan diakui pada saat kasir perusahaan melakukan pembayaran uang muka melalui sistem kas / bank.
 
+
 ## CONTOH
 Departemen pembelian mengirimkan pesanan pembelian kepada supplier. Kemudian supplier memberikan informasi bahwa atas pesanan tersebut membutuhkan pembayaran di muka agar barang dapat dikirimkan. Departemen pembelian harus mengisi form uang muka pembelian sebagai informasi kepada departemen keuangan agar dapat mengaturkan pembayarannya. 

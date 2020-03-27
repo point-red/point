@@ -11,4 +11,5 @@ sebagai perantara antara pihak yang bertanggung jawab atas pengeluaran kas denga
 !> **Dalam Perintah Bayar** tidak terjadi jurnal karena hanya sebagai pengajuan pembayaran kepada atasan / yang memegang tanggung jawab hutang.
 
 ## CONTOH
-Bagian keuangan memiliki rencana untuk melakukan pembayaran kepada beberapa supplier. Saat bagian keuangan melakukan pengajuan persetujuan pembayaran, atasan / manager melihat adanya hutang yang sebenarnya masih bisa ditunda dulu karena saat itu kas / bank sangat menipis / sedang dibutuhkan untuk kegiatan tertentu. Maka atasan / manager dapat tidak menyetujui pembayaran atas hutang-hutang yang dapat diundur. 
+Bagian keuangan memiliki rencana untuk melakukan pembayaran kepada beberapa supplier. Saat bagian keuangan melakukan pengajuan persetujuan pembayaran, atasan / manager melihat adanya hutang yang sebenarnya masih bisa ditunda dulu karena saat itu kas / bank sangat menipis / sedang dibutuhkan untuk kegiatan tertentu. Maka atasan / manager dapat tidak menyetujui pembayaran atas hutang-hutang yang dapat diundur.
+ 

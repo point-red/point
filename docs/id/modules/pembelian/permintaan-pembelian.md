@@ -10,4 +10,3 @@ Sebagai penghubung antara departemen yang mengajukan dengan user yang memiliki w
 
 ## CONTOH
 Bagian gudang melakukan input data permintaan pembelian untuk beberapa item persediaan barang yang akan habis, untuk ditujukan kepada user penanggung jawab stock. Saat form telah disetujui oleh penanggung jawab stock, maka form akan masuk dalam daftar tunggu departemen pembelian untuk diproses pembeliannya.
-

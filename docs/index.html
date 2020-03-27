@@ -14,7 +14,9 @@
 <script>
   window.$docsify = {
     alias: {
-      '/.*/_navbar.md': '/_navbar.md'
+      '/.*/_navbar.md': '/_navbar.md',
+      '/.*/_media': '/_media',
+      '/.*/images': '/images',
     },
     name: 'Point.RED',
     repo: 'point-red/point',
@@ -39,6 +41,15 @@
       placeholder: 'Type to search',
       noData: 'No Results!',
       depth: 6
+    },
+
+    markdown: {
+      // https://marked.js.org/#/USING_PRO.md#renderer
+      renderer: {
+        image: function(href, title) {
+          return `<img src="${href}" data-origin="${href}" alt="${title}">`
+        }
+      }
     }
   }
 </script>

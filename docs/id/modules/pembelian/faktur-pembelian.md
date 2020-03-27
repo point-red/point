@@ -3,7 +3,7 @@
 ![](_media/id/pembelian/faktur-pembelian.jpg)
 
 ## DEFINISI
-Penerimaan sejumlah tagihan yang harus dibayarkan oleh perusahaan atas barang yang telah diterima. 
+Penerimaan sejumlah tagihan yang harus dibayarkan perusahaan atas barang yang telah diterima. 
 
 ## KEGUNAAN
 untuk input transaksi hutang perusahaan berdasarkan faktur yang diterima. Sehingga perusahaan dapat melihat jumlah daftar hutang yang masih harus dibayar kepada supplier serta masa jatuh temponya.

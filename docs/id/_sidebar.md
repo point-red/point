@@ -26,7 +26,7 @@
       - [Pesanan Pembelian](id/modules/pembelian/pesanan-pembelian.md)
       - [Penerimaan Barang](id/modules/pembelian/penerimaan-barang.md)
       - [Faktur Pembelian](id/modules/pembelian/faktur-pembelian.md)
-      - [Rangkaian Pembelian](id/modules/pembelian/rangkaian-pembelian.md)
+      - [Perintah Bayar](id/modules/pembelian/perintah-bayar.md)
       - [Uang Muka Pembelian](id/modules/pembelian/uang-muka-pembelian.md)
       - [Retur Pembelian](id/modules/pembelian/retur-pembelian.md)
   - Penjualan

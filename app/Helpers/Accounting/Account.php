@@ -6,13 +6,13 @@ use App\Model\Accounting\ChartOfAccountType;
 
 class Account
 {
-    public static function currentLiabilities()
+    public static function accountPayables()
     {
-        return optional(ChartOfAccountType::where('name', 'current liability')->first())->accounts;
+        return optional(ChartOfAccountType::where('name', 'ACCOUNT PAYABLE')->first())->accounts;
     }
 
     public static function accountReceivables()
     {
-        return optional(ChartOfAccountType::where('name', 'account receivable')->first())->accounts;
+        return optional(ChartOfAccountType::where('name', 'ACCOUNT RECEIVABLE')->first())->accounts;
     }
 }

@@ -147,7 +147,6 @@ class PurchaseInvoice extends TransactionModel
         $purchaseInvoice->updateIfDone();
 
         self::setPurchaseReceiveDone($purchaseInvoice);
-        self::updateInventory($purchaseInvoice);
         self::updateJournal($purchaseInvoice);
 
         return $purchaseInvoice;
@@ -196,39 +195,6 @@ class PurchaseInvoice extends TransactionModel
         foreach ($purchaseReceives as $receive) {
             $receive->form()->update(['done' => true]);
         }
-    }
-
-    /**
-     * Update price, cogs in inventory.
-     */
-    private static function updateInventory($purchaseInvoice)
-    {
-        $purchaseInvoice->load('items.purchaseReceive.form');
-        $items = $purchaseInvoice->items;
-
-        foreach ($items as $item) {
-            $formId = $item->purchaseReceive->form->id;
-            $itemId = $item->item_id;
-
-            $additionalFee = $purchaseInvoice->delivery_fee - $purchaseInvoice->discount_value;
-            $total = $purchaseInvoice->amount - $additionalFee - $purchaseInvoice->tax;
-            $price = self::calculatePrice($item, $total, $additionalFee);
-
-            $inventory = Inventory::where('form_id', $formId)->where('item_id', $itemId)->first();
-
-            $inventory->price = $price;
-            $inventory->total_value = $price * $inventory->quantity;
-            $inventory->cogs = $inventory->total_value / $inventory->total_quantity;
-            $inventory->save();
-        }
-    }
-
-    private static function calculatePrice($item, $total, $additionalFee)
-    {
-        $totalPerItem = ($item->price - $item->discount_value) * $item->quantity * $item->converter;
-        $feePerItem = $totalPerItem / $total * $additionalFee;
-
-        return ($totalPerItem + $feePerItem) / $item->quantity;
     }
 
     private static function updateJournal($purchaseInvoice)

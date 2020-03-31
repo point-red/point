@@ -53,7 +53,7 @@ class UpdateSalesContractRequest extends FormRequest
         } else {
             $rulesSalesContractItemGroup = [
                 'groups' => 'required|array',
-                'groups.*.group_id' => ValidationRule::foreignKey('groups'),
+                'groups.*.item_group_id' => ValidationRule::foreignKey('item_groups'),
                 'groups.*.price' => ValidationRule::price(),
                 'groups.*.quantity' => ValidationRule::quantity(),
                 'groups.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),

@@ -36,7 +36,7 @@ class SalesContractGroupItem extends TransactionModel
 
     public function group()
     {
-        return $this->belongsTo(ItemGroup::class);
+        return $this->belongsTo(ItemGroup::class, 'item_group_id');
     }
 
     public function salesOrderItems()

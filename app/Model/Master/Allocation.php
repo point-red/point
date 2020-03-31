@@ -30,7 +30,7 @@ class Allocation extends MasterModel
      */
     public function groups()
     {
-        return $this->morphToMany(Group::class, 'groupable');
+        return $this->belongsToMany(AllocationGroup::class);
     }
 
     public function reports()

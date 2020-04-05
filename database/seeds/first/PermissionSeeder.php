@@ -231,6 +231,7 @@ class PermissionSeeder extends Seeder
 
         $this->setScaleWeightPermission();
         $this->setPinPointPermission();
+        $this->setPlayBookPermission();
     }
 
     private function setScaleWeightPermission()
@@ -263,6 +264,22 @@ class PermissionSeeder extends Seeder
         Permission::createIfNotExists('read pin point attendance report');
         Permission::createIfNotExists('notification pin point sales');
         Permission::createIfNotExists('notification pin point supervisor');
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
+    private function setPlayBookPermission()
+    {
+        Permission::createIfNotExists('menu play book');
+
+        $allPermission = [
+            'play book glossaries'
+        ];
 
         foreach ($allPermission as $permission) {
             Permission::createIfNotExists('create '.$permission);

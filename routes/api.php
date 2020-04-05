@@ -10,6 +10,8 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
 Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(function () {
     Route::post('register', 'RegisterController@store');
 
@@ -72,5 +74,6 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         // Plugin
         require base_path('routes/api/plugin/scale-weight.php');
         require base_path('routes/api/plugin/pin-point.php');
+        require base_path('routes/api/plugin/play-book.php');
     });
 });

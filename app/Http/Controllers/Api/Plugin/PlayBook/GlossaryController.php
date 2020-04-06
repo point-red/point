@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Model\Plugin\PlayBook\Glossary;
 use App\Http\Requests\Plugin\PlayBook\Glossary\StoreGlossaryRequest as StoreRequest;
 use App\Http\Resources\ApiResource;
+use App\Http\Resources\ApiCollection;
 
 class GlossaryController extends Controller
 {
@@ -15,9 +16,12 @@ class GlossaryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $query = Glossary::filter($request);
+        $glossaries = pagination($query, $request->limit ?: 10);
+
+        return new ApiCollection($glossaries);
     }
 
     /**
@@ -49,9 +53,9 @@ class GlossaryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Glossary $glossary)
     {
-        //
+        return response()->json(compact('glossary'));
     }
 
     /**

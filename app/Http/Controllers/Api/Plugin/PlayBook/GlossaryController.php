@@ -91,8 +91,10 @@ class GlossaryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Glossary $glossary)
     {
-        //
+        $glossary->delete();
+
+        return ['message' => 'Glossary deleted.'];
     }
 }

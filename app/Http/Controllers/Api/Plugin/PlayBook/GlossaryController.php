@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Api\Plugin\PlayBook;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Model\Plugin\PlayBook\Glossary;
-use App\Http\Requests\Plugin\PlayBook\Glossary\StoreGlossaryRequest as StoreRequest;
 use App\Http\Resources\ApiResource;
 use App\Http\Resources\ApiCollection;
+use App\Http\Requests\Plugin\PlayBook\Glossary\StoreGlossaryRequest as StoreRequest;
+use App\Http\Requests\Plugin\PlayBook\Glossary\UpdateGlossaryRequest as UpdateRequest;
 
 class GlossaryController extends Controller
 {
@@ -76,9 +77,12 @@ class GlossaryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateRequest $request, Glossary $glossary)
     {
-        //
+        $glossary->duplicateToHistory();
+        $glossary->update($request->all());
+
+        return response()->json(compact('glossary'));
     }
 
     /**

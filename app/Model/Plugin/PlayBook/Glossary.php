@@ -15,8 +15,18 @@ class Glossary extends Model
         'code', 'name', 'abbreviation', 'note'
     ];
 
+    public function histories()
+    {
+        return $this->hasMany(GlossaryHistory::class);
+    }
+
     public function scopeFilter($query, Request $request)
     {
         return $query->where('code', 'like', "%{$request->search}%");
+    }
+
+    public function duplicateToHistory()
+    {
+        $this->histories()->save(new GlossaryHistory($this->toArray()));
     }
 }

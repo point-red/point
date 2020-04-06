@@ -19,20 +19,10 @@ class GlossaryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Glossary::filter($request);
+        $query = Glossary::filter($request)->orderBy('code');
         $glossaries = pagination($query, $request->limit ?: 10);
 
         return new ApiCollection($glossaries);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -44,6 +34,7 @@ class GlossaryController extends Controller
     public function store(StoreRequest $request)
     {
         $glossary = Glossary::create($request->all());
+        $glossary->duplicateToHistory();
 
         return new ApiResource($glossary);
     }
@@ -60,17 +51,6 @@ class GlossaryController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -79,8 +59,8 @@ class GlossaryController extends Controller
      */
     public function update(UpdateRequest $request, Glossary $glossary)
     {
-        $glossary->duplicateToHistory();
         $glossary->update($request->all());
+        $glossary->duplicateToHistory();
 
         return response()->json(compact('glossary'));
     }

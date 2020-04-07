@@ -16,8 +16,9 @@ class PerformanceReportController extends Controller
 {
     public function index(Request $request)
     {
-        $dateFrom = date('Y-m-d H:i:s', strtotime($request->get('date_from')));
-        $dateTo = date('Y-m-d H:i:s', strtotime($request->get('date_to')));
+
+        $dateFrom = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('date_from'))));
+        $dateTo = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('date_to'))));
         $numberOfDays = Automated::getDays($request->get('date_from'), $request->get('date_to'));
 
         $queryTarget = $this->queryTarget($dateFrom, $dateTo);

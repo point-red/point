@@ -186,33 +186,22 @@ class SalesVisitationController extends Controller
             }
         }
 
-        // Details
-        $array_item = $request->get('item');
-        $array_price = $request->get('price');
-        $array_quantity = $request->get('quantity');
-
         $totalVisitation = SalesVisitation::rightJoin(
             SalesVisitationDetail::getTableName(),
             SalesVisitationDetail::getTableName('sales_visitation_id'),
             '=',
             SalesVisitation::getTableName('id')
-        )
-            ->where(SalesVisitation::getTableName('name'), $customer->name)->get()->count();
+        )->where(SalesVisitation::getTableName('name'), $customer->name)->get()->count();
 
-        if ($array_item) {
-            for ($i = 0; $i < count($array_item); $i++) {
-                if ($array_item[$i] && $array_price[$i] && $array_quantity[$i]) {
-                    $item = Item::where('name', $array_item[$i])->first();
-                    if (! $item) {
-                        $item = new Item;
-                        $item->name = $array_item[$i];
-                        $item->save();
-                    }
+        $items = $request->get('items');
+        if ($items) {
+            for ($i = 0; $i < count($items); $i++) {
+                if ($items[$i]['item_id'] && $items[$i]['quantity'] && $items[$i]['price']) {
                     $detail = new SalesVisitationDetail;
                     $detail->sales_visitation_id = $salesVisitation->id;
-                    $detail->item_id = $item->id;
-                    $detail->price = $array_price[$i];
-                    $detail->quantity = $array_quantity[$i];
+                    $detail->item_id = $items[$i]['item_id'];
+                    $detail->price = $items[$i]['price'];
+                    $detail->quantity = $items[$i]['quantity'];
                     $detail->save();
 
                     if ($i == 0 && $totalVisitation > 0) {
@@ -225,7 +214,6 @@ class SalesVisitationController extends Controller
 
         if ($request->get('image')) {
             \App\Helpers\StorageHelper::uploadFromBase64($request->get('image'), 'sales visitation form', $salesVisitation->id);
-            ;
         }
 
         if ($salesVisitation->details->count() > 0) {

@@ -49,7 +49,7 @@ class ChartOfAccountController extends Controller
         $chartOfAccount->position = $request->get('position');
         $chartOfAccount->cash_flow = $request->get('cash_flow');
         if ($request->get('cash_flow')) {
-            $chartOfAccount->cash_flow_position = $request->get('cash_flow_position');
+            $chartOfAccount->cash_flow_position = $request->get('cash_flow_position') ?? null;
         }
         $chartOfAccount->number = $request->get('number') ?? null;
         $chartOfAccount->name = $request->get('name');
@@ -87,7 +87,7 @@ class ChartOfAccountController extends Controller
         $chartOfAccount->position = $request->get('position');
         $chartOfAccount->cash_flow = $request->get('cash_flow');
         if ($request->get('cash_flow')) {
-            $chartOfAccount->cash_flow_position = $request->get('cash_flow_position');
+            $chartOfAccount->cash_flow_position = $request->get('cash_flow_position') ?? null;
         }
         $chartOfAccount->number = $request->get('number') ?? null;
         $chartOfAccount->alias = $request->get('alias');

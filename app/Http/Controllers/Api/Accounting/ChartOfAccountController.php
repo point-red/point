@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Accounting;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Accounting\ChartOfAccount\StoreRequest;
+use App\Http\Requests\Accounting\ChartOfAccount\UpdateRequest;
 use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
@@ -39,7 +41,7 @@ class ChartOfAccountController extends Controller
      * @param Request  $request
      * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         $chartOfAccount = new ChartOfAccount;
         $chartOfAccount->type_id = $request->get('type_id');
@@ -77,7 +79,7 @@ class ChartOfAccountController extends Controller
      * @param  int  $id
      * @return ApiResource
      */
-    public function update(Request $request, $id)
+    public function update(UpdateRequest $request, $id)
     {
         $chartOfAccount = ChartOfAccount::findOrFail($id);
         $chartOfAccount->type_id = $request->get('type_id');

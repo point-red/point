@@ -8,6 +8,8 @@ class CutOffAccount extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'cut_off_account';
+
     protected $table = 'cut_off_accounts';
 
     protected $casts = [

@@ -9,6 +9,8 @@ class CutOffSalesDownPayment extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'cut_off_sales_down_payment';
+
     protected $table = 'cut_off_sales_down_payments';
 
     protected $casts = [

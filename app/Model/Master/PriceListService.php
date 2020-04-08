@@ -8,6 +8,8 @@ class PriceListService extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'price_list_service';
+
     protected $fillable = [
         'pricing_group_id',
         'service_id',

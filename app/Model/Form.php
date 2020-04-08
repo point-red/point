@@ -14,6 +14,8 @@ class Form extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'form';
+
     protected $user_logs = true;
 
     protected $fillable = [

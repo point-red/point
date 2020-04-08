@@ -8,6 +8,8 @@ class AllocationGroup extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'allocation_group';
+
     protected $fillable = ['name'];
 
     /**

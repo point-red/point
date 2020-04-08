@@ -35,9 +35,10 @@ class SalesVisitationController extends Controller
      */
     public function index(Request $request)
     {
-        $salesVisitationForm = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
-            ->join('customers', 'customers.id', '=', 'pin_point_sales_visitations.customer_id')
-            ->join('users', 'users.id', '=', 'forms.created_by')
+        $salesVisitationForm = SalesVisitation::from('pin_point_sales_visitations as ' . SalesVisitation::$alias)
+            ->join('forms', 'forms.id', '=', 'sales_visitation.form_id')
+            ->join('customers', 'customers.id', '=', 'sales_visitation.customer_id')
+            ->join('users as created_by', 'created_by.id', '=', 'forms.created_by')
             ->with('form.createdBy')
             ->with('interestReasons')
             ->with('noInterestReasons')

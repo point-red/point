@@ -8,6 +8,8 @@ class Branch extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'branch';
+
     protected $table = 'branches';
 
     protected $fillable = [

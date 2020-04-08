@@ -8,6 +8,8 @@ class ServiceGroup extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'service_group';
+
     protected $fillable = ['name'];
 
     /**

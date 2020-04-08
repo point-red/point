@@ -10,6 +10,8 @@ class Service extends MasterModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'service';
+
     protected $appends = ['label'];
 
     protected $fillable = [

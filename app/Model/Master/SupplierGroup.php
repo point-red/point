@@ -8,6 +8,8 @@ class SupplierGroup extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'supplier_group';
+
     protected $fillable = ['name'];
 
     /**

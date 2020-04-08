@@ -8,6 +8,8 @@ class ChartOfAccountType extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'account_type';
+
     protected $table = 'chart_of_account_types';
 
     public function accounts()

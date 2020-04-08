@@ -11,6 +11,8 @@ class User extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'user';
+
     protected $guard_name = 'api';
 
     protected $user_logs = false;

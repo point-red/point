@@ -8,6 +8,8 @@ class ItemUnit extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'item_unit';
+
     protected $fillable = [
         'name',
         'label',

@@ -11,6 +11,8 @@ class SalesVisitation extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_visitation';
+
     protected $table = 'pin_point_sales_visitations';
 
     protected $casts = [

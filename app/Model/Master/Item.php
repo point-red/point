@@ -17,6 +17,8 @@ class Item extends MasterModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'item';
+
     protected $appends = ['label'];
 
     protected $fillable = [

@@ -8,6 +8,8 @@ class ItemGroup extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'item_group';
+
     protected $fillable = ['name', 'type'];
 
     /**

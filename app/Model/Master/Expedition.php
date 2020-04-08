@@ -8,6 +8,8 @@ class Expedition extends MasterModel
 {
     public static $morphName = 'Expedition';
 
+    public static $alias = 'expedition';
+
     protected $connection = 'tenant';
 
     protected $fillable = [

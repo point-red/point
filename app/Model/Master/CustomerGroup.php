@@ -9,6 +9,8 @@ class CustomerGroup extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'customer_group';
+
     protected $fillable = ['name'];
 
     /**

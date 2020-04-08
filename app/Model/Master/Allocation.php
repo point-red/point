@@ -9,6 +9,8 @@ class Allocation extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'allocation';
+
     protected $appends = ['label'];
 
     protected $fillable = [

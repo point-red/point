@@ -8,6 +8,8 @@ class Invoice extends Model
 {
     protected $connection = 'mysql';
 
+    public static $alias = 'invoice';
+
     public function setDateAttribute($value)
     {
         $this->attributes['date'] = convert_to_server_timezone($value);

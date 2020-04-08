@@ -11,6 +11,8 @@ class CutOff extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'cut_off';
+
     protected $table = 'cut_offs';
 
     public $timestamps = false;

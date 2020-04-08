@@ -8,6 +8,8 @@ class Email extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'email';
+
     /**
      * Get all of the owning emailable models.
      */

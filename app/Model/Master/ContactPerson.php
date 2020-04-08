@@ -8,6 +8,8 @@ class ContactPerson extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'contact_person';
+
     /**
      * Get all of the owning contactable models.
      */

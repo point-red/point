@@ -9,6 +9,8 @@ class ChartOfAccount extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'chart_of_account';
+
     protected $table = 'chart_of_accounts';
 
     protected $appends = ['label'];

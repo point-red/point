@@ -8,6 +8,8 @@ class Address extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'address';
+
     /**
      * Get all of the owning addressable models.
      */

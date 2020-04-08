@@ -9,6 +9,8 @@ class Warehouse extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'warehouse';
+
     protected $appends = ['label'];
 
     protected $fillable = [

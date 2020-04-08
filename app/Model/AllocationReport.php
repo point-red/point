@@ -8,6 +8,8 @@ class AllocationReport extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'allocation_report';
+
     /**
      * Get the form that owns the AllocationReport.
      *

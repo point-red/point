@@ -8,6 +8,8 @@ class PricingGroup extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'pricing_group';
+
     protected $fillable = [
         'label',
         'notes',

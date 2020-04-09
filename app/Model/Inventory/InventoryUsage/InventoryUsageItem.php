@@ -11,6 +11,8 @@ class InventoryUsageItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'inventory_usage_item';
+
     public $timestamps = false;
 
     protected $casts = [

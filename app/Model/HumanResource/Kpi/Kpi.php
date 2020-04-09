@@ -10,6 +10,8 @@ class Kpi extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'kpi';
+
     /**
      * Get the kpi groups for the kpi.
      */

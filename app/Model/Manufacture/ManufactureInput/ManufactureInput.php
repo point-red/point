@@ -15,6 +15,8 @@ class ManufactureInput extends TransactionModel
 {
     public static $morphName = 'ManufactureInput';
 
+    public static $alias = 'manufacture_input';
+
     public $timestamps = false;
 
     protected $connection = 'tenant';

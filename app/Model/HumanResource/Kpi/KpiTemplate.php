@@ -8,6 +8,8 @@ class KpiTemplate extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'kpi_template';
+
     /**
      * Get the employees for the kpi template.
      */

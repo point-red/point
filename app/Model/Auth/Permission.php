@@ -6,6 +6,8 @@ class Permission extends \Spatie\Permission\Models\Permission
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'permission';
+
     public static function isExists($name)
     {
         if (! self::where('name', $name)->first()) {

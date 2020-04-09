@@ -8,6 +8,8 @@ class EmployeeGender extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_gender';
+
     /**
      * Get the employees for the gender.
      */

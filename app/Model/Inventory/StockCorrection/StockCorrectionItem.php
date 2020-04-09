@@ -9,6 +9,8 @@ class StockCorrectionItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'stock_correction_item';
+
     public $timestamps = false;
 
     protected $casts = [

@@ -12,6 +12,8 @@ class InventoryUsage extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'inventory_usage';
+
     public $timestamps = false;
 
     protected $fillable = [

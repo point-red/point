@@ -159,7 +159,7 @@ class SalesVisitationController extends Controller
             }
         }
 
-        // Not Interest Reason
+        // No Interest Reason
         $noInterestReasons = $request->get('no_interest_reasons');
         $countNoInterestReason = 0;
         for ($i = 0; $i < count($noInterestReasons); $i++) {

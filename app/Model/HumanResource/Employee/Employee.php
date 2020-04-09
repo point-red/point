@@ -16,6 +16,8 @@ class Employee extends MasterModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'employee';
+
     protected $appends = ['label'];
 
     protected $casts = [

@@ -8,6 +8,8 @@ class EmployeeSalaryAssessmentScore extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_assessment_score';
+
     /**
      * Get the salary assessment that owns the score.
      */

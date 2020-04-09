@@ -9,6 +9,8 @@ class OpeningStockWarehouse extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'opening_stock_warehouse';
+
     public $timestamps = false;
 
     protected $fillable = [

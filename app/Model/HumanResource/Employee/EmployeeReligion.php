@@ -8,6 +8,8 @@ class EmployeeReligion extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_religion';
+
     /**
      * Get the employees for the religion.
      */

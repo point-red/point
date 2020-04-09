@@ -14,6 +14,8 @@ class Inventory extends PointModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'inventory';
+
     protected $casts = [
         'price' => 'double',
         'quantity' => 'double',

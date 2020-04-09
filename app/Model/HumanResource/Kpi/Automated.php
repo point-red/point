@@ -15,6 +15,8 @@ class Automated extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'automated';
+
     /**
      * Get the automated data based on indicator.
      */

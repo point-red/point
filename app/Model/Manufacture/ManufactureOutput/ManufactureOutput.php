@@ -17,6 +17,8 @@ class ManufactureOutput extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'manufacture_output';
+
     protected $fillable = [
         'manufacture_process_id',
         'manufacture_input_id',

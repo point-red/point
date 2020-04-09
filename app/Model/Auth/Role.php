@@ -8,6 +8,8 @@ class Role extends \Spatie\Permission\Models\Role
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'role';
+
     use EloquentFilters;
 
     public static function isExists($name)

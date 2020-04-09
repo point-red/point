@@ -9,6 +9,8 @@ class EmployeeCompanyEmail extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_company_email';
+
     /**
      * Get the employee that owns the email.
      */

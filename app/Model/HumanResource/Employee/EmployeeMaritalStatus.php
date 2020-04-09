@@ -8,6 +8,8 @@ class EmployeeMaritalStatus extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_marital_status';
+
     /**
      * Get the employees for the marital status.
      */

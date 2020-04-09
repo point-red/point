@@ -12,6 +12,8 @@ class StockCorrection extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'stock_correction';
+
     public $timestamps = false;
 
     public $defaultNumberPrefix = 'SC';

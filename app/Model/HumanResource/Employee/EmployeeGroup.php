@@ -8,6 +8,8 @@ class EmployeeGroup extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_group';
+
     /**
      * Get the employees for the group.
      */

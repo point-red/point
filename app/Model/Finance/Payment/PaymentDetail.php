@@ -14,6 +14,8 @@ class PaymentDetail extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'payment_detail';
+
     public $timestamps = false;
 
     protected $fillable = [

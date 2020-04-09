@@ -12,6 +12,8 @@ class ReceiveItem extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'transfer_receive';
+
     public $timestamps = false;
 
     public $defaultNumberPrefix = 'TIS';

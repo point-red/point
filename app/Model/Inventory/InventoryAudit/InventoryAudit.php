@@ -13,6 +13,8 @@ class InventoryAudit extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'inventory_audit';
+
     public $timestamps = false;
 
     public $defaultNumberPrefix = 'IA';

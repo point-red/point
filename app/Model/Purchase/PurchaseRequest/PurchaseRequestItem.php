@@ -11,6 +11,8 @@ class PurchaseRequestItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'purchase_request_item';
+
     public $timestamps = false;
 
     protected $fillable = [

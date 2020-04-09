@@ -16,6 +16,8 @@ class DeliveryNote extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_delivery_note';
+
     protected $table = 'delivery_notes';
 
     public $timestamps = false;

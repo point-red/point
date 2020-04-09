@@ -14,6 +14,8 @@ class SalesQuotation extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_quotation';
+
     public $timestamps = false;
 
     protected $fillable = [

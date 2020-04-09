@@ -10,6 +10,8 @@ class Project extends Model
 {
     protected $connection = 'mysql';
 
+    public static $alias = 'project';
+
     /**
      * Get the owner that owns the project.
      */

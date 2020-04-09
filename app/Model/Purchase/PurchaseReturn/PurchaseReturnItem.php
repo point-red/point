@@ -8,6 +8,8 @@ class PurchaseReturnItem extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'purchase_return_item';
+
     public $timestamps = false;
 
     /**

@@ -11,6 +11,8 @@ class SalesInvoiceService extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_invoice_service';
+
     public $timestamps = false;
 
     protected $fillable = [

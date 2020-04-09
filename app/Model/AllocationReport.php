@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AllocationReport extends Model
 {
@@ -13,7 +14,7 @@ class AllocationReport extends Model
     /**
      * Get the form that owns the AllocationReport.
      *
-     *@return eloquent
+     * @return BelongsTo
      */
     public function form()
     {

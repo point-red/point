@@ -9,6 +9,8 @@ class ProjectUser extends Model
 {
     protected $connection = 'mysql';
 
+    public static $alias = 'project_user';
+
     protected $table = 'project_user';
 
     /**

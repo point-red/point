@@ -10,6 +10,8 @@ class PurchaseReceiveItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'purchase_receive_item';
+
     public $timestamps = false;
 
     protected $fillable = [

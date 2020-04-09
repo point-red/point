@@ -12,6 +12,8 @@ class SalesInvoiceItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_invoice_item';
+
     public $timestamps = false;
 
     protected $fillable = [

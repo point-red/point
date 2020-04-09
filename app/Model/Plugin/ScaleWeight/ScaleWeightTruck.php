@@ -9,6 +9,8 @@ class ScaleWeightTruck extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'scale_weight_truck';
+
     protected $table = 'scale_weight_trucks';
 
     protected $casts = [

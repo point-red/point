@@ -8,6 +8,8 @@ class SalesQuotationService extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_quotation_service';
+
     public $timestamps = false;
 
     protected $fillable = [

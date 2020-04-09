@@ -16,6 +16,8 @@ class PurchaseDownPayment extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'purchase_down_payment';
+
     public $timestamps = false;
 
     protected $fillable = [

@@ -10,6 +10,8 @@ class SalesOrderService extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_order_service';
+
     public $timestamps = false;
 
     protected $fillable = [

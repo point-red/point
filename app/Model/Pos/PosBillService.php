@@ -9,6 +9,8 @@ class PosBillService extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'pos_bill_service';
+
     public $timestamps = false;
 
     protected $fillable = [

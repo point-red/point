@@ -9,6 +9,8 @@ class ScaleWeightItem extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'scale_weight_item';
+
     protected $table = 'scale_weight_items';
 
     public function setTimeAttribute($value)

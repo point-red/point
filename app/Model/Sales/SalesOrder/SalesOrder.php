@@ -19,6 +19,8 @@ class SalesOrder extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_order';
+
     public $timestamps = false;
 
     public $defaultNumberPrefix = 'SO';

@@ -10,6 +10,8 @@ class SalesContractItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_contract_item';
+
     public $timestamps = false;
 
     protected $fillable = [

@@ -9,6 +9,8 @@ class SalesQuotationItem extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_quotation_item';
+
     public $timestamps = false;
 
     protected $fillable = [

@@ -8,6 +8,8 @@ class SalesReturnItem extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_return_item';
+
     /**
      * Indicates if the model should be timestamped.
      *

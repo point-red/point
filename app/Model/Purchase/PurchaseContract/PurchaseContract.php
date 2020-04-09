@@ -13,6 +13,8 @@ class PurchaseContract extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'purchase_contract';
+
     public $timestamps = false;
 
     protected $fillable = [

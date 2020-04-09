@@ -10,6 +10,8 @@ class PurchaseReturn extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'purchase_return';
+
     /**
      * Indicates if the model should be timestamped.
      *

@@ -2,16 +2,17 @@
 
 namespace App\Model\Master;
 
-use App\Model\HumanResource\Employee\Employee;
 use App\Model\MasterModel;
+use App\Traits\Model\Master\TenantUserJoin;
+use App\Traits\Model\Master\TenantUserRelation;
 use Illuminate\Support\Arr;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends MasterModel
 {
-    protected $connection = 'tenant';
+    use HasRoles, TenantUserJoin, TenantUserRelation;
 
-    public static $alias = 'user';
+    protected $connection = 'tenant';
 
     protected $guard_name = 'api';
 
@@ -19,7 +20,7 @@ class User extends MasterModel
 
     protected $appends = ['full_name'];
 
-    use HasRoles;
+    public static $alias = 'user';
 
     protected $casts = [
         'call' => 'double',
@@ -38,29 +39,5 @@ class User extends MasterModel
         $names = Arr::pluck($permissions, 'name');
 
         return $names;
-    }
-
-    /**
-     * The employees that belong to the user.
-     */
-    public function employees()
-    {
-        return $this->belongsToMany(Employee::class, 'employee_scorer');
-    }
-
-    /**
-     * The warehouses that belong to the user.
-     */
-    public function warehouses()
-    {
-        return $this->belongsToMany(Warehouse::class, 'user_warehouse')->withPivot(['is_default']);
-    }
-
-    /**
-     * The branches that belong to the user.
-     */
-    public function branches()
-    {
-        return $this->belongsToMany(Branch::class, 'branch_user')->withPivot(['is_default']);
     }
 }

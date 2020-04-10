@@ -7,6 +7,7 @@ use App\Http\Requests\Master\Warehouse\StoreWarehouseRequest;
 use App\Http\Requests\Master\Warehouse\UpdateWarehouseRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Warehouse;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,12 @@ class WarehouseController extends Controller
      */
     public function index(Request $request)
     {
-        $warehouses = Warehouse::eloquentFilter($request);
+        $warehouses = Warehouse::from('warehouses as ' . Warehouse::$alias)->eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $joins = explode(',', $request->get('join'));
+            $warehouses = Warehouse::joins($warehouses, $joins);
+        }
 
         if ($request->get('is_archived')) {
             $warehouses = $warehouses->whereNotNull('archived_at');
@@ -57,7 +63,10 @@ class WarehouseController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $warehouse = Warehouse::eloquentFilter($request)->findOrFail($id);
+        $warehouse = Warehouse::from('warehouses as ' . Warehouse::$alias)
+            ->eloquentFilter($request)
+            ->where('warehouse.id', $id)
+            ->first();
 
         return new ApiResource($warehouse);
     }

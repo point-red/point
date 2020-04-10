@@ -8,7 +8,9 @@ class ChartOfAccountGroup extends MasterModel
 {
     protected $connection = 'tenant';
 
-    public static $alias = 'chart_of_account_group';
-
     protected $table = 'chart_of_account_groups';
+
+    public static $alias = 'account_group';
+
+    public static $morphName = 'ChartOfAccountGroup';
 }

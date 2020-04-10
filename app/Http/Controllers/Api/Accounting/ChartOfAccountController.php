@@ -9,7 +9,12 @@ use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\ChartOfAccountGroup;
 use App\Model\Accounting\ChartOfAccountType;
+use App\Model\Accounting\Journal;
+use App\Model\Form;
+use App\Model\Master\User;
+use App\Model\Plugin\PinPoint\SalesVisitation;
 use Illuminate\Http\Request;
 
 class ChartOfAccountController extends Controller
@@ -22,12 +27,17 @@ class ChartOfAccountController extends Controller
      */
     public function index(Request $request)
     {
-        $accounts = ChartOfAccount::eloquentFilter($request);
+        $accounts = ChartOfAccount::from('chart_of_accounts as ' . ChartOfAccount::$alias)->eloquentFilter($request);
+
+        if ($request->get('join')) {
+            $joins = explode(',', $request->get('join'));
+            $accounts = ChartOfAccount::joins($accounts, $joins);
+        }
 
         if ($request->get('is_archived')) {
-            $accounts = $accounts->whereNotNull('archived_at');
+            $accounts = $accounts->whereNotNull('account.archived_at');
         } else {
-            $accounts = $accounts->whereNull('archived_at');
+            $accounts = $accounts->whereNull('account.archived_at');
         }
 
         $accounts = pagination($accounts, $request->get('limit'));
@@ -67,7 +77,10 @@ class ChartOfAccountController extends Controller
      */
     public function show($id)
     {
-        $chartOfAccount = ChartOfAccount::findOrFail($id)->load(['type', 'group']);
+        $chartOfAccount = ChartOfAccount::from('chart_of_accounts as ' . ChartOfAccount::$alias)
+            ->where(ChartOfAccount::$alias.'.id', $id)
+            ->first()
+            ->load(['type', 'group']);
 
         return new ApiResource($chartOfAccount);
     }

@@ -6,11 +6,11 @@ use App\Traits\EloquentFilters;
 
 class Role extends \Spatie\Permission\Models\Role
 {
+    use EloquentFilters;
+
     protected $connection = 'tenant';
 
     public static $alias = 'role';
-
-    use EloquentFilters;
 
     public static function isExists($name)
     {

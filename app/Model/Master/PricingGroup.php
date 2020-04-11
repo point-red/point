@@ -3,9 +3,13 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Traits\Model\Master\PricingGroupJoin;
+use App\Traits\Model\Master\PricingGroupRelation;
 
 class PricingGroup extends MasterModel
 {
+    use PricingGroupRelation, PricingGroupJoin;
+
     protected $connection = 'tenant';
 
     public static $alias = 'pricing_group';
@@ -14,28 +18,4 @@ class PricingGroup extends MasterModel
         'label',
         'notes',
     ];
-
-    /**
-     * Get the member of pricing group.
-     */
-    public function customers()
-    {
-        return $this->hasMany(Customer::class);
-    }
-
-    /**
-     * Get the item's price of pricing group.
-     */
-    public function priceListItem()
-    {
-        return $this->hasMany(PriceListItem::class);
-    }
-
-    /**
-     * Get the item's price of pricing group.
-     */
-    public function priceListService()
-    {
-        return $this->hasMany(PriceListService::class);
-    }
 }

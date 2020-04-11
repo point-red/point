@@ -8,6 +8,7 @@ use App\Http\Requests\Master\Allocation\UpdateAllocationRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Master\Allocation;
+use App\Model\Master\AllocationGroup;
 use Illuminate\Http\Request;
 
 class AllocationController extends Controller
@@ -20,7 +21,8 @@ class AllocationController extends Controller
      */
     public function index(Request $request)
     {
-        $allocations = Allocation::eloquentFilter($request);
+        $allocations = Allocation::from(Allocation::getTableName() . ' as ' . Allocation::$alias)
+            ->eloquentFilter($request);
 
         if ($request->get('is_archived')) {
             $allocations = $allocations->whereNotNull('archived_at');
@@ -51,12 +53,18 @@ class AllocationController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param int $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return new ApiResource(Allocation::findOrFail($id));
+        $allocation = Allocation::from(Allocation::getTableName() . ' as ' . Allocation::$alias)
+            ->eloquentFilter($request)
+            ->where(Allocation::$alias.'.id', $id)
+            ->first();
+
+        return new ApiResource($allocation);
     }
 
     /**

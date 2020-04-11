@@ -25,7 +25,9 @@ class UserController extends ApiController
      */
     public function index(Request $request)
     {
-        $users = TenantUser::eloquentFilter($request);
+        $users = TenantUser::from(TenantUser::getTableName() . ' as ' . TenantUser::$alias)->eloquentFilter($request);
+
+        $users = TenantUser::joins($users, $request->get('join'));
 
         $users = pagination($users, $request->get('limit'));
 
@@ -58,7 +60,13 @@ class UserController extends ApiController
      */
     public function show(Request $request, $id)
     {
-        $user = TenantUser::eloquentFilter($request)->findOrFail($id);
+        $user = TenantUser::from(TenantUser::getTableName() . ' as ' . TenantUser::$alias)
+            ->eloquentFilter($request)
+            ->findOrFail($id);
+
+        $user = TenantUser::joins($user, $request->get('join'));
+
+        $user = $user->where(TenantUser::$alias.'.id', $id)->first();
 
         return new ApiResource($user);
     }

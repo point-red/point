@@ -3,21 +3,18 @@
 namespace App\Model\Master;
 
 use App\Helpers\Inventory\InventoryHelper;
-use App\Model\Accounting\ChartOfAccount;
-use App\Model\Accounting\Journal;
 use App\Model\Form;
-use App\Model\Inventory\Inventory;
 use App\Model\Inventory\OpeningStock\OpeningStock;
 use App\Model\Inventory\OpeningStock\OpeningStockWarehouse;
 use App\Model\MasterModel;
+use App\Traits\Model\Master\ItemJoin;
+use App\Traits\Model\Master\ItemRelation;
 
 class Item extends MasterModel
 {
-    public static $morphName = 'Item';
+    use ItemJoin, ItemRelation;
 
     protected $connection = 'tenant';
-
-    public static $alias = 'item';
 
     protected $appends = ['label'];
 
@@ -42,45 +39,15 @@ class Item extends MasterModel
         'cogs' => 'double',
     ];
 
+    public static $morphName = 'Item';
+
+    public static $alias = 'item';
+
     public function getLabelAttribute()
     {
         $label = $this->code ? '[' . $this->code . '] ' : '';
 
         return $label . $this->name;
-    }
-
-    /**
-     * Get all of the item's journals.
-     */
-    public function journals()
-    {
-        return $this->morphMany(Journal::class, 'journalable');
-    }
-
-    public function inventories()
-    {
-        return $this->hasMany(Inventory::class);
-    }
-
-    /**
-     * Get all of the groups for the items.
-     */
-    public function groups()
-    {
-        return $this->belongsToMany(ItemGroup::class);
-    }
-
-    /**
-     * Get all of the units for the items.
-     */
-    public function units()
-    {
-        return $this->hasMany(ItemUnit::class);
-    }
-
-    public function account()
-    {
-        return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
     }
 
     public static function create($data)

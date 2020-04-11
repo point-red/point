@@ -2,14 +2,15 @@
 
 namespace App\Model\Master;
 
-use App\Model\AllocationReport;
 use App\Model\MasterModel;
+use App\Traits\Model\Master\AllocationJoin;
+use App\Traits\Model\Master\AllocationRelation;
 
 class Allocation extends MasterModel
 {
-    protected $connection = 'tenant';
+    use AllocationJoin, AllocationRelation;
 
-    public static $alias = 'allocation';
+    protected $connection = 'tenant';
 
     protected $appends = ['label'];
 
@@ -20,23 +21,14 @@ class Allocation extends MasterModel
         'disabled',
     ];
 
+    public static $alias = 'allocation';
+
+    public static $morphName = 'Allocation';
+
     public function getLabelAttribute()
     {
         $label = $this->code ? '[' . $this->code . '] ' : '';
 
         return $label . $this->name;
-    }
-
-    /**
-     * Get all of the groups for the items.
-     */
-    public function groups()
-    {
-        return $this->belongsToMany(AllocationGroup::class);
-    }
-
-    public function reports()
-    {
-        return $this->hasMany(AllocationReport::class);
     }
 }

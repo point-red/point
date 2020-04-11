@@ -3,20 +3,16 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Traits\Model\Master\ItemGroupJoin;
+use App\Traits\Model\Master\ItemGroupRelation;
 
 class ItemGroup extends MasterModel
 {
-    protected $connection = 'tenant';
+    use ItemGroupJoin, ItemGroupRelation;
 
-    public static $alias = 'item_group';
+    protected $connection = 'tenant';
 
     protected $fillable = ['name', 'type'];
 
-    /**
-     * get all of the items that are assigned this group.
-     */
-    public function items()
-    {
-        return $this->belongstomany(Item::class);
-    }
+    public static $alias = 'item_group';
 }

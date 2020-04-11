@@ -20,7 +20,8 @@ class BranchController extends Controller
      */
     public function index(Request $request)
     {
-        $branches = Branch::eloquentFilter($request);
+        $branches = Branch::from(Branch::getTableName() . ' as ' . Branch::$alias)
+            ->eloquentFilter($request);
 
         if ($request->get('is_archived')) {
             $branches = $branches->whereNotNull('archived_at');
@@ -57,7 +58,10 @@ class BranchController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $branch = Branch::eloquentFilter($request)->findOrFail($id);
+        $branch = Branch::from(Branch::getTableName() . ' as ' . Branch::$alias)
+            ->eloquentFilter($request)
+            ->where(Branch::$alias.'.id', $id)
+            ->first();
 
         return new ApiResource($branch);
     }

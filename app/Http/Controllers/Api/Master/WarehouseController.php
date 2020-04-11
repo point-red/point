@@ -23,10 +23,7 @@ class WarehouseController extends Controller
     {
         $warehouses = Warehouse::from('warehouses as ' . Warehouse::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $joins = explode(',', $request->get('join'));
-            $warehouses = Warehouse::joins($warehouses, $joins);
-        }
+        $warehouses = Warehouse::joins($warehouses, $request->get('join'));
 
         if ($request->get('is_archived')) {
             $warehouses = $warehouses->whereNotNull('archived_at');
@@ -64,9 +61,11 @@ class WarehouseController extends Controller
     public function show(Request $request, $id)
     {
         $warehouse = Warehouse::from('warehouses as ' . Warehouse::$alias)
-            ->eloquentFilter($request)
-            ->where('warehouse.id', $id)
-            ->first();
+            ->eloquentFilter($request);
+
+        $warehouse = Warehouse::joins($warehouse, $request->get('join'))
+
+        $warehouse = $warehouse->where('warehouse.id', $id)->first();
 
         return new ApiResource($warehouse);
     }

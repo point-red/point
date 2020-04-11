@@ -3,12 +3,14 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Traits\Model\Master\PriceListServiceJoin;
+use App\Traits\Model\Master\PriceListServiceRelation;
 
 class PriceListService extends MasterModel
 {
-    protected $connection = 'tenant';
+    use PriceListServiceRelation, PriceListServiceJoin;
 
-    public static $alias = 'price_list_service';
+    protected $connection = 'tenant';
 
     protected $fillable = [
         'pricing_group_id',
@@ -26,8 +28,5 @@ class PriceListService extends MasterModel
         'discount_value'   => 'double',
     ];
 
-    public function service()
-    {
-        return $this->belongsTo(Service::class);
-    }
+    public static $alias = 'price_list_service';
 }

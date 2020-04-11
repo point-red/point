@@ -29,10 +29,7 @@ class ChartOfAccountController extends Controller
     {
         $accounts = ChartOfAccount::from('chart_of_accounts as ' . ChartOfAccount::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $joins = explode(',', $request->get('join'));
-            $accounts = ChartOfAccount::joins($accounts, $joins);
-        }
+        $accounts = ChartOfAccount::joins($accounts, $request->get('join'));
 
         if ($request->get('is_archived')) {
             $accounts = $accounts->whereNotNull('account.archived_at');
@@ -72,17 +69,19 @@ class ChartOfAccountController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param int $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $chartOfAccount = ChartOfAccount::from('chart_of_accounts as ' . ChartOfAccount::$alias)
-            ->where(ChartOfAccount::$alias.'.id', $id)
-            ->first()
-            ->load(['type', 'group']);
+        $account = ChartOfAccount::from('chart_of_accounts as ' . ChartOfAccount::$alias)->eloquentFilter($request);
 
-        return new ApiResource($chartOfAccount);
+        $account = ChartOfAccount::joins($account, $request->get('join'));
+
+        $account = $account->where(ChartOfAccount::$alias.'.id', $id)->first();
+
+        return new ApiResource($account);
     }
 
     /**

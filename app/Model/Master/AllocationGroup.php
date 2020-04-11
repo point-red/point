@@ -3,20 +3,16 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Traits\Model\Master\AllocationGroupJoin;
+use App\Traits\Model\Master\AllocationGroupRelation;
 
 class AllocationGroup extends MasterModel
 {
-    protected $connection = 'tenant';
+    use AllocationGroupJoin, AllocationGroupRelation;
 
-    public static $alias = 'allocation_group';
+    protected $connection = 'tenant';
 
     protected $fillable = ['name'];
 
-    /**
-     * get all of the allocations that are assigned this group.
-     */
-    public function allocations()
-    {
-        return $this->belongstomany(Allocation::class);
-    }
+    public static $alias = 'allocation_group';
 }

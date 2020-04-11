@@ -10,6 +10,12 @@ use App\Model\Master\User;
 trait ChartOfAccountJoin
 {
     public static function joins($query, $joins) {
+        $joins = explode(',', $joins);
+
+        if (!$joins) {
+            return $query;
+        }
+
         if (in_array('account_type', $joins)) {
             $query = $query->join(ChartOfAccountType::getTableName() . ' as ' . ChartOfAccountType::$alias,
                 'account_type.id', '=', 'account.type_id');

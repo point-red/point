@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\CutOff;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
@@ -12,10 +13,13 @@ use App\Model\Inventory\OpeningStock\OpeningStock;
 use App\Model\Inventory\StockCorrection\StockCorrection;
 use App\Model\Inventory\TransferItem\ReceiveItem;
 use App\Model\Inventory\TransferItem\TransferItem;
+use App\Model\Master\Allocation;
+use App\Model\Master\Branch;
 use App\Model\Master\Customer;
 use App\Model\Master\Item;
 use App\Model\Master\Service;
 use App\Model\Master\Supplier;
+use App\Model\Master\Warehouse;
 use App\Model\Pos\PosBill;
 use App\Model\Purchase\PurchaseContract\PurchaseContract;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
@@ -49,11 +53,14 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
     {
         Relation::morphMap([
             // Master
+            Allocation::$morphName => Allocation::class,
             Supplier::$morphName => Supplier::class,
             Customer::$morphName => Customer::class,
             Employee::$morphName => Employee::class,
             Item::$morphName => Item::class,
             Service::$morphName => Service::class,
+            Branch::$morphName => Branch::class,
+            Warehouse::$morphName => Warehouse::class,
             // Inventory
             InventoryAudit::$morphName => InventoryAudit::class,
             OpeningStock::$morphName => OpeningStock::class,
@@ -88,6 +95,7 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             PaymentOrder::$morphName => PaymentOrder::class,
             Payment::$morphName => Payment::class,
             // Accounting
+            ChartOfAccount::$morphName => ChartOfAccount::class,
             CutOff::$morphName => CutOff::class,
         ]);
     }

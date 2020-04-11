@@ -24,6 +24,8 @@ class Warehouse extends MasterModel
 
     public static $alias = 'warehouse';
 
+    public static $morphName = 'Warehouse';
+
     public function getLabelAttribute()
     {
         $label = $this->code ? '[' . $this->code . '] ' : '';

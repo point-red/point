@@ -3,20 +3,16 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Traits\Model\Master\ServiceGroupJoin;
+use App\Traits\Model\Master\ServiceGroupRelation;
 
 class ServiceGroup extends MasterModel
 {
-    protected $connection = 'tenant';
+    use ServiceGroupRelation, ServiceGroupJoin;
 
-    public static $alias = 'service_group';
+    protected $connection = 'tenant';
 
     protected $fillable = ['name'];
 
-    /**
-     * get all of the services that are assigned this group.
-     */
-    public function services()
-    {
-        return $this->belongstomany(Service::class);
-    }
+    public static $alias = 'service_group';
 }

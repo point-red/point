@@ -23,7 +23,9 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $items = Item::eloquentFilter($request);
+        $items = Item::from(Item::getTableName() . ' as ' . Item::$alias)->eloquentFilter($request);
+
+        $items = Item::joins($items, $request->get('join'));
 
         if ($request->has('group_id')) {
             $items = $items->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
@@ -119,7 +121,11 @@ class ItemController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $item = Item::eloquentFilter($request)->findOrFail($id);
+        $item = Item::from(Item::getTableName() . ' as ' . Item::$alias)->eloquentFilter($request);
+
+        $item = Item::joins($item, $request->get('join'));
+
+        $item = $item->where(Item::$alias.'.id', $id)->first();
 
         return new ApiResource($item);
     }

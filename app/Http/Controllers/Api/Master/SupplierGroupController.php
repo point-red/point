@@ -22,7 +22,9 @@ class SupplierGroupController extends ApiController
      */
     public function index(Request $request)
     {
-        $groups = SupplierGroup::eloquentFilter($request);
+        $groups = SupplierGroup::from(SupplierGroup::getTableName() . ' as ' . SupplierGroup::$alias)->eloquentFilter($request);
+
+        $groups = SupplierGroup::joins($groups, $request->get('join'));
 
         $groups = pagination($groups, $request->get('limit'));
 
@@ -53,7 +55,11 @@ class SupplierGroupController extends ApiController
      */
     public function show(Request $request, $id)
     {
-        $group = SupplierGroup::eloquentFilter($request)->findOrFail($id);
+        $group = SupplierGroup::from(SupplierGroup::getTableName() . ' as ' . SupplierGroup::$alias)->eloquentFilter($request);
+
+        $group = SupplierGroup::joins($group, $request->get('join'));
+
+        $group = $group->where(SupplierGroup::$alias.'.id', $id)->first();
 
         return new ApiResource($group);
     }

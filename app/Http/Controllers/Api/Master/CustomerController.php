@@ -35,8 +35,9 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::from(Customer::getTableName() . ' as ' . Customer::$alias)
-            ->eloquentFilter($request);
+        $customers = Customer::from(Customer::getTableName() . ' as ' . Customer::$alias)->eloquentFilter($request);
+
+        $customers = Customer::joins($customers, $request->get('join'));
 
         if ($request->get('group_id')) {
             $customers = $customers->leftJoin('groupables', function ($q) use ($request) {
@@ -108,10 +109,11 @@ class CustomerController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $customer = Customer::from(Customer::getTableName() . ' as ' . Customer::$alias)
-            ->eloquentFilter($request)
-            ->where(Customer::$alias.'.id', $id)
-            ->first();
+        $customer = Customer::from(Customer::getTableName() . ' as ' . Customer::$alias)->eloquentFilter($request);
+
+        $customer = Customer::joins($customer, $request->get('join'));
+
+        $customer = $customer->where(Customer::$alias.'.id', $id)->first();
 
         if ($request->get('total_payable')) {
             $customer->total_payable = $customer->totalAccountPayable();

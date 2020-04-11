@@ -21,8 +21,9 @@ class AllocationController extends Controller
      */
     public function index(Request $request)
     {
-        $allocations = Allocation::from(Allocation::getTableName() . ' as ' . Allocation::$alias)
-            ->eloquentFilter($request);
+        $allocations = Allocation::from(Allocation::getTableName() . ' as ' . Allocation::$alias)->eloquentFilter($request);
+
+        $allocations = Allocation::joins($allocations, $request->get('join'));
 
         if ($request->get('is_archived')) {
             $allocations = $allocations->whereNotNull('archived_at');
@@ -59,10 +60,11 @@ class AllocationController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $allocation = Allocation::from(Allocation::getTableName() . ' as ' . Allocation::$alias)
-            ->eloquentFilter($request)
-            ->where(Allocation::$alias.'.id', $id)
-            ->first();
+        $allocation = Allocation::from(Allocation::getTableName() . ' as ' . Allocation::$alias)->eloquentFilter($request);
+
+        $allocation = Allocation::joins($allocation, $request->get('join'));
+
+        $allocation = $allocation->where(Allocation::$alias.'.id', $id)->first();
 
         return new ApiResource($allocation);
     }

@@ -20,7 +20,9 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        $roles = Role::eloquentFilter($request);
+        $roles = Role::from(Role::getTableName() . ' as ' . Role::$alias)->eloquentFilter($request);
+
+        $roles = Role::joins($roles, $request->get('join'));
 
         $roles = pagination($roles, $request->get('limit'));
 
@@ -52,12 +54,19 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param Request $request
+     * @param int $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return new ApiResource(Role::findOrFail($id));
+        $role = Role::from(Role::getTableName() . ' as ' . Role::$alias)->eloquentFilter($request);
+
+        $role = Role::joins($role, $request->get('join'));
+
+        $role = $role->where(Role::$alias.'.id', $id)->first();
+
+        return new ApiResource($role);
     }
 
     /**

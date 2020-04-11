@@ -13,16 +13,19 @@ class RolePermissionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param $roleId
-     *
+     * @param Request $request
+     * @param $id
      * @return array
      */
-    public function index($roleId)
+    public function index(Request $request, $id)
     {
-        $role = Role::findOrFail($roleId);
-        $names = Arr::pluck($role->permissions, 'name');
+        $role = Role::from(Role::getTableName() . ' as ' . Role::$alias)->eloquentFilter($request);
 
-        return $names;
+        $role = Role::joins($role, $request->get('join'));
+
+        $role = $role->where(Role::$alias.'.id', $id)->first();
+
+        return Arr::pluck($role->permissions, 'name');
     }
 
     /**

@@ -20,7 +20,9 @@ class PricingGroupController extends Controller
      */
     public function index(Request $request)
     {
-        $pricingGroup = PricingGroup::eloquentFilter($request);
+        $pricingGroup = PricingGroup::from(PricingGroup::getTableName() . ' as ' . PricingGroup::$alias)->eloquentFilter($request);
+
+        $pricingGroup = PricingGroup::joins($pricingGroup, $request->get('join'));
 
         $pricingGroup = pagination($pricingGroup, $request->get('limit'));
 
@@ -51,7 +53,11 @@ class PricingGroupController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $pricingGroup = PricingGroup::eloquentFilter($request)->findOrFail($id);
+        $pricingGroup = PricingGroup::from(PricingGroup::getTableName() . ' as ' . PricingGroup::$alias)->eloquentFilter($request);
+
+        $pricingGroup = PricingGroup::joins($pricingGroup, $request->get('join'));
+
+        $pricingGroup = $pricingGroup->where(PricingGroup::$alias.'.id', $id)->first();
 
         return new ApiResource($pricingGroup);
     }

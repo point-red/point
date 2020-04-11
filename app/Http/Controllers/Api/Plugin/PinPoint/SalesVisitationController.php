@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Plugin\PinPoint;
 use App\Helper\Reward\TokenHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
+use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
 use App\Model\CloudStorage;
@@ -30,15 +31,13 @@ class SalesVisitationController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @return SalesVisitationCollection
+     * @return ApiCollection
      * @throws \Exception
      */
     public function index(Request $request)
     {
-        $salesVisitationForm = SalesVisitation::from('pin_point_sales_visitations as ' . SalesVisitation::$alias)
-            ->join('forms', 'forms.id', '=', 'sales_visitation.form_id')
-            ->join('customers', 'customers.id', '=', 'sales_visitation.customer_id')
-            ->join('users as created_by', 'created_by.id', '=', 'forms.created_by')
+        $salesVisitationForm = SalesVisitation::from(SalesVisitation::getTableName() . ' as ' . SalesVisitation::$alias)
+            ->join(Form::getTableName() . ' as ' . Form::$alias, 'form.id', '=', 'sales_visitation.form_id')
             ->with('form.createdBy')
             ->with('interestReasons')
             ->with('noInterestReasons')
@@ -46,17 +45,19 @@ class SalesVisitationController extends Controller
             ->with('details.item')
             ->eloquentFilter($request);
 
+        $salesVisitationForm = SalesVisitation::joins($salesVisitationForm, $request->get('join'));
+
         if ($request->get('customer_id')) {
-            $salesVisitationForm = $salesVisitationForm->where('customer_id', $request->get('customer_id'));
+            $salesVisitationForm = $salesVisitationForm->where('sales_visitation.customer_id', $request->get('customer_id'));
         }
 
         $dateFrom = date_from($request->get('date_from'), false, true);
         $dateTo = date_to($request->get('date_to'), false, true);
 
-        $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$dateFrom, $dateTo]);
+        $salesVisitationForm = $salesVisitationForm->whereBetween('form.date', [$dateFrom, $dateTo]);
 
         if (! tenant()->hasPermissionTo('read pin point sales visitation form')) {
-            $salesVisitationForm = $salesVisitationForm->where('forms.created_by', auth()->user()->id);
+            $salesVisitationForm = $salesVisitationForm->where('form.created_by', auth()->user()->id);
         }
 
         $salesVisitationForm = pagination($salesVisitationForm, $request->get('limit'));
@@ -74,7 +75,7 @@ class SalesVisitationController extends Controller
             }
         }
 
-        return new SalesVisitationCollection($salesVisitationForm);
+        return new ApiCollection($salesVisitationForm);
     }
 
     /**

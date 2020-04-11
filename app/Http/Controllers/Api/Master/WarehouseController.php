@@ -60,10 +60,9 @@ class WarehouseController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $warehouse = Warehouse::from('warehouses as ' . Warehouse::$alias)
-            ->eloquentFilter($request);
+        $warehouse = Warehouse::from('warehouses as ' . Warehouse::$alias)->eloquentFilter($request);
 
-        $warehouse = Warehouse::joins($warehouse, $request->get('join'))
+        $warehouse = Warehouse::joins($warehouse, $request->get('join'));
 
         $warehouse = $warehouse->where('warehouse.id', $id)->first();
 

@@ -22,8 +22,9 @@ class CustomerGroupController extends ApiController
      */
     public function index(Request $request)
     {
-        $groups = CustomerGroup::from(CustomerGroup::getTableName() . ' as ' . CustomerGroup::$alias)
-            ->eloquentFilter($request);
+        $groups = CustomerGroup::from(CustomerGroup::getTableName() . ' as ' . CustomerGroup::$alias)->eloquentFilter($request);
+
+        $groups = CustomerGroup::joins($groups, $request->get('join'));
 
         $groups = pagination($groups, $request->get('limit'));
 
@@ -54,10 +55,11 @@ class CustomerGroupController extends ApiController
      */
     public function show(Request $request, $id)
     {
-        $group = CustomerGroup::from(CustomerGroup::getTableName() . ' as ' . CustomerGroup::$alias)
-            ->eloquentFilter($request)
-            ->where(CustomerGroup::$alias.'.id', $id)
-            ->first();
+        $group = CustomerGroup::from(CustomerGroup::getTableName() . ' as ' . CustomerGroup::$alias)->eloquentFilter($request);
+
+        $group = CustomerGroup::joins($group, $request->get('join'));
+
+        $group = $group->where(CustomerGroup::$alias.'.id', $id)->first();
 
         return new ApiResource($group);
     }

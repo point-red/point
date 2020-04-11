@@ -22,7 +22,9 @@ class ServiceGroupController extends ApiController
      */
     public function index(Request $request)
     {
-        $groups = ServiceGroup::eloquentFilter($request);
+        $groups = ServiceGroup::from(ServiceGroup::getTableName() . ' as ' . ServiceGroup::$alias)->eloquentFilter($request);
+
+        $groups = ServiceGroup::joins($groups, $request->get('join'));
 
         $groups = pagination($groups, $request->get('limit'));
 
@@ -53,7 +55,11 @@ class ServiceGroupController extends ApiController
      */
     public function show(Request $request, $id)
     {
-        $group = ServiceGroup::eloquentFilter($request)->findOrFail($id);
+        $group = ServiceGroup::from(ServiceGroup::getTableName() . ' as ' . ServiceGroup::$alias)->eloquentFilter($request);
+
+        $group = ServiceGroup::joins($group, $request->get('join'));
+
+        $group = $group->where(ServiceGroup::$alias.'.id', $id)->first();
 
         return new ApiResource($group);
     }

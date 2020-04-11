@@ -60,9 +60,7 @@ class UserController extends ApiController
      */
     public function show(Request $request, $id)
     {
-        $user = TenantUser::from(TenantUser::getTableName() . ' as ' . TenantUser::$alias)
-            ->eloquentFilter($request)
-            ->findOrFail($id);
+        $user = TenantUser::from(TenantUser::getTableName() . ' as ' . TenantUser::$alias)->eloquentFilter($request);
 
         $user = TenantUser::joins($user, $request->get('join'));
 

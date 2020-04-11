@@ -134,21 +134,7 @@ trait EloquentFilters
 
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                if ($value !== null) {
-                    $array = explode('.', $key);
-                    $column = array_pop($array);
-                    $relation = array_pop($array);
-
-                    foreach (array_filter(explode(';', $value)) as $value2) {
-                        if (!empty($relation)) {
-                            $query->whereHas($relation, function ($query) use ($column, $value2) {
-                                $query->where($column, $value2);
-                            });
-                        } else {
-                            $query->where($key, $value2);
-                        }
-                    }
-                }
+                $query->where($key, $value);
             }
         });
     }
@@ -166,20 +152,7 @@ trait EloquentFilters
 
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                if ($value !== null) {
-                    $array = explode('.', $key);
-                    $column = array_pop($array);
-                    $relation = array_pop($array);
-                    foreach (explode(';', $value) as $value2) {
-                        if (! empty($relation)) {
-                            $query->orWhereHas($relation, function ($query) use ($column, $value2) {
-                                $query->where($column, $value2);
-                            });
-                        } else {
-                            $query->orWhere($key, $value2);
-                        }
-                    }
-                }
+                $query->where($key, $value);
             }
         });
     }
@@ -248,17 +221,7 @@ trait EloquentFilters
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $relation = explode('.', $key);
-            $column = array_pop($relation);
-            $relation = implode('.', $relation);
-
-            if (! empty($relation)) {
-                $query->whereHas($relation, function ($query) use ($column, $value) {
-                    $query->where($column, '>=', $value);
-                });
-            } else {
-                $query->where($key, '>=', $value);
-            }
+            $query->where($key, '>=', $value);
         }
     }
 
@@ -274,17 +237,7 @@ trait EloquentFilters
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $relation = explode('.', $key);
-            $column = array_pop($relation);
-            $relation = implode('.', $relation);
-
-            if (! empty($relation)) {
-                $query->whereHas($relation, function ($query) use ($column, $value) {
-                    $query->where($column, '<=', $value);
-                });
-            } else {
-                $query->where($key, '<=', $value);
-            }
+            $query->where($key, '<=', $value);
         }
     }
 
@@ -409,13 +362,7 @@ trait EloquentFilters
 
         $query->orWhere(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $valueArray) {
-                        $query->orWhere($key, $valueArray);
-                    }
-                } else {
-                    $query->where($key, $value);
-                }
+                $query->where($key, $value);
             }
         });
     }

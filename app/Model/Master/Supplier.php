@@ -5,9 +5,7 @@ namespace App\Model\Master;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\Journal;
-use App\Model\Finance\Payment\Payment;
 use App\Model\MasterModel;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Traits\Model\Master\SupplierJoin;
 use App\Traits\Model\Master\SupplierRelation;
 

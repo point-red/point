@@ -24,7 +24,9 @@ class ItemGroupController extends Controller
      */
     public function index(Request $request)
     {
-        $groups = ItemGroup::eloquentFilter($request);
+        $groups = ItemGroup::from(ItemGroup::getTableName() . ' as ' . ItemGroup::$alias)->eloquentFilter($request);
+
+        $groups = ItemGroup::joins($groups, $request->get('join'));
 
         $groups = pagination($groups, $request->get('limit'));
 
@@ -55,7 +57,11 @@ class ItemGroupController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $group = ItemGroup::eloquentFilter($request)->findOrFail($id);
+        $group = ItemGroup::from(ItemGroup::getTableName() . ' as ' . ItemGroup::$alias)->eloquentFilter($request);
+
+        $group = ItemGroup::joins($group, $request->get('join'));
+
+        $group = $group->where(ItemGroup::$alias.'.id', $id)->first();
 
         return new ApiResource($group);
     }

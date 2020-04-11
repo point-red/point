@@ -20,8 +20,9 @@ class BranchController extends Controller
      */
     public function index(Request $request)
     {
-        $branches = Branch::from(Branch::getTableName() . ' as ' . Branch::$alias)
-            ->eloquentFilter($request);
+        $branches = Branch::from(Branch::getTableName() . ' as ' . Branch::$alias)->eloquentFilter($request);
+
+        $branches = Branch::joins($branches, $request->get('join'));
 
         if ($request->get('is_archived')) {
             $branches = $branches->whereNotNull('archived_at');
@@ -58,10 +59,11 @@ class BranchController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $branch = Branch::from(Branch::getTableName() . ' as ' . Branch::$alias)
-            ->eloquentFilter($request)
-            ->where(Branch::$alias.'.id', $id)
-            ->first();
+        $branch = Branch::from(Branch::getTableName() . ' as ' . Branch::$alias)->eloquentFilter($request);
+
+        $branch = Branch::joins($branch, $request->get('join'));
+
+        $branch = $branch->where(Branch::$alias.'.id', $id)->first();
 
         return new ApiResource($branch);
     }

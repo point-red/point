@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Plugin\PlayBook\Glossary;
+namespace App\Http\Requests\Plugin\PlayBook\Procedure;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreGlossaryRequest extends FormRequest
+class StoreProcedureRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,8 @@ class StoreGlossaryRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => ['required', 'unique:tenant.play_book_glossaries'],
-            'name' => 'required',
-            'abbreviation' => 'required'
+            'code' => ['required', 'unique:tenant.play_book_procedures'],
+            'name' => ['required']
         ];
     }
 }

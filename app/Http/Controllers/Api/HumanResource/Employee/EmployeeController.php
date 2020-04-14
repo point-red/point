@@ -102,14 +102,6 @@ class EmployeeController extends Controller
         $employee->functional_allowance = $request->get('functional_allowance') ?? 0;
         $employee->communication_allowance = $request->get('communication_allowance') ?? 0;
 
-        if ($request->get('employee_group_name')) {
-            $group = new EmployeeGroup;
-            $group->name = $request->get('employee_group_name');
-            $group->save();
-
-            $employee->employee_group_id = $group->id;
-        }
-
         $employee->save();
 
         Address::saveFromRelation($employee, $request->get('addresses'));
@@ -242,66 +234,25 @@ class EmployeeController extends Controller
         $employee->functional_allowance = $request->get('functional_allowance');
         $employee->communication_allowance = $request->get('communication_allowance');
 
-        if ($request->get('employee_group_name')) {
-            $group = new EmployeeGroup;
-            $group->name = $request->get('employee_group_name');
-            $group->save();
-
-            $employee->employee_group_id = $group->id;
-        } else {
-            $employee->employee_group_id = $request->get('employee_group_id');
-        }
-
         $employee->save();
 
-        $deleteAddresses = array_column($request->get('addresses'), 'id');
-        Employee\EmployeeAddress::where('employee_id', $employee->id)->whereNotIn('id', $deleteAddresses)->delete();
-        for ($i = 0; $i < count($request->get('addresses')); $i++) {
-            if (isset($request->get('addresses')[$i]['id'])) {
-                $employeeAddress = Employee\EmployeeAddress::findOrFail($request->get('addresses')[$i]['id']);
-            } else {
-                $employeeAddress = new Employee\EmployeeAddress;
-                $employeeAddress->employee_id = $employee->id;
-            }
-            $employeeAddress->address = $request->get('addresses')[$i]['address'];
-            $employeeAddress->save();
-        }
-        $deletePhones = array_column($request->get('phones'), 'id');
-        Employee\EmployeePhone::where('employee_id', $employee->id)->whereNotIn('id', $deletePhones)->delete();
-        for ($i = 0; $i < count($request->get('phones')); $i++) {
-            if (isset($request->get('phones')[$i]['id'])) {
-                $employeePhone = Employee\EmployeePhone::findOrFail($request->get('phones')[$i]['id']);
-            } else {
-                $employeePhone = new Employee\EmployeePhone;
-                $employeePhone->employee_id = $employee->id;
-            }
-            $employeePhone->phone = $request->get('phones')[$i]['phone'];
-            $employeePhone->save();
-        }
-        $deleted = array_column($request->get('company_emails'), 'id');
-        Employee\EmployeeCompanyEmail::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
-        for ($i = 0; $i < count($request->get('company_emails')); $i++) {
-            if (isset($request->get('company_emails')[$i]['id'])) {
-                $employeeCompanyEmail = Employee\EmployeeCompanyEmail::findOrFail($request->get('company_emails')[$i]['id']);
-            } else {
-                $employeeCompanyEmail = new Employee\EmployeeCompanyEmail;
-                $employeeCompanyEmail->employee_id = $employee->id;
-            }
-            $employeeCompanyEmail->email = $request->get('company_emails')[$i]['email'];
-            $employeeCompanyEmail->save();
-        }
-        $deleted = array_column($request->get('emails'), 'id');
-        EmployeeEmail::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
-        for ($i = 0; $i < count($request->get('emails')); $i++) {
-            if (isset($request->get('emails')[$i]['id'])) {
-                $employeeEmails = EmployeeEmail::findOrFail($request->get('emails')[$i]['id']);
-            } else {
-                $employeeEmails = new EmployeeEmail;
+        Address::saveFromRelation($employee, $request->get('addresses'));
+        Phone::saveFromRelation($employee, $request->get('phones'));
+        Email::saveFromRelation($employee, $request->get('emails'));
+
+        for ($i = 0; $i < count($request->get('company_emails') ?? []); $i++) {
+            if ($request->get('company_emails')[$i]['email']) {
+                $employeeEmails = Employee\EmployeeCompanyEmail::first();
+                if (!$employeeEmails) {
+                    info('here');
+                    $employeeEmails = new Employee\EmployeeCompanyEmail;
+                }
                 $employeeEmails->employee_id = $employee->id;
+                $employeeEmails->email = $request->get('company_emails')[$i]['email'];
+                $employeeEmails->save();
             }
-            $employeeEmails->email = $request->get('emails')[$i]['email'];
-            $employeeEmails->save();
         }
+
         $deleted = array_column($request->get('salary_histories'), 'id');
         EmployeeSalaryHistory::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
         for ($i = 0; $i < count($request->get('salary_histories')); $i++) {

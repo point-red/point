@@ -16,6 +16,9 @@ use App\Model\HumanResource\Employee\EmployeeGroup;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 use App\Model\HumanResource\Employee\EmployeeScorer;
 use App\Model\HumanResource\Employee\EmployeeSocialMedia;
+use App\Model\Master\Address;
+use App\Model\Master\Email;
+use App\Model\Master\Phone;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -46,8 +49,9 @@ class EmployeeController extends Controller
             ->with('phones')
             ->with('status')
             ->with('jobLocation')
-            ->with('user')
-            ->select('employees.*');
+            ->with('user');
+
+        $employees = Employee::joins($employees, $request->get('join'));
 
         if ($request->get('is_archived')) {
             $employees = $employees->whereNotNull('archived_at');
@@ -108,32 +112,17 @@ class EmployeeController extends Controller
 
         $employee->save();
 
-        for ($i = 0; $i < count($request->get('addresses') ?? []); $i++) {
-            $employeeAddress = new Employee\EmployeeAddress;
-            $employeeAddress->employee_id = $employee->id;
-            $employeeAddress->address = $request->get('addresses')[$i]['address'];
-            $employeeAddress->save();
-        }
-
-        for ($i = 0; $i < count($request->get('phones') ?? []); $i++) {
-            $employeePhone = new Employee\EmployeePhone;
-            $employeePhone->employee_id = $employee->id;
-            $employeePhone->phone = $request->get('phones')[$i]['phone'];
-            $employeePhone->save();
-        }
-
-        for ($i = 0; $i < count($request->get('emails') ?? []); $i++) {
-            $employeeEmail = new EmployeeEmail;
-            $employeeEmail->employee_id = $employee->id;
-            $employeeEmail->email = $request->get('emails')[$i]['email'];
-            $employeeEmail->save();
-        }
+        Address::saveFromRelation($employee, $request->get('addresses'));
+        Phone::saveFromRelation($employee, $request->get('phones'));
+        Email::saveFromRelation($employee, $request->get('emails'));
 
         for ($i = 0; $i < count($request->get('company_emails') ?? []); $i++) {
-            $employeeEmails = new Employee\EmployeeCompanyEmail;
-            $employeeEmails->employee_id = $employee->id;
-            $employeeEmails->email = $request->get('company_emails')[$i]['email'];
-            $employeeEmails->save();
+            if ($request->get('company_emails')[$i]['email']) {
+                $employeeEmails = new Employee\EmployeeCompanyEmail;
+                $employeeEmails->employee_id = $employee->id;
+                $employeeEmails->email = $request->get('company_emails')[$i]['email'];
+                $employeeEmails->save();
+            }
         }
 
         for ($i = 0; $i < count($request->get('salary_histories') ?? []); $i++) {
@@ -173,6 +162,15 @@ class EmployeeController extends Controller
             }
         }
 
+        $scorers = $request->get('scorers');
+        $deleted = array_column($request->get('scorers'), 'id');
+        EmployeeScorer::where('employee_id', $employee->id)->whereNotIn('user_id', $deleted)->delete();
+        foreach ($scorers as $scorer) {
+            if (! $employee->scorers->contains($scorer['id'])) {
+                $employee->scorers()->attach($scorer['id']);
+            }
+        }
+
         DB::connection('tenant')->commit();
 
         return new ApiResource($employee);
@@ -187,9 +185,9 @@ class EmployeeController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $employee = Employee::eloquentFilter($request)
-            ->where('employees.id', $id)
-            ->with('group')
+        $employee = Employee::from(Employee::getTableName() . ' as ' . Employee::$alias)->eloquentFilter($request);
+
+        $employee = $employee->with('group')
             ->with('gender')
             ->with('religion')
             ->with('maritalStatus')
@@ -204,10 +202,11 @@ class EmployeeController extends Controller
             ->with('phones')
             ->with('status')
             ->with('jobLocation')
-            ->with('user')
-            ->select('employees.*')
-            ->eloquentFilter($request)
-            ->first();
+            ->with('user');
+
+        $employee = Employee::joins($employee, $request->get('join'));
+
+        $employee = $employee->where(Employee::$alias.'.id', $id)->first();
 
         return new ApiResource($employee);
     }

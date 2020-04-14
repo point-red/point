@@ -11,6 +11,8 @@ class EmployeeCompanyEmail extends MasterModel
 
     public static $alias = 'employee_company_email';
 
+    public static $morphName = 'EmployeeCompanyEmail';
+
     /**
      * Get the employee that owns the email.
      */

@@ -4,7 +4,7 @@ namespace App\Http\Requests\HumanResource\Employee\EmployeeGroup;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreEmployeeGroupRequest extends FormRequest
+class AttachRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class StoreEmployeeGroupRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**

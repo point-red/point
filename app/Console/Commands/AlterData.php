@@ -110,7 +110,7 @@ class AlterData extends Command
 //            }
 //
 //            DB::connection('tenant')->commit();
-//        }
+        }
     }
 
     private function setData()

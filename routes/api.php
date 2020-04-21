@@ -37,6 +37,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::post('auth-user', 'AuthUserController@show');
         require base_path('routes/api/account.php');
         require base_path('routes/api/project.php');
+        Route::apiResource('invoices', 'InvoiceController');
 
         // Global Transaction
         Route::resource('transactions', 'TransactionController');

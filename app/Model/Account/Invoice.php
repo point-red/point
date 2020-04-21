@@ -2,13 +2,27 @@
 
 namespace App\Model\Account;
 
+use App\Model\Project\Project;
+use App\Traits\EloquentFilters;
 use Illuminate\Database\Eloquent\Model;
 
 class Invoice extends Model
 {
+    use EloquentFilters;
+
     protected $connection = 'mysql';
 
     public static $alias = 'invoice';
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
 
     public function setDateAttribute($value)
     {

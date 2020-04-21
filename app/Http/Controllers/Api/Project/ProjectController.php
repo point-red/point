@@ -54,7 +54,7 @@ class ProjectController extends Controller
         // User only allowed to create max 1 project
         $numberOfProject = Project::where('owner_id', auth()->user()->id)->count();
         // TODO: disable new project creation
-        if ($numberOfProject >= 0) {
+        if ($numberOfProject >= 100) {
             return response()->json([
                 'code' => 422,
                 'message' => 'We are updating our server, currently you cannot create new project',
@@ -109,6 +109,9 @@ class ProjectController extends Controller
         $invoice->project_address = $project->address;
         $invoice->project_email = $projectUser->user_email;
         $invoice->project_phone = $project->phone;
+        $invoice->sub_total = 0;
+        $invoice->vat = 0;
+        $invoice->total = 0;
         $invoice->save();
 
         $invoiceItem = new InvoiceItem;
@@ -136,6 +139,8 @@ class ProjectController extends Controller
                 $invoiceItem->discount_percent = 0;
                 $invoiceItem->discount_value = 0;
                 $invoiceItem->save();
+
+                $invoice->sub_total += $invoiceItem->amount * $project->total_user;
             } else {
                 $invoiceItem = new InvoiceItem;
                 $invoiceItem->invoice_id = $invoice->id;
@@ -145,8 +150,13 @@ class ProjectController extends Controller
                 $invoiceItem->discount_percent = 0;
                 $invoiceItem->discount_value = 0;
                 $invoiceItem->save();
+
+                $invoice->sub_total += $invoiceItem->amount;
             }
         }
+        $invoice->vat = $invoice->sub_total * 10 / 100;
+        $invoice->total = $invoice->sub_total + $invoice->vat;
+        $invoice->save();
 
         DB::connection('mysql')->commit();
 

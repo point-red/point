@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\PaymentGateway\Xendit;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
+use App\Model\Account\Invoice;
 use App\Model\Account\Wallet;
 use App\Model\PaymentGateway\Xendit\XenditInvoicePaid;
 use Illuminate\Http\Request;
@@ -21,14 +22,27 @@ class XenditCallbackController extends Controller
             $data->fill($request->all());
             $data->save();
 
-            $userId = explode('-', $data->external_id);
+            $externalId = explode('-', $data->external_id);
 
-            $wallet = new Wallet;
-            $wallet->user_id = $userId[1];
-            $wallet->source_id = $data->id;
-            $wallet->source_type = get_class($data);
-            $wallet->amount = $data->amount;
-            $wallet->save();
+            if ($externalId[0] == 'user') {
+                $wallet = new Wallet;
+                $wallet->user_id = $externalId[1];
+                $wallet->source_id = $data->id;
+                $wallet->source_type = get_class($data);
+                $wallet->amount = $data->amount;
+                $wallet->save();
+            }
+
+            if ($externalId[0] == 'invoice') {
+                $invoice = Invoice::find($externalId[1]);
+                $invoice->paidable_type = XenditInvoicePaid::class;
+                $invoice->paidable_id = $data->id;
+                $invoice->save();
+            }
+
+            if ($invoice->project->is_generated == false) {
+                $invoice->project->generate();
+            }
 
             return new ApiResource($data);
         }

@@ -127,7 +127,7 @@ class ProjectController extends Controller
             $project->plugins()->attach($plugin['id'], [
                 'created_at' => now(),
                 'updated_at' => now(),
-                'expiry_date' => date('Y-m-t 23:59:59')
+                'expired_date' => date('Y-m-t 23:59:59')
             ]);
 
             if ($plugin['price_per_user']) {

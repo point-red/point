@@ -2,6 +2,7 @@
 
 namespace App\Model\Project;
 
+use App\Model\Plugin;
 use App\Model\ProjectPreference;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
@@ -34,5 +35,10 @@ class Project extends Model
     public function preference()
     {
         return $this->hasOne(ProjectPreference::class);
+    }
+
+    public function plugins()
+    {
+        return $this->belongsToMany(Plugin::class);
     }
 }

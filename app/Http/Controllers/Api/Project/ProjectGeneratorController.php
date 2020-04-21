@@ -9,8 +9,7 @@ use App\Http\Requests\Project\Project\UpdateProjectRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Http\Resources\Project\Project\ProjectResource;
-use App\Model\Account\Invoice;
-use App\Model\Account\InvoiceItem;
+use App\Model\Master\User;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
 use Illuminate\Http\Request;
@@ -54,14 +53,12 @@ class ProjectController extends Controller
         // User only allowed to create max 1 project
         $numberOfProject = Project::where('owner_id', auth()->user()->id)->count();
         // TODO: disable new project creation
-        if ($numberOfProject >= 0) {
+        if ($numberOfProject >= 100) {
             return response()->json([
                 'code' => 422,
                 'message' => 'We are updating our server, currently you cannot create new project',
             ], 422);
         }
-
-        DB::connection('mysql')->beginTransaction();
 
         $project = new Project;
         $project->owner_id = auth()->user()->id;
@@ -77,9 +74,6 @@ class ProjectController extends Controller
         $project->vat_id_number = $request->get('vat_id_number');
         $project->invitation_code = get_invitation_code();
         $project->is_generated = false;
-        $project->total_user = $request->get('total_user');
-        $project->expired_date = date('Y-m-t 23:59:59');
-        $project->package_id = 1;
         $project->save();
 
         $projectUser = new ProjectUser;
@@ -90,65 +84,30 @@ class ProjectController extends Controller
         $projectUser->joined = true;
         $projectUser->save();
 
-        $invoiceNumber = date('Ymd');
-        $invoiceCount = Invoice::where('date', '>=', date('Y-m-01 00:00:00'))
-            ->where('date', '<=', date('Y-m-t 23:59:59'))
-            ->count();
-        $invoiceNumber = $invoiceNumber . sprintf('%04d', $invoiceCount + 1);
+        // Create new database for tenant project
+        $dbName = env('DB_DATABASE').'_'.strtolower($request->get('code'));
+        Artisan::call('tenant:database:create', ['db_name' => $dbName]);
 
-        // Create invoice
-        $invoice = new Invoice;
-        $invoice->date = now();
-        $invoice->due_date = now();
-        $invoice->number = $invoiceNumber;
-        $invoice->address = 'Jl Musi no 21, Surabaya';
-        $invoice->phone = '';
-        $invoice->email = 'billing@point.red';
-        $invoice->project_id = $project->id;
-        $invoice->project_name = $project->name;
-        $invoice->project_address = $project->address;
-        $invoice->project_email = $projectUser->user_email;
-        $invoice->project_phone = $project->phone;
-        $invoice->save();
+        // Update tenant database name in configuration
+        config()->set('database.connections.tenant.database', $dbName);
+        DB::connection('tenant')->reconnect();
+        DB::connection('tenant')->beginTransaction();
 
-        $invoiceItem = new InvoiceItem;
-        $invoiceItem->invoice_id = $invoice->id;
-        $invoiceItem->description = 'ERP PACKAGE - COMMUNITY EDITION';
-        $invoiceItem->quantity = 1;
-        $invoiceItem->amount = 0;
-        $invoiceItem->discount_percent = 0;
-        $invoiceItem->discount_value = 0;
-        $invoiceItem->save();
+        // Migrate database
+        Artisan::call('tenant:migrate', ['db_name' => $dbName]);
 
-        foreach ($request->get('plugins') as $plugin) {
-            $project->plugins()->attach($plugin['id'], [
-                'created_at' => now(),
-                'updated_at' => now(),
-                'expiry_date' => date('Y-m-t 23:59:59')
-            ]);
+        // Clone user point into their database
+        $user = new User;
+        $user->id = auth()->user()->id;
+        $user->name = auth()->user()->name;
+        $user->first_name = auth()->user()->first_name;
+        $user->last_name = auth()->user()->last_name;
+        $user->email = auth()->user()->email;
+        $user->save();
 
-            if ($plugin['price_per_user']) {
-                $invoiceItem = new InvoiceItem;
-                $invoiceItem->invoice_id = $invoice->id;
-                $invoiceItem->description = $plugin['notes'];
-                $invoiceItem->quantity = $project->total_user;
-                $invoiceItem->amount = $plugin['price_per_user_proportional'];
-                $invoiceItem->discount_percent = 0;
-                $invoiceItem->discount_value = 0;
-                $invoiceItem->save();
-            } else {
-                $invoiceItem = new InvoiceItem;
-                $invoiceItem->invoice_id = $invoice->id;
-                $invoiceItem->description = $plugin['description'];
-                $invoiceItem->quantity = 1;
-                $invoiceItem->amount = $plugin['price_proportional'];
-                $invoiceItem->discount_percent = 0;
-                $invoiceItem->discount_value = 0;
-                $invoiceItem->save();
-            }
-        }
+        Artisan::call('tenant:seed:first', ['db_name' => $dbName]);
 
-        DB::connection('mysql')->commit();
+        DB::connection('tenant')->commit();
 
         return new ProjectResource($project);
     }
@@ -165,11 +124,7 @@ class ProjectController extends Controller
 
         $dbName = env('DB_DATABASE').'_'.strtolower($project->code);
 
-        $project->db_size = 0;
-
-        if ($project->is_active) {
-            $project->db_size = dbm_get_size($dbName, 'tenant');
-        }
+        $project->db_size = dbm_get_size($dbName, 'tenant');
 
         return new ApiResource($project);
     }

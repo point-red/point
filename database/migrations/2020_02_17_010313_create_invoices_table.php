@@ -17,13 +17,12 @@ class CreateInvoicesTable extends Migration
             $table->increments('id');
             $table->dateTime('date');
             $table->dateTime('due_date');
-            $table->unsignedInteger('user_id');
             $table->unsignedInteger('project_id');
             $table->string('project_name')->nullable();
             $table->string('project_address')->nullable();
             $table->string('project_email')->nullable();
             $table->string('project_phone')->nullable();
-            $table->string('name')->nullable();
+            $table->string('number')->nullable();
             $table->string('address')->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
@@ -35,11 +34,6 @@ class CreateInvoicesTable extends Migration
             $table->unsignedInteger('paidable_id')->nullable()->index();
             $table->string('paidable_type')->nullable()->index();
             $table->timestamps();
-
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('restrict');
 
             $table->foreign('project_id')
                 ->references('id')

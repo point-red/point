@@ -9,12 +9,6 @@ use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Accounting\ChartOfAccount;
-use App\Model\Accounting\ChartOfAccountGroup;
-use App\Model\Accounting\ChartOfAccountType;
-use App\Model\Accounting\Journal;
-use App\Model\Form;
-use App\Model\Master\User;
-use App\Model\Plugin\PinPoint\SalesVisitation;
 use Illuminate\Http\Request;
 
 class ChartOfAccountController extends Controller
@@ -45,8 +39,8 @@ class ChartOfAccountController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request  $request
-     * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource
+     * @param StoreRequest $request
+     * @return ChartOfAccountResource
      */
     public function store(StoreRequest $request)
     {
@@ -112,8 +106,7 @@ class ChartOfAccountController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     *
-     * @return \App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountResource
+     * @return ChartOfAccountResource
      */
     public function destroy($id)
     {

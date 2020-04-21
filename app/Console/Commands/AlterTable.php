@@ -4,8 +4,6 @@ namespace App\Console\Commands;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 
 class AlterTable extends Command
 {
@@ -40,15 +38,16 @@ class AlterTable extends Command
     {
         $projects = Project::all();
         foreach ($projects as $project) {
-            $db = env('DB_DATABASE').'_'.strtolower($project->code);
-
-            $this->line('Clone '.$project->code);
-            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
-            $this->line('Alter '.$project->code);
-            config()->set('database.connections.tenant.database', $db);
-            DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD COLUMN `cash_flow_position` varchar(255)');
-            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD COLUMN `cash_flow` varchar(255)');
+            $project->package_id = 1;
+            $project->save();
+//            $db = env('DB_DATABASE').'_'.strtolower($project->code);
+//            $this->line('Clone '.$project->code);
+//            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+//            $this->line('Alter '.$project->code);
+//            config()->set('database.connections.tenant.database', $db);
+//            DB::connection('tenant')->reconnect();
+//            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD COLUMN `cash_flow_position` varchar(255)');
+//            DB::connection('tenant')->statement('ALTER TABLE `chart_of_accounts` ADD COLUMN `cash_flow` varchar(255)');
         }
     }
 }

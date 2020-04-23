@@ -26,9 +26,15 @@ class InstructionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        $instruction = Instruction::latest()->first();
+        $query = Instruction::latest();
+
+        if ($request->has('procedure_id')) {
+            $query->whereProcedureId($request->procedure_id);
+        }
+
+        $instruction = $query->first();
 
         if (!$instruction) {
             return response()->json([
@@ -81,9 +87,17 @@ class InstructionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Instruction $instruction)
     {
-        //
+        $request->validate([
+            'number' => ["unique:tenant.play_book_instructions,number,{$instruction->id}"],
+            'name' => ['required'],
+            'procedure_id' => ['required', 'numeric']
+        ]);
+
+        $instruction->update($request->all());
+
+        return response()->json(compact('instruction'));
     }
 
     /**

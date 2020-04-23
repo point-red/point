@@ -9,7 +9,7 @@ Route::prefix('plugin')->namespace('Plugin')->group(function () {
         
         Route::apiResource('procedures', 'ProcedureController')->except('edit');
 
-        Route::apiResource('instructions', 'Instruction\InstructionController')->except('edit');
+        Route::resource('instructions', 'Instruction\InstructionController')->except('edit');
         Route::apiResource('instructions/{instruction}/steps', 'Instruction\StepController')->except('edit');
     });
 });

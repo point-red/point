@@ -28,6 +28,20 @@ class InstructionController extends Controller
      */
     public function create()
     {
+        $instruction = Instruction::latest()->first();
+
+        if (!$instruction) {
+            return response()->json([
+                'number' => null
+            ]);
+        }
+
+        $code = preg_replace("/[^a-zA-Z_\s]+/", "", "{$instruction->number}");
+        $iteration = (int) preg_replace("/[a-zA-Z_\s]+/", "", "{$instruction->number}");
+
+        return response()->json([
+            'number' => $code . (++$iteration)
+        ]);
     }
 
     /**

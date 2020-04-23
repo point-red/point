@@ -22,7 +22,9 @@ class Glossary extends Model
 
     public function scopeFilter($query, Request $request)
     {
-        return $query->where('code', 'like', "%{$request->search}%");
+        return $query
+            ->where('code', 'like', "%{$request->search}%")
+            ->orWhere('name', 'like', "%{$request->search}%");
     }
 
     public function duplicateToHistory()

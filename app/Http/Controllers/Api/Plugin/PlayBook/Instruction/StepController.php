@@ -89,9 +89,25 @@ class StepController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Instruction $instruction, InstructionStep $step)
     {
-        //
+        $request->validate([
+            'instruction_id' => ['required', 'numeric'],
+            'name' => ['required'],
+            'contents.*.glossary_id' => ['required'],
+            'contents.*.content' => ['required']
+        ]);
+
+        $step->update($request->only('name'));
+        $step->contents()->delete();
+
+        foreach ($request->contents as $content) {
+            $step->contents()->save(new InstructionStepContent($content));
+        }
+
+        $step->contents;
+
+        return response()->json(compact('step'));
     }
 
     /**

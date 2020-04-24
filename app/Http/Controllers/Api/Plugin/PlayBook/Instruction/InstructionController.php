@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Plugin\PlayBook\Instruction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Plugin\PlayBook\Instruction;
+use App\Model\Plugin\PlayBook\InstructionHistory;
 use Illuminate\Http\Request;
 
 class InstructionController extends Controller
@@ -42,11 +43,20 @@ class InstructionController extends Controller
             ]);
         }
 
-        $code = preg_replace("/[^a-zA-Z_\s]+/", "", "{$instruction->number}");
-        $iteration = (int) preg_replace("/[a-zA-Z_\s]+/", "", "{$instruction->number}");
+        $delimiter = "~*~";
+        $onlyNumerics = explode(
+            $delimiter,
+            preg_replace("/[^0-9]/", $delimiter, $instruction->number)
+        );
+        $lastNumeric = $onlyNumerics[count($onlyNumerics) - 1];
+        $nonIteration = substr(
+            $instruction->number, 
+            0, 
+            strlen($instruction->number) - strlen("{$lastNumeric}")
+        );
 
         return response()->json([
-            'number' => $code . (++$iteration)
+            'number' => $nonIteration . ++$lastNumeric
         ]);
     }
 
@@ -95,6 +105,7 @@ class InstructionController extends Controller
             'procedure_id' => ['required', 'numeric']
         ]);
 
+        InstructionHistory::updateInstruction($request->all(), $instruction);
         $instruction->update($request->all());
 
         return response()->json(compact('instruction'));

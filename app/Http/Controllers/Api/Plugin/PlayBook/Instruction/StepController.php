@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Plugin\PlayBook\Instruction;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Plugin\PlayBook\Instruction;
+use App\Model\Plugin\PlayBook\InstructionHistory;
 use App\Model\Plugin\PlayBook\InstructionStep;
 use App\Model\Plugin\PlayBook\InstructionStepContent;
 use Illuminate\Http\Request;
@@ -94,6 +95,7 @@ class StepController extends Controller
             $step->contents()->save(new InstructionStepContent($content));
         }
 
+        InstructionHistory::updateStep($request->all(), $step);
         $step->contents;
 
         return response()->json(compact('step'));

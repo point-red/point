@@ -25,6 +25,11 @@ class Instruction extends Model
         return $this->hasMany(InstructionStep::class);
     }
 
+    public function history()
+    {
+        return $this->hasOne(InstructionHistory::class);
+    }
+
     public function scopeFilter($query, Request $request)
     {
         if ($request->has('procedure_id')) {

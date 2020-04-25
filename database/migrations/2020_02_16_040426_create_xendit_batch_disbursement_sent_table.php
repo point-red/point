@@ -17,7 +17,7 @@ class CreateXenditBatchDisbursementSentTable extends Migration
             $table->increments('id');
             $table->string('xendit_id');
             $table->string('user_id');
-            $table->string('approver_id');
+            $table->string('er_id');
             $table->timestamp('approved_at');
             $table->unsignedInteger('total_disbursed_count');
             $table->unsignedDecimal('total_disbursed_amount', 65, 30);

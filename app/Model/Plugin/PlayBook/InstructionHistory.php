@@ -23,7 +23,7 @@ class InstructionHistory extends Model
     {
         $steps = [];
 
-        foreach ($instruction->steps()->with('contents')->get() as $step) {
+        foreach ($instruction->steps()->with('contents.glossary')->get() as $step) {
             $steps[] = (object) [
                 'id' => $step->id,
                 'histories' => [
@@ -53,15 +53,19 @@ class InstructionHistory extends Model
             $history = self::createHistory($instruction);
         }
 
-        foreach ($instruction->toArray() as $key => $oldValue) {
-            if ($oldValue != @$newValue[$key]) {
-                $newHistoryArray = json_decode($history->{$key});
-                array_push(
-                    $newHistoryArray,
-                    $newValue[$key]
-                );
-                $history->{$key} = json_encode($newHistoryArray);
-            }
+        if ($newValue === null) {
+            return;
+        }
+
+        $instruction = $instruction->toArray();
+
+        foreach (['number', 'name'] as $key) {
+            $newHistoryArray = json_decode($history->{$key});
+            array_push(
+                $newHistoryArray,
+                $newValue[$key]
+            );
+            $history->{$key} = json_encode($newHistoryArray);
         }
 
         $history->save();
@@ -75,10 +79,10 @@ class InstructionHistory extends Model
             $history = self::createHistory($step->instruction);
         }
 
-        # ambil index array step dari $history->steps
         $steps = json_decode($history->steps);
         $index = -1;
-
+        
+        # ambil index array step dari $history->steps
         for ($i = 0; $i < count($steps); $i++) {
             if ($steps[$i]->id == $step->id) {
                 $index = $i;
@@ -87,6 +91,13 @@ class InstructionHistory extends Model
 
         if ($index > -1) {
             $steps[$index]->histories[] = $newValue;
+        } else {
+            $steps[] = (object) [
+                'id' => $step->id,
+                'histories' => [
+                    $step
+                ]
+            ];
         }
 
         $history->steps = json_encode($steps);

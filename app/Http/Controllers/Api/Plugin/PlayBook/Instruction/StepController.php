@@ -56,7 +56,8 @@ class StepController extends Controller
             $step->contents()->save(new InstructionStepContent($content));
         }
 
-        $step->contents;
+        $step->contents = $step->contents()->with('glossary')->get(); # load glossary;
+        InstructionHistory::updateStep($step, $step);
 
         return response()->json(compact('step'));
     }
@@ -88,6 +89,8 @@ class StepController extends Controller
             'contents.*.content' => ['required']
         ]);
 
+        $oldStep = (clone $step);
+
         $step->update($request->only('name'));
         $step->contents()->delete();
 
@@ -95,8 +98,8 @@ class StepController extends Controller
             $step->contents()->save(new InstructionStepContent($content));
         }
 
-        InstructionHistory::updateStep($request->all(), $step);
-        $step->contents;
+        $step->contents = $step->contents()->with('glossary')->get();
+        InstructionHistory::updateStep($step, $oldStep);
 
         return response()->json(compact('step'));
     }

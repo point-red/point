@@ -74,8 +74,11 @@ class InstructionController extends Controller
             'procedure_id' => ['required', 'numeric']
         ]);
 
+        $instruction = Instruction::create($request->all());
+        InstructionHistory::updateInstruction(null, $instruction);
+
         return [
-            'instruction' => Instruction::create($request->all())
+            'instruction' => $instruction
         ];
     }
 

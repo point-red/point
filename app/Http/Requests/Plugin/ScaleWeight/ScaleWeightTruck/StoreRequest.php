@@ -26,7 +26,6 @@ class StoreRequest extends FormRequest
         return [
             'machine_code' => 'required',
             'form_number' => 'required',
-            'uuid' => 'unique:tenant.scale_weight_trucks,uuid',
             'vendor' => 'required',
             'driver' => 'required',
             'license_number' => 'required',

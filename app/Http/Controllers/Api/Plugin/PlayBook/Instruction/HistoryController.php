@@ -21,6 +21,7 @@ class HistoryController extends Controller
         $instruction->name = json_decode($instruction->name);
         $instruction->number = json_decode($instruction->number);
         $instruction->steps = json_decode($instruction->steps);
+        $instruction->procedure = $instruction->instruction->procedure;
 
         return response()->json(compact('instruction'));
     }

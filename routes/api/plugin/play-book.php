@@ -7,8 +7,8 @@ Route::prefix('plugin')->namespace('Plugin')->group(function () {
         Route::apiResource('glossaries', 'GlossaryController')->except('edit');
         Route::apiResource('glossaries/{glossary}/histories', 'GlossaryHistoryController')->only('index');
         
-        Route::apiResource('procedures', 'ProcedureController')->except('edit');
-        
+        Route::resource('procedures', 'ProcedureController')->except('edit');
+
         Route::resource('instructions', 'Instruction\InstructionController')->except('edit');
         Route::apiResource('instructions/{instruction}/steps', 'Instruction\StepController')->except('edit');
         Route::apiResource('instructions/{instruction}/histories', 'Instruction\HistoryController')->only('index');

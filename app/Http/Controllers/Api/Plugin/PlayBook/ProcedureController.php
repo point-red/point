@@ -23,14 +23,46 @@ class ProcedureController extends Controller
         return new ApiCollection($procedures);
     }
 
-    /**ApiCollection
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $query = Procedure::latest();
+
+        if ($request->has('procedure_id')) {
+            $query->whereProcedureId($request->procedure_id);
+        } else {
+            $query->parent();
+        }
+
+        $procedure = $query->first();
+
+        if (!$procedure) {
+            $procedure = Procedure::find($request->procedure_id);
+
+            return response()->json([
+                'code' => $procedure ? "{$procedure->code}.1" : null
+            ]);
+        }
+
+        $delimiter = "~*~";
+        $onlyNumerics = explode(
+            $delimiter,
+            preg_replace("/[^0-9]/", $delimiter, $procedure->code)
+        );
+        $lastNumeric = $onlyNumerics[count($onlyNumerics) - 1];
+        $nonIteration = substr(
+            $procedure->code, 
+            0, 
+            strlen($procedure->code) - strlen("{$lastNumeric}")
+        );
+
+        return response()->json([
+            'code' => $nonIteration . ++$lastNumeric
+        ]);
     }
 
     /**
@@ -50,9 +82,9 @@ class ProcedureController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Procedure $procedure)
     {
-        //
+        return response()->json(compact('procedure'));
     }
 
     /**
@@ -70,12 +102,19 @@ class ProcedureController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Model\Plugin\PlayBook\Procedure $procedure
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Procedure $procedure)
     {
-        //
+        $request->validate([
+            'code' => ['required', "unique:tenant.play_book_procedures,code,{$procedure->id}"],
+            'name' => ['required']
+        ]);
+
+        $procedure->update($request->all());
+
+        return response()->json(compact('procedure'));
     }
 
     /**

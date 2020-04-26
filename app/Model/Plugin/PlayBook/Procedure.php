@@ -14,13 +14,18 @@ class Procedure extends Model
     protected $with = ['procedures'];
 
     protected $fillable = [
-        'intruction_number', 'procedure_id', 'code',
+        'procedure_id', 'code',
         'name', 'purpose', 'note', 'status'
     ];
 
     public function procedures()
     {
         return $this->hasMany(Procedure::class);
+    }
+
+    public function histories()
+    {
+        return $this->hasMany(ProcedureHistory::class);
     }
 
     public function scopeParent($query)
@@ -31,5 +36,15 @@ class Procedure extends Model
     public function scopeFilter($query, Request $request)
     {
         return $query;
+    }
+
+    public function duplicateToHistory()
+    {
+        $me = $this->toArray();
+        unset($me->procedure_id);
+
+        $this->histories()->save(new ProcedureHistory(
+            $me
+        ));
     }
 }

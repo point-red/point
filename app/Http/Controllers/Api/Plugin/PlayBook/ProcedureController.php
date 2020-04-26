@@ -73,7 +73,10 @@ class ProcedureController extends Controller
      */
     public function store(StoreProcedureRequest $request)
     {
-        return Procedure::create($request->all());
+        $procedure = Procedure::create($request->all());
+        $procedure->duplicateToHistory();
+
+        return response()->json(compact('procedure'));
     }
 
     /**
@@ -113,6 +116,7 @@ class ProcedureController extends Controller
         ]);
 
         $procedure->update($request->all());
+        $procedure->duplicateToHistory();
 
         return response()->json(compact('procedure'));
     }

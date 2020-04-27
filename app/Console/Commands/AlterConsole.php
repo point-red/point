@@ -46,7 +46,7 @@ class AlterConsole extends Command
             DB::connection('tenant')->reconnect();
             $count = Employee::all()->count();
             if ($count > 0) {
-                $this->line('PROJECT:  '.$project->code .' = '. $project->count());
+                $this->line('PROJECT:  '.$project->code .' = '. $count);
             }
         }
     }

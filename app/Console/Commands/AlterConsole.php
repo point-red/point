@@ -44,9 +44,13 @@ class AlterConsole extends Command
         foreach ($projects as $project) {
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
             DB::connection('tenant')->reconnect();
-            $count = Employee::all()->count();
-            if ($count > 0) {
-                $this->line('PROJECT:  '.$project->code .' = '. $count);
+            $employees = Employee::where('updated_at', '>', '2020-04-21')->get();
+            if ($employees->count() > 0) {
+                $this->line('PROJECT:  '.$project->code .' = '. $employees->count());
+
+                foreach ($employees as $employee) {
+                    $this->line($employee->id . '. ' . $employee->name .' ('.$employee->updated_at.')');
+                }
             }
         }
     }

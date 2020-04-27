@@ -1,16 +1,21 @@
 # RETUR PENJUALAN
 
+![](_media/id/penjualan/retur-penjualan.jpg)
 
-Retur Penjualan merupakan kegiatan pengembalian barang dari customer atas barang yang telah dikirimkan oleh perusahaan dengan alasan tertentu.
+## DEFINISI
+Kegiatan pengembalian barang dari customer atas barang yang telah dikirimkan oleh perusahaan dengan alasan tertentu.
 
-Retur Penjualan memiliki fungsi untuk input transaksi atas retur agar dapat membiayakan atau dapat menambahkan jumlah persediaan.
+## KEGUNAAN
+untuk input transaksi atas retur agar dapat membiayakan atau dapat menambahkan jumlah persediaan.
 
-Karena dalam retur penjualan berupa pembebanan atau penambahan persediaan, maka dalam sistem ini akan terjadi jurnal.
+!> **Note** Karena dalam retur penjualan berupa pembebanan atau penambahan persediaan, maka dalam sistem ini akan terjadi jurnal.
 
-Contoh 1 : tgl 20/3/20 Perusahaan menerima pengembalian barang sejumlah Rp.99.000 dari nota Customer A atas barang yang telah dikirimkan pada tgl 07/03/20 karena barang tersebut rusak
+## CONTOH APABILA BARANG DIRETUR KARENA RUSAK
+Tgl 20/3/20 Perusahaan menerima pengembalian barang sejumlah Rp.99.000 dari nota Customer A atas barang yang telah dikirimkan pada tgl 07/03/20 karena barang tersebut rusak
 
-Jurnal yang akan terjadi :
-Penjualannya menggunakan PPN
+### JURNALNYA :
+
+#### Penjualannya menggunakan PPN
 
 | No. Akun | Nama Akun                | Debit     | Kredit    |
 | -------- | ------------------------ | --------- | --------- |
@@ -21,7 +26,7 @@ Penjualannya menggunakan PPN
 | 50101    | Beban Pokok Penjualan    |           | Rp.90.000 |
 
 
-Penjualannya tanpa PPN
+#### Penjualannya tanpa PPN
 
 | No. Akun | Nama Akun                | Debit     | Kredit    |
 | -------- | ------------------------ | --------- | --------- |
@@ -30,11 +35,12 @@ Penjualannya tanpa PPN
 | 50112    | Beban Selisih Persediaan | Rp.99.000 |           |
 | 50101    | Beban Pokok Penjualan    |           | Rp.99.000 |
 
-Contoh 2 : tgl 20/3/20 Perusahaan menerima pengembalian barang sejumlah Rp.99.000 dari nota Customer A atas barang yang telah dikirimkan pada tgl 07/03/20 karena barang tersebut salah warna.
+## CONTOH APABILA RETUR KARENA KELALAIAN PENGIRIMAN
+Tgl 20/3/20 Perusahaan menerima pengembalian barang sejumlah Rp.99.000 dari nota Customer A atas barang yang telah dikirimkan pada tgl 07/03/20 karena barang tersebut salah warna.
 
-Jurnal yang akan terjadi :
+### JURNALNYA :
 
-Penjualannya menggunakan PPN
+#### Penjualannya menggunakan PPN
 
 | No. Akun | Nama Akun              | Debit     | Kredit    |
 | -------- | ---------------------- | --------- | --------- |
@@ -45,7 +51,7 @@ Penjualannya menggunakan PPN
 | 50101    | Beban Pokok Penjualan  |           | Rp.90.000 |
 
 
-Penjualannya tanpa PPN
+#### Penjualannya tanpa PPN
 
 | No. Akun | Nama Akun              | Debit     | Kredit    |
 | -------- | ---------------------- | --------- | --------- |

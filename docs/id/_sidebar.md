@@ -21,6 +21,22 @@
   - Aset Tetap
       - [Metode Penyusutan](/id/modules/aset-tetap/metode-penyusutan.md)
       - [Tipe Aset tetap](id/modules/aset-tetap/tipe-aset-tetap.md)
+      - Pembelian Aset Tetap
+        - [Permintaan Pembelian](/id/modules/aset-tetap/pembelian-aset-tetap/permintaan-pembelian.md)
+        - [Pesanan Pembelian](id/modules/aset-tetap/pembelian-aset-tetap/pesanan-pembelian.md)
+        - [Penerimaan Barang](id/modules/aset-tetap/pembelian-aset-tetap/penerimaan-aset-tetap.md)
+        - [Faktur Pembelian](id/modules/aset-tetap/pembelian-aset-tetap/faktur-pembelian.md)
+        - [Perintah Bayar](id/modules/aset-tetap/pembelian-aset-tetap/perintah-bayar.md)
+        - [Uang Muka Pembelian](id/modules/aset-tetap/pembelian-aset-tetap/uang-muka-pembelian.md)
+        - [Retur Pembelian](id/modules/aset-tetap/pembelian-aset-tetap/retur-pembelian.md)
+      - Penjualan Aset Tetap
+        - [Penentuan Penjualan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/penentuan-penjualan-aset-tetap.md)
+        - [Pesanan Penjualan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/pesanan-penjualan-aset-tetap.md)
+        - [Pengiriman Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/pengiriman-aset-tetap.md)
+        - [Faktur Penjualan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/faktur-penjualan-aset-tetap.md)
+        - [Perintah Penagihan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/perintah-penagihan-aset-tetap.md)
+        - [Uang Muka Penjualan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/uang-muka-penjualan-aset-tetap.md)
+        - [Retur Penjualan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/retur-penjualan-aset-tetap.md)
   - Pembelian
       - [Permintaan Pembelian](/id/modules/pembelian/permintaan-pembelian.md)
       - [Pesanan Pembelian](id/modules/pembelian/pesanan-pembelian.md)

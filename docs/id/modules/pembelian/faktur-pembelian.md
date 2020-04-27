@@ -1,4 +1,4 @@
-# FAKTUR PEMBELIAN
+# FAKTUR PEMBELIAN ASET TETAP
 
 ![](_media/id/pembelian/faktur-pembelian.jpg)
 

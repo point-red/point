@@ -158,6 +158,10 @@ class ProjectController extends Controller
         $invoice->total = $invoice->sub_total + $invoice->vat;
         $invoice->save();
 
+        if ($invoice->total == 0) {
+            $project->generate();
+        }
+
         DB::connection('mysql')->commit();
 
         return new ProjectResource($project);

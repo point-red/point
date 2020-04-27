@@ -8,6 +8,8 @@ class EmployeeSocialMedia extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_social_media';
+
     /**
      * Get the employee that owns the social media.
      */

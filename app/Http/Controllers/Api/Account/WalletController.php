@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api\Account;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
+use App\Model\Account\Invoice;
 use App\Model\Account\Wallet;
+use App\Model\Plugin;
 use Illuminate\Http\Request;
 use Xendit\Xendit;
 
@@ -48,12 +50,22 @@ class WalletController extends Controller
 
         if ($count == 0) {
             // create new invoice
-            $params = [
-                'external_id' => 'user-' . auth()->user()->id,
-                'payer_email' => auth()->user()->email,
-                'description' => 'Top-up',
-                'amount' => $request->get('amount')
-            ];
+            if ($request->get('invoice_id')) {
+                $invoice = Invoice::find($request->get('invoice_id'));
+                $params = [
+                    'external_id' => 'invoice-' . $request->get('invoice_id'),
+                    'payer_email' => auth()->user()->email,
+                    'description' => 'INVOICE #'.$invoice->number,
+                    'amount' => $request->get('amount')
+                ];
+            } else {
+                $params = [
+                    'external_id' => 'user-' . auth()->user()->id,
+                    'payer_email' => auth()->user()->email,
+                    'description' => 'Top-up',
+                    'amount' => $request->get('amount')
+                ];
+            }
 
             $createInvoice = \Xendit\Invoice::create($params);
 

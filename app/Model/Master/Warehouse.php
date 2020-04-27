@@ -2,11 +2,14 @@
 
 namespace App\Model\Master;
 
-use App\Model\Inventory\Inventory;
 use App\Model\MasterModel;
+use App\Traits\Model\Master\WarehouseJoin;
+use App\Traits\Model\Master\WarehouseRelation;
 
 class Warehouse extends MasterModel
 {
+    use WarehouseJoin, WarehouseRelation;
+
     protected $connection = 'tenant';
 
     protected $appends = ['label'];
@@ -19,28 +22,14 @@ class Warehouse extends MasterModel
         'phone',
     ];
 
+    public static $alias = 'warehouse';
+
+    public static $morphName = 'Warehouse';
+
     public function getLabelAttribute()
     {
         $label = $this->code ? '[' . $this->code . '] ' : '';
 
         return $label . $this->name;
-    }
-
-    /**
-     * The users that belong to the warehouse.
-     */
-    public function users()
-    {
-        return $this->belongsToMany(User::class, 'user_warehouse')->withPivot(['is_default']);;
-    }
-
-    public function inventories()
-    {
-        return $this->hasMany(Inventory::class, 'warehouse_id');
-    }
-
-    public function branch()
-    {
-        return $this->belongsTo(Branch::class);
     }
 }

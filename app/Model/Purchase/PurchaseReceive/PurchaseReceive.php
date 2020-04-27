@@ -17,6 +17,8 @@ class PurchaseReceive extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'purchase_receive';
+
     protected $table = 'purchase_receives';
 
     public $timestamps = false;

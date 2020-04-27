@@ -2,7 +2,7 @@
     <thead>
     <tr>
         <th></th>
-        <th colspan="{{ sizeof($reasons) }}">Not Interest Reasons</th>
+        <th colspan="{{ sizeof($reasons) }}">No Interest Reasons</th>
     </tr>
     <tr>
         <th>Week</th>

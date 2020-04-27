@@ -13,3 +13,5 @@ Route::prefix('project')->namespace('Project')->group(function () {
     Route::patch('projects/{id}/preferences', 'ProjectPreferenceController@update');
     Route::apiResource('request-join', 'RequestJoinController');
 });
+
+Route::apiResource('plugins', 'PluginController');

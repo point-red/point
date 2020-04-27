@@ -8,6 +8,8 @@ class KpiTemplateScore extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'kpi_template_score';
+
     /**
      * Get the template indicator that owns the template score.
      */

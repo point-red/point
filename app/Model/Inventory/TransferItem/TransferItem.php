@@ -12,6 +12,8 @@ class TransferItem extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'transfer_sent';
+
     public $timestamps = false;
 
     public $defaultNumberPrefix = 'TIS';

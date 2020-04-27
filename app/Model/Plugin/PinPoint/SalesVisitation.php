@@ -2,13 +2,15 @@
 
 namespace App\Model\Plugin\PinPoint;
 
-use App\Model\Form;
-use App\Model\Master\Customer;
 use App\Model\PointModel;
+use App\Traits\Model\Plugin\PinPoint\SalesVisitationJoin;
+use App\Traits\Model\Plugin\PinPoint\SalesVisitationRelation;
 use Illuminate\Support\Facades\DB;
 
 class SalesVisitation extends PointModel
 {
+    use SalesVisitationRelation, SalesVisitationJoin;
+
     protected $connection = 'tenant';
 
     protected $table = 'pin_point_sales_visitations';
@@ -18,6 +20,8 @@ class SalesVisitation extends PointModel
         'value' => 'double',
     ];
 
+    public static $alias = 'sales_visitation';
+
     public function setDueDateAttribute($value)
     {
         $this->attributes['due_date'] = convert_to_server_timezone($value);
@@ -26,36 +30,6 @@ class SalesVisitation extends PointModel
     public function getDueDateAttribute($value)
     {
         return convert_to_local_timezone($value);
-    }
-
-    public function form()
-    {
-        return $this->belongsTo(Form::class);
-    }
-
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class);
-    }
-
-    public function interestReasons()
-    {
-        return $this->hasMany(SalesVisitationInterestReason::class);
-    }
-
-    public function noInterestReasons()
-    {
-        return $this->hasMany(SalesVisitationNoInterestReason::class);
-    }
-
-    public function similarProducts()
-    {
-        return $this->hasMany(SalesVisitationSimilarProduct::class);
-    }
-
-    public function details()
-    {
-        return $this->hasMany(SalesVisitationDetail::class);
     }
 
     public static function call($dateFrom, $dateTo)

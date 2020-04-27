@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Notification extends Model
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'notification';
+
     public $timestamps = false;
 
     private $user_id;

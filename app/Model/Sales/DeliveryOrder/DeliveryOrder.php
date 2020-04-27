@@ -16,6 +16,8 @@ class DeliveryOrder extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_delivery_order';
+
     protected $table = 'delivery_orders';
 
     public $timestamps = false;

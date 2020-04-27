@@ -11,6 +11,8 @@ class SalesReturn extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_return';
+
     /**
      * Indicates if the model should be timestamped.
      *

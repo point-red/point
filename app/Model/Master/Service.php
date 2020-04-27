@@ -3,10 +3,12 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Traits\Model\Master\ServiceJoin;
+use App\Traits\Model\Master\ServiceRelation;
 
 class Service extends MasterModel
 {
-    public static $morphName = 'Service';
+    use ServiceJoin, ServiceRelation;
 
     protected $connection = 'tenant';
 
@@ -19,19 +21,15 @@ class Service extends MasterModel
         'disabled',
     ];
 
+    public static $alias = 'service';
+
+    public static $morphName = 'Service';
+
     public function getLabelAttribute()
     {
         $label = $this->code ? '[' . $this->code . '] ' : '';
         
         return $label . $this->name;
-    }
-
-    /**
-     * Get all of the groups for the items.
-     */
-    public function groups()
-    {
-        return $this->belongsToMany(ServiceGroup::class);
     }
 
     /**

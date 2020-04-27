@@ -13,6 +13,8 @@ class PosBill extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'pos_bill';
+
     public $timestamps = false;
 
     protected $fillable = [

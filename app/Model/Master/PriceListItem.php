@@ -3,9 +3,13 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Traits\Model\Master\PriceListItemJoin;
+use App\Traits\Model\Master\PriceListItemRelation;
 
 class PriceListItem extends MasterModel
 {
+    use PriceListItemRelation, PriceListItemJoin;
+
     protected $connection = 'tenant';
 
     protected $fillable = [
@@ -23,13 +27,5 @@ class PriceListItem extends MasterModel
         'discount_value' => 'double',
     ];
 
-    public function itemUnit()
-    {
-        return $this->belongsTo(ItemUnit::class);
-    }
-
-    public function pricingGroups()
-    {
-        return $this->belongsTo(PricingGroup::class);
-    }
+    public static $alias = 'price_list_item';
 }

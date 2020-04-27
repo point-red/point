@@ -13,10 +13,6 @@
 Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(function () {
     Route::post('register', 'RegisterController@store');
 
-    Route::get('test', function () {
-        return response()->json(['message' => 'welcome']);
-    });
-
     Route::prefix('payment-gateway/xendit-callback')->namespace('PaymentGateway\\Xendit')->group(function () {
         Route::post('/invoice-paid', 'XenditCallbackController@invoicePaid');
         Route::post('/fva-created', 'XenditCallbackController@fvaCreated');
@@ -41,6 +37,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::post('auth-user', 'AuthUserController@show');
         require base_path('routes/api/account.php');
         require base_path('routes/api/project.php');
+        Route::apiResource('invoices', 'InvoiceController');
 
         // Global Transaction
         Route::resource('transactions', 'TransactionController');

@@ -9,6 +9,8 @@ class EmployeePhone extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_phone';
+
     /**
      * Get the employee that owns the phone.
      */

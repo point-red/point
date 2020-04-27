@@ -10,6 +10,8 @@ class ManufactureFormulaFinishedGood extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'manufacture_formula_finished_goods';
+
     public $timestamps = false;
 
     protected $fillable = [

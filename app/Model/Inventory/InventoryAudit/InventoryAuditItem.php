@@ -9,6 +9,8 @@ class InventoryAuditItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'inventory_audit_item';
+
     public $timestamps = false;
 
     protected $casts = [

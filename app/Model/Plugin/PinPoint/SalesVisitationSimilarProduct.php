@@ -8,6 +8,8 @@ class SalesVisitationSimilarProduct extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_visitation_similar_product';
+
     protected $table = 'pin_point_sales_visitation_similar_products';
 
     public $timestamps = false;

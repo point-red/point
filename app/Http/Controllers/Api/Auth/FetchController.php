@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class FetchController extends Controller
 {
@@ -42,7 +43,9 @@ class FetchController extends Controller
                 $response->tenant_address = $project->address;
                 $response->tenant_phone = $project->phone;
                 $response->tenant_owner_id = $project->owner_id;
+                $response->tenant_user_full_name = tenant($request->user()->id)->full_name;
                 $response->is_owner = $project->owner_id == $request->user()->id;
+                $response->plugins = Arr::pluck($project->plugins, 'name');;
                 $response->permissions = tenant($request->user()->id)->getPermissions();
                 $response->branches = tenant($request->user()->id)->branches;
                 $response->branch = null;

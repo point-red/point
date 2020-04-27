@@ -9,6 +9,7 @@ use App\Model\Accounting\CutOff;
 use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
 use App\Model\Master\Branch;
 use App\Model\Master\Item;
+use App\Model\Master\ItemUnit;
 use App\Model\Master\PricingGroup;
 use App\Model\Master\User;
 use App\Model\Master\Warehouse;
@@ -57,42 +58,58 @@ class AlterData extends Command
         foreach ($projects as $project) {
             $this->line('Clone '.$project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
-            $this->line('Alter '.$project->code);
-            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
-            DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('SET FOREIGN_KEY_CHECKS=0;');
-            DB::connection('tenant')->beginTransaction();
-            $this->setData();
+            $project->plugins()->attach(1);
 
-            SettingJournal::query()->truncate();
-            ChartOfAccount::query()->truncate();
-            ChartOfAccountType::query()->truncate();
-
-            Artisan::call('db:seed', [
-                '--database' => 'tenant',
-                '--class' => 'ChartOfAccountTypeSeeder',
-                '--force' => true,
-            ]);
-
-            Excel::import(new ChartOfAccountImport(), storage_path('template/chart_of_accounts_manufacture.xlsx'));
-
-            Artisan::call('db:seed', [
-                '--database' => 'tenant',
-                '--class' => 'SettingJournalSeeder',
-                '--force' => true,
-            ]);
-
-            $items = Item::all();
-            $account = ChartOfAccount::where('alias', 'PERSEDIAAN BAHAN BAKU')->first();
-
-            foreach ($items as $item) {
-                $item->chart_of_account_id = $account->id;
-                $item->save();
-            }
-
-            DB::connection('tenant')->commit();
-            DB::connection('tenant')->statement('SET FOREIGN_KEY_CHECKS=1;');
+//            $this->line('Alter '.$project->code);
+//            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
+//            DB::connection('tenant')->reconnect();
+//            DB::connection('tenant')->beginTransaction();
+//            $this->setData();
+//
+//            SettingJournal::query()->truncate();
+//            ChartOfAccount::query()->truncate();
+//            ChartOfAccountType::query()->truncate();
+//
+//            Artisan::call('db:seed', [
+//                '--database' => 'tenant',
+//                '--class' => 'ChartOfAccountTypeSeeder',
+//                '--force' => true,
+//            ]);
+//
+//            Excel::import(new ChartOfAccountImport(), storage_path('template/chart_of_accounts_manufacture.xlsx'));
+//
+//            Artisan::call('db:seed', [
+//                '--database' => 'tenant',
+//                '--class' => 'SettingJournalSeeder',
+//                '--force' => true,
+//            ]);
+//
+//            $items = Item::all();
+//            $account = ChartOfAccount::where('alias', 'PERSEDIAAN BAHAN BAKU')->first();
+//
+//            foreach ($items as $item) {
+//                $item->chart_of_account_id = $account->id;
+//                $item->save();
+//
+//                if ($item->unit_default == null || $item->unit_default_purchase == null || $item->unit_default_sales == null) {
+//                    $unit = ItemUnit::where('item_id', $item->id)->first();
+//                    if (!$unit) {
+//                        $unit = new ItemUnit;
+//                        $unit->label = 'PCS';
+//                        $unit->name = 'PCS';
+//                        $unit->converter = 1;
+//                        $unit->save();
+//                    }
+//
+//                    $item->unit_default = $unit->id;
+//                    $item->unit_default_purchase = $unit->id;
+//                    $item->unit_default_sales = $unit->id;
+//                    $item->save();
+//                }
+//            }
+//
+//            DB::connection('tenant')->commit();
         }
     }
 

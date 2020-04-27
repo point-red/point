@@ -19,7 +19,7 @@ class AccountPayableController extends Controller
      */
     public function index(Request $request)
     {
-        $accounts = optional(\App\Helpers\Accounting\Account::currentLiabilities())->pluck('id') ?? [];
+        $accounts = optional(\App\Helpers\Accounting\Account::accountPayables())->pluck('id') ?? [];
 
         $journalPayments = $this->getJournalPayments($accounts);
 

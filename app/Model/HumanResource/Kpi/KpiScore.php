@@ -8,6 +8,8 @@ class KpiScore extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'kpi_score';
+
     /**
      * Get the indicator that owns the template score.
      */

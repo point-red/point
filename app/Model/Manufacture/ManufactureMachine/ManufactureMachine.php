@@ -8,6 +8,8 @@ class ManufactureMachine extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'manufacture_machine';
+
     protected $appends = ['label'];
 
     protected $fillable = [

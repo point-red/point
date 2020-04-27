@@ -10,6 +10,8 @@ class ManufactureProcess extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'manufacture_process';
+
     protected $fillable = [
         'name',
         'notes'

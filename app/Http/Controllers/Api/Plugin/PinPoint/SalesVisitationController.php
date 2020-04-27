@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Plugin\PinPoint;
 use App\Helper\Reward\TokenHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
+use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
 use App\Model\CloudStorage;
@@ -30,14 +31,13 @@ class SalesVisitationController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @return SalesVisitationCollection
+     * @return ApiCollection
      * @throws \Exception
      */
     public function index(Request $request)
     {
-        $salesVisitationForm = SalesVisitation::join('forms', 'forms.id', '=', 'pin_point_sales_visitations.form_id')
-            ->join('customers', 'customers.id', '=', 'pin_point_sales_visitations.customer_id')
-            ->join('users', 'users.id', '=', 'forms.created_by')
+        $salesVisitationForm = SalesVisitation::from(SalesVisitation::getTableName() . ' as ' . SalesVisitation::$alias)
+            ->join(Form::getTableName() . ' as ' . Form::$alias, 'form.id', '=', 'sales_visitation.form_id')
             ->with('form.createdBy')
             ->with('interestReasons')
             ->with('noInterestReasons')
@@ -45,17 +45,19 @@ class SalesVisitationController extends Controller
             ->with('details.item')
             ->eloquentFilter($request);
 
+        $salesVisitationForm = SalesVisitation::joins($salesVisitationForm, $request->get('join'));
+
         if ($request->get('customer_id')) {
-            $salesVisitationForm = $salesVisitationForm->where('customer_id', $request->get('customer_id'));
+            $salesVisitationForm = $salesVisitationForm->where('sales_visitation.customer_id', $request->get('customer_id'));
         }
 
         $dateFrom = date_from($request->get('date_from'), false, true);
         $dateTo = date_to($request->get('date_to'), false, true);
 
-        $salesVisitationForm = $salesVisitationForm->whereBetween('forms.date', [$dateFrom, $dateTo]);
+        $salesVisitationForm = $salesVisitationForm->whereBetween('form.date', [$dateFrom, $dateTo]);
 
         if (! tenant()->hasPermissionTo('read pin point sales visitation form')) {
-            $salesVisitationForm = $salesVisitationForm->where('forms.created_by', auth()->user()->id);
+            $salesVisitationForm = $salesVisitationForm->where('form.created_by', auth()->user()->id);
         }
 
         $salesVisitationForm = pagination($salesVisitationForm, $request->get('limit'));
@@ -73,7 +75,7 @@ class SalesVisitationController extends Controller
             }
         }
 
-        return new SalesVisitationCollection($salesVisitationForm);
+        return new ApiCollection($salesVisitationForm);
     }
 
     /**
@@ -158,7 +160,7 @@ class SalesVisitationController extends Controller
             }
         }
 
-        // Not Interest Reason
+        // No Interest Reason
         $noInterestReasons = $request->get('no_interest_reasons');
         $countNoInterestReason = 0;
         for ($i = 0; $i < count($noInterestReasons); $i++) {
@@ -186,33 +188,22 @@ class SalesVisitationController extends Controller
             }
         }
 
-        // Details
-        $array_item = $request->get('item');
-        $array_price = $request->get('price');
-        $array_quantity = $request->get('quantity');
-
         $totalVisitation = SalesVisitation::rightJoin(
             SalesVisitationDetail::getTableName(),
             SalesVisitationDetail::getTableName('sales_visitation_id'),
             '=',
             SalesVisitation::getTableName('id')
-        )
-            ->where(SalesVisitation::getTableName('name'), $customer->name)->get()->count();
+        )->where(SalesVisitation::getTableName('name'), $customer->name)->get()->count();
 
-        if ($array_item) {
-            for ($i = 0; $i < count($array_item); $i++) {
-                if ($array_item[$i] && $array_price[$i] && $array_quantity[$i]) {
-                    $item = Item::where('name', $array_item[$i])->first();
-                    if (! $item) {
-                        $item = new Item;
-                        $item->name = $array_item[$i];
-                        $item->save();
-                    }
+        $items = $request->get('items');
+        if ($items) {
+            for ($i = 0; $i < count($items); $i++) {
+                if ($items[$i]['item_id'] && $items[$i]['quantity'] && $items[$i]['price']) {
                     $detail = new SalesVisitationDetail;
                     $detail->sales_visitation_id = $salesVisitation->id;
-                    $detail->item_id = $item->id;
-                    $detail->price = $array_price[$i];
-                    $detail->quantity = $array_quantity[$i];
+                    $detail->item_id = $items[$i]['item_id'];
+                    $detail->price = $items[$i]['price'];
+                    $detail->quantity = $items[$i]['quantity'];
                     $detail->save();
 
                     if ($i == 0 && $totalVisitation > 0) {
@@ -225,7 +216,6 @@ class SalesVisitationController extends Controller
 
         if ($request->get('image')) {
             \App\Helpers\StorageHelper::uploadFromBase64($request->get('image'), 'sales visitation form', $salesVisitation->id);
-            ;
         }
 
         if ($salesVisitation->details->count() > 0) {

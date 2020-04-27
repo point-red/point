@@ -9,6 +9,8 @@ class EmployeeAddress extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_address';
+
     /**
      * Get the employee that owns the address.
      */

@@ -128,12 +128,17 @@ class PriceListItemController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param int $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $priceListItem = PriceListItem::findOrFail($id);
+        $priceListItem = PriceListItem::from(PriceListItem::getTableName() . ' as ' . PriceListItem::$alias)->eloquentFilter($request);
+
+        $priceListItem = PriceListItem::joins($priceListItem, $request->get('join'));
+
+        $priceListItem = $priceListItem->where(PriceListItem::$alias.'.id', $id)->first();
 
         return new ApiResource($priceListItem);
     }

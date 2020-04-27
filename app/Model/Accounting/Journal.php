@@ -9,6 +9,8 @@ class Journal extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'journal';
+
     protected $table = 'journals';
 
     protected $casts = [

@@ -10,6 +10,8 @@ class OpeningStock extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'opening_stock';
+
     public $timestamps = false;
 
     public $defaultNumberPrefix = 'OS';

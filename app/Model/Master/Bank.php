@@ -8,6 +8,8 @@ class Bank extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'bank';
+
     /**
      * Get all of the owning bankable models.
      */

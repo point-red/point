@@ -8,6 +8,8 @@ class EmployeePromotionHistory extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_promotion_history';
+
     /**
      * Get the employee that owns the promotion history.
      */

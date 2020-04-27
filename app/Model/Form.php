@@ -14,6 +14,8 @@ class Form extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'form';
+
     protected $user_logs = true;
 
     protected $fillable = [
@@ -133,7 +135,7 @@ class Form extends PointModel
 
     public function archive($editedNotes = '')
     {
-        if ($this->cancellation_status == null || $this->cancellation_status != 1) {
+        if ($this->cancellation_status != null && $this->cancellation_status != 1) {
             throw new FormActiveException();
         }
 

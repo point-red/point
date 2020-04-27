@@ -10,6 +10,8 @@ class ManufactureFormulaRawMaterial extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'manufacture_formula_raw_material';
+
     public $timestamps = false;
 
     protected $fillable = [

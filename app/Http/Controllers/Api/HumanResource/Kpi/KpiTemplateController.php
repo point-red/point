@@ -74,7 +74,9 @@ class KpiTemplateController extends Controller
             }])
             ->first();
 
-        $template->target = (float) $template->target;
+        if ($template) {
+            $template->target = (float) $template->target;
+        }
 
         return new ApiResource($template);
     }

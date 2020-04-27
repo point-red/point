@@ -8,6 +8,8 @@ class EmployeeContract extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_contract';
+
     /**
      * Get the employee that owns the contract.
      */

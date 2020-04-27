@@ -3,12 +3,16 @@
 namespace App\Model\Auth;
 
 use App\Traits\EloquentFilters;
+use App\Traits\Model\Auth\RoleJoin;
+use App\Traits\Model\Auth\RoleRelation;
 
 class Role extends \Spatie\Permission\Models\Role
 {
+    use EloquentFilters, RoleJoin, RoleRelation;
+
     protected $connection = 'tenant';
 
-    use EloquentFilters;
+    public static $alias = 'role';
 
     public static function isExists($name)
     {
@@ -26,5 +30,16 @@ class Role extends \Spatie\Permission\Models\Role
         }
 
         return self::where('name', $name)->first();
+    }
+
+    public static function getTableName($column = null)
+    {
+        $tableName = with(new static)->getTable();
+
+        if (isset($column)) {
+            $tableName = "$tableName.$column";
+        }
+
+        return $tableName;
     }
 }

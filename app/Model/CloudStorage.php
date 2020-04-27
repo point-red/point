@@ -12,6 +12,8 @@ class CloudStorage extends Model
 {
     protected $connection = 'mysql';
 
+    public static $alias = 'cloud_storage';
+
     use EloquentFilters;
 
     public function getExpiredAtAttribute($value)

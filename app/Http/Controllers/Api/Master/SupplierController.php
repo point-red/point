@@ -7,8 +7,6 @@ use App\Http\Requests\Master\Supplier\StoreSupplierRequest;
 use App\Http\Requests\Master\Supplier\UpdateSupplierRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Accounting\Journal;
-use App\Model\Finance\Payment\Payment;
 use App\Model\Master\Address;
 use App\Model\Master\Bank;
 use App\Model\Master\ContactPerson;
@@ -30,60 +28,9 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
-        $suppliers = Supplier::eloquentFilter($request);
+        $suppliers = Supplier::from(Supplier::getTableName() . ' as ' . Supplier::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('addresses', $fields)) {
-                $suppliers = $suppliers->leftjoin(Address::getTableName(), function ($q) {
-                    $q->on(Address::getTableName('addressable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Address::getTableName('addressable_type'), Supplier::$morphName);
-                });
-            }
-
-            if (in_array('phones', $fields)) {
-                $suppliers = $suppliers->leftjoin(Phone::getTableName(), function ($q) {
-                    $q->on(Phone::getTableName('phoneable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Phone::getTableName('phoneable_type'), Supplier::$morphName);
-                });
-            }
-
-            if (in_array('emails', $fields)) {
-                $suppliers = $suppliers->leftjoin(Email::getTableName(), function ($q) {
-                    $q->on(Email::getTableName('emailable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Email::getTableName('emailable_type'), Supplier::$morphName);
-                });
-            }
-
-            if (in_array('contact_persons', $fields)) {
-                $suppliers = $suppliers->leftjoin(ContactPerson::getTableName(), function ($q) {
-                    $q->on(ContactPerson::getTableName('contactable_id'), '=', Supplier::getTableName('id'))
-                        ->where(ContactPerson::getTableName('contactable_type'), Supplier::$morphName);
-                });
-            }
-
-            if (in_array('banks', $fields)) {
-                $suppliers = $suppliers->leftjoin(Bank::getTableName(), function ($q) {
-                    $q->on(Bank::getTableName('bankable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Bank::getTableName('bankable_type'), Supplier::$morphName);
-                });
-            }
-
-            if (in_array('journals', $fields)) {
-                $suppliers = $suppliers->leftjoin(Journal::getTableName(), function ($q) {
-                    $q->on(Journal::getTableName('journalable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Journal::getTableName('journalable_type'), Supplier::$morphName);
-                });
-            }
-
-            if (in_array('payments', $fields)) {
-                $suppliers = $suppliers->leftjoin(Payment::getTableName(), function ($q) {
-                    $q->on(Payment::getTableName('paymentable_id'), '=', Supplier::getTableName('id'))
-                        ->where(Payment::getTableName('paymentable_type'), Supplier::$morphName);
-                });
-            }
-        }
+        $suppliers = Supplier::joins($suppliers, $request->get('join'));
 
         if ($request->get('group_id')) {
             $suppliers = $suppliers->join('groupables', function ($q) use ($request) {
@@ -159,7 +106,11 @@ class SupplierController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $supplier = Supplier::eloquentFilter($request)->findOrFail($id);
+        $supplier = Supplier::from(Supplier::getTableName() . ' as ' . Supplier::$alias)->eloquentFilter($request);
+
+        $supplier = Supplier::joins($supplier, $request->get('join'));
+
+        $supplier = $supplier->where(Supplier::$alias.'.id', $id)->first();
 
         if ($request->get('total_payable')) {
             $supplier->total_payable = $supplier->totalAccountPayable();

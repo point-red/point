@@ -3,19 +3,18 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Traits\Model\Master\CustomerGroupJoin;
+use App\Traits\Model\Master\CustomerGroupRelation;
 use Carbon\Carbon;
 
 class CustomerGroup extends MasterModel
 {
+    use CustomerGroupJoin, CustomerGroupRelation;
+
     protected $connection = 'tenant';
 
     protected $fillable = ['name'];
 
-    /**
-     * get all of the customers that are assigned this group.
-     */
-    public function customers()
-    {
-        return $this->belongstomany(Customer::class);
-    }
+    public static $alias = 'customer_group';
+
 }

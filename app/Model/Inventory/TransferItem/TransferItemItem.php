@@ -9,6 +9,8 @@ class TransferItemItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'transfer_sent_item';
+
     public $timestamps = false;
 
     protected $casts = [

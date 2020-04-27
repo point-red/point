@@ -23,7 +23,10 @@ class ExpeditionController extends Controller
      */
     public function index(Request $request)
     {
-        $expeditions = Expedition::eloquentFilter($request);
+        $expeditions = Expedition::from(Expedition::getTableName() . ' as ' . Expedition::$alias)->eloquentFilter($request);
+
+        $expeditions = Expedition::joins($expeditions, $request->get('join'));
+
         $expeditions = pagination($expeditions, $request->get('limit'));
 
         return new ApiCollection($expeditions);
@@ -63,7 +66,11 @@ class ExpeditionController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $expedition = Expedition::eloquentFilter($request)->findOrFail($id);
+        $expedition = Expedition::from(Expedition::getTableName() . ' as ' . Expedition::$alias)->eloquentFilter($request);
+
+        $expedition = Expedition::joins($expedition, $request->get('join'));
+
+        $expedition = $expedition->where(Expedition::$alias.'.id', $id)->first();
 
         return new ApiResource($expedition);
     }

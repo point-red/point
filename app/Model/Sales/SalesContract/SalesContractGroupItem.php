@@ -10,6 +10,8 @@ class SalesContractGroupItem extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_contract_group_item';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -36,7 +38,7 @@ class SalesContractGroupItem extends TransactionModel
 
     public function group()
     {
-        return $this->belongsTo(ItemGroup::class);
+        return $this->belongsTo(ItemGroup::class, 'item_group_id');
     }
 
     public function salesOrderItems()

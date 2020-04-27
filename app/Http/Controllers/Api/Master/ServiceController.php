@@ -21,7 +21,9 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $services = Service::eloquentFilter($request);
+        $services = Service::from(Service::getTableName() . ' as ' . Service::$alias)->eloquentFilter($request);
+
+        $services = Service::joins($services, $request->get('join'));
 
         if ($request->get('is_archived')) {
             $services = $services->whereNotNull('archived_at');
@@ -62,9 +64,11 @@ class ServiceController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $service = Service::eloquentFilter($request)
-            ->with('groups')
-            ->findOrFail($id);
+        $service = Service::from(Service::getTableName() . ' as ' . Service::$alias)->eloquentFilter($request);
+
+        $service = Service::joins($service, $request->get('join'));
+
+        $service = $service->where(Service::$alias.'.id', $id)->first();
 
         return new ApiResource($service);
     }

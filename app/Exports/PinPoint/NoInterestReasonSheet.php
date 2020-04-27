@@ -50,7 +50,7 @@ class NoInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wit
             'Time',
             'Sales',
             'Customer',
-            'Not Interest Reason',
+            'No Interest Reason',
         ];
     }
 
@@ -74,7 +74,7 @@ class NoInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wit
      */
     public function title(): string
     {
-        return 'Not Interest Reason';
+        return 'No Interest Reason';
     }
 
     /**

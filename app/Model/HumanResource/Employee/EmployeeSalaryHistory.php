@@ -8,6 +8,8 @@ class EmployeeSalaryHistory extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_salary_history';
+
     /**
      * Get the employee that owns the salary history.
      */

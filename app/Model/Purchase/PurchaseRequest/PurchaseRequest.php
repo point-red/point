@@ -18,6 +18,8 @@ class PurchaseRequest extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'purchase_request';
+
     protected $fillable = [
         'required_date',
         'supplier_id',

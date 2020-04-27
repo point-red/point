@@ -11,6 +11,8 @@ class SalesOrderItem extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_order_item';
+
     public $timestamps = false;
 
     protected $fillable = [

@@ -10,6 +10,8 @@ class PurchaseReceiveService extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'purchase_receive_service';
+
     public $timestamps = false;
 
     protected $fillable = [

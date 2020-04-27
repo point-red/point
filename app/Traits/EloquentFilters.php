@@ -10,8 +10,7 @@ trait EloquentFilters
      */
     public function scopeEloquentFilter($query, $request)
     {
-        $query->joins($request->get('joins'))
-            ->fields($request->get('fields'))
+        $query->fields($request->get('fields'))
             ->sortBy($request->get('sort_by'))
             ->includes($request->get('includes'))
             ->fieldGroupBy($request->get('group_by'))
@@ -40,35 +39,6 @@ trait EloquentFilters
             ->orFilterNotNull($request->get('or_filter_not_null'))
             ->orFilterWhereHas($request->get('or_filter_where_has'))
             ->orFilterWhereHasLike($request->get('or_filter_where_has_like'));
-    }
-
-    /**
-     * @param $query
-     * @param $values
-     *
-     * To only get specific column, separated by comma
-     * Examples :
-     * ?joins=forms.id=inventories.form_id
-     */
-    public function scopeJoins($query, $values)
-    {
-        if ($values) {
-            $values = $this->convertJavascriptObjectToArray($values);
-            foreach ($values as $value) {
-                $join = explode('=', $value);
-                $table1 = explode('.', $join[0])[0];
-                $column1 = explode('.', $join[0])[1];
-                $table2 = explode('.', $join[1])[0];
-                $column2 = explode('.', $join[1])[1];
-
-                $query->join($table1, $table1.'.'.$column1, '=', $table2.'.'.$column2);
-            }
-//            foreach (explode(';', $values) as $value) {
-//                $query->leftJoin($polymorphic, $polymorphic.'.'.$polymorphic.'_id', '=', $relation.'.id')
-//                    ->where($polymorphic.'_type', get_table_class($relation))
-//                    ->where($polymorphic.'_id', '=', $relation_id);
-//            }
-        }
     }
 
     /**
@@ -164,21 +134,7 @@ trait EloquentFilters
 
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                if ($value !== null) {
-                    $array = explode('.', $key);
-                    $column = array_pop($array);
-                    $relation = array_pop($array);
-
-                    foreach (array_filter(explode(';', $value)) as $value2) {
-                        if (!empty($relation)) {
-                            $query->whereHas($relation, function ($query) use ($column, $value2) {
-                                $query->where($column, $value2);
-                            });
-                        } else {
-                            $query->where($key, $value2);
-                        }
-                    }
-                }
+                $query->where($key, $value);
             }
         });
     }
@@ -196,20 +152,7 @@ trait EloquentFilters
 
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                if ($value !== null) {
-                    $array = explode('.', $key);
-                    $column = array_pop($array);
-                    $relation = array_pop($array);
-                    foreach (explode(';', $value) as $value2) {
-                        if (! empty($relation)) {
-                            $query->orWhereHas($relation, function ($query) use ($column, $value2) {
-                                $query->where($column, $value2);
-                            });
-                        } else {
-                            $query->orWhere($key, $value2);
-                        }
-                    }
-                }
+                $query->where($key, $value);
             }
         });
     }
@@ -246,8 +189,8 @@ trait EloquentFilters
      * @param $query
      * @param $values
      *
-     * Example to search for name
-     * ?filter_like[customers.name]=doe
+     * Example
+     * ?filter_like[alias.column]=value
      */
     public function scopeFilterLike($query, $values)
     {
@@ -256,24 +199,12 @@ trait EloquentFilters
         // search each word that separate by space
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                $array = explode('.', $key);
-                $column = array_pop($array);
-                $relation = array_pop($array);
-                if (! empty($relation) && $this->getTable() !== $relation) {
-                    $query->orWhereHas($relation, function ($query) use ($value, $column) {
-                        $words = explode(' ', $value);
-                        foreach ($words as $word) {
-                            $query->where($column, 'like', '%'.$word.'%');
-                        }
-                    });
-                } else {
-                    $query->orWhere(function ($query) use ($value, $key) {
-                        $words = explode(' ', $value);
-                        foreach ($words as $word) {
-                            $query->where($key, 'like', '%'.$word.'%');
-                        }
-                    });
-                }
+                $query->orWhere(function ($query) use ($value, $key) {
+                    $words = explode(' ', $value);
+                    foreach ($words as $word) {
+                        $query->where($key, 'like', '%'.$word.'%');
+                    }
+                });
             }
         });
     }
@@ -290,17 +221,7 @@ trait EloquentFilters
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $relation = explode('.', $key);
-            $column = array_pop($relation);
-            $relation = implode('.', $relation);
-
-            if (! empty($relation)) {
-                $query->whereHas($relation, function ($query) use ($column, $value) {
-                    $query->where($column, '>=', $value);
-                });
-            } else {
-                $query->where($key, '>=', $value);
-            }
+            $query->where($key, '>=', $value);
         }
     }
 
@@ -316,17 +237,7 @@ trait EloquentFilters
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $relation = explode('.', $key);
-            $column = array_pop($relation);
-            $relation = implode('.', $relation);
-
-            if (! empty($relation)) {
-                $query->whereHas($relation, function ($query) use ($column, $value) {
-                    $query->where($column, '<=', $value);
-                });
-            } else {
-                $query->where($key, '<=', $value);
-            }
+            $query->where($key, '<=', $value);
         }
     }
 
@@ -451,13 +362,7 @@ trait EloquentFilters
 
         $query->orWhere(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $valueArray) {
-                        $query->orWhere($key, $valueArray);
-                    }
-                } else {
-                    $query->where($key, $value);
-                }
+                $query->where($key, $value);
             }
         });
     }

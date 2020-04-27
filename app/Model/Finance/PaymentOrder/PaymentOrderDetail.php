@@ -10,6 +10,8 @@ class PaymentOrderDetail extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'payment_order_detail';
+
     public $timestamps = false;
 
     protected $fillable = [

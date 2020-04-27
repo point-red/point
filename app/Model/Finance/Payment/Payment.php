@@ -13,6 +13,8 @@ class Payment extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'payment';
+
     public $timestamps = false;
 
     protected $fillable = [

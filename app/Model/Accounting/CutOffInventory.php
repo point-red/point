@@ -10,6 +10,8 @@ class CutOffInventory extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'cut_off_inventory';
+
     protected $table = 'cut_off_inventories';
 
     protected $casts = [

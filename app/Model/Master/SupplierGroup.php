@@ -3,18 +3,16 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Traits\Model\Master\SupplierGroupJoin;
+use App\Traits\Model\Master\SupplierGroupRelation;
 
 class SupplierGroup extends MasterModel
 {
+    use SupplierGroupRelation, SupplierGroupJoin;
+
     protected $connection = 'tenant';
 
     protected $fillable = ['name'];
 
-    /**
-     * Get all of the customers that are assigned this group.
-     */
-    public function suppliers()
-    {
-        return $this->belongsToMany(Supplier::class);
-    }
+    public static $alias = 'supplier_group';
 }

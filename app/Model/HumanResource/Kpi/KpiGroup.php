@@ -8,6 +8,8 @@ class KpiGroup extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'kpi_group';
+
     /**
      * Get the kpis for the group.
      */

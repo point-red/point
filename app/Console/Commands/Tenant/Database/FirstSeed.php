@@ -67,6 +67,7 @@ class FirstSeed extends Command
 
         // seed warehouse
         $warehouse = new Warehouse;
+        $warehouse->branch_id = $branch->id;
         $warehouse->name = 'CENTRAL WAREHOUSE';
         $warehouse->save();
 

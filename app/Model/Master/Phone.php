@@ -8,6 +8,8 @@ class Phone extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'phone';
+
     /**
      * Get all of the owning phoneable models.
      */

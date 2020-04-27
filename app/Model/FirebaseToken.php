@@ -10,6 +10,8 @@ class FirebaseToken extends Model
 {
     protected $connection = 'mysql';
 
+    public static $alias = 'firebase_token';
+
     /**
      * Get the user that invited to the project.
      */

@@ -8,6 +8,8 @@ class Wallet extends Model
 {
     protected $connection = 'mysql';
 
+    public static $alias = 'wallet';
+
     protected $table = 'wallets';
 
     protected $casts = [

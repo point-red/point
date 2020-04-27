@@ -8,6 +8,8 @@ class EmployeeSalaryAchievement extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_salary_achievement';
+
     /**
      * Get the salary that owns the achievement.
      */

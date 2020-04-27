@@ -128,7 +128,11 @@ class PriceListServiceController extends Controller
      */
     public function show($id)
     {
-        $priceListService = PriceListService::findOrFail($id);
+        $priceListService = PriceListService::from(PriceListService::getTableName() . ' as ' . PriceListService::$alias)->eloquentFilter($request);
+
+        $priceListService = PriceListService::joins($priceListService, $request->get('join'));
+
+        $priceListService = $priceListService->where(PriceListService::$alias.'.id', $id)->first();
 
         return new ApiResource($priceListService);
     }

@@ -46,11 +46,11 @@
       - [Uang Muka Pembelian](id/modules/pembelian/uang-muka-pembelian.md)
       - [Retur Pembelian](id/modules/pembelian/retur-pembelian.md)
   - Penjualan
-      - [Penentuan Penjualan](id/modules/penjualan/penentuan-penjualan)
+      - [Penetapan Penjualan](id/modules/penjualan/penetapan-penjualan.md)
       - [Pesanan Penjualan](id/modules/penjualan/pesanan-penjualan.md)
       - [Pengiriman Barang](id/modules/penjualan/pengiriman-barang.md)
       - [Faktur Penjualan](id/modules/penjualan/faktur-penjualan.md)
-      - [Rangkaian Penjualan](id/modules/penjualan/rangkaian-penjualan.md)
+      - [Perintah Penagihan](id/modules/penjualan/perintah-penagihan.md)
       - [Uang Muka Penjualan](id/modules/penjualan/uang-muka-penjualan.md)
       - [Retur Penjualan](id/modules/penjualan/retur-penjualan.md)
   - Persediaan

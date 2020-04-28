@@ -12,11 +12,11 @@ Table : `gudang`
 
 Properties :
 
-| Column | Type | Description | Relationship |
-| --- | --- | --- | --- |
+| Column | Type      | Description | Relationship |
+| --- | --------- | --- | --- |
 | id | increment | | |
-| code | string | unique | |
-| name | string | | |
+| code | varchar   | unique | |
+| name | varchar   | | |
 | created_at | timestamp | | |
 | updated_at | timestamp | | &nbsp; |
 

@@ -3,7 +3,7 @@
 ![](_media/id/pembelian/retur-pembelian.jpg)
 
 ## DEFINISI
-Pengembalian barang atas barang yang telah dibeli karena alasan-alasan tertentu sehingga dapat mengurangi jumlah nominal hutang kepada supplier yang bersangkutan.
+Pengembalian barang atas barang yang dibeli karena alasan-alasan tertentu sehingga dapat mengurangi nominal hutang kepada supplier yang bersangkutan.
 
 ## KEGUNAAN
 untuk melakukan input transaksi retur pembelian sehingga dapat dilihat daftar rekamannya dan dapat mengurangi nominal hutang saat akan dilakukan pembayaran dalam sistem kas / bank
@@ -29,4 +29,4 @@ Perusahaan mengembalikan barang kepada supplier sebesar Rp.800.000 karena barang
 | 10401    | Persediaan Bahan Baku |            | Rp.800.000 |
 
 
-!> ** Note** Retur dibebankan langsung pada Persediaan karena sistem mengunakan metode Perpectual
+!> **Note** Retur dibebankan langsung pada Persediaan karena sistem mengunakan metode Perpectual

@@ -3,7 +3,7 @@
 ![](_media/id/pembelian/permintaan-pembelian.jpg)
 
 ## DEFINISI
-Pengajuan dari departemen yang memerlukan adanya pengadaan barang yang berhubungan dengan kegiatan operasional maupun non operasional.
+Pengajuan dari departemen yang memerlukan pengadaan barang yang berhubungan dengan kegiatan operasional maupun non operasional.
 
 ## KEGUNAAN
 Sebagai penghubung antara departemen yang mengajukan dengan user yang memiliki wewenang untuk memberikan persetujuan agar dapat diproses oleh departemen pembelian. Sehingga dapat dilihat daftar riwayat permintaan barangnya.

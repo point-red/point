@@ -17,7 +17,10 @@ class ProcedureController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Procedure::parent()->filter($request)->orderBy('code');
+        $query = Procedure::query()
+            ->parent()
+            ->approved()
+            ->filter($request)->orderBy('code');
         $procedures = pagination($query, $request->limit ?: 10);
 
         return new ApiCollection($procedures);
@@ -73,7 +76,10 @@ class ProcedureController extends Controller
      */
     public function store(StoreProcedureRequest $request)
     {
-        $procedure = Procedure::create($request->all());
+        $procedure = new Procedure($request->all());
+        $procedure->approval_action = 'store';
+        $procedure->save();
+
         $procedure->duplicateToHistory();
 
         return response()->json(compact('procedure'));

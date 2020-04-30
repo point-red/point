@@ -12,7 +12,7 @@ class ProcedureHistory extends Model
     protected $table = 'play_book_procedure_histories';
 
     protected $fillable = [
-        'procedure_id', 'code',
+        'procedure_id', 'code', 'content',
         'name', 'purpose', 'note', 'status'
     ];
 

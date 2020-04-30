@@ -19,6 +19,7 @@ class CreatePlayBookProcedureHistoriesTable extends Migration
             $table->string('code', 32)->nullable();
             $table->string('name', 300)->nullable();
             $table->longtext('purpose')->nullable();
+            $table->longtext('content')->nullable();
             $table->longtext('note')->nullable();
             $table->boolean('status')->default(true);
             $table->timestamps();

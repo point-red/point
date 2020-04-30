@@ -25,6 +25,33 @@ class GlossaryController extends Controller
         return new ApiCollection($glossaries);
     }
 
+    public function create()
+    {
+        $glossary = Glossary::latest()->first();
+
+        if (!$glossary) {
+            return response()->json([
+                'code' => null
+            ]);
+        }
+
+        $delimiter = "~*~";
+        $onlyNumerics = explode(
+            $delimiter,
+            preg_replace("/[^0-9]/", $delimiter, $glossary->code)
+        );
+        $lastNumeric = $onlyNumerics[count($onlyNumerics) - 1];
+        $nonIteration = substr(
+            $glossary->code, 
+            0, 
+            strlen($glossary->code) - strlen("{$lastNumeric}")
+        );
+
+        return response()->json([
+            'code' => $nonIteration . ++$lastNumeric
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      *

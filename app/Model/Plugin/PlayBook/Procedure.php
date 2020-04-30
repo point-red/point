@@ -2,6 +2,7 @@
 
 namespace App\Model\Plugin\PlayBook;
 
+use App\Model\Master\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
@@ -14,8 +15,14 @@ class Procedure extends Model
     protected $with = ['procedures'];
 
     protected $fillable = [
-        'procedure_id', 'code',
-        'name', 'purpose', 'note', 'status'
+        'procedure_id', 'code', 'content',
+        'name', 'purpose', 'note', 'status', 'procedure_pending_id',
+        'approval_request_by', 'approval_request_at',
+        'approved_at', 'approval_request_to', 'approval_action'
+    ];
+
+    protected $dates = [
+        'approved_at', 'approval_request_at'
     ];
 
     public function procedures()
@@ -26,6 +33,28 @@ class Procedure extends Model
     public function histories()
     {
         return $this->hasMany(ProcedureHistory::class);
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approval_request_to');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->whereNotNull('approved_at');
+    }
+
+    public function scopeApprovalRequested($query)
+    {
+        return $query->whereNull('approved_at')
+            ->whereNotNull('approval_request_at');
+    }
+
+    public function scopeApprovalNotSent($query)
+    {
+        return $query->whereNull('approved_at')
+            ->whereNull('approval_request_at');
     }
 
     public function scopeParent($query)

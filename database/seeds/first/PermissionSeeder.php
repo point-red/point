@@ -279,9 +279,13 @@ class PermissionSeeder extends Seeder
 
         $allPermission = [
             'play book glossaries',
-            'play book procedures',
+            'play book procedures code',
+            'play book procedures content',
             'play book instructions'
         ];
+
+        Permission::createIfNotExists('accept play book approval procedures');
+        Permission::createIfNotExists('accept play book approval instructions');
 
         foreach ($allPermission as $permission) {
             Permission::createIfNotExists('create '.$permission);

@@ -27,6 +27,12 @@ class UserController extends ApiController
     {
         $users = TenantUser::eloquentFilter($request);
 
+        if ($request->has('permission')) {
+            $users->whereHas('roles.permissions', function ($query) use ($request) {
+                $query->whereName($request->permission);
+            });
+        }
+
         $users = pagination($users, $request->get('limit'));
 
         return new ApiCollection($users);

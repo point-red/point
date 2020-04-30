@@ -19,9 +19,20 @@ class CreatePlayBookProceduresTable extends Migration
             $table->string('code', 32)->nullable();
             $table->string('name', 300)->nullable();
             $table->longtext('purpose')->nullable();
+            $table->longtext('content')->nullable();
             $table->longtext('note')->nullable();
             $table->boolean('status')->default(true);
+            $table->enum('approval_action', ['store', 'update', 'destroy'])->nullable();
+            $table->unsignedInteger('approval_request_by')->nullable();
+            $table->datetime('approval_request_at')->nullable();
+            $table->datetime('approved_at')->nullable();
+            $table->unsignedInteger('approval_request_to')->nullable();
+            $table->longtext('approval_note')->nullable();
+            $table->integer('procedure_pending_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('approval_request_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('approval_request_to')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

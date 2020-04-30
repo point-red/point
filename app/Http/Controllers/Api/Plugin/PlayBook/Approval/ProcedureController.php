@@ -56,6 +56,16 @@ class ProcedureController extends Controller
             $procedure->update([
                 'approved_at' => now()
             ]);
+        } elseif ($procedure->approval_action === 'update') {
+            $source = Procedure::findOrFail($procedure->procedure_pending_id);
+            $source->update($procedure->toArray());
+            $source->update([
+                'approved_at' => now()
+            ]);
+            $source->duplicateToHistory();
+            $procedure->delete();
+
+            return $source;
         }
 
         return $procedure;

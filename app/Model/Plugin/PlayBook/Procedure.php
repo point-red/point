@@ -45,6 +45,11 @@ class Procedure extends Model
         return $query->whereNotNull('approved_at');
     }
 
+    public function scopeNotApprovedYet($query)
+    {
+        return $query->whereNull('approved_at');
+    }
+
     public function scopeApprovalRequested($query)
     {
         return $query->whereNull('approved_at')

@@ -121,8 +121,10 @@ class ProcedureController extends Controller
             'name' => ['required']
         ]);
 
-        $procedure->update($request->all());
-        $procedure->duplicateToHistory();
+        $approval = new Procedure($request->only('code', 'name', 'purpose', 'content', 'note'));
+        $approval->approval_action = 'update';
+        $approval->procedure_pending_id = $procedure->id;
+        $approval->save();
 
         return response()->json(compact('procedure'));
     }

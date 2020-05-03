@@ -66,6 +66,11 @@ class ProcedureController extends Controller
             $procedure->delete();
 
             return $source;
+        } elseif ($procedure->approval_action === 'destroy') {
+            $source = Procedure::findOrFail($procedure->procedure_pending_id);
+            $source->delete();
+            Procedure::whereProcedurePendingId($procedure->procedure_pending_id)->delete();
+            $procedure->delete();
         }
 
         return $procedure;

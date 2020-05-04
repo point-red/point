@@ -15,10 +15,14 @@ Route::namespace('Web')->group(function () {
     Route::view('/', 'welcome');
 
     Route::get('/download', 'CloudStorageController@download');
-    Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+    Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 });
 
 Route::namespace('Web')->middleware('web-middleware')->group(function () {
+    Route::get('login/github', 'Auth\LoginController@redirectToGithub');
+    Route::get('login/github/callback', 'Auth\LoginController@handleGithubCallback');
+    Route::get('login/google', 'Auth\LoginController@redirectToGoogle');
+    Route::get('login/google/callback', 'Auth\LoginController@handleGoogleCallback');
     Route::post('login', 'Auth\LoginController@login');
     Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 });

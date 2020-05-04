@@ -17,7 +17,10 @@ class InstructionController extends Controller
      */
     public function index(Request $request)
     {
-        $instructions = Instruction::filter($request)->orderBy('number')->get();
+        $instructions = Instruction::filter($request)
+            ->approved()
+            ->orderBy('number')
+            ->get();
 
         return response()->json(compact('instructions'));
     }
@@ -74,7 +77,10 @@ class InstructionController extends Controller
             'procedure_id' => ['required', 'numeric']
         ]);
 
-        $instruction = Instruction::create($request->all());
+        $instruction = new Instruction($request->all());
+        $instruction->approval_action = 'store';
+        $instruction->save();
+
         InstructionHistory::updateInstruction(null, $instruction);
 
         return [

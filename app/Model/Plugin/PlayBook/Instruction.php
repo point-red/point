@@ -13,7 +13,10 @@ class Instruction extends Model
     protected $table = 'play_book_instructions';
 
     protected $fillable = [
-        'procedure_id', 'number', 'name', 'status'
+        'procedure_id', 'number', 'name', 'status',
+        'instruction_pending_id', 'approval_request_by',
+        'approval_request_at', 'approved_at',
+        'approval_request_to', 'approval_action'
     ];
 
     public function procedure()

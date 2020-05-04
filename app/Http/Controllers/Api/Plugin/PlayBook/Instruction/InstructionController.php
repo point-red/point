@@ -94,9 +94,9 @@ class InstructionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Instruction $instruction)
     {
-        //
+        return response()->json(compact('instruction'));
     }
 
     /**
@@ -114,10 +114,13 @@ class InstructionController extends Controller
             'procedure_id' => ['required', 'numeric']
         ]);
 
-        InstructionHistory::updateInstruction($request->all(), $instruction);
-        $instruction->update($request->all());
+        $approval = new Instruction($request->only('number', 'name'));
+        $approval->approval_action = 'update';
+        $approval->procedure_id = $instruction->procedure_id;
+        $approval->instruction_pending_id = $instruction->id;
+        $approval->save();
 
-        return response()->json(compact('instruction'));
+        return response()->json(compact('approval'));
     }
 
     /**
@@ -128,7 +131,15 @@ class InstructionController extends Controller
      */
     public function destroy(Instruction $instruction)
     {
-        $instruction->delete();
+        // $instruction->delete();
+        $approval = new Instruction([
+            'procedure_id' => $instruction->procedure_id,
+            'number' => $instruction->number,
+            'name' => $instruction->name,
+        ]);
+        $approval->approval_action = 'destroy';
+        $approval->instruction_pending_id = $instruction->id;
+        $approval->save();
 
         return response()->json([
             'message' => 'Deleted.'

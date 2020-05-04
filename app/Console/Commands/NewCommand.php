@@ -52,6 +52,8 @@ class NewCommand extends Command
             '--client' => 'client',
             '--name' => 'Website',
         ]);
+        Artisan::call('db:seed --class=PackageSeeder');
+        Artisan::call('db:seed --class=PluginSeeder');
 
         $this->line('setup new user "admin" and password "admin"');
         $user = new User;
@@ -64,6 +66,7 @@ class NewCommand extends Command
 
         $this->line('setup new project "dev"');
         $project = new Project;
+        $project->package_id = 1;
         $project->owner_id = $user->id;
         $project->code = 'dev';
         $project->name = 'development';

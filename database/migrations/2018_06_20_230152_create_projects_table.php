@@ -42,7 +42,7 @@ class CreateProjectsTable extends Migration
             $table->foreign('package_id')
                 ->references('id')
                 ->on('packages')
-                ->onDelete('set null');
+                ->onDelete('restrict');
         });
     }
 

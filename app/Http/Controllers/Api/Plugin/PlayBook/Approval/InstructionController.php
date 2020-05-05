@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Model\Plugin\PlayBook\Instruction;
 use App\Model\Plugin\PlayBook\InstructionHistory;
+use App\Model\Plugin\PlayBook\InstructionStep;
+use App\Model\Plugin\PlayBook\InstructionStepContent;
 use Illuminate\Http\Request;
 
 class InstructionController extends Controller
@@ -22,9 +24,17 @@ class InstructionController extends Controller
             ->filter($request)->orderBy('number');
 
         if ($request->want === 'send') {
-            $query->approvalNotSent();
+            $query->approvalNotSent()->orWhereHas('steps', function ($query) {
+                $query->approvalNotSent();
+            })->with(['steps' => function ($query) {
+                $query->approvalNotSent();
+            }]);
         } else {
-            $query->approvalRequested();
+            $query->approvalRequested()->orWhereHas('steps', function ($query) {
+                $query->approvalRequested();
+            })->with(['steps' => function ($query) {
+                $query->with('contents.glossary')->approvalRequested();
+            }]);
         }
 
         $instructions = pagination($query, $request->limit ?: 10);
@@ -43,9 +53,13 @@ class InstructionController extends Controller
             'approval_request_to' => $request->approver_id
         ]);
 
-        return [
-            'input' => $request->all()
-        ];
+        $steps = InstructionStep::approvalNotSent()->whereIn('id', $request->step_ids)->update([
+            'approval_request_by' => $request->user()->id,
+            'approval_request_at' => now(),
+            'approval_request_to' => $request->approver_id
+        ]);
+
+        return compact('instructions', 'steps');
     }
 
     /**
@@ -75,5 +89,40 @@ class InstructionController extends Controller
         }
 
         return $instruction;
+    }
+
+    /**
+     * Approve a instruction
+     */
+    public function approveStep(Instruction $instruction, InstructionStep $step)
+    {
+        if ($step->approval_action === 'store') {
+            $step->update([
+                'approved_at' => now()
+            ]);
+        } elseif ($step->approval_action === 'update') {
+            $source = InstructionStep::findOrFail($step->instruction_step_pending_id);
+            $oldStep = (clone $source);
+
+            $source->fill($step->toArray());
+            $source->update([
+                'approved_at' => now()
+            ]);
+            $source->contents()->delete();
+
+            foreach ($step->contents as $content) {
+                $source->contents()->save(new InstructionStepContent($content->toArray()));
+            }
+
+            $source->contents = $source->contents()->with('glossary')->get();
+            InstructionHistory::updateStep($source, $oldStep);
+            $step->delete();
+
+            return $source;
+        } elseif ($step->approval_action === 'destroy') {
+            
+        }
+
+        return $step;
     }
 }

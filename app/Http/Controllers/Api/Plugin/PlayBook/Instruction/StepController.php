@@ -19,7 +19,11 @@ class StepController extends Controller
      */
     public function index(Request $request, Instruction $instruction)
     {
-        $query = $instruction->steps()->with('contents');
+        $query = $instruction
+            ->steps()
+            ->with('contents.glossary')
+            ->approved();
+
         $steps = pagination($query, $request->limit ?: 10);
 
         return new ApiCollection($steps);
@@ -90,18 +94,6 @@ class StepController extends Controller
             'contents.*.content' => ['required']
         ]);
 
-        // $oldStep = (clone $step);
-
-        // $step->update($request->only('name'));
-        // $step->contents()->delete();
-
-        // foreach ($request->contents as $content) {
-        //     $step->contents()->save(new InstructionStepContent($content));
-        // }
-
-        // $step->contents = $step->contents()->with('glossary')->get();
-        // InstructionHistory::updateStep($step, $oldStep);
-
         $approval = new InstructionStep($request->only('name'));
         $approval->approval_action = 'update';
         $approval->instruction_id = $instruction->id;
@@ -123,7 +115,17 @@ class StepController extends Controller
      */
     public function destroy(Instruction $instruction, InstructionStep $step)
     {
-        $step->contents()->delete();
-        $step->delete();
+        // $step->contents()->delete();
+        // $step->delete();
+        $approval = new InstructionStep([
+            'name' => $step->name,
+            'instruction_id' => $step->instruction_id,
+            'approval_action' => 'destroy',
+            'instruction_step_pending_id' => $step->id
+        ]);
+
+        $approval->save();
+
+        return $approval;
     }
 }

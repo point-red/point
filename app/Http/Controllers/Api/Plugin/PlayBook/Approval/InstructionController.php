@@ -120,7 +120,10 @@ class InstructionController extends Controller
 
             return $source;
         } elseif ($step->approval_action === 'destroy') {
-            
+            $source = InstructionStep::findOrFail($step->instruction_step_pending_id);
+            $source->delete();
+            InstructionStep::whereInstructionStepPendingId($step->instruction_step_pending_id)->delete();
+            $step->delete();
         }
 
         return $step;

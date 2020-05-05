@@ -101,16 +101,14 @@ class ScaleWeightTruckController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return EmptyResponse
+     * @return ApiResource
      */
     public function destroy($id)
     {
         $scaleWeightTruck = ScaleWeightTruck::findOrFail($id);
+        $scaleWeightTruck->deleted_at = date('Y-m-d H:i:s');
+        $scaleWeightTruck->save();
 
-        if ($scaleWeightTruck) {
-            $scaleWeightTruck->delete();
-        }
-
-        return new EmptyResponse;
+        return new ApiResource($scaleWeightTruck);
     }
 }

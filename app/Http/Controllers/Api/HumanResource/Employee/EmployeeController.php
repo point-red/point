@@ -154,14 +154,14 @@ class EmployeeController extends Controller
             }
         }
 
-        $scorers = $request->get('scorers');
-        $deleted = array_column($request->get('scorers'), 'id');
-        EmployeeScorer::where('employee_id', $employee->id)->whereNotIn('user_id', $deleted)->delete();
-        foreach ($scorers as $scorer) {
-            if (! $employee->scorers->contains($scorer['id'])) {
-                $employee->scorers()->attach($scorer['id']);
+        if ($request->has('scorers')) {
+            foreach ($request->get('scorers') as $scorer) {
+                if (! $employee->scorers->contains($scorer['id'])) {
+                    $employee->scorers()->attach($scorer['id']);
+                }
             }
         }
+
 
         DB::connection('tenant')->commit();
 
@@ -253,54 +253,64 @@ class EmployeeController extends Controller
             }
         }
 
-        $deleted = array_column($request->get('salary_histories'), 'id');
-        EmployeeSalaryHistory::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
-        for ($i = 0; $i < count($request->get('salary_histories')); $i++) {
-            if (isset($request->get('salary_histories')[$i]['id'])) {
-                $employeeSalaryHistory = EmployeeSalaryHistory::findOrFail($request->get('salary_histories')[$i]['id']);
-            } else {
-                $employeeSalaryHistory = new EmployeeSalaryHistory;
-                $employeeSalaryHistory->employee_id = $employee->id;
+        if ($request->has('salary_histories')) {
+            $deleted = array_column($request->get('salary_histories'), 'id');
+            EmployeeSalaryHistory::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
+            for ($i = 0; $i < count($request->get('salary_histories')); $i++) {
+                if (isset($request->get('salary_histories')[$i]['id'])) {
+                    $employeeSalaryHistory = EmployeeSalaryHistory::findOrFail($request->get('salary_histories')[$i]['id']);
+                } else {
+                    $employeeSalaryHistory = new EmployeeSalaryHistory;
+                    $employeeSalaryHistory->employee_id = $employee->id;
+                }
+                $employeeSalaryHistory->date = date('Y-m-d', strtotime($request->get('salary_histories')[$i]['date']));
+                $employeeSalaryHistory->salary = $request->get('salary_histories')[$i]['salary'];
+                $employeeSalaryHistory->save();
             }
-            $employeeSalaryHistory->date = date('Y-m-d', strtotime($request->get('salary_histories')[$i]['date']));
-            $employeeSalaryHistory->salary = $request->get('salary_histories')[$i]['salary'];
-            $employeeSalaryHistory->save();
-        }
-        $deleted = array_column($request->get('social_media'), 'id');
-        EmployeeSocialMedia::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
-        for ($i = 0; $i < count($request->get('social_media')); $i++) {
-            if (isset($request->get('social_media')[$i]['id'])) {
-                $employeeSocialMedia = EmployeeSocialMedia::findOrFail($request->get('social_media')[$i]['id']);
-            } else {
-                $employeeSocialMedia = new EmployeeSocialMedia;
-                $employeeSocialMedia->employee_id = $employee->id;
-            }
-            $employeeSocialMedia->type = $request->get('social_media')[$i]['type'];
-            $employeeSocialMedia->account = $request->get('social_media')[$i]['account'];
-            $employeeSocialMedia->save();
-        }
-        $deleted = array_column($request->get('contracts'), 'id');
-        EmployeeContract::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
-        for ($i = 0; $i < count($request->get('contracts')); $i++) {
-            if (isset($request->get('contracts')[$i]['id'])) {
-                $employeeContract = EmployeeContract::findOrFail($request->get('contracts')[$i]['id']);
-            } else {
-                $employeeContract = new EmployeeContract;
-                $employeeContract->employee_id = $employee->id;
-            }
-            $employeeContract->contract_begin = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_begin']));
-            $employeeContract->contract_end = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_end']));
-            $employeeContract->link = '';
-            $employeeContract->notes = $request->get('contracts')[$i]['notes'];
-            $employeeContract->save();
         }
 
-        $scorers = $request->get('scorers');
-        $deleted = array_column($request->get('scorers'), 'id');
-        EmployeeScorer::where('employee_id', $employee->id)->whereNotIn('user_id', $deleted)->delete();
-        foreach ($scorers as $scorer) {
-            if (! $employee->scorers->contains($scorer['id'])) {
-                $employee->scorers()->attach($scorer['id']);
+        if ($request->has('social_media')) {
+            $deleted = array_column($request->get('social_media'), 'id');
+            EmployeeSocialMedia::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
+            for ($i = 0; $i < count($request->get('social_media')); $i++) {
+                if (isset($request->get('social_media')[$i]['id'])) {
+                    $employeeSocialMedia = EmployeeSocialMedia::findOrFail($request->get('social_media')[$i]['id']);
+                } else {
+                    $employeeSocialMedia = new EmployeeSocialMedia;
+                    $employeeSocialMedia->employee_id = $employee->id;
+                }
+                $employeeSocialMedia->type = $request->get('social_media')[$i]['type'];
+                $employeeSocialMedia->account = $request->get('social_media')[$i]['account'];
+                $employeeSocialMedia->save();
+            }
+        }
+
+        if ($request->has('contracts')) {
+            $deleted = array_column($request->get('contracts'), 'id');
+            EmployeeContract::where('employee_id', $employee->id)->whereNotIn('id', $deleted)->delete();
+            for ($i = 0; $i < count($request->get('contracts')); $i++) {
+                if (isset($request->get('contracts')[$i]['id'])) {
+                    $employeeContract = EmployeeContract::findOrFail($request->get('contracts')[$i]['id']);
+                } else {
+                    $employeeContract = new EmployeeContract;
+                    $employeeContract->employee_id = $employee->id;
+                }
+                $employeeContract->contract_begin = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_begin']));
+                $employeeContract->contract_end = date('Y-m-d', strtotime($request->get('contracts')[$i]['contract_end']));
+                $employeeContract->link = '';
+                $employeeContract->notes = $request->get('contracts')[$i]['notes'];
+                $employeeContract->save();
+            }
+        }
+
+        if ($request->has('scorers')) {
+            $scorers = $request->get('scorers');
+            $deleted = array_column($request->get('scorers'), 'id');
+            EmployeeScorer::where('employee_id', $employee->id)->whereNotIn('user_id', $deleted)->delete();
+            foreach ($scorers as $scorer) {
+                if (! $employee->scorers->contains($scorer['id'])) {
+                    $employee->scorers()->attach($scorer['id']);
+                }
             }
         }
 

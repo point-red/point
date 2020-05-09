@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
@@ -70,6 +71,9 @@ class NewCommand extends Command
         $project->owner_id = $user->id;
         $project->code = 'dev';
         $project->name = 'development';
+        $project->expired_date = Carbon::now()->addYears(10);
+        $project->is_generated = true;
+        $project->total_user = 1;
         $project->invitation_code = get_invitation_code();
         $project->save();
 

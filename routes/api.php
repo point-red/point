@@ -51,6 +51,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
             Route::get('wallets', 'WalletController@index');
             Route::get('wallets/amount', 'WalletController@amount');
             Route::post('wallets/top-up', 'WalletController@topUp');
+            Route::post('wallets/pay', 'WalletController@pay');
         });
 
         // Tenant

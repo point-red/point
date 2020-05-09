@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
 use App\Model\Account\Invoice;
 use App\Model\Account\Wallet;
+use App\Model\PaymentGateway\Xendit\XenditInvoicePaid;
 use App\Model\Plugin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Xendit\Xendit;
 
 class WalletController extends Controller
@@ -28,6 +30,33 @@ class WalletController extends Controller
                 'amount' => (double) $amount
             ]
         ], 200);
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function pay(Request $request)
+    {
+        $invoice = Invoice::find($request->get('invoice_id'));
+
+        DB::beginTransaction();
+
+        $wallet = new Wallet;
+        $wallet->user_id = auth()->user()->id;
+        $wallet->source_id = $invoice->id;
+        $wallet->source_type = Invoice::class;
+        $wallet->amount = $invoice->total * -1;
+        $wallet->save();
+
+        $invoice->paidable_type = Wallet::class;
+        $invoice->paidable_id = $wallet->id;
+        $invoice->save();
+
+        DB::commit();
+
+        if ($invoice->project->is_generated == false) {
+            $invoice->project->generate();
+        }
     }
 
     public function topUp(Request $request)

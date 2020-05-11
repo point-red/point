@@ -17,6 +17,7 @@ Route::prefix('plugin')->namespace('Plugin')->group(function () {
         Route::get('approval/procedures', 'Approval\ProcedureController@index');
         Route::post('approval/procedures/send', 'Approval\ProcedureController@sendApproval');
         Route::post('approval/procedures/{procedure}/approve', 'Approval\ProcedureController@approve');
+        Route::post('approval/procedures/{procedure}/decline', 'Approval\ProcedureController@decline');
         Route::get('approval/instructions', 'Approval\InstructionController@index');
         Route::post('approval/instructions/send', 'Approval\InstructionController@sendApproval');
         Route::post('approval/instructions/{instruction}/approve', 'Approval\InstructionController@approve');

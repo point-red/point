@@ -75,4 +75,17 @@ class ProcedureController extends Controller
 
         return $procedure;
     }
+
+    /**
+     * Decline an approval request
+     */
+    public function decline(Request $request, Procedure $procedure)
+    {
+        $procedure->update([
+            'approval_note' => $request->approval_note,
+            'declined_at' => now()
+        ]);
+
+        return $procedure;
+    }
 }

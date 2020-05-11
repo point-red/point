@@ -137,16 +137,20 @@ class ProcedureController extends Controller
      */
     public function destroy(Procedure $procedure)
     {
-        $approval = new Procedure([
-            'code' => $procedure->code,
-            'name' => $procedure->name,
-            'purpose' => $procedure->purpose,
-            'content' => $procedure->content,
-            'note' => $procedure->note
-        ]);
-        $approval->approval_action = 'destroy';
-        $approval->procedure_pending_id = $procedure->id;
-        $approval->save();
+        if (!$procedure->declined_at) {
+            $approval = new Procedure([
+                'code' => $procedure->code,
+                'name' => $procedure->name,
+                'purpose' => $procedure->purpose,
+                'content' => $procedure->content,
+                'note' => $procedure->note
+            ]);
+            $approval->approval_action = 'destroy';
+            $approval->procedure_pending_id = $procedure->id;
+            $approval->save();
+        } else {
+            $procedure->delete();
+        }
 
         return [
             'message' => 'Deleted'

@@ -19,7 +19,7 @@ class Procedure extends Model
         'name', 'purpose', 'note', 'status', 'procedure_pending_id',
         'approval_request_by', 'approval_request_at',
         'approved_at', 'approval_request_to', 'approval_action',
-        'declined_at'
+        'declined_at', 'approval_note'
     ];
 
     protected $dates = [

@@ -115,8 +115,13 @@ class StepController extends Controller
      */
     public function destroy(Instruction $instruction, InstructionStep $step)
     {
-        // $step->contents()->delete();
-        // $step->delete();
+        if ($step->declined_at) {
+            $step->contents()->delete();
+            $step->delete();
+
+            return ['message' => 'deleted'];
+        }
+        
         $approval = new InstructionStep([
             'name' => $step->name,
             'instruction_id' => $step->instruction_id,

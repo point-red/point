@@ -92,6 +92,19 @@ class InstructionController extends Controller
     }
 
     /**
+     * Decline
+     */
+    public function decline(Request $request, Instruction $instruction)
+    {
+        $instruction->update([
+            'approval_note' => $request->approval_note,
+            'declined_at' => now()
+        ]);
+
+        return $instruction;
+    }
+
+    /**
      * Approve a instruction
      */
     public function approveStep(Instruction $instruction, InstructionStep $step)

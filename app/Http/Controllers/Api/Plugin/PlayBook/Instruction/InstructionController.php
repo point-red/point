@@ -131,7 +131,12 @@ class InstructionController extends Controller
      */
     public function destroy(Instruction $instruction)
     {
-        // $instruction->delete();
+        if ($instruction->declined_at) {
+            $instruction->delete();
+
+            return ['message' => 'deleted'];
+        }
+
         $approval = new Instruction([
             'procedure_id' => $instruction->procedure_id,
             'number' => $instruction->number,

@@ -8,6 +8,8 @@ class EmployeeSocialMedia extends MasterModel
 {
     protected $connection = 'tenant';
 
+    protected $table = 'employee_social_media';
+
     public static $alias = 'employee_social_media';
 
     /**

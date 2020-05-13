@@ -51,7 +51,7 @@ class ProcedureController extends Controller
 
         Mail::to([
             $approver->email
-        ])->send(new ApprovalRequestSent(
+        ])->queue(new ApprovalRequestSent(
             Procedure::class,
             $approver,
             $_SERVER['HTTP_REFERER']

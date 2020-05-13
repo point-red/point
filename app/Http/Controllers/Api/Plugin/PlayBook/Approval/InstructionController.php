@@ -66,7 +66,7 @@ class InstructionController extends Controller
 
         Mail::to([
             $approver->email
-        ])->send(new ApprovalRequestSent(
+        ])->queue(new ApprovalRequestSent(
             Instruction::class,
             $approver,
             $_SERVER['HTTP_REFERER']

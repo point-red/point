@@ -198,11 +198,11 @@ class EmployeeSalaryController extends Controller
             $employee_salary->cash_payment_week4 = $request->get('cash_payment_week_4') ?? 0;
             $employee_salary->cash_payment_week5 = $request->get('cash_payment_week_5') ?? 0;
 
-            $employee_salary->weekly_sales_week1 = $achievements['weekly_sales']['week1'] ?? 0;
-            $employee_salary->weekly_sales_week2 = $achievements['weekly_sales']['week2'] ?? 0;
-            $employee_salary->weekly_sales_week3 = $achievements['weekly_sales']['week3'] ?? 0;
-            $employee_salary->weekly_sales_week4 = $achievements['weekly_sales']['week4'] ?? 0;
-            $employee_salary->weekly_sales_week5 = $achievements['weekly_sales']['week5'] ?? 0;
+            $employee_salary->weekly_sales_week1 = $request->get('weekly_sales_week_1') ?? 0;
+            $employee_salary->weekly_sales_week2 = $request->get('weekly_sales_week_2') ?? 0;
+            $employee_salary->weekly_sales_week3 = $request->get('weekly_sales_week_3') ?? 0;
+            $employee_salary->weekly_sales_week4 = $request->get('weekly_sales_week_4') ?? 0;
+            $employee_salary->weekly_sales_week5 = $request->get('weekly_sales_week_5') ?? 0;
 
             $employee_salary->wa_daily_report_week1 = $request->get('wa_daily_report_week_1') ?? 0;
             $employee_salary->wa_daily_report_week2 = $request->get('wa_daily_report_week_2') ?? 0;
@@ -336,6 +336,12 @@ class EmployeeSalaryController extends Controller
         $employee_salary->cash_payment_week4 = $salary['cash_payment_week4'] ?? 0;
         $employee_salary->cash_payment_week5 = $salary['cash_payment_week5'] ?? 0;
 
+        $employee_salary->weekly_sales_week1 = $salary['weekly_sales_week1'] ?? 0;
+        $employee_salary->weekly_sales_week2 = $salary['weekly_sales_week2'] ?? 0;
+        $employee_salary->weekly_sales_week3 = $salary['weekly_sales_week3'] ?? 0;
+        $employee_salary->weekly_sales_week4 = $salary['weekly_sales_week4'] ?? 0;
+        $employee_salary->weekly_sales_week5 = $salary['weekly_sales_week5'] ?? 0;
+
         $employee_salary->wa_daily_report_week1 = $salary['wa_daily_report_week1'] ?? 0;
         $employee_salary->wa_daily_report_week2 = $salary['wa_daily_report_week2'] ?? 0;
         $employee_salary->wa_daily_report_week3 = $salary['wa_daily_report_week3'] ?? 0;
@@ -389,8 +395,8 @@ class EmployeeSalaryController extends Controller
      */
     public function assessment(Request $request, $employeeId)
     {
-        $dateFrom = date('Y-m-d', strtotime($request->startDate));
-        $dateTo = date('Y-m-d', strtotime($request->endDate));
+        $dateFrom = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('startDate'))));
+        $dateTo = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('endDate'))));
 
         $kpis = Kpi::select('kpis.*')
             ->addSelect(DB::raw('CONCAT("week", (FLOOR((DAYOFMONTH(kpis.date) - 1) / 7) + 1)) AS week_of_month'))
@@ -547,13 +553,6 @@ class EmployeeSalaryController extends Controller
                 'week4' => 0,
                 'week5' => 0,
             ],
-            'weekly_sales' => [
-                'week1' => 0,
-                'week2' => 0,
-                'week3' => 0,
-                'week4' => 0,
-                'week5' => 0,
-            ],
             'total' => [
                 'weight' => 100,
                 'week1' => 0,
@@ -565,7 +564,13 @@ class EmployeeSalaryController extends Controller
         ];
 
         foreach ($employee_achievements['automated'] as $key => &$achievement) {
-            if ($key !== 'balance') {
+            if ($key === 'balance') {
+                $achievement['week1'] = 100;
+                $achievement['week2'] = 100;
+                $achievement['week3'] = 100;
+                $achievement['week4'] = 100;
+                $achievement['week5'] = 100;
+            } else {
                 $data = [
                     'score' => 0,
                     'target' => 0,
@@ -636,7 +641,9 @@ class EmployeeSalaryController extends Controller
                                     $data['target'] += $target;
                                 }
                             }
-                        } elseif ($assessment['automated_code'] === 'V') {
+                        }
+                    } else {
+                        if ($assessment['name'] === 'Persentase Value') { // NOTE: Hard-Coded
                             if ($project->code === $project_code) {
                                 foreach ($employee_achievements['automated']['achievement_area_value'] as $week => &$data) {
                                     if ($week !== 'weight') {
@@ -645,10 +652,6 @@ class EmployeeSalaryController extends Controller
 
                                         $data['score'] += $score;
                                         $data['target'] += $target;
-
-                                        if ($score != 0) {
-                                            $employee_achievements['automated']['balance'][$week] = 100;
-                                        }
                                     }
                                 }
                             }
@@ -679,7 +682,6 @@ class EmployeeSalaryController extends Controller
                         if ($value['payment_method'] === 'cash') {
                             $employee_achievements['cash_payment'][$value['week_of_month']] += (float) $value['value'];
                         }
-                        $employee_achievements['weekly_sales'][$value['week_of_month']] += (float) $value['value'];
                     }
                 }
             }

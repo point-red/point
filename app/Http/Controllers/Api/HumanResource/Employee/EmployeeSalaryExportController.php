@@ -81,30 +81,43 @@ class EmployeeSalaryExportController extends Controller
         $salary_final_score_week_5 = ((float) $additionalSalaryData['total_assessments']['week5'] + (float) $additionalSalaryData['total_achievements']['week5']) / 2;
 
         $baseSalaryPerWeek = $employeeSalary->active_days_in_month > 0 ? $employeeSalary->base_salary / $employeeSalary->active_days_in_month : 0;
+        $baseMultiplierKpiPerWeek = $employeeSalary->active_days_in_month > 0 ? $employeeSalary->multiplier_kpi / $employeeSalary->active_days_in_month : 0;
 
-        $base_salary_week_1 = $additionalSalaryData['score_percentages_assessments'][0]['week1'] ? $baseSalaryPerWeek * $employeeSalary->active_days_week1 * ($additionalSalaryData['score_percentages_assessments'][0]['week1'] / 100) : 0;
-        $base_salary_week_2 = $additionalSalaryData['score_percentages_assessments'][0]['week2'] ? $baseSalaryPerWeek * $employeeSalary->active_days_week2 * ($additionalSalaryData['score_percentages_assessments'][0]['week2'] / 100) : 0;
-        $base_salary_week_3 = $additionalSalaryData['score_percentages_assessments'][0]['week3'] ? $baseSalaryPerWeek * $employeeSalary->active_days_week3 * ($additionalSalaryData['score_percentages_assessments'][0]['week3'] / 100) : 0;
-        $base_salary_week_4 = $additionalSalaryData['score_percentages_assessments'][0]['week4'] ? $baseSalaryPerWeek * $employeeSalary->active_days_week4 * ($additionalSalaryData['score_percentages_assessments'][0]['week4'] / 100) : 0;
-        $base_salary_week_5 = $additionalSalaryData['score_percentages_assessments'][0]['week5'] ? $baseSalaryPerWeek * $employeeSalary->active_days_week5 * ($additionalSalaryData['score_percentages_assessments'][0]['week5'] / 100) : 0;
+        $percentageCallWeek1 = $additionalSalaryData['score_percentages_assessments'][0]['week1'] / 100;
+        $percentageCallWeek2 = $additionalSalaryData['score_percentages_assessments'][0]['week2'] / 100;
+        $percentageCallWeek3 = $additionalSalaryData['score_percentages_assessments'][0]['week3'] / 100;
+        $percentageCallWeek4 = $additionalSalaryData['score_percentages_assessments'][0]['week4'] / 100;
+        $percentageCallWeek5 = $additionalSalaryData['score_percentages_assessments'][0]['week5'] / 100;
 
-        $real_transport_allowance_week_1 = $additionalSalaryData['score_percentages_assessments'][0]['week1'] ? $employeeSalary->daily_transport_allowance * $employeeSalary->active_days_week1 * ($additionalSalaryData['score_percentages_assessments'][0]['week1'] / 100) : 0;
-        $real_transport_allowance_week_2 = $additionalSalaryData['score_percentages_assessments'][0]['week2'] ? $employeeSalary->daily_transport_allowance * $employeeSalary->active_days_week2 * ($additionalSalaryData['score_percentages_assessments'][0]['week2'] / 100) : 0;
-        $real_transport_allowance_week_3 = $additionalSalaryData['score_percentages_assessments'][0]['week3'] ? $employeeSalary->daily_transport_allowance * $employeeSalary->active_days_week3 * ($additionalSalaryData['score_percentages_assessments'][0]['week3'] / 100) : 0;
-        $real_transport_allowance_week_4 = $additionalSalaryData['score_percentages_assessments'][0]['week4'] ? $employeeSalary->daily_transport_allowance * $employeeSalary->active_days_week4 * ($additionalSalaryData['score_percentages_assessments'][0]['week4'] / 100) : 0;
-        $real_transport_allowance_week_5 = $additionalSalaryData['score_percentages_assessments'][0]['week5'] ? $employeeSalary->daily_transport_allowance * $employeeSalary->active_days_week5 * ($additionalSalaryData['score_percentages_assessments'][0]['week5'] / 100) : 0;
+        $active_days_percentage_week_1 = $percentageCallWeek1 * $employeeSalary->active_days_week1;
+        $active_days_percentage_week_2 = $percentageCallWeek2 * $employeeSalary->active_days_week2;
+        $active_days_percentage_week_3 = $percentageCallWeek3 * $employeeSalary->active_days_week3;
+        $active_days_percentage_week_4 = $percentageCallWeek4 * $employeeSalary->active_days_week4;
+        $active_days_percentage_week_5 = $percentageCallWeek5 * $employeeSalary->active_days_week5;
+
+        $base_salary_week_1 = $baseSalaryPerWeek * $active_days_percentage_week_1;
+        $base_salary_week_2 = $baseSalaryPerWeek * $active_days_percentage_week_2;
+        $base_salary_week_3 = $baseSalaryPerWeek * $active_days_percentage_week_3;
+        $base_salary_week_4 = $baseSalaryPerWeek * $active_days_percentage_week_4;
+        $base_salary_week_5 = $baseSalaryPerWeek * $active_days_percentage_week_5;
+
+        $real_transport_allowance_week_1 = $employeeSalary->daily_transport_allowance * $active_days_percentage_week_1;
+        $real_transport_allowance_week_2 = $employeeSalary->daily_transport_allowance * $active_days_percentage_week_2;
+        $real_transport_allowance_week_3 = $employeeSalary->daily_transport_allowance * $active_days_percentage_week_3;
+        $real_transport_allowance_week_4 = $employeeSalary->daily_transport_allowance * $active_days_percentage_week_4;
+        $real_transport_allowance_week_5 = $employeeSalary->daily_transport_allowance * $active_days_percentage_week_5;
+
+        $multiplier_kpi_week_1 = $baseMultiplierKpiPerWeek * $active_days_percentage_week_1;
+        $multiplier_kpi_week_2 = $baseMultiplierKpiPerWeek * $active_days_percentage_week_2;
+        $multiplier_kpi_week_3 = $baseMultiplierKpiPerWeek * $active_days_percentage_week_3;
+        $multiplier_kpi_week_4 = $baseMultiplierKpiPerWeek * $active_days_percentage_week_4;
+        $multiplier_kpi_week_5 = $baseMultiplierKpiPerWeek * $active_days_percentage_week_5;
 
         $minimum_component_amount_week_1 = (float) $additionalSalaryData['total_assessments']['week1'] * $base_salary_week_1 / 100;
         $minimum_component_amount_week_2 = (float) $additionalSalaryData['total_assessments']['week2'] * $base_salary_week_2 / 100;
         $minimum_component_amount_week_3 = (float) $additionalSalaryData['total_assessments']['week3'] * $base_salary_week_3 / 100;
         $minimum_component_amount_week_4 = (float) $additionalSalaryData['total_assessments']['week4'] * $base_salary_week_4 / 100;
         $minimum_component_amount_week_5 = (float) $additionalSalaryData['total_assessments']['week5'] * $base_salary_week_5 / 100;
-
-        $multiplier_kpi_week_1 = $employeeSalary->active_days_in_month > 0 && $additionalSalaryData['score_percentages_assessments'][0]['week1'] ? $employeeSalary->multiplier_kpi * $employeeSalary->active_days_week1 * ($additionalSalaryData['score_percentages_assessments'][0]['week1'] / 100) / $employeeSalary->active_days_in_month : 0;
-        $multiplier_kpi_week_2 = $employeeSalary->active_days_in_month > 0 && $additionalSalaryData['score_percentages_assessments'][0]['week2'] ? $employeeSalary->multiplier_kpi * $employeeSalary->active_days_week2 * ($additionalSalaryData['score_percentages_assessments'][0]['week2'] / 100) / $employeeSalary->active_days_in_month : 0;
-        $multiplier_kpi_week_3 = $employeeSalary->active_days_in_month > 0 && $additionalSalaryData['score_percentages_assessments'][0]['week3'] ? $employeeSalary->multiplier_kpi * $employeeSalary->active_days_week3 * ($additionalSalaryData['score_percentages_assessments'][0]['week3'] / 100) / $employeeSalary->active_days_in_month : 0;
-        $multiplier_kpi_week_4 = $employeeSalary->active_days_in_month > 0 && $additionalSalaryData['score_percentages_assessments'][0]['week4'] ? $employeeSalary->multiplier_kpi * $employeeSalary->active_days_week4 * ($additionalSalaryData['score_percentages_assessments'][0]['week4'] / 100) / $employeeSalary->active_days_in_month : 0;
-        $multiplier_kpi_week_5 = $employeeSalary->active_days_in_month > 0 && $additionalSalaryData['score_percentages_assessments'][0]['week5'] ? $employeeSalary->multiplier_kpi * $employeeSalary->active_days_week5 * ($additionalSalaryData['score_percentages_assessments'][0]['week5'] / 100) / $employeeSalary->active_days_in_month : 0;
 
         $additional_component_point_week_1 = (float) $additionalSalaryData['total_achievements']['week1'] * $multiplier_kpi_week_1 / 100;
         $additional_component_point_week_2 = (float) $additionalSalaryData['total_achievements']['week2'] * $multiplier_kpi_week_2 / 100;
@@ -124,6 +137,8 @@ class EmployeeSalaryExportController extends Controller
         $total_component_amount_week_4 = $minimum_component_amount_week_4 + $additional_component_amount_week_4;
         $total_component_amount_week_5 = $minimum_component_amount_week_5 + $additional_component_amount_week_5;
 
+        $total_component_amount = $total_component_amount_week_1 + $total_component_amount_week_2 + $total_component_amount_week_3 + $total_component_amount_week_4 + $total_component_amount_week_5;
+
         $total_amount_week_1 = $total_component_amount_week_1 + $real_transport_allowance_week_1;
         $total_amount_week_2 = $total_component_amount_week_2 + $real_transport_allowance_week_2;
         $total_amount_week_3 = $total_component_amount_week_3 + $real_transport_allowance_week_3;
@@ -138,23 +153,29 @@ class EmployeeSalaryExportController extends Controller
 
         $total_amount_received = $total_amount_received_week_1 + $total_amount_received_week_2 + $total_amount_received_week_3 + $total_amount_received_week_4 + $total_amount_received_week_5;
 
-        $company_profit_week_1 = 0.05 * ($employeeSalary->payment_from_marketing_week1 + $employeeSalary->payment_from_sales_week1 + $employeeSalary->payment_from_spg_week1 + $employeeSalary->cash_payment_week1);
-        $company_profit_week_2 = 0.05 * ($employeeSalary->payment_from_marketing_week2 + $employeeSalary->payment_from_sales_week2 + $employeeSalary->payment_from_spg_week2 + $employeeSalary->cash_payment_week2);
-        $company_profit_week_3 = 0.05 * ($employeeSalary->payment_from_marketing_week3 + $employeeSalary->payment_from_sales_week3 + $employeeSalary->payment_from_spg_week3 + $employeeSalary->cash_payment_week3);
-        $company_profit_week_4 = 0.05 * ($employeeSalary->payment_from_marketing_week4 + $employeeSalary->payment_from_sales_week4 + $employeeSalary->payment_from_spg_week4 + $employeeSalary->cash_payment_week4);
-        $company_profit_week_5 = 0.05 * ($employeeSalary->payment_from_marketing_week5 + $employeeSalary->payment_from_sales_week5 + $employeeSalary->payment_from_spg_week5 + $employeeSalary->cash_payment_week5);
+        $receivable_week_1 = $employeeSalary->payment_from_marketing_week1 + $employeeSalary->payment_from_sales_week1 + $employeeSalary->payment_from_spg_week1 + $employeeSalary->cash_payment_week1;
+        $receivable_week_2 = $employeeSalary->payment_from_marketing_week2 + $employeeSalary->payment_from_sales_week2 + $employeeSalary->payment_from_spg_week2 + $employeeSalary->cash_payment_week2;
+        $receivable_week_3 = $employeeSalary->payment_from_marketing_week3 + $employeeSalary->payment_from_sales_week3 + $employeeSalary->payment_from_spg_week3 + $employeeSalary->cash_payment_week3;
+        $receivable_week_4 = $employeeSalary->payment_from_marketing_week4 + $employeeSalary->payment_from_sales_week4 + $employeeSalary->payment_from_spg_week4 + $employeeSalary->cash_payment_week4;
+        $receivable_week_5 = $employeeSalary->payment_from_marketing_week5 + $employeeSalary->payment_from_sales_week5 + $employeeSalary->payment_from_spg_week5 + $employeeSalary->cash_payment_week5;
 
-        $settlement_difference_minus_amount_week_1 = $employeeSalary->payment_from_marketing_week1 + $employeeSalary->payment_from_sales_week1 + $employeeSalary->payment_from_spg_week1 + $employeeSalary->cash_payment_week1 - $total_amount_received_week_1;
-        $settlement_difference_minus_amount_week_2 = $employeeSalary->payment_from_marketing_week2 + $employeeSalary->payment_from_sales_week2 + $employeeSalary->payment_from_spg_week2 + $employeeSalary->cash_payment_week2 - $total_amount_received_week_2;
-        $settlement_difference_minus_amount_week_3 = $employeeSalary->payment_from_marketing_week3 + $employeeSalary->payment_from_sales_week3 + $employeeSalary->payment_from_spg_week3 + $employeeSalary->cash_payment_week3 - $total_amount_received_week_3;
-        $settlement_difference_minus_amount_week_4 = $employeeSalary->payment_from_marketing_week4 + $employeeSalary->payment_from_sales_week4 + $employeeSalary->payment_from_spg_week4 + $employeeSalary->cash_payment_week4 - $total_amount_received_week_4;
-        $settlement_difference_minus_amount_week_5 = $employeeSalary->payment_from_marketing_week5 + $employeeSalary->payment_from_sales_week5 + $employeeSalary->payment_from_spg_week5 + $employeeSalary->cash_payment_week5 - $total_amount_received_week_5;
+        $company_profit_week_1 = 0.05 * $receivable_week_1;
+        $company_profit_week_2 = 0.05 * $receivable_week_2;
+        $company_profit_week_3 = 0.05 * $receivable_week_3;
+        $company_profit_week_4 = 0.05 * $receivable_week_4;
+        $company_profit_week_5 = 0.05 * $receivable_week_5;
 
-        $company_profit_difference_minus_amount_week_1 = $company_profit_week_1 - $total_amount_week_1;
-        $company_profit_difference_minus_amount_week_2 = $company_profit_week_2 - $total_amount_week_2;
-        $company_profit_difference_minus_amount_week_3 = $company_profit_week_3 - $total_amount_week_3;
-        $company_profit_difference_minus_amount_week_4 = $company_profit_week_4 - $total_amount_week_4;
-        $company_profit_difference_minus_amount_week_5 = $company_profit_week_5 - $total_amount_week_5;
+        $settlement_difference_minus_amount_week_1 = $receivable_week_1 - $total_amount_received_week_1;
+        $settlement_difference_minus_amount_week_2 = $receivable_week_2 - $total_amount_received_week_2;
+        $settlement_difference_minus_amount_week_3 = $receivable_week_3 - $total_amount_received_week_3;
+        $settlement_difference_minus_amount_week_4 = $receivable_week_4 - $total_amount_received_week_4;
+        $settlement_difference_minus_amount_week_5 = $receivable_week_5 - $total_amount_received_week_5;
+
+        $company_profit_difference_minus_amount_week_1 = $company_profit_week_1 - $total_amount_received_week_1;
+        $company_profit_difference_minus_amount_week_2 = $company_profit_week_2 - $total_amount_received_week_2;
+        $company_profit_difference_minus_amount_week_3 = $company_profit_week_3 - $total_amount_received_week_3;
+        $company_profit_difference_minus_amount_week_4 = $company_profit_week_4 - $total_amount_received_week_4;
+        $company_profit_difference_minus_amount_week_5 = $company_profit_week_5 - $total_amount_received_week_5;
 
         $day_average_divisor = 0;
         $total_minimum_component_score = 0;
@@ -199,7 +220,7 @@ class EmployeeSalaryExportController extends Controller
         $average_additional_component_score = $day_average_divisor != 0 ? $total_additional_component_score / $day_average_divisor : 0;
         $average_final_score = $day_average_divisor != 0 ? $total_final_score / $day_average_divisor : 0;
 
-        $total_payment = ($employeeSalary->payment_from_marketing_week1 + $employeeSalary->payment_from_sales_week1 + $employeeSalary->payment_from_spg_week1 + $employeeSalary->cash_payment_week1) + ($employeeSalary->payment_from_marketing_week2 + $employeeSalary->payment_from_sales_week2 + $employeeSalary->payment_from_spg_week2 + $employeeSalary->cash_payment_week2) + ($employeeSalary->payment_from_marketing_week3 + $employeeSalary->payment_from_sales_week3 + $employeeSalary->payment_from_spg_week3 + $employeeSalary->cash_payment_week3) + ($employeeSalary->payment_from_marketing_week4 + $employeeSalary->payment_from_sales_week4 + $employeeSalary->payment_from_spg_week4 + $employeeSalary->cash_payment_week4) + ($employeeSalary->payment_from_marketing_week5 + $employeeSalary->payment_from_sales_week5 + $employeeSalary->payment_from_spg_week5 + $employeeSalary->cash_payment_week5);
+        $total_payment = $receivable_week_1 + $receivable_week_2 + $receivable_week_3 + $receivable_week_4 + $receivable_week_5;
 
         $total_settlement_difference_minus_amount = $settlement_difference_minus_amount_week_1 + $settlement_difference_minus_amount_week_2 + $settlement_difference_minus_amount_week_3 + $settlement_difference_minus_amount_week_4 + $settlement_difference_minus_amount_week_5;
 
@@ -230,6 +251,7 @@ class EmployeeSalaryExportController extends Controller
             'total_component_amount_week_3' => $total_component_amount_week_3,
             'total_component_amount_week_4' => $total_component_amount_week_4,
             'total_component_amount_week_5' => $total_component_amount_week_5,
+            'total_component_amount' => $total_component_amount,
             'total_amount_week_1' => $total_amount_week_1,
             'total_amount_week_2' => $total_amount_week_2,
             'total_amount_week_3' => $total_amount_week_3,

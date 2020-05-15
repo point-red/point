@@ -168,7 +168,7 @@
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['total_component_amount_week_3'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['total_component_amount_week_4'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['total_component_amount_week_5'], 2) }}</td>
-	        <td>&nbsp;</td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_component_amount'], 2) }}</b></td>
 	    </tr>
 	    <tr>
 	        <td colspan="2"><b>Total Amount With Allowance</b></td>
@@ -177,7 +177,7 @@
 	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_week_3'], 2) }}</b></td>
 	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_week_4'], 2) }}</b></td>
 	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_week_5'], 2) }}</b></td>
-	        <td>&nbsp;</td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received'], 2) }}</b></td>
 	    </tr>
 	    <tr>
 	        <td colspan="2">Receivable Cut &gt; 60 Days</td>

@@ -21,9 +21,9 @@ class Automated extends TransactionModel
      * Get the automated data based on indicator.
      */
     public static function getData($automated_code, $dateFrom, $dateTo, $employeeId)
-    {
-        $dateFrom = date('Y-m-d H:i:s', strtotime($dateFrom));
-        $dateTo = date('Y-m-d H:i:s', strtotime($dateTo));
+    { 
+        $dateFrom = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($dateFrom)));
+        $dateTo = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($dateTo)));
 
         $employee = Employee::findOrFail($employeeId);
         $userId = $employee->user_id ?? 0;
@@ -107,9 +107,10 @@ class Automated extends TransactionModel
     public static function getDays($dateFrom, $dateTo)
     {
         $dateTimeFrom = new DateTime($dateFrom);
+        $dateTimeFrom->modify('+1 day');
 
         $dateTimeTo = new DateTime($dateTo);
-        $dateTimeTo->modify('+1 day');
+        $dateTimeTo->modify('+2 day');
 
         $difference = $dateTimeFrom->diff($dateTimeTo);
         $numberOfDays = $difference->days;

@@ -50,6 +50,10 @@ class InstructionController extends Controller
      */
     public function sendApproval(Request $request)
     {
+        $request->validate([
+            'approver_id' => ['required', 'numeric']
+        ]);
+
         $instructions = Instruction::approvalNotSent()->whereIn('id', $request->ids)->update([
             'approval_request_by' => $request->user()->id,
             'approval_request_at' => now(),

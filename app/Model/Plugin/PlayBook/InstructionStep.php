@@ -3,7 +3,6 @@
 namespace App\Model\Plugin\PlayBook;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 
 class InstructionStep extends Model
 {

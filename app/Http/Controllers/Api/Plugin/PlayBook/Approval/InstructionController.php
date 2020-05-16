@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Mail;
 
 class InstructionController extends Controller
 {
-    
     /**
      * Display a listing of the resource.
      *

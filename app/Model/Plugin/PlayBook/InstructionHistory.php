@@ -28,7 +28,7 @@ class InstructionHistory extends Model
                 'id' => $step->id,
                 'histories' => [
                     $step,
-                ]
+                ],
             ];
         }
 
@@ -81,7 +81,7 @@ class InstructionHistory extends Model
 
         $steps = json_decode($history->steps);
         $index = -1;
-        
+
         // ambil index array step dari $history->steps
         for ($i = 0; $i < count($steps); $i++) {
             if ($steps[$i]->id == $step->id) {
@@ -96,7 +96,7 @@ class InstructionHistory extends Model
                 'id' => $step->id,
                 'histories' => [
                     $step,
-                ]
+                ],
             ];
         }
 

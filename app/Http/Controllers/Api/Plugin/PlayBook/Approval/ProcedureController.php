@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Plugin\PlayBook\Approval;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Plugin\PlayBook\Procedure\StoreProcedureRequest;
 use App\Http\Resources\ApiCollection;
 use App\Mail\Plugin\PlayBook\Approval\ApprovalRequestSent;
 use App\Model\Master\User;
@@ -35,18 +34,18 @@ class ProcedureController extends Controller
     }
 
     /**
-     * Send approval request to a specific approver
+     * Send approval request to a specific approver.
      */
     public function sendApproval(Request $request)
     {
         $request->validate([
-            'approver_id' => ['required', 'numeric']
+            'approver_id' => ['required', 'numeric'],
         ]);
 
         Procedure::approvalNotSent()->whereIn('id', $request->ids)->update([
             'approval_request_by' => $request->user()->id,
             'approval_request_at' => now(),
-            'approval_request_to' => $request->approver_id
+            'approval_request_to' => $request->approver_id,
         ]);
 
         $procedures = Procedure::approvalNotSent()->whereIn('id', $request->ids)->get();
@@ -54,7 +53,7 @@ class ProcedureController extends Controller
         $approver = User::findOrFail($request->approver_id);
 
         Mail::to([
-            $approver->email
+            $approver->email,
         ])->queue(new ApprovalRequestSent(
             Procedure::class,
             $approver,
@@ -62,24 +61,24 @@ class ProcedureController extends Controller
         ));
 
         return [
-            'input' => $request->all()
+            'input' => $request->all(),
         ];
     }
 
     /**
-     * Approve a procedure
+     * Approve a procedure.
      */
     public function approve(Procedure $procedure)
     {
         if ($procedure->approval_action === 'store') {
             $procedure->update([
-                'approved_at' => now()
+                'approved_at' => now(),
             ]);
         } elseif ($procedure->approval_action === 'update') {
             $source = Procedure::findOrFail($procedure->procedure_pending_id);
             $source->update($procedure->toArray());
             $source->update([
-                'approved_at' => now()
+                'approved_at' => now(),
             ]);
             $source->duplicateToHistory();
             $procedure->delete();
@@ -96,13 +95,13 @@ class ProcedureController extends Controller
     }
 
     /**
-     * Decline an approval request
+     * Decline an approval request.
      */
     public function decline(Request $request, Procedure $procedure)
     {
         $procedure->update([
             'approval_note' => $request->approval_note,
-            'declined_at' => now()
+            'declined_at' => now(),
         ]);
 
         return $procedure;

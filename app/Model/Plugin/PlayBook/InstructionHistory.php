@@ -11,7 +11,7 @@ class InstructionHistory extends Model
     protected $table = 'play_book_instruction_histories';
 
     protected $fillable = [
-        'instruction_id', 'number', 'name', 'steps', 'status'
+        'instruction_id', 'number', 'name', 'steps', 'status',
     ];
 
     public function instruction()
@@ -27,15 +27,15 @@ class InstructionHistory extends Model
             $steps[] = (object) [
                 'id' => $step->id,
                 'histories' => [
-                    $step
+                    $step,
                 ]
             ];
         }
 
-        $history = new InstructionHistory([
+        $history = new self([
             'number' => json_encode([$instruction->number]),
             'name' => json_encode([$instruction->name]),
-            'steps' => json_encode($steps)
+            'steps' => json_encode($steps),
         ]);
 
         $instruction->history()->save(
@@ -47,9 +47,9 @@ class InstructionHistory extends Model
 
     public static function updateInstruction($newValue, Instruction $instruction)
     {
-        $history = $instruction->history()->first(); # ben gak dianggep atribute
+        $history = $instruction->history()->first(); // ben gak dianggep atribute
 
-        if (!$history) {
+        if (! $history) {
             $history = self::createHistory($instruction);
         }
 
@@ -73,16 +73,16 @@ class InstructionHistory extends Model
 
     public static function updateStep($newValue, InstructionStep $step)
     {
-        $history = $step->instruction->history()->first(); # ben gak dianggep atribute
+        $history = $step->instruction->history()->first(); // ben gak dianggep atribute
 
-        if (!$history) {
+        if (! $history) {
             $history = self::createHistory($step->instruction);
         }
 
         $steps = json_decode($history->steps);
         $index = -1;
         
-        # ambil index array step dari $history->steps
+        // ambil index array step dari $history->steps
         for ($i = 0; $i < count($steps); $i++) {
             if ($steps[$i]->id == $step->id) {
                 $index = $i;
@@ -95,7 +95,7 @@ class InstructionHistory extends Model
             $steps[] = (object) [
                 'id' => $step->id,
                 'histories' => [
-                    $step
+                    $step,
                 ]
             ];
         }

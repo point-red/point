@@ -46,30 +46,30 @@ class InstructionController extends Controller
     }
 
     /**
-     * Send approval request to a specific approver
+     * Send approval request to a specific approver.
      */
     public function sendApproval(Request $request)
     {
         $request->validate([
-            'approver_id' => ['required', 'numeric']
+            'approver_id' => ['required', 'numeric'],
         ]);
 
         $instructions = Instruction::approvalNotSent()->whereIn('id', $request->ids)->update([
             'approval_request_by' => $request->user()->id,
             'approval_request_at' => now(),
-            'approval_request_to' => $request->approver_id
+            'approval_request_to' => $request->approver_id,
         ]);
 
         $steps = InstructionStep::approvalNotSent()->whereIn('id', $request->step_ids)->update([
             'approval_request_by' => $request->user()->id,
             'approval_request_at' => now(),
-            'approval_request_to' => $request->approver_id
+            'approval_request_to' => $request->approver_id,
         ]);
 
         $approver = User::findOrFail($request->approver_id);
 
         Mail::to([
-            $approver->email
+            $approver->email,
         ])->queue(new ApprovalRequestSent(
             Instruction::class,
             $approver,
@@ -80,20 +80,20 @@ class InstructionController extends Controller
     }
 
     /**
-     * Approve a instruction
+     * Approve a instruction.
      */
     public function approve(Instruction $instruction)
     {
         if ($instruction->approval_action === 'store') {
             $instruction->update([
-                'approved_at' => now()
+                'approved_at' => now(),
             ]);
         } elseif ($instruction->approval_action === 'update') {
             $source = Instruction::findOrFail($instruction->instruction_pending_id);
             InstructionHistory::updateInstruction($instruction->toArray(), $source);
             $source->fill($instruction->toArray());
             $source->update([
-                'approved_at' => now()
+                'approved_at' => now(),
             ]);
             $instruction->delete();
 
@@ -109,26 +109,26 @@ class InstructionController extends Controller
     }
 
     /**
-     * Decline
+     * Decline.
      */
     public function decline(Request $request, Instruction $instruction)
     {
         $instruction->update([
             'approval_note' => $request->approval_note,
-            'declined_at' => now()
+            'declined_at' => now(),
         ]);
 
         return $instruction;
     }
 
     /**
-     * Approve a instruction
+     * Approve a instruction.
      */
     public function approveStep(Instruction $instruction, InstructionStep $step)
     {
         if ($step->approval_action === 'store') {
             $step->update([
-                'approved_at' => now()
+                'approved_at' => now(),
             ]);
         } elseif ($step->approval_action === 'update') {
             $source = InstructionStep::findOrFail($step->instruction_step_pending_id);
@@ -136,7 +136,7 @@ class InstructionController extends Controller
 
             $source->fill($step->toArray());
             $source->update([
-                'approved_at' => now()
+                'approved_at' => now(),
             ]);
             $source->contents()->delete();
 
@@ -160,13 +160,13 @@ class InstructionController extends Controller
     }
 
     /**
-     * Decline step
+     * Decline step.
      */
     public function declineStep(Request $request, Instruction $instruction, InstructionStep $step)
     {
         $step->update([
             'approval_note' => $request->approval_note,
-            'declined_at' => now()
+            'declined_at' => now(),
         ]);
 
         return $step;

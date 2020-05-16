@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Plugin\PlayBook;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Model\Plugin\PlayBook\Glossary;
+use Illuminate\Http\Request;
 
 class GlossaryHistoryController extends Controller
 {

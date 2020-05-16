@@ -17,7 +17,7 @@ class Instruction extends Model
         'instruction_pending_id', 'approval_request_by',
         'approval_request_at', 'approved_at',
         'approval_request_to', 'approval_action',
-        'approval_note', 'declined_at'
+        'approval_note', 'declined_at',
     ];
 
     public function procedure()

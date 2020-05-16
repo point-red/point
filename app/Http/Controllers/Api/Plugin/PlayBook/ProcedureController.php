@@ -43,28 +43,28 @@ class ProcedureController extends Controller
 
         $procedure = $query->first();
 
-        if (!$procedure) {
+        if (! $procedure) {
             $procedure = Procedure::find($request->procedure_id);
 
             return response()->json([
-                'code' => $procedure ? "{$procedure->code}.1" : null
+                'code' => $procedure ? "{$procedure->code}.1" : null,
             ]);
         }
 
-        $delimiter = "~*~";
+        $delimiter = '~*~';
         $onlyNumerics = explode(
             $delimiter,
-            preg_replace("/[^0-9]/", $delimiter, $procedure->code)
+            preg_replace('/[^0-9]/', $delimiter, $procedure->code),
         );
         $lastNumeric = $onlyNumerics[count($onlyNumerics) - 1];
         $nonIteration = substr(
-            $procedure->code, 
-            0, 
+            $procedure->code,
+            0,
             strlen($procedure->code) - strlen("{$lastNumeric}")
         );
 
         return response()->json([
-            'code' => $nonIteration . ++$lastNumeric
+            'code' => $nonIteration.++$lastNumeric,
         ]);
     }
 
@@ -118,7 +118,7 @@ class ProcedureController extends Controller
     {
         $request->validate([
             'code' => ['required', "unique:tenant.play_book_procedures,code,{$procedure->id}"],
-            'name' => ['required']
+            'name' => ['required'],
         ]);
 
         $approval = new Procedure($request->only('code', 'name', 'purpose', 'content', 'note'));
@@ -137,13 +137,13 @@ class ProcedureController extends Controller
      */
     public function destroy(Procedure $procedure)
     {
-        if (!$procedure->declined_at) {
+        if (! $procedure->declined_at) {
             $approval = new Procedure([
                 'code' => $procedure->code,
                 'name' => $procedure->name,
                 'purpose' => $procedure->purpose,
                 'content' => $procedure->content,
-                'note' => $procedure->note
+                'note' => $procedure->note,
             ]);
             $approval->approval_action = 'destroy';
             $approval->procedure_pending_id = $procedure->id;
@@ -153,7 +153,7 @@ class ProcedureController extends Controller
         }
 
         return [
-            'message' => 'Deleted'
+            'message' => 'Deleted',
         ];
     }
 }

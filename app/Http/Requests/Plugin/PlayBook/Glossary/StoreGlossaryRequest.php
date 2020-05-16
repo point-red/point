@@ -26,7 +26,7 @@ class StoreGlossaryRequest extends FormRequest
         return [
             'code' => ['required', 'unique:tenant.play_book_glossaries'],
             'name' => 'required',
-            'abbreviation' => 'required'
+            'abbreviation' => 'required',
         ];
     }
 }

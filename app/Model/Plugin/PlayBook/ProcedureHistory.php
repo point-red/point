@@ -13,7 +13,7 @@ class ProcedureHistory extends Model
 
     protected $fillable = [
         'procedure_id', 'code', 'content',
-        'name', 'purpose', 'note', 'status'
+        'name', 'purpose', 'note', 'status',
     ];
 
     public function procedure()

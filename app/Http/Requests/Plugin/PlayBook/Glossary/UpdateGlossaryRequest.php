@@ -26,7 +26,7 @@ class UpdateGlossaryRequest extends FormRequest
         return [
             'code' => ['required', "unique:tenant.play_book_glossaries,code,{$this->id}"],
             'name' => 'required',
-            'abbreviation' => 'required'
+            'abbreviation' => 'required',
         ];
     }
 }

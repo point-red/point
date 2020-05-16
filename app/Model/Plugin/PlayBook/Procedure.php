@@ -19,16 +19,16 @@ class Procedure extends Model
         'name', 'purpose', 'note', 'status', 'procedure_pending_id',
         'approval_request_by', 'approval_request_at',
         'approved_at', 'approval_request_to', 'approval_action',
-        'declined_at', 'approval_note'
+        'declined_at', 'approval_note',
     ];
 
     protected $dates = [
-        'approved_at', 'approval_request_at'
+        'approved_at', 'approval_request_at',
     ];
 
     public function procedures()
     {
-        return $this->hasMany(Procedure::class);
+        return $this->hasMany(self::class);
     }
 
     public function histories()

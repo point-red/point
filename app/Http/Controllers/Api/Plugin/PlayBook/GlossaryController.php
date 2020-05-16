@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api\Plugin\PlayBook;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Model\Plugin\PlayBook\Glossary;
-use App\Http\Resources\ApiResource;
-use App\Http\Resources\ApiCollection;
 use App\Http\Requests\Plugin\PlayBook\Glossary\StoreGlossaryRequest as StoreRequest;
 use App\Http\Requests\Plugin\PlayBook\Glossary\UpdateGlossaryRequest as UpdateRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Plugin\PlayBook\Glossary;
+use Illuminate\Http\Request;
 
 class GlossaryController extends Controller
 {
@@ -29,26 +29,26 @@ class GlossaryController extends Controller
     {
         $glossary = Glossary::latest()->first();
 
-        if (!$glossary) {
+        if (! $glossary) {
             return response()->json([
-                'code' => null
+                'code' => null,
             ]);
         }
 
-        $delimiter = "~*~";
+        $delimiter = '~*~';
         $onlyNumerics = explode(
             $delimiter,
-            preg_replace("/[^0-9]/", $delimiter, $glossary->code)
+            preg_replace('/[^0-9]/', $delimiter, $glossary->code)
         );
         $lastNumeric = $onlyNumerics[count($onlyNumerics) - 1];
         $nonIteration = substr(
-            $glossary->code, 
-            0, 
+            $glossary->code,
+            0,
             strlen($glossary->code) - strlen("{$lastNumeric}")
         );
 
         return response()->json([
-            'code' => $nonIteration . ++$lastNumeric
+            'code' => $nonIteration.++$lastNumeric,
         ]);
     }
 

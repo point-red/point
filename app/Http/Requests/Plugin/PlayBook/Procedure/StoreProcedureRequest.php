@@ -25,7 +25,7 @@ class StoreProcedureRequest extends FormRequest
     {
         return [
             'code' => ['required', 'unique:tenant.play_book_procedures'],
-            'name' => ['required']
+            'name' => ['required'],
         ];
     }
 }

@@ -5,10 +5,8 @@ namespace App\Mail\Plugin\PlayBook\Approval;
 use App\Model\Plugin\PlayBook\Instruction;
 use App\Model\Plugin\PlayBook\Procedure;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Str;
 
 class ApprovalRequestSent extends Mailable
 {
@@ -26,9 +24,9 @@ class ApprovalRequestSent extends Mailable
     public function __construct($type, $approver, $urlReferer)
     {
         if ($type === Procedure::class) {
-            $this->type = "procedure";
+            $this->type = 'procedure';
         } elseif ($type === Instruction::class) {
-            $this->type = "instruction";
+            $this->type = 'instruction';
         }
 
         $this->approver = $approver;
@@ -51,7 +49,7 @@ class ApprovalRequestSent extends Mailable
             ->view('emails.plugin.play-book.approval-sent', [
                 'type' => $this->type,
                 'name' => $this->approver->name,
-                'url' => @$url
+                'url' => @$url,
             ]);
     }
 }

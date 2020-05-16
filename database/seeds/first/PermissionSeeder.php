@@ -108,7 +108,7 @@ class PermissionSeeder extends Seeder
             'manufacture processing',
             'manufacture machine',
             'manufacture process',
-            'manufacture formula'
+            'manufacture formula',
         ];
 
         foreach ($allPermission as $permission) {
@@ -281,7 +281,7 @@ class PermissionSeeder extends Seeder
             'play book glossaries',
             'play book procedures code',
             'play book procedures content',
-            'play book instructions'
+            'play book instructions',
         ];
 
         Permission::createIfNotExists('accept play book approval procedures');

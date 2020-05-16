@@ -11,6 +11,6 @@ class GlossaryHistory extends Model
     protected $table = 'play_book_glossary_histories';
 
     protected $fillable = [
-        'code', 'glossary_id', 'name', 'abbreviation', 'note'
+        'code', 'glossary_id', 'name', 'abbreviation', 'note',
     ];
 }

@@ -11,7 +11,7 @@ class InstructionStepContent extends Model
     protected $table = 'play_book_instruction_step_contents';
 
     protected $fillable = [
-        'step_id', 'glossary_id', 'content'
+        'step_id', 'glossary_id', 'content',
     ];
 
     public function step()

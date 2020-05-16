@@ -50,7 +50,7 @@ class StepController extends Controller
             'instruction_id' => ['required', 'numeric'],
             'name' => ['required'],
             'contents.*.glossary_id' => ['required'],
-            'contents.*.content' => ['required']
+            'contents.*.content' => ['required'],
         ]);
 
         $step = new InstructionStep($request->only('name'));
@@ -61,7 +61,7 @@ class StepController extends Controller
             $step->contents()->save(new InstructionStepContent($content));
         }
 
-        $step->contents = $step->contents()->with('glossary')->get(); # load glossary;
+        $step->contents = $step->contents()->with('glossary')->get(); // load glossary;
         InstructionHistory::updateStep($step, $step);
 
         return response()->json(compact('step'));
@@ -91,7 +91,7 @@ class StepController extends Controller
             'instruction_id' => ['required', 'numeric'],
             'name' => ['required'],
             'contents.*.glossary_id' => ['required'],
-            'contents.*.content' => ['required']
+            'contents.*.content' => ['required'],
         ]);
 
         $approval = new InstructionStep($request->only('name'));
@@ -121,12 +121,12 @@ class StepController extends Controller
 
             return ['message' => 'deleted'];
         }
-        
+
         $approval = new InstructionStep([
             'name' => $step->name,
             'instruction_id' => $step->instruction_id,
             'approval_action' => 'destroy',
-            'instruction_step_pending_id' => $step->id
+            'instruction_step_pending_id' => $step->id,
         ]);
 
         $approval->save();

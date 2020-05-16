@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Plugin\PlayBook\Instruction;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
 use App\Model\Plugin\PlayBook\Instruction;
 use App\Model\Plugin\PlayBook\InstructionHistory;
 use Illuminate\Http\Request;
@@ -40,26 +39,26 @@ class InstructionController extends Controller
 
         $instruction = $query->first();
 
-        if (!$instruction) {
+        if (! $instruction) {
             return response()->json([
-                'number' => null
+                'number' => null,
             ]);
         }
 
-        $delimiter = "~*~";
+        $delimiter = '~*~';
         $onlyNumerics = explode(
             $delimiter,
-            preg_replace("/[^0-9]/", $delimiter, $instruction->number)
+            preg_replace('/[^0-9]/', $delimiter, $instruction->number)
         );
         $lastNumeric = $onlyNumerics[count($onlyNumerics) - 1];
         $nonIteration = substr(
-            $instruction->number, 
-            0, 
+            $instruction->number,
+            0,
             strlen($instruction->number) - strlen("{$lastNumeric}")
         );
 
         return response()->json([
-            'number' => $nonIteration . ++$lastNumeric
+            'number' => $nonIteration.++$lastNumeric,
         ]);
     }
 
@@ -74,7 +73,7 @@ class InstructionController extends Controller
         $request->validate([
             'number' => ['unique:tenant.play_book_instructions'],
             'name' => ['required'],
-            'procedure_id' => ['required', 'numeric']
+            'procedure_id' => ['required', 'numeric'],
         ]);
 
         $instruction = new Instruction($request->all());
@@ -84,7 +83,7 @@ class InstructionController extends Controller
         InstructionHistory::updateInstruction(null, $instruction);
 
         return [
-            'instruction' => $instruction
+            'instruction' => $instruction,
         ];
     }
 
@@ -111,7 +110,7 @@ class InstructionController extends Controller
         $request->validate([
             'number' => ["unique:tenant.play_book_instructions,number,{$instruction->id}"],
             'name' => ['required'],
-            'procedure_id' => ['required', 'numeric']
+            'procedure_id' => ['required', 'numeric'],
         ]);
 
         $approval = new Instruction($request->only('number', 'name'));
@@ -147,7 +146,7 @@ class InstructionController extends Controller
         $approval->save();
 
         return response()->json([
-            'message' => 'Deleted.'
+            'message' => 'Deleted.',
         ]);
     }
 }

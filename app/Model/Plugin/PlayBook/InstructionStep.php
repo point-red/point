@@ -15,7 +15,7 @@ class InstructionStep extends Model
         'instruction_id', 'name', 'status',
         'instruction_step_pending_id', 'approval_request_by',
         'approval_request_at', 'approved_at', 'declined_at',
-        'approval_request_to', 'approval_action', 'approval_note'
+        'approval_request_to', 'approval_action', 'approval_note',
     ];
 
     public function instruction()

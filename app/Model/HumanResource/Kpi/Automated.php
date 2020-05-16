@@ -21,7 +21,7 @@ class Automated extends TransactionModel
      * Get the automated data based on indicator.
      */
     public static function getData($automated_code, $dateFrom, $dateTo, $employeeId)
-    { 
+    {
         $dateFrom = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($dateFrom)));
         $dateTo = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($dateTo)));
 

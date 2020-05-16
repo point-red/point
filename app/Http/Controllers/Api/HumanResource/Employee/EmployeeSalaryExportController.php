@@ -16,8 +16,8 @@ class EmployeeSalaryExportController extends Controller
     public function export(Request $request)
     {
         $request->validate([
-          'id' => 'required|integer',
-          'employeeId' => 'required|integer',
+            'id' => 'required|integer',
+            'employeeId' => 'required|integer',
         ]);
 
         $employeeSalary = EmployeeSalary::where('employee_salaries.employee_id', $request->get('employeeId'))

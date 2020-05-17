@@ -30,6 +30,16 @@ class AuthUserController extends ApiController
             ],
         ];
 
+        if ($request->has('plugin_id')) {
+            $userData['data'] = array_add($userData['data'], 'projects', Project::from('projects as project')
+                ->join('project_user as project_user', 'project.id', '=', 'project_user.project_id')
+                ->join('plugin_project as plugin_project', 'project.id', '=', 'plugin_project.plugin_id')
+                ->where('project_user.user_id', $user->id)
+                ->where('plugin_project.plugin_id', $request->get('plugin_id'))
+                ->select('project.*')
+                ->get());
+        }
+
         if ($request->get('tenant_code')) {
             $project = Project::where('code', $request->get('tenant_code'))->first();
 

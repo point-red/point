@@ -47,6 +47,17 @@ class PluginSeeder extends Seeder
         ];
         array_push($plugins, $plugin);
 
+        $plugin = [
+            'name' => 'STOCK BOOKKEEPING',
+            'description' => 'Manage your stock without headache',
+            'price' => 0,
+            'is_monthly_price' => false,
+            'price_per_user' => 0,
+            'is_monthly_price_per_user' => false,
+            'is_active' => true,
+        ];
+        array_push($plugins, $plugin);
+
         $this->create($plugins);
     }
 

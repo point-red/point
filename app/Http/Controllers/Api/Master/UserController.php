@@ -25,7 +25,7 @@ class UserController extends ApiController
     {
         $users = TenantUser::eloquentFilter($request);
 
-        # filter users by ?permission query string
+        // filter users by ?permission query string
         if ($request->has('permission')) {
             $users->permission($request->permission);
         }

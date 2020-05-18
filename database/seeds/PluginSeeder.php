@@ -22,6 +22,7 @@ class PluginSeeder extends Seeder
             'price_per_user' => 15000,
             'is_monthly_price_per_user' => true,
             'is_active' => true,
+            'app_url' => null,
         ];
         array_push($plugins, $plugin);
 
@@ -33,6 +34,7 @@ class PluginSeeder extends Seeder
             'price_per_user' => 15000,
             'is_monthly_price_per_user' => true,
             'is_active' => false,
+            'app_url' => null,
         ];
         array_push($plugins, $plugin);
 
@@ -44,6 +46,7 @@ class PluginSeeder extends Seeder
             'price_per_user' => 0,
             'is_monthly_price_per_user' => false,
             'is_active' => false,
+            'app_url' => null,
         ];
         array_push($plugins, $plugin);
 
@@ -55,6 +58,7 @@ class PluginSeeder extends Seeder
             'price_per_user' => 0,
             'is_monthly_price_per_user' => false,
             'is_active' => true,
+            'app_url' => 'https://stock.point.red',
         ];
         array_push($plugins, $plugin);
 
@@ -76,6 +80,7 @@ class PluginSeeder extends Seeder
             $plugin->price_per_user = $array['price_per_user'];
             $plugin->is_monthly_price_per_user = $array['is_monthly_price_per_user'];
             $plugin->is_active = $array['is_active'];
+            $plugin->app_url = $array['app_url'];
             $plugin->save();
         }
     }

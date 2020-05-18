@@ -14,4 +14,6 @@ Route::prefix('project')->namespace('Project')->group(function () {
     Route::apiResource('request-join', 'RequestJoinController');
 });
 
+Route::post('plugins/{id}/subscribe', 'PluginController@subscribe');
+Route::post('plugins/{id}/unsubscribe', 'PluginController@unsubscribe');
 Route::apiResource('plugins', 'PluginController');

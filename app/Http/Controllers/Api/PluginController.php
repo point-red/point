@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
 use App\Model\Plugin;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PluginController extends Controller
@@ -38,10 +40,11 @@ class PluginController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int $id
+     * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         //
     }
@@ -51,7 +54,7 @@ class PluginController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
@@ -67,5 +70,25 @@ class PluginController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function subscribe(Request $request, $id)
+    {
+        $plugin = Plugin::findOrFail($id);
+        $plugin->projects()->attach($request->get('project_id'), [
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+            'expired_date' => date('Y-m-t 23:59:59')
+        ]);
+
+        return new ApiResource($plugin);
+    }
+
+    public function unsubscribe(Request $request, $id)
+    {
+        $plugin = Plugin::findOrFail($id);
+        $plugin->projects()->detach($request->get('project_id'));
+
+        return new ApiResource($plugin);
     }
 }

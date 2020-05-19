@@ -175,7 +175,9 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        $project = Project::findOrFail($id)->load('users');
+        $project = Project::findOrFail($id)
+            ->load('users')
+            ->load('plugins');
 
         $dbName = env('DB_DATABASE').'_'.strtolower($project->code);
 

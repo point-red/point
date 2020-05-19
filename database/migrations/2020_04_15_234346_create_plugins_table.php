@@ -23,6 +23,9 @@ class CreatePluginsTable extends Migration
             $table->boolean('is_monthly_price_per_user');
             $table->unsignedInteger('user_id')->nullable();
             $table->boolean('is_active');
+            // If the plugin host their own app they can put the link here
+            // The link example https://domain.com
+            $table->string('app_url')->nullable();
             $table->timestamps();
         });
     }

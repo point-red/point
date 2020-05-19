@@ -95,6 +95,8 @@ class EmployeeSalaryExportController extends Controller
         $active_days_percentage_week_4 = $percentageCallWeek4 * $employeeSalary->active_days_week4;
         $active_days_percentage_week_5 = $percentageCallWeek5 * $employeeSalary->active_days_week5;
 
+        $active_days_percentage_total = $active_days_percentage_week_1 + $active_days_percentage_week_2 + $active_days_percentage_week_3 + $active_days_percentage_week_4 + $active_days_percentage_week_5;
+
         $base_salary_week_1 = $baseSalaryPerWeek * $active_days_percentage_week_1;
         $base_salary_week_2 = $baseSalaryPerWeek * $active_days_percentage_week_2;
         $base_salary_week_3 = $baseSalaryPerWeek * $active_days_percentage_week_3;
@@ -106,6 +108,8 @@ class EmployeeSalaryExportController extends Controller
         $real_transport_allowance_week_3 = $employeeSalary->daily_transport_allowance * $active_days_percentage_week_3;
         $real_transport_allowance_week_4 = $employeeSalary->daily_transport_allowance * $active_days_percentage_week_4;
         $real_transport_allowance_week_5 = $employeeSalary->daily_transport_allowance * $active_days_percentage_week_5;
+
+        $real_transport_allowance_total = $real_transport_allowance_week_1 + $real_transport_allowance_week_2 + $real_transport_allowance_week_3 + $real_transport_allowance_week_4 + $real_transport_allowance_week_5;
 
         $multiplier_kpi_week_1 = $baseMultiplierKpiPerWeek * $active_days_percentage_week_1;
         $multiplier_kpi_week_2 = $baseMultiplierKpiPerWeek * $active_days_percentage_week_2;
@@ -231,6 +235,29 @@ class EmployeeSalaryExportController extends Controller
         $total_amount_received_difference = $employeeSalary->maximum_salary_amount - $total_amount_received;
 
         return [
+            'base_salary_week_1' => $base_salary_week_1,
+            'base_salary_week_2' => $base_salary_week_2,
+            'base_salary_week_3' => $base_salary_week_3,
+            'base_salary_week_4' => $base_salary_week_4,
+            'base_salary_week_5' => $base_salary_week_5,
+            'real_transport_allowance_week_1' => $real_transport_allowance_week_1,
+            'real_transport_allowance_week_2' => $real_transport_allowance_week_2,
+            'real_transport_allowance_week_3' => $real_transport_allowance_week_3,
+            'real_transport_allowance_week_4' => $real_transport_allowance_week_4,
+            'real_transport_allowance_week_5' => $real_transport_allowance_week_5,
+            'real_transport_allowance_total' => $real_transport_allowance_total,
+            'active_days_percentage_week_1' => $active_days_percentage_week_1,
+            'active_days_percentage_week_2' => $active_days_percentage_week_2,
+            'active_days_percentage_week_3' => $active_days_percentage_week_3,
+            'active_days_percentage_week_4' => $active_days_percentage_week_4,
+            'active_days_percentage_week_5' => $active_days_percentage_week_5,
+            'active_days_percentage_total' => $active_days_percentage_total,
+            'real_transport_allowance_week_1' => $real_transport_allowance_week_1,
+            'real_transport_allowance_week_2' => $real_transport_allowance_week_2,
+            'real_transport_allowance_week_3' => $real_transport_allowance_week_3,
+            'real_transport_allowance_week_4' => $real_transport_allowance_week_4,
+            'real_transport_allowance_week_5' => $real_transport_allowance_week_5,
+            'real_transport_allowance_total' => $real_transport_allowance_total,
             'salary_final_score_week_1' => $salary_final_score_week_1,
             'salary_final_score_week_2' => $salary_final_score_week_2,
             'salary_final_score_week_3' => $salary_final_score_week_3,
@@ -241,6 +268,16 @@ class EmployeeSalaryExportController extends Controller
             'minimum_component_amount_week_3' => $minimum_component_amount_week_3,
             'minimum_component_amount_week_4' => $minimum_component_amount_week_4,
             'minimum_component_amount_week_5' => $minimum_component_amount_week_5,
+            'multiplier_kpi_week_1' => $multiplier_kpi_week_1,
+            'multiplier_kpi_week_2' => $multiplier_kpi_week_2,
+            'multiplier_kpi_week_3' => $multiplier_kpi_week_3,
+            'multiplier_kpi_week_4' => $multiplier_kpi_week_4,
+            'multiplier_kpi_week_5' => $multiplier_kpi_week_5,
+            'additional_component_point_week_1' => $additional_component_point_week_1,
+            'additional_component_point_week_2' => $additional_component_point_week_2,
+            'additional_component_point_week_3' => $additional_component_point_week_3,
+            'additional_component_point_week_4' => $additional_component_point_week_4,
+            'additional_component_point_week_5' => $additional_component_point_week_5,
             'additional_component_amount_week_1' => $additional_component_amount_week_1,
             'additional_component_amount_week_2' => $additional_component_amount_week_2,
             'additional_component_amount_week_3' => $additional_component_amount_week_3,

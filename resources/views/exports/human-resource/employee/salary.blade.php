@@ -4,14 +4,14 @@
 		font-weight: normal;
 		font-style: normal;
 		font-variant: normal;
-		font-size: 12;
+		font-size: 10;
 	}
 	td {
 		font-family: 'Helvetica';
 		font-weight: normal;
 		font-style: normal;
 		font-variant: normal;
-		font-size: 9;
+		font-size: 8;
 	
 	}
 </style>
@@ -56,7 +56,7 @@
 	        <td style="text-align:center;">W3</td>
 	        <td style="text-align:center;">W4</td>
 	        <td style="text-align:center;">W5</td>
-	        <td style="text-align:center;">Additional Note</td>
+	        <td style="text-align:center;">Weight</td>
 	    </tr>
 	    <tr>
 	        <td colspan="2" style="text-align:center;"><b>MINIMUM COMPONENT</b></td>
@@ -71,7 +71,7 @@
 	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$key]['week3'], 0) }}%</td>
 	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$key]['week4'], 0) }}%</td>
 	            <td style="text-align:center;">{{ number_format($additionalSalaryData['score_percentages_assessments'][$key]['week5'], 0) }}%</td>
-	            <td>&nbsp;</td>
+	            <td style="text-align:center;">{{ number_format($indicator->weight, 0) }}%</td>
 	        </tr>
 	    @endforeach
 	    <tr>
@@ -117,7 +117,7 @@
 	            <td style="text-align:center;">{{ number_format($achievement['week3'], 0) }}%</td>
 	            <td style="text-align:center;">{{ number_format($achievement['week4'], 0) }}%</td>
 	            <td style="text-align:center;">{{ number_format($achievement['week5'], 0) }}%</td>
-	            <td>&nbsp;</td>
+	            <td style="text-align:center;">{{ number_format($achievement['weight'], 0) }}%</td>
 	        </tr>
 	    @endforeach
 	    <tr>
@@ -144,7 +144,43 @@
 	        </td>
 	    </tr>
 	    <tr>
-	        <td colspan="2">Minimum Component Amount</td>
+	        <td colspan="2">Area Value</td>
+	        <td style="text-align:center;">Rp {{ number_format($employeeSalary->base_salary, 2) }}</td>
+	        <td style="text-align:center;">Rp {{ number_format($employeeSalary->base_salary, 2) }}</td>
+	        <td style="text-align:center;">Rp {{ number_format($employeeSalary->base_salary, 2) }}</td>
+	        <td style="text-align:center;">Rp {{ number_format($employeeSalary->base_salary, 2) }}</td>
+	        <td style="text-align:center;">Rp {{ number_format($employeeSalary->base_salary, 2) }}</td>
+	        <td>&nbsp;</td>
+	    </tr>
+	    <tr>
+	        <td colspan="2">Area Value Per Week</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['base_salary_week_1'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['base_salary_week_2'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['base_salary_week_3'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['base_salary_week_4'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['base_salary_week_5'], 2) }}</td>
+	        <td>&nbsp;</td>
+	    </tr>
+	    <tr>
+	        <td colspan="2">Daily Transport</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->daily_transport_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->daily_transport_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->daily_transport_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->daily_transport_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->daily_transport_allowance, 2) }}</td>
+	        <td>&nbsp;</td>
+	    </tr>
+	    <tr>
+	        <td colspan="2">Real Transport Received</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['real_transport_allowance_week_1'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['real_transport_allowance_week_2'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['real_transport_allowance_week_3'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['real_transport_allowance_week_4'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['real_transport_allowance_week_5'], 2) }}</td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['real_transport_allowance_total'], 2) }}</b></td>
+	    </tr>
+	    <tr>
+	        <td colspan="2">Minimum Component</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['minimum_component_amount_week_1'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['minimum_component_amount_week_2'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['minimum_component_amount_week_3'], 2) }}</td>
@@ -153,7 +189,34 @@
 	        <td>&nbsp;</td>
 	    </tr>
 	    <tr>
-	        <td colspan="2">Additional Component Amount</td>
+	        <td colspan="2">Multiplier KPI</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->multiplier_kpi, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->multiplier_kpi, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->multiplier_kpi, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->multiplier_kpi, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->multiplier_kpi, 2) }}</td>
+	        <td>&nbsp;</td>
+	    </tr>
+	    <tr>
+	        <td colspan="2">Multiplier KPI (Weekly Result)</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['multiplier_kpi_week_1'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['multiplier_kpi_week_2'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['multiplier_kpi_week_3'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['multiplier_kpi_week_4'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['multiplier_kpi_week_5'], 2) }}</td>
+	        <td>&nbsp;</td>
+	    </tr>
+	    <tr>
+	        <td colspan="2">Additional Point</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['additional_component_point_week_1'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['additional_component_point_week_2'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['additional_component_point_week_3'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['additional_component_point_week_4'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['additional_component_point_week_5'], 2) }}</td>
+	        <td>&nbsp;</td>
+	    </tr>
+	    <tr>
+	        <td colspan="2">Additional Component</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['additional_component_amount_week_1'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['additional_component_amount_week_2'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['additional_component_amount_week_3'], 2) }}</td>
@@ -168,16 +231,16 @@
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['total_component_amount_week_3'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['total_component_amount_week_4'], 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['total_component_amount_week_5'], 2) }}</td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_component_amount'], 2) }}</b></td>
+	        <td style="text-align:center;"><b>Rp {{ number_format($calculatedSalaryData['total_component_amount'], 2) }}</b></td>
 	    </tr>
 	    <tr>
 	        <td colspan="2"><b>Total Amount With Allowance</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_week_1'], 2) }}</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_week_2'], 2) }}</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_week_3'], 2) }}</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_week_4'], 2) }}</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_week_5'], 2) }}</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received'], 2) }}</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_week_1'], 2) }}</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_week_2'], 2) }}</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_week_3'], 2) }}</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_week_4'], 2) }}</b></td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_week_5'], 2) }}</b></td>
+	        <td style="text-align:center;"><b>Rp {{ number_format($calculatedSalaryData['total_amount_received'], 2) }}</b></td>
 	    </tr>
 	    <tr>
 	        <td colspan="2">Receivable Cut &gt; 60 Days</td>
@@ -189,35 +252,9 @@
 	        <td>&nbsp;</td>
 	    </tr>
 	    <tr>
-	        <td colspan="2"><b>Total Amount Received</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_week_1'], 2) }}</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_week_2'], 2) }}</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_week_3'], 2) }}</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_week_4'], 2) }}</b></td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_week_5'], 2) }}</b></td>
-	        <td>&nbsp;</td>
-	    </tr>
-	    <tr>
-	        <td colspan="6"></td>>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received'], 2) }}</b></td>
-	        <td>&nbsp;</td>
-	    </tr>
-	    <tr>
-	        <td colspan="2"><b>Maximum Amount Receivable</b></td>
-	        <td>&nbsp;</td>
-	        <td>&nbsp;</td>
-	        <td>&nbsp;</td>
-	        <td>&nbsp;</td>
-	        <td style="text-align:center;"><b>{{ number_format($employeeSalary->maximum_salary_amount, 2) }}</b></td>
-	        <td>If KPI 100%</td>
-	    </tr>
-	    <tr>
-	        <td colspan="2"><b>Amount Received Difference</b></td>
-	        <td>&nbsp;</td>
-	        <td>&nbsp;</td>
-	        <td>&nbsp;</td>
-	        <td>&nbsp;</td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_amount_received_difference'], 2) }}</b></td>
+	    	<td colspan="2"><b>Total Amount Received</b></td>
+	        <td colspan="5"></td>>
+	        <td style="text-align:center;"><b>Rp {{ number_format($calculatedSalaryData['total_amount_received'], 2) }}</b></td>
 	        <td>&nbsp;</td>
 	    </tr>
 	    <tr>
@@ -293,6 +330,24 @@
 	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_company_profit_difference_minus_amount'], 2) }}</b></td>
 	    </tr>
 	    <tr>
+	        <td colspan="2">Communication Allowance</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->communication_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->communication_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->communication_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->communication_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->communication_allowance, 2) }}</td>
+	        <td>&nbsp;</td>
+	    </tr>
+	    <tr>
+	        <td colspan="2">Functional Allowance</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->functional_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->functional_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->functional_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->functional_allowance, 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($employeeSalary->functional_allowance, 2) }}</td>
+	        <td>&nbsp;</td>
+	    </tr>
+	    <tr>
 	        <td colspan="2">Weekly Sales</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->weekly_sales_week1, 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->weekly_sales_week2, 2) }}</td>
@@ -300,6 +355,15 @@
 	        <td style="text-align:center;">{{ number_format($employeeSalary->weekly_sales_week4, 2) }}</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->weekly_sales_week5, 2) }}</td>
 	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_weekly_sales'], 2) }}</b></td>
+	    </tr>
+	    <tr>
+	        <td colspan="2">Active Days / Week</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['active_days_percentage_week_1'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['active_days_percentage_week_2'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['active_days_percentage_week_3'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['active_days_percentage_week_4'], 2) }}</td>
+	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['active_days_percentage_week_5'], 2) }}</td>
+	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['active_days_percentage_total'], 2) }}</b></td>
 	    </tr>
 	    <tr>
 	        <td colspan="2">WA Daily Report</td>

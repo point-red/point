@@ -24,8 +24,8 @@ class EmployeeSalaryExportController extends Controller
               ->where('employee_salaries.id', $request->get('id'))
               ->first();
 
-        $additionalSalaryData = EmployeeSalary::getAdditionalSalaryData($employeeSalary)['additional'];
-        $calculatedSalaryData = EmployeeSalary::getCalculationSalaryData($employeeSalary, $additionalSalaryData);
+        $additionalSalaryData = $employeeSalary->getAdditionalSalaryData($employeeSalary->assessments, $employeeSalary->achievements);
+        $calculatedSalaryData = $employeeSalary->getCalculationSalaryData($additionalSalaryData);
 
         $tenant = strtolower($request->header('Tenant'));
         $key = str_random(16);

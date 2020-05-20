@@ -89,6 +89,8 @@ class EmployeeSalaryResource extends JsonResource
 
             'assessments' => EmployeeSalaryAssessmentResource::collection($this->assessments),
             'achievements' => EmployeeSalaryAchievementResource::collection($this->achievements),
+
+            'amount_received' => $this->total_amount_receivable,
         ];
     }
 }

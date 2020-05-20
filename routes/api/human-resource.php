@@ -39,6 +39,7 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::get('employees/{employee_id}/salary/assessment', 'EmployeeSalaryController@assessment');
         Route::get('employees/{employee_id}/salary/achievement', 'EmployeeSalaryController@achievement');
         Route::apiResource('employees/{employee_id}/salary', 'EmployeeSalaryController');
+        Route::get('employees/{employee_id}/salary-by/{group}', 'EmployeeSalaryController@showBy');
         Route::post('employees/{employee_id}/salary/export', 'EmployeeSalaryExportController@export');
     });
 });

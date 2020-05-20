@@ -15,9 +15,9 @@ use App\Model\HumanResource\Employee\EmployeeSalaryAssessment;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentScore;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentTarget;
 use App\Model\HumanResource\Kpi\Kpi;
+use App\Model\Master\User;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
-use App\Model\Project\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -648,21 +648,33 @@ class EmployeeSalaryController extends Controller
      */
     public function achievement(Request $request, $employeeId)
     {
-        // Project
-        $project_code = $request->header('Tenant');
-        $current_project = Project::where('code', $project_code)->first();
+        $currentEmployee = Employee::findOrFail($employeeId);
 
-        if (! $project_code || ! $current_project) {
-            return response()->json([
-                'code' => 422,
-                'message' => 'Project not found',
-            ], 422);
+        $employeeIdArea = [];
+        $employeeIdNational = [];
+
+        $employees = Employee::all();
+
+        foreach ($employees as $emp) {
+            $branch = $emp->branch;
+
+            if ($branch) {
+                if ($branch->id === $currentEmployee->branch->id) {
+                    array_push($employeeIdArea, $emp->id);
+                    array_push($employeeIdNational, $emp->id);
+                } else {
+                    array_push($employeeIdNational, $emp->id);
+                }
+            }
         }
 
-        $group_of_projects = Project::where('group', $current_project->group)->get();
+        $employeeIdArea = array_unique($employeeIdArea);
+        $employeeIdArea = array_filter($employeeIdArea);
+        $employeeIdNational = array_unique($employeeIdNational);
+        $employeeIdNational = array_filter($employeeIdNational);
 
-        $employee = Employee::findOrFail($employeeId);
-        $userId = $employee->user_id ?? 0;
+        log_object($employeeIdArea);
+        log_object($employeeIdNational);
 
         $employee_achievements = [
             'automated' => [
@@ -720,31 +732,26 @@ class EmployeeSalaryController extends Controller
         }
 
         // Area & National Call, Effective Call & Value
-        foreach ($group_of_projects as $project) {
-            config()->set('database.connections.tenant.database', 'point_'.strtolower($project->code));
-            DB::connection('tenant')->reconnect();
+        foreach ($employees as $employee) {
+            $assessmentData = $this->assessment($request, $employee->id);
+            $assessmentData = $assessmentData['data']['indicators'];
 
-            $employees = Employee::all();
+            foreach ($assessmentData as $assessment) {
+                if (array_key_exists('automated_code', $assessment)) {
+                    if ($assessment['automated_code'] === 'C') {
+                        if (in_array($employee->id, $employeeIdArea)) {
+                            foreach ($employee_achievements['automated']['achievement_area_call'] as $week => &$data) {
+                                if ($week !== 'weight') {
+                                    $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
+                                    $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
 
-            foreach ($employees as $employee) {
-                $assessmentData = $this->assessment($request, $employee->id);
-                $assessmentData = $assessmentData['data']['indicators'];
-
-                foreach ($assessmentData as $assessment) {
-                    if (array_key_exists('automated_code', $assessment)) {
-                        if ($assessment['automated_code'] === 'C') {
-                            if ($project->code === $project_code) {
-                                foreach ($employee_achievements['automated']['achievement_area_call'] as $week => &$data) {
-                                    if ($week !== 'weight') {
-                                        $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
-                                        $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
-
-                                        $data['score'] += $score;
-                                        $data['target'] += $target;
-                                    }
+                                    $data['score'] += $score;
+                                    $data['target'] += $target;
                                 }
                             }
+                        }
 
+                        if (in_array($employee->id, $employeeIdNational)) {
                             foreach ($employee_achievements['automated']['achievement_national_call'] as $week => &$data) {
                                 if ($week !== 'weight') {
                                     $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
@@ -754,19 +761,21 @@ class EmployeeSalaryController extends Controller
                                     $data['target'] += $target;
                                 }
                             }
-                        } elseif ($assessment['automated_code'] === 'EC') {
-                            if ($project->code === $project_code) {
-                                foreach ($employee_achievements['automated']['achievement_area_effective_call'] as $week => &$data) {
-                                    if ($week !== 'weight') {
-                                        $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
-                                        $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
+                        }
+                    } elseif ($assessment['automated_code'] === 'EC') {
+                        if (in_array($employee->id, $employeeIdArea)) {
+                            foreach ($employee_achievements['automated']['achievement_area_effective_call'] as $week => &$data) {
+                                if ($week !== 'weight') {
+                                    $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
+                                    $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
 
-                                        $data['score'] += $score;
-                                        $data['target'] += $target;
-                                    }
+                                    $data['score'] += $score;
+                                    $data['target'] += $target;
                                 }
                             }
+                        }
 
+                        if (in_array($employee->id, $employeeIdNational)) {
                             foreach ($employee_achievements['automated']['achievement_national_effective_call'] as $week => &$data) {
                                 if ($week !== 'weight') {
                                     $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
@@ -777,20 +786,22 @@ class EmployeeSalaryController extends Controller
                                 }
                             }
                         }
-                    } else {
-                        if ($assessment['name'] === 'Persentase Value') { // NOTE: Hard-Coded
-                            if ($project->code === $project_code) {
-                                foreach ($employee_achievements['automated']['achievement_area_value'] as $week => &$data) {
-                                    if ($week !== 'weight') {
-                                        $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
-                                        $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
+                    }
+                } else {
+                    if ($assessment['name'] === 'Persentase Value') { // NOTE: Hard-Coded
+                        if (in_array($employee->id, $employeeIdArea)) {
+                            foreach ($employee_achievements['automated']['achievement_area_value'] as $week => &$data) {
+                                if ($week !== 'weight') {
+                                    $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
+                                    $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
 
-                                        $data['score'] += $score;
-                                        $data['target'] += $target;
-                                    }
+                                    $data['score'] += $score;
+                                    $data['target'] += $target;
                                 }
                             }
+                        }
 
+                        if (in_array($employee->id, $employeeIdNational)) {
                             foreach ($employee_achievements['automated']['achievement_national_value'] as $week => &$data) {
                                 if ($week !== 'weight') {
                                     $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
@@ -819,9 +830,6 @@ class EmployeeSalaryController extends Controller
                 }
             }
         }
-
-        config()->set('database.connections.tenant.database', 'point_'.strtolower($project_code));
-        DB::connection('tenant')->reconnect();
 
         return ['data' => $employee_achievements];
     }

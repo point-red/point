@@ -18,6 +18,7 @@ use App\Model\HumanResource\Employee\EmployeeSocialMedia;
 use App\Model\HumanResource\Employee\EmployeeStatus;
 use App\Model\HumanResource\Kpi\KpiTemplate;
 use App\Model\Master\Address;
+use App\Model\Master\Branch;
 use App\Model\Master\Email;
 use App\Model\Master\Phone;
 use App\Model\Master\User;
@@ -158,5 +159,13 @@ trait EmployeeRelation
     public function payments()
     {
         return $this->morphMany(Payment::class, 'paymentable');
+    }
+
+    /**
+     * The branch that is connected to the employee.
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

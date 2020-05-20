@@ -2,6 +2,7 @@
 
 namespace App\Exports\PinPoint\Performance;
 
+use App\Model\Master\Branch;
 use App\Model\Master\Item;
 use App\Model\Master\User;
 use App\Model\Plugin\PinPoint\SalesVisitation;
@@ -25,12 +26,14 @@ class DailySheet implements FromView, WithTitle, ShouldAutoSize, WithEvents, Wit
      * @param string $date
      * @param string $dateFrom
      * @param string $dateTo
+     * @param string $branchId
      */
-    public function __construct(string $date, string $dateFrom, string $dateTo)
+    public function __construct(string $date, string $dateFrom, string $dateTo, string $branchId)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
         $this->date = $date;
+        $this->branchId = $branchId;
     }
 
     /**
@@ -126,6 +129,8 @@ class DailySheet implements FromView, WithTitle, ShouldAutoSize, WithEvents, Wit
         $queryValue = $this->queryValue($this->dateFrom, $this->dateTo);
         $details = $this->queryDetails($this->dateFrom, $this->dateTo);
 
+        $branch = Branch::find($this->branchId);
+
         $users = User::query()->leftJoinSub($queryTarget, 'queryTarget', function ($join) {
             $join->on('users.id', '=', 'queryTarget.user_id');
         })->leftJoinSub($queryCall, 'queryCall', function ($join) {
@@ -144,8 +149,15 @@ class DailySheet implements FromView, WithTitle, ShouldAutoSize, WithEvents, Wit
             ->addSelect('queryCall.total as actual_call')
             ->addSelect('queryEffectiveCall.total as actual_effective_call')
             ->addSelect('queryValue.value as actual_value')
-            ->where('queryTarget.call', '>', 0)
-            ->groupBy('users.id')
+            ->where('queryTarget.call', '>', 0);
+
+        if ($branch) {
+            $branchUsers = $branch->users;
+            $ids = $branchUsers->pluck('id')->toArray();
+            $users = $users->whereIn('users.id', $ids);
+        }
+
+        $users = $users->groupBy('users.id')
             ->get();
 
         foreach ($users as $user) {

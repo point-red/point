@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Plugin\PinPoint\Report;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Plugin\PinPoint\Report\Performance\PerformanceCollection;
 use App\Model\HumanResource\Kpi\Automated;
+use App\Model\Master\Branch;
 use App\Model\Master\User;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
@@ -19,6 +20,9 @@ class PerformanceReportController extends Controller
         $dateFrom = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('date_from'))));
         $dateTo = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('date_to'))));
         $numberOfDays = Automated::getDays($request->get('date_from'), $request->get('date_to'));
+
+        $branchId = $request->get('branch_id');
+        $branch = Branch::find($branchId);
 
         $queryTarget = $this->queryTarget($dateFrom, $dateTo);
         $queryCall = $this->queryCall($dateFrom, $dateTo);
@@ -44,9 +48,26 @@ class PerformanceReportController extends Controller
             ->addSelect('queryCall.total as call')
             ->addSelect('queryEffectiveCall.total as effective_call')
             ->addSelect('queryValue.value as value')
-            ->where('queryTarget.call', '>', 0)
-            ->groupBy('users.id')
+            ->where('queryTarget.call', '>', 0);
+
+        if ($branch) {
+            $branchUsers = $branch->users;
+            $ids = $branchUsers->pluck('id')->toArray();
+            $result = $result->whereIn('users.id', $ids);
+        }
+
+        $result = $result->groupBy('users.id')
             ->get();
+
+        $totals = [
+            'target_call' => 0,
+            'target_effective_call' => 0,
+            'target_value' => 0,
+            'call' => 0,
+            'effective_call' => 0,
+            'value' => 0,
+            'items' => [],
+        ];
 
         foreach ($result as $user) {
             $values = array_values($details->filter(function ($value) use ($user) {
@@ -62,9 +83,32 @@ class PerformanceReportController extends Controller
             $user->target_call = $user->target_call * $numberOfDays;
             $user->target_effective_call = $user->target_effective_call * $numberOfDays;
             $user->target_value = $user->target_value * $numberOfDays;
+
+            $totals['target_call'] += $user->target_call;
+            $totals['target_effective_call'] += $user->target_effective_call;
+            $totals['target_value'] += $user->target_value;
+            $totals['call'] += $user->call;
+            $totals['effective_call'] += $user->effective_call;
+            $totals['value'] += $user->value;
+
+            foreach ($user->items as $item) {
+                if (array_key_exists($item->item_id, $totals['items'])) {
+                    $totals['items'][$item->item_id]['quantity'] += $item->quantity;
+                } else {
+                    $totals['items'][$item->item_id]['item_id'] = $item->item_id;
+                    $totals['items'][$item->item_id]['quantity'] = $item->quantity;
+                }
+            }
         }
 
-        return new PerformanceCollection($result);
+        $totals['items'] = array_values($totals['items']);
+
+        return (new PerformanceCollection($result))
+            ->additional([
+                'data_set' => [
+                    'totals' => $totals,
+                ],
+            ]);
     }
 
     public function queryTarget($dateFrom, $dateTo)

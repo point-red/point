@@ -15,9 +15,6 @@ use App\Model\HumanResource\Employee\EmployeeSalaryAssessment;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentScore;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentTarget;
 use App\Model\HumanResource\Kpi\Kpi;
-use App\Model\Master\User;
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -74,7 +71,7 @@ class EmployeeSalaryController extends Controller
             }
         }
 
-        return (new EmployeeSalaryCollection($employee_salaries));
+        return new EmployeeSalaryCollection($employee_salaries);
     }
 
     /**
@@ -237,7 +234,7 @@ class EmployeeSalaryController extends Controller
 
         return (new EmployeeSalaryResource($employee_salary))
             ->additional([
-                'additional' => $employee_salary->getAdditionalSalaryData($employee_salary->assessments, $employee_salary->achievements)
+                'additional' => $employee_salary->getAdditionalSalaryData($employee_salary->assessments, $employee_salary->achievements),
             ]);
     }
 
@@ -326,7 +323,7 @@ class EmployeeSalaryController extends Controller
         $additional = [];
 
         foreach ($employee_salaries as $salary) {
-            if ($type === 'weekly') {                
+            if ($type === 'weekly') {
                 if ($salary->start_date < $template_salary->start_date) {
                     $response['start_date'] = $salary->start_date;
                 }
@@ -672,9 +669,6 @@ class EmployeeSalaryController extends Controller
         $employeeIdArea = array_filter($employeeIdArea);
         $employeeIdNational = array_unique($employeeIdNational);
         $employeeIdNational = array_filter($employeeIdNational);
-
-        log_object($employeeIdArea);
-        log_object($employeeIdNational);
 
         $employee_achievements = [
             'automated' => [

@@ -37,7 +37,7 @@ class EmployeeSalary extends TransactionModel
     }
 
     /**
-     * Returns the amount of weeks into the month a date is
+     * Returns the amount of weeks into the month a date is.
      * @param $date a YYYY-MM-DD formatted date
      * @param $rollover The day on which the week rolls over
      */
@@ -47,19 +47,19 @@ class EmployeeSalary extends TransactionModel
         $daylen = 86400;
 
         $timestamp = strtotime($date);
-        $first = strtotime($cut . "00");
+        $first = strtotime($cut.'00');
         $elapsed = ($timestamp - $first) / $daylen;
 
         $weeks = 1;
 
         for ($i = 1; $i <= $elapsed; $i++) {
-            $dayfind = $cut . (strlen($i) < 2 ? '0' . $i : $i);
+            $dayfind = $cut.(strlen($i) < 2 ? '0'.$i : $i);
             $daytimestamp = strtotime($dayfind);
 
-            $day = strtolower(date("l", $daytimestamp));
+            $day = strtolower(date('l', $daytimestamp));
 
             if ($day == strtolower($rollover)) {
-                $weeks ++;
+                $weeks++;
             }
         }
 
@@ -272,7 +272,7 @@ class EmployeeSalary extends TransactionModel
         $total_amount_received_week_4 = $total_amount_week_4;
         $total_amount_received_week_5 = $total_amount_week_5;
 
-        if (EmployeeSalary::getWeekOfMonth($this->start_date) === 1) {
+        if (self::getWeekOfMonth($this->start_date) === 1) {
             $total_amount_received_week_1 = $total_amount_received_week_1 + $this->communication_allowance + $this->functional_allowance;
         }
 

@@ -19,6 +19,7 @@ class EmployeeSalaryAdditionalComponentResource extends JsonResource
             'name' => $this->name,
             'weight' => $this->weight,
             'automated_code' => $this->automated_code,
+            'automated_code_name' => $this->automated_code_name,
         ];
     }
 }

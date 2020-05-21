@@ -39,8 +39,6 @@ class EmployeeSalaryAdditionalComponentController extends Controller
      */
     public function store(StoreEmployeeSalaryAdditionalComponentRequest $request)
     {
-        DB::connection('tenant')->beginTransaction();
-
         $weight = $request->input('weight');
 
         if (EmployeeSalaryAdditionalComponent::isAboveMaximumWeight($weight)) {
@@ -55,6 +53,7 @@ class EmployeeSalaryAdditionalComponentController extends Controller
         $additionalComponent->name = $request->input('name');
         $additionalComponent->weight = $weight;
         $additionalComponent->automated_code = $request->input('automated_code');
+        $additionalComponent->automated_code_name = $request->input('automated_code_name');
         $additionalComponent->save();
 
         return new EmployeeSalaryAdditionalComponentResource($additionalComponent);
@@ -101,6 +100,7 @@ class EmployeeSalaryAdditionalComponentController extends Controller
         $additionalComponent->name = $request->input('name');
         $additionalComponent->weight = $weight;
         $additionalComponent->automated_code = $request->input('automated_code');
+        $additionalComponent->automated_code_name = $request->input('automated_code_name');
         $additionalComponent->save();
 
         return new EmployeeSalaryAdditionalComponentResource($additionalComponent);

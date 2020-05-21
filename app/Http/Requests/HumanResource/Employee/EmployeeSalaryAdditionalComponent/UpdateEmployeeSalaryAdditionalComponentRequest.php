@@ -27,6 +27,7 @@ class UpdateEmployeeSalaryAdditionalComponentRequest extends FormRequest
             'name' => 'required|unique:tenant.employee_salary_additional_components,name,'.$this->id,
             'weight' => 'required',
             'automated_code' => 'required',
+            'automated_code_name' => 'required',
         ];
     }
 }

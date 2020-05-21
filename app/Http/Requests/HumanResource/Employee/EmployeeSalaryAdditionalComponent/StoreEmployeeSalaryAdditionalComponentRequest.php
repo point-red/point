@@ -26,7 +26,7 @@ class StoreEmployeeSalaryAdditionalComponentRequest extends FormRequest
         return [
             'name' => 'required|unique:tenant.employee_salary_additional_components',
             'weight' => 'required',
-            'automated_code' => 'required',
+            'automated_code' => 'required|unique:tenant.employee_salary_additional_components',
             'automated_code_name' => 'required',
         ];
     }

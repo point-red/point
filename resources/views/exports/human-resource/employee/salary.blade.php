@@ -95,23 +95,7 @@
 	    @foreach($employeeSalary->achievements as $key => $achievement)
 	        <tr>
 	            <td>{{ ++$key }}</td>
-	            <td>
-		            @if ($key == 1)
-					    Balance SKU Area
-					@elseif ($key == 2)
-					    %C National Achievement
-					@elseif ($key == 3)
-					    %EC National Achievement
-					@elseif ($key == 4)
-					    %Value National Achievement
-					@elseif ($key == 5)
-					    %C Area Achievement
-					@elseif ($key == 6)
-					    %EC Area Achievement
-					@elseif ($key == 7)
-					    Value Area Achievement
-					@endif
-		        </td>
+	            <td>{{ $achievement->name }}</td>
 	            <td style="text-align:center;">{{ number_format($achievement['week1'], 0) }}%</td>
 	            <td style="text-align:center;">{{ number_format($achievement['week2'], 0) }}%</td>
 	            <td style="text-align:center;">{{ number_format($achievement['week3'], 0) }}%</td>

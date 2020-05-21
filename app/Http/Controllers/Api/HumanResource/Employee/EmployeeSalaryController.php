@@ -14,6 +14,7 @@ use App\Model\HumanResource\Employee\EmployeeSalaryAchievement;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessment;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentScore;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentTarget;
+use App\Model\HumanResource\Employee\EmployeeSalaryAdditionalComponent;
 use App\Model\HumanResource\Kpi\Kpi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -201,7 +202,7 @@ class EmployeeSalaryController extends Controller
             foreach ($achievements['automated'] as $key => $achievement) {
                 $salaryAchievement = new EmployeeSalaryAchievement;
                 $salaryAchievement->employee_salary_id = $employee_salary->id;
-                $salaryAchievement->name = $key;
+                $salaryAchievement->name = $achievement['name'];
                 $salaryAchievement->weight = (float) $achievement['weight'];
                 $salaryAchievement->week1 = array_key_exists('week1', $achievement) ? (float) $achievement['week1'] : 0;
                 $salaryAchievement->week2 = array_key_exists('week2', $achievement) ? (float) $achievement['week2'] : 0;
@@ -669,39 +670,25 @@ class EmployeeSalaryController extends Controller
         $employeeIdNational = array_unique($employeeIdNational);
         $employeeIdNational = array_filter($employeeIdNational);
 
-        $employee_achievements = [
-            'automated' => [
-                'balance' => [
-                    'weight' => 5,
-                ],
-                'achievement_national_call' => [
-                    'weight' => 10,
-                ],
-                'achievement_national_effective_call' => [
-                    'weight' => 10,
-                ],
-                'achievement_national_value' => [
-                    'weight' => 15,
-                ],
-                'achievement_area_call' => [
-                    'weight' => 10,
-                ],
-                'achievement_area_effective_call' => [
-                    'weight' => 20,
-                ],
-                'achievement_area_value' => [
-                    'weight' => 30,
-                ],
-            ],
-            'total' => [
-                'weight' => 100,
-                'week1' => 0,
-                'week2' => 0,
-                'week3' => 0,
-                'week4' => 0,
-                'week5' => 0,
-            ],
+        $employee_achievements = [];
+        $employee_achievements['automated'] = [];
+        $employee_achievements['total'] = [
+            'weight' => 0,
+            'week1' => 0,
+            'week2' => 0,
+            'week3' => 0,
+            'week4' => 0,
+            'week5' => 0,
         ];
+
+        $additionalComponents = EmployeeSalaryAdditionalComponent::all();
+
+        foreach ($additionalComponents as $key => $additionalComponent) {
+            $employee_achievements['automated'][$additionalComponent->automated_code]['id'] = ++$key;
+            $employee_achievements['automated'][$additionalComponent->automated_code]['name'] = $additionalComponent->name;
+            $employee_achievements['automated'][$additionalComponent->automated_code]['weight'] = $additionalComponent->weight;
+            $employee_achievements['total']['weight'] += $additionalComponent->weight;
+        }
 
         foreach ($employee_achievements['automated'] as $key => &$achievement) {
             if ($key === 'balance') {
@@ -733,75 +720,87 @@ class EmployeeSalaryController extends Controller
                 if (array_key_exists('automated_code', $assessment)) {
                     if ($assessment['automated_code'] === 'C') {
                         if (in_array($employee->id, $employeeIdArea)) {
-                            foreach ($employee_achievements['automated']['achievement_area_call'] as $week => &$data) {
-                                if ($week !== 'weight') {
-                                    $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
-                                    $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
+                            if (array_key_exists('achievement_area_call', $employee_achievements['automated'])) {
+                                foreach ($employee_achievements['automated']['achievement_area_call'] as $week => &$data) {
+                                    if ($week !== 'weight' && $week !== 'name' && $week !== 'id') {
+                                        $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
+                                        $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
 
-                                    $data['score'] += $score;
-                                    $data['target'] += $target;
+                                        $data['score'] += $score;
+                                        $data['target'] += $target;
+                                    }
                                 }
                             }
                         }
 
                         if (in_array($employee->id, $employeeIdNational)) {
-                            foreach ($employee_achievements['automated']['achievement_national_call'] as $week => &$data) {
-                                if ($week !== 'weight') {
-                                    $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
-                                    $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
+                            if (array_key_exists('achievement_national_call', $employee_achievements['automated'])) {
+                                foreach ($employee_achievements['automated']['achievement_national_call'] as $week => &$data) {
+                                    if ($week !== 'weight' && $week !== 'name' && $week !== 'id') {
+                                        $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
+                                        $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
 
-                                    $data['score'] += $score;
-                                    $data['target'] += $target;
+                                        $data['score'] += $score;
+                                        $data['target'] += $target;
+                                    }
                                 }
                             }
                         }
                     } elseif ($assessment['automated_code'] === 'EC') {
-                        if (in_array($employee->id, $employeeIdArea)) {
-                            foreach ($employee_achievements['automated']['achievement_area_effective_call'] as $week => &$data) {
-                                if ($week !== 'weight') {
-                                    $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
-                                    $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
+                        if (array_key_exists('achievement_area_effective_call', $employee_achievements['automated'])) {
+                            if (in_array($employee->id, $employeeIdArea)) {
+                                foreach ($employee_achievements['automated']['achievement_area_effective_call'] as $week => &$data) {
+                                    if ($week !== 'weight' && $week !== 'name' && $week !== 'id') {
+                                        $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
+                                        $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
 
-                                    $data['score'] += $score;
-                                    $data['target'] += $target;
+                                        $data['score'] += $score;
+                                        $data['target'] += $target;
+                                    }
                                 }
                             }
                         }
 
                         if (in_array($employee->id, $employeeIdNational)) {
-                            foreach ($employee_achievements['automated']['achievement_national_effective_call'] as $week => &$data) {
-                                if ($week !== 'weight') {
-                                    $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
-                                    $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
+                            if (array_key_exists('achievement_national_effective_call', $employee_achievements['automated'])) {
+                                foreach ($employee_achievements['automated']['achievement_national_effective_call'] as $week => &$data) {
+                                    if ($week !== 'weight' && $week !== 'name' && $week !== 'id') {
+                                        $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
+                                        $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
 
-                                    $data['score'] += $score;
-                                    $data['target'] += $target;
+                                        $data['score'] += $score;
+                                        $data['target'] += $target;
+                                    }
                                 }
                             }
                         }
                     }
                 } else {
-                    if ($assessment['name'] === 'Persentase Value') { // NOTE: Hard-Coded
+                    if (strtolower($assessment['name']) === strtolower('Persentase Value')) { // NOTE: Hard-Coded
                         if (in_array($employee->id, $employeeIdArea)) {
-                            foreach ($employee_achievements['automated']['achievement_area_value'] as $week => &$data) {
-                                if ($week !== 'weight') {
-                                    $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
-                                    $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
+                            if (array_key_exists('achievement_area_value', $employee_achievements['automated'])) {
+                                foreach ($employee_achievements['automated']['achievement_area_value'] as $week => &$data) {
+                                    if ($week !== 'weight' && $week !== 'name' && $week !== 'id') {
+                                        $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
+                                        $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
 
-                                    $data['score'] += $score;
-                                    $data['target'] += $target;
+                                        $data['score'] += $score;
+                                        $data['target'] += $target;
+                                    }
                                 }
                             }
                         }
 
                         if (in_array($employee->id, $employeeIdNational)) {
-                            foreach ($employee_achievements['automated']['achievement_national_value'] as $week => &$data) {
-                                if ($week !== 'weight') {
-                                    $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
-                                    $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
+                            if (array_key_exists('achievement_national_value', $employee_achievements['automated'])) {
+                                foreach ($employee_achievements['automated']['achievement_national_value'] as $week => &$data) {
+                                    if ($week !== 'weight' && $week !== 'name' && $week !== 'id') {
+                                        $score = array_key_exists($week, $assessment['score']) ? $assessment['score'][$week] : 0;
+                                        $target = array_key_exists($week, $assessment['target']) ? $assessment['target'][$week] : 0;
 
-                                    $data['score'] += $score;
-                                    $data['target'] += $target;
+                                        $data['score'] += $score;
+                                        $data['target'] += $target;
+                                    }
                                 }
                             }
                         }
@@ -813,7 +812,7 @@ class EmployeeSalaryController extends Controller
         foreach ($employee_achievements['automated'] as $key => &$achievement) {
             if (stripos($key, 'area') !== false || stripos($key, 'national') !== false) {
                 foreach ($achievement as $week => $score) {
-                    if ($week !== 'weight') {
+                    if ($week !== 'weight' && $week !== 'name' && $week !== 'id') {
                         $achievement[$week] = $achievement[$week]['target'] ? $achievement[$week]['score'] / $achievement[$week]['target'] * 100 : 0;
 
                         if ($achievement[$week] > 100 && stripos($key, 'value') === false) {

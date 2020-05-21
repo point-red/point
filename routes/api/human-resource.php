@@ -22,6 +22,7 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::apiResource('genders', 'EmployeeGenderController');
         Route::apiResource('statuses', 'EmployeeStatusController');
         Route::apiResource('job-locations', 'EmployeeJobLocationController');
+        Route::apiResource('additional-components', 'EmployeeSalaryAdditionalComponentController');
         Route::put('employees/{id}/archive', 'EmployeeController@archive');
         Route::patch('employees/{id}/archive', 'EmployeeController@archive');
         Route::put('employees/bulk-archive', 'EmployeeController@bulkArchive');

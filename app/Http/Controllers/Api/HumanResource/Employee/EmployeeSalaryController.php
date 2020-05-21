@@ -48,7 +48,6 @@ class EmployeeSalaryController extends Controller
 
         $employee_salaries = pagination($employee_salaries, 15);
 
-
         foreach ($employee_salaries as &$employee_salary) {
             $salaries_data = EmployeeSalary::select('employee_salaries.*');
 

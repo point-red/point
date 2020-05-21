@@ -2,33 +2,29 @@
 
 namespace App\Model\Accounting;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
+use App\Traits\Model\Accounting\ChartOfAccountJoin;
+use App\Traits\Model\Accounting\ChartOfAccountRelation;
 
-class ChartOfAccount extends Model
+class ChartOfAccount extends MasterModel
 {
+    use ChartOfAccountJoin, ChartOfAccountRelation;
+
     protected $connection = 'tenant';
 
     protected $table = 'chart_of_accounts';
 
-    /**
-     * Get the type that owns the chart of account.
-     */
-    public function type()
-    {
-        return $this->belongsTo(get_class(new ChartOfAccountType()), 'type_id');
-    }
+    protected $appends = ['label'];
 
-    /**
-     * Get the type that owns the chart of account.
-     */
-    public function group()
-    {
-        return $this->belongsTo(get_class(new ChartOfAccountGroup()), 'group_id');
-    }
+    public static $alias = 'account';
 
-    public function journals($date)
+    public static $morphName = 'ChartOfAccount';
+
+    public function getLabelAttribute()
     {
-        return $this->hasMany(get_class(new Journal()), 'chart_of_account_id')->where('date', '<=', $date);
+        $label = $this->number ? '[' . $this->number . '] ' : '';
+
+        return $label . $this->alias;
     }
 
     public function totalDebit($date)

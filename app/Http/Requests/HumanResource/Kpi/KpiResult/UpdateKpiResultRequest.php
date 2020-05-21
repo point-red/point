@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\HumanResource\Kpi\KpiResult;
 
-use Illuminate\Http\Request;
-use App\Rules\NumberNotInRange;
-use Illuminate\Validation\Rule;
 use App\Model\HumanResource\Kpi\KpiResult;
+use App\Rules\NumberNotInRange;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class UpdateKpiResultRequest extends FormRequest
 {

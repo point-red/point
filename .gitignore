@@ -2,11 +2,15 @@
 /public/hot
 /public/storage
 /storage/*.key
+/storage/firebase-service-account.json
 /vendor
 /.idea
 /.vagrant
+/build
 Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
 .env
+.phpunit.result.cache
+.php_cs.cache

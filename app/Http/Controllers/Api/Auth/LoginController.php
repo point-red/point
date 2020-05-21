@@ -2,23 +2,25 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Model\Project\Project;
+use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param \App\Http\Requests\Auth\LoginRequest $request
+     * @param LoginRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(LoginRequest $request)
     {
         // check username for login is name or email
-        $usernameLabel = str_contains($request->username, '@') ? 'email' : 'name';
+        $usernameLabel = Str::contains($request->username, '@') ? 'email' : 'name';
 
         $attempt = auth()->guard('web')->attempt([
             $usernameLabel => $request->username,
@@ -36,6 +38,17 @@ class LoginController extends Controller
 
         $tokenResult = $user->createToken($user->name);
 
+        $tokenResult->token->is_mobile = $request->input('is_mobile') ?? null;
+        $tokenResult->token->os_name = $request->input('os_name') ?? null;
+        $tokenResult->token->os_version = $request->input('os_version') ?? null;
+        $tokenResult->token->browser_name = $request->input('browser_name') ?? null;
+        $tokenResult->token->browser_version = $request->input('browser_version') ?? null;
+        $tokenResult->token->mobile_vendor = $request->input('mobile_vendor') ?? null;
+        $tokenResult->token->mobile_model = $request->input('mobile_model') ?? null;
+        $tokenResult->token->engine_name = $request->input('engine_name') ?? null;
+        $tokenResult->token->engine_version = $request->input('engine_version') ?? null;
+        $tokenResult->token->save();
+
         $response = $user;
         $response->access_token = $tokenResult->accessToken;
         $response->token_type = 'Bearer';
@@ -49,6 +62,20 @@ class LoginController extends Controller
                 $response->tenant_code = $project->code;
                 $response->tenant_name = $project->name;
                 $response->permissions = tenant($user->id)->getPermissions();
+                $response->branches = tenant($user->id)->branches;
+                $response->branch = null;
+                $response->warehouses = tenant($user->id)->warehouses;
+                $response->warehouse = null;
+                foreach ($response->branches as $branch) {
+                    if ($branch->pivot->is_default) {
+                        $response->branch = $branch;
+                    }
+                }
+                foreach ($response->warehouses as $warehouse) {
+                    if ($warehouse->pivot->is_default) {
+                        $response->warehouse = $warehouse;
+                    }
+                }
             }
         }
 

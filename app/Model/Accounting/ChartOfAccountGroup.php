@@ -2,11 +2,15 @@
 
 namespace App\Model\Accounting;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class ChartOfAccountGroup extends Model
+class ChartOfAccountGroup extends MasterModel
 {
     protected $connection = 'tenant';
 
     protected $table = 'chart_of_account_groups';
+
+    public static $alias = 'account_group';
+
+    public static $morphName = 'ChartOfAccountGroup';
 }

@@ -2,19 +2,25 @@
 
 namespace App\Model\Accounting;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\Form;
+use App\Model\TransactionModel;
 
-class CutOff extends Model
+class CutOff extends TransactionModel
 {
+    public static $morphName = 'CutOff';
+
     protected $connection = 'tenant';
+
+    public static $alias = 'cut_off';
 
     protected $table = 'cut_offs';
 
-    /**
-     * Get the details for the cut off.
-     */
-    public function details()
+    public $timestamps = false;
+
+    public $defaultNumberPrefix = 'CUT';
+
+    public function form()
     {
-        return $this->hasMany(get_class(new CutOffDetail()), 'cut_off_id');
+        return $this->morphOne(Form::class, 'formable');
     }
 }

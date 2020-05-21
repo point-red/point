@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\HumanResource\Kpi\Kpi;
 
+use App\Http\Resources\HumanResource\Kpi\KpiScore\KpiScoreResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class KpiIndicatorResource extends JsonResource
@@ -14,6 +15,17 @@ class KpiIndicatorResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'kpi_group_id' => $this->kpi_group_id,
+            'name' => $this->name,
+            'weight' => $this->weight,
+            'target' => $this->target,
+            'score' => $this->score,
+            'score_percentage' => $this->score_percentage,
+            'score_description' => $this->score_description,
+            'automated_code' => $this->automated_code,
+            'scores' => KpiScoreResource::collection($this->scores->sortBy('score')),
+        ];
     }
 }

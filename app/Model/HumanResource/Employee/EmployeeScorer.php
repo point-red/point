@@ -2,11 +2,13 @@
 
 namespace App\Model\HumanResource\Employee;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class EmployeeScorer extends Model
+class EmployeeScorer extends MasterModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'employee_scorer';
 
     protected $table = 'employee_scorer';
 }

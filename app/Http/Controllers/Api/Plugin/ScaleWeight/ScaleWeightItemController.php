@@ -2,23 +2,26 @@
 
 namespace App\Http\Controllers\Api\Plugin\ScaleWeight;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
-use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemResource;
-use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemCollection;
 use App\Http\Requests\Plugin\ScaleWeight\ScaleWeightItem\StoreScaleWeightItemRequest;
+use App\Http\Resources\ApiResource;
+use App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemCollection;
+use App\Model\Plugin\ScaleWeight\ScaleWeightItem;
+use Illuminate\Http\Request;
 
 class ScaleWeightItemController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemCollection
+     * @param Request $request
+     * @return ScaleWeightItemCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        $scaleWeightItem = ScaleWeightItem::all();
+        $scaleWeightItem = ScaleWeightItem::eloquentFilter($request);
+
+        $scaleWeightItem = pagination($scaleWeightItem, $request->get('limit'));
 
         return new ScaleWeightItemCollection($scaleWeightItem);
     }
@@ -27,8 +30,7 @@ class ScaleWeightItemController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \App\Http\Requests\Plugin\ScaleWeight\ScaleWeightItem\StoreScaleWeightItemRequest $request
-     *
-     * @return \App\Http\Resources\Plugin\ScaleWeight\ScaleWeightItem\ScaleWeightItemResource
+     * @return ApiResource
      */
     public function store(StoreScaleWeightItemRequest $request)
     {
@@ -46,7 +48,7 @@ class ScaleWeightItemController extends Controller
         $scaleWeightItem->net_weight = $request->get('net_weight');
         $scaleWeightItem->save();
 
-        return new ScaleWeightItemResource($scaleWeightItem);
+        return new ApiResource($scaleWeightItem);
     }
 
     /**
@@ -65,11 +67,25 @@ class ScaleWeightItemController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
-        //
+        $scaleWeightItem = ScaleWeightItem::findOrFail($id);
+
+        $scaleWeightItem->license_number = $request->get('license_number');
+        $scaleWeightItem->driver = $request->get('driver');
+        $scaleWeightItem->machine_code = $request->get('machine_code');
+        $scaleWeightItem->user = $request->get('user');
+        $scaleWeightItem->vendor = $request->get('vendor');
+        $scaleWeightItem->item = $request->get('item');
+        $scaleWeightItem->time = $request->get('time');
+        $scaleWeightItem->gross_weight = $request->get('gross_weight');
+        $scaleWeightItem->tare_weight = $request->get('tare_weight');
+        $scaleWeightItem->net_weight = $request->get('net_weight');
+        $scaleWeightItem->save();
+
+        return new ApiResource($scaleWeightItem);
     }
 
     /**
@@ -80,6 +96,9 @@ class ScaleWeightItemController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $scaleWeightItem = ScaleWeightItem::findOrFail($id);
+        $scaleWeightItem->delete();
+
+        return response()->json([], 204);
     }
 }

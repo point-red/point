@@ -2,17 +2,21 @@
 
 namespace App\Model\HumanResource\Employee;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class EmployeeSocialMedia extends Model
+class EmployeeSocialMedia extends MasterModel
 {
     protected $connection = 'tenant';
+
+    protected $table = 'employee_social_media';
+
+    public static $alias = 'employee_social_media';
 
     /**
      * Get the employee that owns the social media.
      */
     public function employee()
     {
-        return $this->belongsTo(get_class(new Employee()), 'employee_id');
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 }

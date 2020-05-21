@@ -2,11 +2,13 @@
 
 namespace App\Model\HumanResource\Kpi;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class KpiTemplateGroup extends Model
+class KpiTemplateGroup extends MasterModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'kpi_template_group';
 
     protected $appends = ['target', 'weight'];
 
@@ -25,7 +27,7 @@ class KpiTemplateGroup extends Model
      */
     public function template()
     {
-        return $this->belongsTo(get_class(new KpiTemplate()));
+        return $this->belongsTo(KpiTemplate::class);
     }
 
     /**
@@ -33,6 +35,6 @@ class KpiTemplateGroup extends Model
      */
     public function indicators()
     {
-        return $this->hasMany(get_class(new KpiTemplateIndicator()));
+        return $this->hasMany(KpiTemplateIndicator::class);
     }
 }

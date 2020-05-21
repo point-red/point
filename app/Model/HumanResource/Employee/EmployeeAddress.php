@@ -3,17 +3,19 @@
 namespace App\Model\HumanResource\Employee\Employee;
 
 use App\Model\HumanResource\Employee\Employee;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class EmployeeAddress extends Model
+class EmployeeAddress extends MasterModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'employee_address';
 
     /**
      * Get the employee that owns the address.
      */
     public function employee()
     {
-        return $this->belongsTo(get_class(new Employee()), 'employee_id');
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 }

@@ -2,9 +2,11 @@
 
 namespace App\Model\HumanResource\Kpi;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class KpiResult extends Model
+class KpiResult extends MasterModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'kpi_result';
 }

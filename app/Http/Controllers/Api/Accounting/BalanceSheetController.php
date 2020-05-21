@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Accounting;
 
 use App\Http\Controllers\Controller;
-use App\Model\Accounting\ChartOfAccount;
 use App\Http\Resources\Accounting\BalanceSheet\BalanceSheetCollection;
+use App\Model\Accounting\ChartOfAccount;
 
 class BalanceSheetController extends Controller
 {
@@ -15,6 +15,11 @@ class BalanceSheetController extends Controller
      */
     public function index()
     {
-        return new BalanceSheetCollection(ChartOfAccount::orderBy('type_id')->orderBy('number')->orderBy('alias')->get());
+        $accounts = ChartOfAccount::orderBy('type_id')
+            ->orderBy('number')
+            ->orderBy('alias')
+            ->get();
+
+        return new BalanceSheetCollection($accounts);
     }
 }

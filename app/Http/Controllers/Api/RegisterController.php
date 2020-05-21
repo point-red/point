@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\User;
-use App\Http\Resources\Master\User\UserResource;
 use App\Http\Requests\Master\User\StoreUserRequest;
+use App\Http\Resources\ApiResource;
+use App\User;
 
 class RegisterController extends ApiController
 {
@@ -13,7 +13,7 @@ class RegisterController extends ApiController
         $emailConfirmationCode = substr(encrypt($request->input('email')), 0, 30);
 
         $user = new User;
-        $user->name = $request->name;
+        $user->name = $request->username;
         $user->email = $request->email;
         $user->email_confirmation_code = $emailConfirmationCode;
         $user->password = bcrypt($request->password);
@@ -23,6 +23,6 @@ class RegisterController extends ApiController
         $user->phone = $request->phone;
         $user->save();
 
-        return new UserResource($user);
+        return new ApiResource($user);
     }
 }

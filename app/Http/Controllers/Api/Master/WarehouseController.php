@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use Illuminate\Http\Request;
-use App\Model\Master\Warehouse;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Master\Warehouse\WarehouseResource;
-use App\Http\Resources\Master\Warehouse\WarehouseCollection;
 use App\Http\Requests\Master\Warehouse\StoreWarehouseRequest;
 use App\Http\Requests\Master\Warehouse\UpdateWarehouseRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Accounting\ChartOfAccount;
+use App\Model\Master\Warehouse;
+use Illuminate\Http\Request;
 
 class WarehouseController extends Controller
 {
@@ -16,45 +17,56 @@ class WarehouseController extends Controller
      * Display a listing of the resource.
      *
      * @param \Illuminate\Http\Request $request
-     *
-     * @return \App\Http\Resources\Master\Warehouse\WarehouseCollection
+     * @return ApiCollection
      */
     public function index(Request $request)
     {
-        $limit = $request->input('limit') ?? 0;
+        $warehouses = Warehouse::from('warehouses as ' . Warehouse::$alias)->eloquentFilter($request);
 
-        return new WarehouseCollection(Warehouse::paginate($limit));
+        $warehouses = Warehouse::joins($warehouses, $request->get('join'));
+
+        if ($request->get('is_archived')) {
+            $warehouses = $warehouses->whereNotNull('archived_at');
+        } else {
+            $warehouses = $warehouses->whereNull('archived_at');
+        }
+
+        $warehouses = pagination($warehouses, $request->get('limit'));
+
+        return new ApiCollection($warehouses);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param \App\Http\Requests\Master\Warehouse\StoreWarehouseRequest $request
-     *
-     * @return \App\Http\Resources\Master\Warehouse\WarehouseResource
+     * @return ApiResource
      */
     public function store(StoreWarehouseRequest $request)
     {
         $warehouse = new Warehouse;
-        $warehouse->code = $request->input('code');
-        $warehouse->name = $request->input('name');
-        $warehouse->address = $request->input('address');
-        $warehouse->phone = $request->input('phone');
+        $warehouse->fill($request->all());
         $warehouse->save();
 
-        return new WarehouseResource($warehouse);
+        return new ApiResource($warehouse);
     }
 
     /**
      * Display the specified resource.
      *
+     * @param  Request $request
      * @param  int $id
-     *
-     * @return \App\Http\Resources\Master\Warehouse\WarehouseResource
+     * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return new WarehouseResource(Warehouse::findOrFail($id));
+        $warehouse = Warehouse::from('warehouses as ' . Warehouse::$alias)->eloquentFilter($request);
+
+        $warehouse = Warehouse::joins($warehouse, $request->get('join'));
+
+        $warehouse = $warehouse->where('warehouse.id', $id)->first();
+
+        return new ApiResource($warehouse);
     }
 
     /**
@@ -62,19 +74,15 @@ class WarehouseController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     *
-     * @return \App\Http\Resources\Master\Warehouse\WarehouseResource
+     * @return ApiResource
      */
     public function update(UpdateWarehouseRequest $request, $id)
     {
         $warehouse = Warehouse::findOrFail($id);
-        $warehouse->code = $request->input('code');
-        $warehouse->name = $request->input('name');
-        $warehouse->address = $request->input('address');
-        $warehouse->phone = $request->input('phone');
+        $warehouse->fill($request->all());
         $warehouse->save();
 
-        return new WarehouseResource($warehouse);
+        return new ApiResource($warehouse);
     }
 
     /**

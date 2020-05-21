@@ -1,5 +1,7 @@
 <?php
 
+use Rollbar\Laravel\MonologHandler;
+
 return [
 
     /*
@@ -32,18 +34,24 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => [/*'rollbar', 'slack', */'daily'],
         ],
 
         'single' => [
             'driver' => 'single',
-            'path' => storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/' . php_sapi_name() . '-laravel.log'),
+            'level' => 'debug',
+        ],
+
+        'testing' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/' . php_sapi_name() . '-testing.log'),
             'level' => 'debug',
         ],
 
         'daily' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/' . php_sapi_name() . '-laravel.log'),
             'level' => 'debug',
             'days' => 7,
         ],
@@ -54,6 +62,16 @@ return [
             'username' => 'Laravel Log',
             'emoji' => ':boom:',
             'level' => 'critical',
+        ],
+
+        'rollbar' => [
+            'driver' => 'monolog',
+            'handler' => MonologHandler::class,
+            'access_token' => env('ROLLBAR_TOKEN'),
+            'level' => 'error',
+            'person_fn' => 'Auth::user',
+            'capture_email' => true,
+            'capture_username' => true,
         ],
 
         'syslog' => [

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use Illuminate\Http\Request;
-use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
+use App\Model\Project\Project;
+use App\Model\Project\ProjectUser;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class FetchController extends Controller
 {
@@ -29,9 +31,36 @@ class FetchController extends Controller
             $project = Project::where('code', $request->header('Tenant'))->first();
 
             if ($project) {
+                if (!ProjectUser::where('user_id', $request->user()->id)->where('project_id', $project->id)->first()) {
+                    return response()->json([
+                        'code' => 401,
+                        'message' => 'Unauthenticated',
+                    ], 401);
+                }
+
                 $response->tenant_code = $project->code;
                 $response->tenant_name = $project->name;
+                $response->tenant_address = $project->address;
+                $response->tenant_phone = $project->phone;
+                $response->tenant_owner_id = $project->owner_id;
+                $response->tenant_user_full_name = tenant($request->user()->id)->full_name;
+                $response->is_owner = $project->owner_id == $request->user()->id;
+                $response->plugins = Arr::pluck($project->plugins, 'name');;
                 $response->permissions = tenant($request->user()->id)->getPermissions();
+                $response->branches = tenant($request->user()->id)->branches;
+                $response->branch = null;
+                $response->warehouses = tenant($request->user()->id)->warehouses;
+                $response->warehouse = null;
+                foreach ($response->branches as $branch) {
+                    if ($branch->pivot->is_default) {
+                        $response->branch = $branch;
+                    }
+                }
+                foreach ($response->warehouses as $warehouse) {
+                    if ($warehouse->pivot->is_default) {
+                        $response->warehouse = $warehouse;
+                    }
+                }
             }
         }
 

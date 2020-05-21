@@ -2,30 +2,44 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Model\Auth\Role;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Master\Role\RoleResource;
-use App\Http\Resources\Master\Role\RoleCollection;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Auth\Role;
+use App\Model\Master\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \App\Http\Resources\Master\Role\RoleCollection
+     * @param Request $request
+     * @return ApiCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new RoleCollection(Role::all());
+        $roles = Role::from(Role::getTableName() . ' as ' . Role::$alias)->eloquentFilter($request);
+
+        $roles = Role::joins($roles, $request->get('join'));
+
+        $roles = pagination($roles, $request->get('limit'));
+
+        foreach ($roles as $role) {
+            $role->users = User::whereHas('roles', function (Builder $query) use ($role) {
+                $query->where('role_id', '=', $role->id);
+            })->get();
+        }
+
+        return new ApiCollection($roles);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     *
-     * @return \App\Http\Resources\Master\Role\RoleResource
+     * @param  \Illuminate\Http\Request $request
+     * @return ApiResource
      */
     public function store(Request $request)
     {
@@ -34,19 +48,25 @@ class RoleController extends Controller
         $role->guard_name = 'api';
         $role->save();
 
-        return new RoleResource($role);
+        return new ApiResource($role);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     *
-     * @return \App\Http\Resources\Master\Role\RoleResource
+     * @param Request $request
+     * @param int $id
+     * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        return new RoleResource(Role::findOrFail($id));
+        $role = Role::from(Role::getTableName() . ' as ' . Role::$alias)->eloquentFilter($request);
+
+        $role = Role::joins($role, $request->get('join'));
+
+        $role = $role->where(Role::$alias.'.id', $id)->first();
+
+        return new ApiResource($role);
     }
 
     /**
@@ -54,21 +74,30 @@ class RoleController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return ApiResource
      */
     public function update(Request $request, $id)
     {
-        //
+        $role = Role::findOrFail($id);
+        $role->name = $request->get('name');
+        $role->guard_name = 'api';
+        $role->save();
+
+        return new ApiResource($role);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
-        //
+        $role = Role::findOrFail($id);
+
+        $role->delete();
+
+        return response()->json([], 204);
     }
 }

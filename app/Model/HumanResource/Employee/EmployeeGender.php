@@ -2,17 +2,19 @@
 
 namespace App\Model\HumanResource\Employee;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
 
-class EmployeeGender extends Model
+class EmployeeGender extends MasterModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'employee_gender';
 
     /**
      * Get the employees for the gender.
      */
     public function employees()
     {
-        return $this->hasMany(get_class(new Employee()), 'employee_gender_id');
+        return $this->hasMany(Employee::class, 'employee_gender_id');
     }
 }

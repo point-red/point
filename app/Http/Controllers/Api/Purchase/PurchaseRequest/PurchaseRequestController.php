@@ -10,6 +10,8 @@ use App\Model\Form;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
+use App\Traits\Model\Purchase\PurchaseRequestJoin;
+use App\Traits\Model\Purchase\PurchaseRequestRelation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -23,24 +25,9 @@ class PurchaseRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseRequests = PurchaseRequest::eloquentFilter($request);
+        $purchaseRequests = PurchaseRequest::from(PurchaseRequest::getTableName() . ' as ' . PurchaseRequest::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('supplier', $fields)) {
-                $purchaseRequests = $purchaseRequests->join(Supplier::getTableName(), function ($q) {
-                    $q->on(Supplier::getTableName('id'), '=', PurchaseRequest::getTableName('supplier_id'));
-                });
-            }
-
-            if (in_array('form', $fields)) {
-                $purchaseRequests = $purchaseRequests->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', PurchaseRequest::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseRequest::$morphName);
-                });
-            }
-        }
+        $purchaseRequests = PurchaseRequest::joins($purchaseRequests, $request->get('join'));
 
         $purchaseRequests = pagination($purchaseRequests, $request->get('limit'));
 
@@ -103,7 +90,11 @@ class PurchaseRequestController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::eloquentFilter($request)->with('form.createdBy')->findOrFail($id);
+        $purchaseRequest = PurchaseRequest::eloquentFilter($request);
+
+        $purchaseRequest = PurchaseRequest::joins($purchaseRequest, $request->get('join'));
+
+        $purchaseRequest = $purchaseRequest->with('form.createdBy')->findOrFail($id);
 
         if ($request->has('with_archives')) {
             $purchaseRequest->archives = $purchaseRequest->archives();

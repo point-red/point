@@ -4,14 +4,15 @@ namespace App\Model\Purchase\PurchaseRequest;
 
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\TransactionModel;
+use App\Traits\Model\Purchase\PurchaseRequestJoin;
+use App\Traits\Model\Purchase\PurchaseRequestRelation;
 use Carbon\Carbon;
 
 class PurchaseRequest extends TransactionModel
 {
+    use PurchaseRequestJoin, PurchaseRequestRelation;
+
     public static $morphName = 'PurchaseRequest';
 
     public $timestamps = false;
@@ -42,36 +43,6 @@ class PurchaseRequest extends TransactionModel
     public function setRequiredDateAttribute($value)
     {
         $this->attributes['required_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
-    }
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(PurchaseRequestItem::class);
-    }
-
-    public function services()
-    {
-        return $this->hasMany(PurchaseRequestService::class);
-    }
-
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    public function employee()
-    {
-        return $this->belongsTo(Employee::class);
-    }
-
-    public function purchaseOrders()
-    {
-        return $this->hasMany(PurchaseOrder::class)->active();
     }
 
     public function isAllowedToUpdate()

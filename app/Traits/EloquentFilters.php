@@ -292,17 +292,7 @@ trait EloquentFilters
             $columns = explode(',', $values);
 
             foreach ($columns as $column) {
-                $relation = explode('.', $column);
-                $columnName = array_pop($relation);
-                $relation = implode('.', $relation);
-
-                if (! empty($relation)) {
-                    $query->whereHas($relation, function ($query) use ($columnName) {
-                        $query->whereNotNull($columnName);
-                    });
-                } else {
-                    $query->whereNotNull($columnName);
-                }
+                $query->whereNotNull($column);
             }
         }
     }

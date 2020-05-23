@@ -54,7 +54,7 @@ trait FormScopes
     public function scopeNotCanceled($query)
     {
         $query->whereNull(Form::$alias . '.cancellation_status')
-            ->orWhere(Form::$alias . 'cancellation_status', '!=', '1');
+            ->orWhere(Form::$alias . '.cancellation_status', '!=', '1');
     }
 
     public function scopeNotArchived($query)

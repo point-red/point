@@ -90,11 +90,11 @@ class PurchaseRequestController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::eloquentFilter($request);
+        $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName() . ' as ' . PurchaseRequest::$alias)->eloquentFilter($request);
 
         $purchaseRequest = PurchaseRequest::joins($purchaseRequest, $request->get('join'));
 
-        $purchaseRequest = $purchaseRequest->with('form.createdBy')->findOrFail($id);
+        $purchaseRequest = $purchaseRequest->with('form.createdBy')->where(PurchaseRequest::$alias . '.id', $id)->first();
 
         if ($request->has('with_archives')) {
             $purchaseRequest->archives = $purchaseRequest->archives();

@@ -153,6 +153,12 @@ class AlterData extends Command
         $branch->name = 'CENTRAL';
         $branch->save();
 
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $user->branches()->syncWithoutDetaching(1);
+        }
+
         if (Warehouse::all()->count() == 0) {
             $warehouse = new Warehouse;
         } else {

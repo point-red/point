@@ -36,7 +36,7 @@ class AlterTable extends Command
      */
     public function handle()
     {
-        $projects = Project::all();
+        $projects = Project::where('is_generated', true)->get();
         foreach ($projects as $project) {
             $project->package_id = 1;
             $project->save();

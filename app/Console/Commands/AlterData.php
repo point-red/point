@@ -59,14 +59,13 @@ class AlterData extends Command
             $this->line('Clone '.$project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
 
-            $project->plugins()->attach(1);
+            $this->line('Alter '.$project->code);
+            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
 
-//            $this->line('Alter '.$project->code);
-//            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
-//            DB::connection('tenant')->reconnect();
-//            DB::connection('tenant')->beginTransaction();
-//            $this->setData();
-//
+            DB::connection('tenant')->reconnect();
+            DB::connection('tenant')->beginTransaction();
+            $this->setData();
+
 //            SettingJournal::query()->truncate();
 //            ChartOfAccount::query()->truncate();
 //            ChartOfAccountType::query()->truncate();
@@ -109,7 +108,7 @@ class AlterData extends Command
 //                }
 //            }
 //
-//            DB::connection('tenant')->commit();
+            DB::connection('tenant')->commit();
         }
     }
 

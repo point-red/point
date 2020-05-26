@@ -5,6 +5,8 @@ Route::prefix('purchase')->namespace('Purchase')->group(function () {
     Route::apiResource('contracts', 'PurchaseContract\\PurchaseContractController');
     Route::post('requests/{id}/approve', 'PurchaseRequest\\PurchaseRequestApprovalController@approve');
     Route::post('requests/{id}/reject', 'PurchaseRequest\\PurchaseRequestApprovalController@reject');
+    Route::post('requests/{id}/cancellation-approve', 'PurchaseRequest\\PurchaseRequestCancellationApprovalController@approve');
+    Route::post('requests/{id}/cancellation-reject', 'PurchaseRequest\\PurchaseRequestCancellationApprovalController@reject');
     Route::apiResource('requests', 'PurchaseRequest\\PurchaseRequestController');
     Route::apiResource('down-payments', 'PurchaseDownPayment\\PurchaseDownPaymentController');
     Route::apiResource('orders', 'PurchaseOrder\\PurchaseOrderController');

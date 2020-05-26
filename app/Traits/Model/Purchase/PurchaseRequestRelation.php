@@ -37,8 +37,17 @@ trait PurchaseRequestRelation
         return $this->belongsTo(Employee::class);
     }
 
+    // Select relation that not archived and not canceled
     public function purchaseOrders()
     {
-        return $this->hasMany(PurchaseOrder::class)->active();
+        return $this->hasMany(PurchaseOrder::class)
+            ->join(Form::getTableName(), function ($q) {
+                $q->on(Form::getTableName('formable_id'), '=', PurchaseOrder::getTableName('id'))
+                    ->where(Form::getTableName('formable_type'), PurchaseOrder::$morphName);
+            })->whereNotNull(Form::getTableName('number'))
+            ->where(function ($q) {
+                $q->whereNull(Form::getTableName('cancellation_status'))
+                    ->orWhere(Form::getTableName('cancellation_status'), '!=', '1');
+            });
     }
 }

@@ -9,7 +9,7 @@ use App\Http\Resources\ApiResource;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use Illuminate\Http\Request;
 
-class PurchaseRequestApprovalController extends Controller
+class PurchaseRequestCancellationApprovalController extends Controller
 {
     /**
      * @param Request $request
@@ -21,9 +21,9 @@ class PurchaseRequestApprovalController extends Controller
     public function approve(Request $request, $id)
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
-        $purchaseRequest->form->approval_by = auth()->user()->id;
-        $purchaseRequest->form->approval_at = now();
-        $purchaseRequest->form->approval_status = 1;
+        $purchaseRequest->form->cancellation_approval_by = auth()->user()->id;
+        $purchaseRequest->form->cancellation_approval_at = now();
+        $purchaseRequest->form->cancellation_status = 1;
         $purchaseRequest->form->save();
 
         return new ApiResource($purchaseRequest);
@@ -39,10 +39,10 @@ class PurchaseRequestApprovalController extends Controller
     public function reject(Request $request, $id)
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
-        $purchaseRequest->form->approval_by = auth()->user()->id;
-        $purchaseRequest->form->approval_at = now();
-        $purchaseRequest->form->approval_reason = $request->get('reason');
-        $purchaseRequest->form->approval_status = -1;
+        $purchaseRequest->form->cancellation_approval_by = auth()->user()->id;
+        $purchaseRequest->form->cancellation_approval_at = now();
+        $purchaseRequest->form->cancellation_approval_reason = $request->get('reason');
+        $purchaseRequest->form->cancellation_status = -1;
         $purchaseRequest->form->save();
 
         return new ApiResource($purchaseRequest);

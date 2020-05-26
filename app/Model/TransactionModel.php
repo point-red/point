@@ -15,8 +15,9 @@ class TransactionModel extends PointModel
     public function requestCancel(Request $request)
     {
         $this->form->request_cancellation_to = $this->form->request_approval_to;
+        $this->form->request_cancellation_by = tenant(auth()->user()->id)->id;
         $this->form->request_cancellation_at = now();
-        $this->form->request_cancellation_reason = $request->get('request_cancellation_reason');
+        $this->form->request_cancellation_reason = $request->get('reason');
         $this->form->cancellation_status = 0;
         $this->form->save();
     }
@@ -29,6 +30,18 @@ class TransactionModel extends PointModel
     public function updatedFormNotArchived()
     {
         if (is_null($this->form->number)) {
+            throw new FormArchivedException();
+        }
+    }
+
+    /**
+     * Cannot delete form that already deleted.
+     *
+     * @throws FormArchivedException
+     */
+    public function isNotCanceled()
+    {
+        if ($this->form->cancellation_status == 1) {
             throw new FormArchivedException();
         }
     }

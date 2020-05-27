@@ -11,30 +11,21 @@ use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class PaymentOrderController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @return ApiCollection
      */
     public function index(Request $request)
     {
         $paymentOrder = PaymentOrder::from(PaymentOrder::getTableName() . ' as ' . PaymentOrder::$alias)->eloquentFilter($request);
-
-//        if ($request->get('filter_polymorphic')) {
-//            $filter = json_decode($request->get('filter_polymorphic'), true);
-//            $paymentOrder = $paymentOrder->where(function ($query) use ($filter) {
-//                foreach ($filter as $key => $value) {
-//                    $query->whereHasMorph('paymentable', [Customer::class, Supplier::class, Employee::class], function ($query) use ($key, $value) {
-//                        $query->where($key, $value);
-//                    });
-//                }
-//            });
-//        }
 
         $paymentOrder = PaymentOrder::joins($paymentOrder, $request->get('join'));
 
@@ -46,13 +37,13 @@ class PaymentOrderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     * @throws \Throwable
+     * @param Request $request
+     * @return Response
+     * @throws Throwable
      */
     public function store(Request $request)
     {
-        $result = DB::connection('tenant')->transaction(function () use ($request) {
+        return DB::connection('tenant')->transaction(function () use ($request) {
             $paymentOrder = PaymentOrder::create($request->all());
 
             $paymentOrder
@@ -63,14 +54,12 @@ class PaymentOrderController extends Controller
 
             return new ApiResource($paymentOrder);
         });
-
-        return $result;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
      * @return ApiResource
      */
@@ -87,10 +76,10 @@ class PaymentOrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param Request $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
-     * @throws \Throwable
+     * @return Response
+     * @throws Throwable
      */
     public function update(Request $request, $id)
     {
@@ -117,7 +106,7 @@ class PaymentOrderController extends Controller
      *
      * @param Request $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Request $request, $id)
     {

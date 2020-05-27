@@ -6,9 +6,13 @@ use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\Journal;
 use App\Model\Form;
 use App\Model\TransactionModel;
+use App\Traits\Model\Finance\PaymentJoin;
+use App\Traits\Model\Finance\PaymentRelation;
 
 class Payment extends TransactionModel
 {
+    use PaymentJoin, PaymentRelation;
+
     public static $morphName = 'Payment';
 
     protected $connection = 'tenant';
@@ -116,7 +120,7 @@ class Payment extends TransactionModel
 
     private static function generateFormNumber($payment, $number, $increment)
     {
-        $defaultFormat = '{payment_type}-{disbursed}{y}{m}{increment=4}';
+        $defaultFormat = '{payment_type}{disbursed}{y}{m}{increment=4}';
         $formNumber = $number ?? $defaultFormat;
 
         preg_match_all('/{increment=(\d)}/', $formNumber, $regexResult);
@@ -142,19 +146,23 @@ class Payment extends TransactionModel
      * Different method to get increment
      * because payment number is
      * considering payment_type and disbursed.
+     *
+     * @param $payment
+     * @param $incrementGroup
+     * @return int
      */
     private static function getLastPaymentIncrement($payment, $incrementGroup)
     {
-        $lastPayment = self::whereHas('form', function ($query) use ($incrementGroup) {
-            $query->where('increment_group', $incrementGroup);
-        })
-        ->notArchived()
-        ->where('payment_type', $payment->payment_type)
-        ->where('disbursed', $payment->disbursed)
-        ->with('form')
-        ->get()
-        ->sortByDesc('form.increment')
-        ->first();
+        $lastPayment = Payment::from(Payment::getTableName() .' as ' . Payment::$alias)
+            ->joinForm()
+            ->where('form.increment_group', $incrementGroup)
+            ->whereNotNull('form.number')
+            ->where(Payment::$alias . '.payment_type', $payment->payment_type)
+            ->where(Payment::$alias . '.disbursed', $payment->disbursed)
+            ->with('form')
+            ->orderBy('form.increment', 'desc')
+            ->select(Payment::$alias . '.*')
+            ->first();
 
         $increment = 1;
         if (! empty($lastPayment)) {
@@ -167,7 +175,7 @@ class Payment extends TransactionModel
     private static function updateReferenceDone($paymentDetails)
     {
         foreach ($paymentDetails as $paymentDetail) {
-            if (! $paymentDetail->isDownPayment()) {
+            if ($paymentDetail->isDownPayment()) {
                 $reference = $paymentDetail->referenceable;
                 $reference->remaining -= $paymentDetail->amount;
                 $reference->save();

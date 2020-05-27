@@ -32,10 +32,8 @@ class StorePaymentRequest extends FormRequest
         $rulesPayment = [
             'payment_account_id' => ValidationRule::foreignKey(ChartOfAccount::getTableName()),
             'disbursed' => 'required|boolean',
-            // TODO validate paymentable_id is exist
             'paymentable_id' => 'required|integer|min:0',
             'paymentable_type' => 'required|string',
-
             'details' => 'required|array',
         ];
 
@@ -44,7 +42,6 @@ class StorePaymentRequest extends FormRequest
             'details.*.amount' => ValidationRule::price(),
             'details.*.allocation_id' => ValidationRule::foreignKeyNullable(Allocation::getTableName()),
             'details.*.referenceable_type' => [
-                'required',
                 function ($attribute, $value, $fail) {
                     if (! PaymentDetail::referenceableIsValid($value)) {
                         $fail($attribute.' is invalid');

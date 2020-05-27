@@ -56,7 +56,7 @@ class AlterData extends Command
     {
         $projects = Project::where('is_generated', true)->get();
         foreach ($projects as $project) {
-            $this->line('Clone '.$project->code);
+//            $this->line('Clone '.$project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
 
             $this->line('Alter '.$project->code);
@@ -156,7 +156,11 @@ class AlterData extends Command
         $users = User::all();
 
         foreach ($users as $user) {
-            $user->branches()->syncWithoutDetaching(1);
+            DB::connection('tenant')->table('branch_user')->update([
+                'is_default' => false
+            ]);
+            $user->branches()->detach(1);
+            $user->branches()->attach(1, ['is_default' => 1]);
         }
 
         if (Warehouse::all()->count() == 0) {

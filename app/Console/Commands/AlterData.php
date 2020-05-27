@@ -155,10 +155,11 @@ class AlterData extends Command
 
         $users = User::all();
 
+        DB::connection('tenant')->table('branch_user')->update([
+            'is_default' => false
+        ]);
+
         foreach ($users as $user) {
-            DB::connection('tenant')->table('branch_user')->update([
-                'is_default' => false
-            ]);
             $user->branches()->detach(1);
             $user->branches()->attach(1, ['is_default' => 1]);
         }

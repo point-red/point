@@ -69,11 +69,8 @@ class PurchaseRequestController extends Controller
             $purchaseRequest
                 ->load('form')
                 ->load('employee')
-                ->load('supplier')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($purchaseRequest);
         });
@@ -117,7 +114,12 @@ class PurchaseRequestController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::with('form')->findOrFail($id);
+        $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName() . ' as ' . PurchaseRequest::$alias)
+            ->joinForm()
+            ->where(PurchaseRequest::$alias . '.id', $id)
+            ->select(PurchaseRequest::$alias . '.*')
+            ->with('form')
+            ->first();
 
         $purchaseRequest->isAllowedToUpdate();
 
@@ -153,7 +155,6 @@ class PurchaseRequestController extends Controller
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $purchaseRequest->isAllowedToDelete();
-
         $purchaseRequest->requestCancel($request);
 
         return response()->json([], 204);

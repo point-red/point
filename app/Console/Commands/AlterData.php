@@ -54,19 +54,18 @@ class AlterData extends Command
      */
     public function handle()
     {
-        $projects = Project::all();
+        $projects = Project::where('is_generated', true)->get();
         foreach ($projects as $project) {
-            $this->line('Clone '.$project->code);
+//            $this->line('Clone '.$project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
 
-            $project->plugins()->attach(1);
+            $this->line('Alter '.$project->code);
+            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
 
-//            $this->line('Alter '.$project->code);
-//            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
-//            DB::connection('tenant')->reconnect();
-//            DB::connection('tenant')->beginTransaction();
-//            $this->setData();
-//
+            DB::connection('tenant')->reconnect();
+            DB::connection('tenant')->beginTransaction();
+            $this->setData();
+
 //            SettingJournal::query()->truncate();
 //            ChartOfAccount::query()->truncate();
 //            ChartOfAccountType::query()->truncate();
@@ -109,7 +108,7 @@ class AlterData extends Command
 //                }
 //            }
 //
-//            DB::connection('tenant')->commit();
+            DB::connection('tenant')->commit();
         }
     }
 
@@ -153,6 +152,17 @@ class AlterData extends Command
 
         $branch->name = 'CENTRAL';
         $branch->save();
+
+        $users = User::all();
+
+        DB::connection('tenant')->table('branch_user')->update([
+            'is_default' => false
+        ]);
+
+        foreach ($users as $user) {
+            $user->branches()->detach(1);
+            $user->branches()->attach(1, ['is_default' => 1]);
+        }
 
         if (Warehouse::all()->count() == 0) {
             $warehouse = new Warehouse;

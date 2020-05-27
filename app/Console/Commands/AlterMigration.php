@@ -40,7 +40,7 @@ class AlterMigration extends Command
      */
     public function handle()
     {
-        $projects = Project::all();
+        $projects = Project::where('is_generated', true)->get();
         foreach ($projects as $project) {
             $this->line('Clone '.$project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);

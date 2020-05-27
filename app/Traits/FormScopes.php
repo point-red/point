@@ -85,9 +85,9 @@ trait FormScopes
     public function scopeJoinForm($query)
     {
         $caller = get_class($this);
-        $query->join(Form::getTableName(), function ($q) use ($caller) {
-            $q->on(Form::$alias . 'formable_id', '=', $caller::$alias . '.id')
-                ->where(Form::$alias . 'formable_type', $caller::$morphName);
+        $query->join(Form::getTableName() . ' as ' . Form::$alias, function ($q) use ($caller) {
+            $q->on(Form::$alias . '.formable_id', '=', $caller::$alias . '.id')
+                ->where(Form::$alias . '.formable_type', $caller::$morphName);
         });
     }
 }

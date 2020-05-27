@@ -55,6 +55,7 @@ class PurchaseRequest extends TransactionModel
     {
         $this->updatedFormNotArchived();
         $this->isNotReferenced();
+        $this->isNotCanceled();
     }
 
     public static function create($data)

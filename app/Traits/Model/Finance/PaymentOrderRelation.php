@@ -1,40 +1,38 @@
 <?php
 
-namespace App\Traits\Model\Purchase;
+namespace App\Traits\Model\Finance;
 
 
+use App\Model\Finance\Payment\Payment;
+use App\Model\Finance\PaymentOrder\PaymentOrderDetail;
 use App\Model\Form;
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequestService;
 
-trait PurchaseRequestRelation
+trait PaymentOrderRelation
 {
     public function form()
     {
         return $this->morphOne(Form::class, 'formable');
     }
 
-    public function items()
+    /**
+     * Get all of the owning paymentable models.
+     */
+    public function paymentable()
     {
-        return $this->hasMany(PurchaseRequestItem::class);
+        return $this->morphTo();
     }
 
-    public function services()
+    public function payment()
     {
-        return $this->hasMany(PurchaseRequestService::class);
+        return $this->belongsTo(Payment::class);
     }
 
-    public function supplier()
+    public function details()
     {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    public function employee()
-    {
-        return $this->belongsTo(Employee::class);
+        return $this->hasMany(PaymentOrderDetail::class);
     }
 
     // Select relation that not archived and not canceled

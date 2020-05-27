@@ -3,13 +3,16 @@
 namespace App\Model\Finance\PaymentOrder;
 
 use App\Exceptions\IsReferencedException;
-use App\Model\Finance\Payment\Payment;
 use App\Model\Form;
 use App\Model\TransactionModel;
+use App\Traits\Model\Finance\PaymentOrderJoin;
+use App\Traits\Model\Finance\PaymentOrderRelation;
 use Carbon\Carbon;
 
 class PaymentOrder extends TransactionModel
 {
+    use PaymentOrderJoin, PaymentOrderRelation;
+
     public static $morphName = 'PaymentOrder';
 
     protected $connection = 'tenant';
@@ -41,29 +44,6 @@ class PaymentOrder extends TransactionModel
     public function setDueDateAttribute($value)
     {
         $this->attributes['due_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
-    }
-
-    /**
-     * Get all of the owning paymentable models.
-     */
-    public function paymentable()
-    {
-        return $this->morphTo();
-    }
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function payment()
-    {
-        return $this->belongsTo(Payment::class);
-    }
-
-    public function details()
-    {
-        return $this->hasMany(PaymentOrderDetail::class);
     }
 
     public function setPaymentTypeAttribute($value)

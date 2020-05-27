@@ -54,7 +54,7 @@ class ProcedureController extends Controller
         $delimiter = '~*~';
         $onlyNumerics = explode(
             $delimiter,
-            preg_replace('/[^0-9]/', $delimiter, $procedure->code),
+            preg_replace('/[^0-9]/', $delimiter, $procedure->code)
         );
         $lastNumeric = $onlyNumerics[count($onlyNumerics) - 1];
         $nonIteration = substr(

@@ -42,6 +42,10 @@ class NewCommand extends Command
      */
     public function handle()
     {
+        if (env('APP_ENV') == 'production') {
+            return;
+        }
+
         $dbName = $this->argument('database_name') ?? env('DB_DATABASE');
 
         $this->line('create '.$dbName.' database');

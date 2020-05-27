@@ -82,6 +82,14 @@ class FirstSeed extends Command
 
         // Default user (owner of this project)
         $this->user = User::first();
+        $this->user->branches()->attach([
+            'is_default' => true
+        ]);
+
+        $this->user->warehouses()->attach([
+            'is_default' => true
+        ]);
+
         $this->user->assignRole($role);
     }
 }

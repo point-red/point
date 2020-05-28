@@ -64,6 +64,8 @@ class Payment extends TransactionModel
                 throw new PointException();
             }
             $paymentOrder->payment_id = $payment->id;
+            $paymentOrder->form->done = 1;
+            $paymentOrder->form->save();
             $paymentOrder->save();
         }
 

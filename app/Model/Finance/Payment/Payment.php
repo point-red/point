@@ -2,6 +2,7 @@
 
 namespace App\Model\Finance\Payment;
 
+use App\Exceptions\BranchNullException;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\Journal;
 use App\Model\Form;
@@ -85,6 +86,19 @@ class Payment extends TransactionModel
         $form->done = true;
         $form->approval_status = 1;
 
+        $branches = tenant(auth()->user()->id)->branches;
+        $form->branch_id = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $form->branch_id = $branch->id;
+                break;
+            }
+        }
+
+        if ($form->branch_id == null) {
+            throw new BranchNullException();
+        }
+
         $form->formable_id = $payment->id;
         $form->formable_type = self::$morphName;
         $form->increment = self::getLastPaymentIncrement($payment, $data['increment_group']);
@@ -120,7 +134,7 @@ class Payment extends TransactionModel
 
     private static function generateFormNumber($payment, $number, $increment)
     {
-        $defaultFormat = '{payment_type}{disbursed}{y}{m}{increment=4}';
+        $defaultFormat = '{payment_type}/{disbursed}/{y}{m}{increment=4}';
         $formNumber = $number ?? $defaultFormat;
 
         preg_match_all('/{increment=(\d)}/', $formNumber, $regexResult);

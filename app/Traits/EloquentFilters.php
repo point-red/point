@@ -275,7 +275,7 @@ trait EloquentFilters
             $columns = explode(',', $values);
 
             foreach ($columns as $column) {
-                $query->whereNull($columnName);
+                $query->whereNull($column);
             }
         }
     }

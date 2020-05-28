@@ -3,8 +3,10 @@
 namespace App\Model\Finance\Payment;
 
 use App\Exceptions\BranchNullException;
+use App\Exceptions\PointException;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\Journal;
+use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Form;
 use App\Model\TransactionModel;
 use App\Traits\Model\Finance\PaymentJoin;
@@ -78,6 +80,16 @@ class Payment extends TransactionModel
 
         $payment->amount = self::calculateAmount($paymentDetails);
         $payment->save();
+
+        // Reference Payment Order
+        if ($data['payment_order_id']) {
+            $paymentOrder = PaymentOrder::find($data['payment_order_id']);
+            if ($paymentOrder->payment_id != null) {
+                throw new PointException();
+            }
+            $paymentOrder->payment_id = $payment->id;
+            $paymentOrder->save();
+        }
 
         $payment->details()->saveMany($paymentDetails);
 

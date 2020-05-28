@@ -82,7 +82,7 @@ class Payment extends TransactionModel
         $payment->save();
 
         // Reference Payment Order
-        if ($data['payment_order_id']) {
+        if (isset($data['payment_order_id'])) {
             $paymentOrder = PaymentOrder::find($data['payment_order_id']);
             if ($paymentOrder->payment_id != null) {
                 throw new PointException();
@@ -230,6 +230,7 @@ class Payment extends TransactionModel
             $journal->form_id_reference = optional(optional($paymentDetail->referenceable)->form)->id;
             $journal->journalable_type = $payment->paymentable_type;
             $journal->journalable_id = $payment->paymentable_id;
+            $journal->notes = $paymentDetail->notes;
             $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
             if (! $payment->disbursed) {
                 $journal->credit = $paymentDetail->amount;

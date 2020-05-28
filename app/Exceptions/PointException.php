@@ -6,8 +6,8 @@ use Exception;
 
 class PointException extends Exception
 {
-    public function __construct()
+    public function __construct($message = 'something went wrong')
     {
-        parent::__construct('something went wrong', 422);
+        parent::__construct($message, 422);
     }
 }

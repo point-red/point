@@ -3,6 +3,7 @@
 namespace App\Model\Finance\PaymentOrder;
 
 use App\Exceptions\IsReferencedException;
+use App\Exceptions\PointException;
 use App\Model\Form;
 use App\Model\TransactionModel;
 use App\Traits\Model\Finance\PaymentOrderJoin;
@@ -53,17 +54,17 @@ class PaymentOrder extends TransactionModel
 
     public function isAllowedToUpdate()
     {
-        // Check if not referenced by purchase order
+        // Check if not referenced by another form
         if (optional($this->payment)->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->payment);
+            throw new IsReferencedException('Cannot edit form because it is already paid', $this->payment);
         }
     }
 
     public function isAllowedToDelete()
     {
-        // Check if not referenced by purchase order
+        // Check if not referenced by another form
         if (optional($this->payment)->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->payment);
+            throw new IsReferencedException('Cannot delete form because it is already paid', $this->payment);
         }
     }
 
@@ -75,6 +76,11 @@ class PaymentOrder extends TransactionModel
         $paymentOrderDetails = self::mapPaymentOrderDetails($data['details'] ?? []);
 
         $paymentOrder->amount = self::calculateAmount($paymentOrderDetails);
+
+        if ($paymentOrder->amount < 0) {
+            throw new PointException('You have negative amount');
+        }
+
         $paymentOrder->paymentable_name = $paymentOrder->paymentable->name;
         $paymentOrder->save();
 

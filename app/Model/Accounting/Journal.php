@@ -4,10 +4,15 @@ namespace App\Model\Accounting;
 
 use App\Model\Form;
 use App\Model\PointModel;
+use App\Traits\Model\Accounting\JournalJoin;
 
 class Journal extends PointModel
 {
+    use JournalJoin;
+
     protected $connection = 'tenant';
+
+    public static $morphName = 'Journal';
 
     public static $alias = 'journal';
 

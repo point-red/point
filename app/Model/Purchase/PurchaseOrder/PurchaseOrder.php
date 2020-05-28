@@ -10,10 +10,14 @@ use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\TransactionModel;
+use App\Traits\Model\Purchase\PurchaseOrderJoin;
+use App\Traits\Model\Purchase\PurchaseOrderRelation;
 use Carbon\Carbon;
 
 class PurchaseOrder extends TransactionModel
 {
+    use PurchaseOrderJoin, PurchaseOrderRelation;
+
     public static $morphName = 'PurchaseOrder';
 
     protected $connection = 'tenant';

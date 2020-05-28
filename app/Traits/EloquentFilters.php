@@ -28,6 +28,7 @@ trait EloquentFilters
             ->filterHas($request->get('filter_has'))
             ->filterDoesntHave($request->get('filter_doesnt_have'))
             ->filterWhereHas($request->get('filter_where_has'))
+            ->filterWhereHasLike($request->get('filter_where_has_like'))
             ->filterForm($request->get('filter_form'))
             ->orFilterNotEqual($request->get('or_filter_not_equal'))
             ->orFilterLike($request->get('or_filter_like'))
@@ -274,7 +275,7 @@ trait EloquentFilters
             $columns = explode(',', $values);
 
             foreach ($columns as $column) {
-                $query->whereNull($columnName);
+                $query->whereNull($column);
             }
         }
     }
@@ -501,6 +502,27 @@ trait EloquentFilters
             }
         }
     }
+
+    public function scopeFilterWhereHasLike($query, $values)
+    {
+        if (! is_null($values)) {
+            $values = $this->convertJavascriptObjectToArray($values);
+            foreach ($values as $relation => $filters) {
+                $filters = $this->convertJavascriptObjectToArray($filters);
+                foreach ($filters as $attribute => $value) {
+                    $query->whereHas($relation, function ($query) use ($attribute, $value) {
+                        $query->where(function ($query) use ($value, $attribute) {
+                            $words = explode(' ', $value);
+                            foreach ($words as $word) {
+                                $query->orWhere($attribute, 'like', '%'.$word.'%');
+                            }
+                        });
+                    });
+                }
+            }
+        }
+    }
+
 
     public function scopeOrFilterWhereHasLike($query, $values)
     {

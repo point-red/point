@@ -4,13 +4,11 @@ namespace App\Traits\Model\Purchase;
 
 
 use App\Model\Form;
-use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestService;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 
-trait PurchaseRequestRelation
+trait PurchaseOrderRelation
 {
     public function form()
     {
@@ -19,12 +17,7 @@ trait PurchaseRequestRelation
 
     public function items()
     {
-        return $this->hasMany(PurchaseRequestItem::class);
-    }
-
-    public function services()
-    {
-        return $this->hasMany(PurchaseRequestService::class);
+        return $this->hasMany(PurchaseOrderItem::class);
     }
 
     public function supplier()
@@ -32,18 +25,13 @@ trait PurchaseRequestRelation
         return $this->belongsTo(Supplier::class);
     }
 
-    public function employee()
-    {
-        return $this->belongsTo(Employee::class);
-    }
-
     // Select relation that not archived and not canceled
-    public function purchaseOrders()
+    public function deliverOrders()
     {
-        return $this->hasMany(PurchaseOrder::class)
+        return $this->hasMany(DeliveryOrder::class)
             ->join(Form::getTableName(), function ($q) {
-                $q->on(Form::getTableName('formable_id'), '=', PurchaseOrder::getTableName('id'))
-                    ->where(Form::getTableName('formable_type'), PurchaseOrder::$morphName);
+                $q->on(Form::getTableName('formable_id'), '=', DeliveryOrder::getTableName('id'))
+                    ->where(Form::getTableName('formable_type'), DeliveryOrder::$morphName);
             })->whereNotNull(Form::getTableName('number'))
             ->where(function ($q) {
                 $q->whereNull(Form::getTableName('cancellation_status'))

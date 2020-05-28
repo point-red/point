@@ -2,13 +2,20 @@
 
 namespace App\Model\Finance\Payment;
 
+use App\Exceptions\BranchNullException;
+use App\Exceptions\PointException;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\Journal;
+use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Form;
 use App\Model\TransactionModel;
+use App\Traits\Model\Finance\PaymentJoin;
+use App\Traits\Model\Finance\PaymentRelation;
 
 class Payment extends TransactionModel
 {
+    use PaymentJoin, PaymentRelation;
+
     public static $morphName = 'Payment';
 
     protected $connection = 'tenant';
@@ -74,12 +81,35 @@ class Payment extends TransactionModel
         $payment->amount = self::calculateAmount($paymentDetails);
         $payment->save();
 
+        // Reference Payment Order
+        if (isset($data['payment_order_id'])) {
+            $paymentOrder = PaymentOrder::find($data['payment_order_id']);
+            if ($paymentOrder->payment_id != null) {
+                throw new PointException();
+            }
+            $paymentOrder->payment_id = $payment->id;
+            $paymentOrder->save();
+        }
+
         $payment->details()->saveMany($paymentDetails);
 
         $form = new Form;
         $form->fill($data);
         $form->done = true;
         $form->approval_status = 1;
+
+        $branches = tenant(auth()->user()->id)->branches;
+        $form->branch_id = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $form->branch_id = $branch->id;
+                break;
+            }
+        }
+
+        if ($form->branch_id == null) {
+            throw new BranchNullException();
+        }
 
         $form->formable_id = $payment->id;
         $form->formable_type = self::$morphName;
@@ -116,7 +146,7 @@ class Payment extends TransactionModel
 
     private static function generateFormNumber($payment, $number, $increment)
     {
-        $defaultFormat = '{payment_type}-{disbursed}{y}{m}{increment=4}';
+        $defaultFormat = '{payment_type}/{disbursed}/{y}{m}{increment=4}';
         $formNumber = $number ?? $defaultFormat;
 
         preg_match_all('/{increment=(\d)}/', $formNumber, $regexResult);
@@ -142,19 +172,23 @@ class Payment extends TransactionModel
      * Different method to get increment
      * because payment number is
      * considering payment_type and disbursed.
+     *
+     * @param $payment
+     * @param $incrementGroup
+     * @return int
      */
     private static function getLastPaymentIncrement($payment, $incrementGroup)
     {
-        $lastPayment = self::whereHas('form', function ($query) use ($incrementGroup) {
-            $query->where('increment_group', $incrementGroup);
-        })
-        ->notArchived()
-        ->where('payment_type', $payment->payment_type)
-        ->where('disbursed', $payment->disbursed)
-        ->with('form')
-        ->get()
-        ->sortByDesc('form.increment')
-        ->first();
+        $lastPayment = Payment::from(Payment::getTableName() .' as ' . Payment::$alias)
+            ->joinForm()
+            ->where('form.increment_group', $incrementGroup)
+            ->whereNotNull('form.number')
+            ->where(Payment::$alias . '.payment_type', $payment->payment_type)
+            ->where(Payment::$alias . '.disbursed', $payment->disbursed)
+            ->with('form')
+            ->orderBy('form.increment', 'desc')
+            ->select(Payment::$alias . '.*')
+            ->first();
 
         $increment = 1;
         if (! empty($lastPayment)) {
@@ -167,7 +201,7 @@ class Payment extends TransactionModel
     private static function updateReferenceDone($paymentDetails)
     {
         foreach ($paymentDetails as $paymentDetail) {
-            if (! $paymentDetail->isDownPayment()) {
+            if ($paymentDetail->isDownPayment()) {
                 $reference = $paymentDetail->referenceable;
                 $reference->remaining -= $paymentDetail->amount;
                 $reference->save();
@@ -196,6 +230,7 @@ class Payment extends TransactionModel
             $journal->form_id_reference = optional(optional($paymentDetail->referenceable)->form)->id;
             $journal->journalable_type = $payment->paymentable_type;
             $journal->journalable_id = $payment->paymentable_id;
+            $journal->notes = $paymentDetail->notes;
             $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
             if (! $payment->disbursed) {
                 $journal->credit = $paymentDetail->amount;

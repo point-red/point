@@ -24,24 +24,9 @@ class PurchaseOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseOrders = PurchaseOrder::eloquentFilter($request);
+        $purchaseOrders = PurchaseOrder::from(PurchaseOrder::getTableName() . ' as ' . PurchaseOrder::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('supplier', $fields)) {
-                $purchaseOrders = $purchaseOrders->join(Supplier::getTableName(), function ($q) {
-                    $q->on(Supplier::getTableName('id'), '=', PurchaseOrder::getTableName('supplier_id'));
-                });
-            }
-
-            if (in_array('form', $fields)) {
-                $purchaseOrders = $purchaseOrders->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', PurchaseOrder::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseOrder::$morphName);
-                });
-            }
-        }
+        $purchaseOrders = PurchaseOrder::joins($purchaseOrders, $request->get('join'));
 
         $purchaseOrders = pagination($purchaseOrders, $request->get('limit'));
 
@@ -99,9 +84,7 @@ class PurchaseOrderController extends Controller
                 ->load('form')
                 ->load('supplier')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($purchaseOrder);
         });

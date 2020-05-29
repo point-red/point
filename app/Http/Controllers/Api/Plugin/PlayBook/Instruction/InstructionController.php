@@ -113,7 +113,7 @@ class InstructionController extends Controller
                 'required',
                 Rule::unique('tenant.play_book_instructions', 'number')
                     ->where(function ($query) use ($instruction) {
-                      return $query->whereNotIn('id', [$instruction->id, $instruction->instruction_pending_id]);
+                        return $query->whereNotIn('id', [$instruction->id, $instruction->instruction_pending_id]);
                     }),
             ],
             'name' => ['required'],

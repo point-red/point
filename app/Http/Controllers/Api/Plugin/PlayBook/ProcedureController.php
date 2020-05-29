@@ -122,7 +122,7 @@ class ProcedureController extends Controller
                 'required',
                 Rule::unique('tenant.play_book_procedures', 'code')
                     ->where(function ($query) use ($procedure) {
-                      return $query->whereNotIn('id', [$procedure->id, $procedure->procedure_pending_id]);
+                        return $query->whereNotIn('id', [$procedure->id, $procedure->procedure_pending_id]);
                     }),
             ],
             'name' => ['required'],

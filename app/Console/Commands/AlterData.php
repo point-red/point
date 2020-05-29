@@ -6,6 +6,7 @@ use App\Imports\Template\ChartOfAccountImport;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\CutOff;
+use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
 use App\Model\Master\Branch;
 use App\Model\Master\Item;
@@ -56,7 +57,7 @@ class AlterData extends Command
     {
         $projects = Project::where('is_generated', true)->get();
         foreach ($projects as $project) {
-//            $this->line('Clone '.$project->code);
+            $this->line('Clone '.$project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
 
             $this->line('Alter '.$project->code);
@@ -64,7 +65,13 @@ class AlterData extends Command
 
             DB::connection('tenant')->reconnect();
             DB::connection('tenant')->beginTransaction();
-            $this->setData();
+
+            $paymentOrders = PaymentOrder::whereNotNull('payment_id')->get();
+            foreach ($paymentOrders as $paymentOrder) {
+                $paymentOrder->form->done = 1;
+                $paymentOrder->form->save();
+            }
+//            $this->setData();
 
 //            SettingJournal::query()->truncate();
 //            ChartOfAccount::query()->truncate();

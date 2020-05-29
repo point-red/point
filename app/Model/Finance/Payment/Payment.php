@@ -4,7 +4,6 @@ namespace App\Model\Finance\Payment;
 
 use App\Exceptions\BranchNullException;
 use App\Exceptions\PointException;
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\Journal;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Form;
@@ -36,29 +35,6 @@ class Payment extends TransactionModel
         'amount' => 'double',
     ];
 
-    public function paymentAccount()
-    {
-        return $this->belongsTo(ChartOfAccount::class, 'payment_account_id');
-    }
-
-    public function details()
-    {
-        return $this->hasMany(PaymentDetail::class, 'payment_id');
-    }
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    /**
-     * Get all of the owning paymentable models.
-     */
-    public function paymentable()
-    {
-        return $this->morphTo();
-    }
-
     public function isAllowedToUpdate()
     {
         // TODO isAllowed to update?
@@ -88,6 +64,8 @@ class Payment extends TransactionModel
                 throw new PointException();
             }
             $paymentOrder->payment_id = $payment->id;
+            $paymentOrder->form->done = 1;
+            $paymentOrder->form->save();
             $paymentOrder->save();
         }
 

@@ -3,7 +3,9 @@
 namespace App\Traits\Model\Finance;
 
 
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\Finance\Payment\Payment;
+use App\Model\Finance\Payment\PaymentDetail;
 use App\Model\Finance\PaymentOrder\PaymentOrderDetail;
 use App\Model\Form;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
@@ -25,9 +27,14 @@ trait PaymentRelation
         return $this->morphTo();
     }
 
+    public function paymentAccount()
+    {
+        return $this->belongsTo(ChartOfAccount::class, 'payment_account_id');
+    }
+
     public function details()
     {
-        return $this->hasMany(PaymentOrderDetail::class);
+        return $this->hasMany(PaymentDetail::class, 'payment_id');
     }
 
     // Select relation that not archived and not canceled

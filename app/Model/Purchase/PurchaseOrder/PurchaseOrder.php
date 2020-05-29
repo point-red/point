@@ -71,60 +71,8 @@ class PurchaseOrder extends TransactionModel
         $this->attributes['eta'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
 
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(PurchaseOrderItem::class);
-    }
-
-    public function services()
-    {
-        return $this->hasMany(PurchaseOrderService::class);
-    }
-
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    public function purchaseRequest()
-    {
-        return $this->belongsTo(PurchaseRequest::class, 'purchase_request_id');
-    }
-
-    public function purchaseReceives()
-    {
-        return $this->hasMany(PurchaseReceive::class)->active();
-    }
-
-    public function downPayments()
-    {
-        return $this->morphMany(PurchaseDownPayment::class, 'downpaymentable')
-            ->active();
-    }
-
-    public function paidDownPayments()
-    {
-        return $this->downPayments()->whereNotNull('paid_by');
-    }
-
-    public function remainingDownPayments()
-    {
-        return $this->paidDownPayments()->where('remaining', '>', 0);
-    }
-
-    public function warehouse()
-    {
-        return $this->belongsTo(Warehouse::class);
-    }
-
     public function updateIfDone()
     {
-        // TODO check service too
         $done = true;
         $items = $this->items()->with('purchaseReceiveItems')->get();
         foreach ($items as $item) {
@@ -165,13 +113,11 @@ class PurchaseOrder extends TransactionModel
         $purchaseOrder->fill($data);
 
         $items = self::mapItems($data['items'] ?? []);
-        $services = self::mapServices($data['services'] ?? []);
 
-        $purchaseOrder->amount = self::calculateAmount($purchaseOrder, $items, $services);
+        $purchaseOrder->amount = self::calculateAmount($purchaseOrder, $items);
         $purchaseOrder->save();
 
         $purchaseOrder->items()->saveMany($items);
-        $purchaseOrder->services()->saveMany($services);
 
         $form = new Form;
         $form->saveData($data, $purchaseOrder);
@@ -194,24 +140,10 @@ class PurchaseOrder extends TransactionModel
         }, $items);
     }
 
-    private static function mapServices($services)
-    {
-        return array_map(function ($service) {
-            $purchaseOrderService = new PurchaseOrderService;
-            $purchaseOrderService->fill($service);
-
-            return $purchaseOrderService;
-        }, $services);
-    }
-
-    private static function calculateAmount($purchaseOrder, $items, $services)
+    private static function calculateAmount($purchaseOrder, $items)
     {
         $amount = array_reduce($items, function ($carry, $item) {
             return $carry + $item->quantity * ($item->price - $item->discount_value) * $item->converter;
-        }, 0);
-
-        $amount += array_reduce($services, function ($carry, $service) {
-            return $carry + $service->quantity * ($service->price - $service->discount_value);
         }, 0);
 
         $amount -= $purchaseOrder->discount_value;

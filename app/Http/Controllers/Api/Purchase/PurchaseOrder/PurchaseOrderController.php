@@ -62,15 +62,6 @@ class PurchaseOrderController extends Controller
      *      - taxable (Boolean, Optional)
      *      - description (String)
      *      - allocation_id (Int, Optional)
-     *  - services (Array) :
-     *      - service_id (Int)
-     *      - quantity (Decimal)
-     *      - price (Decimal)
-     *      - discount_percent (Decimal, Optional)
-     *      - discount_value (Decimal, Optional)
-     *      - taxable (Boolean, Optional)
-     *      - description (String)
-     *      - allocation_id (Int, Optional).
      *
      * @param StorePurchaseOrderRequest $request
      * @return ApiResource
@@ -147,9 +138,7 @@ class PurchaseOrderController extends Controller
                 ->load('form')
                 ->load('supplier')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($purchaseOrder);
         });

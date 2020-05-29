@@ -43,6 +43,7 @@ class FetchController extends Controller
                 $response->tenant_address = $project->address;
                 $response->tenant_phone = $project->phone;
                 $response->tenant_owner_id = $project->owner_id;
+                $response->tenant_package_id = $project->package_id;
                 $response->tenant_user_full_name = tenant($request->user()->id)->full_name;
                 $response->is_owner = $project->owner_id == $request->user()->id;
                 $response->plugins = Arr::pluck($project->plugins, 'name');;

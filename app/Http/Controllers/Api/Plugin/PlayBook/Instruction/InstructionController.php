@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Model\Plugin\PlayBook\Instruction;
 use App\Model\Plugin\PlayBook\InstructionHistory;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class InstructionController extends Controller
 {
@@ -108,18 +109,28 @@ class InstructionController extends Controller
     public function update(Request $request, Instruction $instruction)
     {
         $request->validate([
-            'number' => ["unique:tenant.play_book_instructions,number,{$instruction->id}"],
+            'number' => [
+                'required',
+                Rule::unique('tenant.play_book_instructions', 'number')
+                    ->where(function ($query) use ($instruction) {
+                      return $query->whereNotIn('id', [$instruction->id, $instruction->instruction_pending_id]);
+                    })
+            ],
             'name' => ['required'],
             'procedure_id' => ['required', 'numeric'],
         ]);
 
-        $approval = new Instruction($request->only('number', 'name'));
-        $approval->approval_action = 'update';
-        $approval->procedure_id = $instruction->procedure_id;
-        $approval->instruction_pending_id = $instruction->id;
-        $approval->save();
+        if ($instruction->approved_at && $instruction->approval_request_at) {
+            $approval = new Instruction($request->only('number', 'name'));
+            $approval->approval_action = 'update';
+            $approval->procedure_id = $instruction->procedure_id;
+            $approval->instruction_pending_id = $instruction->id;
+            $approval->save();
+        } else {
+            $instruction->update($request->all());
+        }
 
-        return response()->json(compact('approval'));
+        return response()->json(compact('instruction'));
     }
 
     /**

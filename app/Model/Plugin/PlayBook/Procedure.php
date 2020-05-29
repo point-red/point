@@ -77,7 +77,7 @@ class Procedure extends Model
             ->orWhere('purpose', 'like', "%{$request->search}%")
             ->orWhere('note', 'like', "%{$request->search}%")
             ->orWhereHas('procedures', function ($query) use ($request) {
-                # only two levels to prefent infinity recursion
+                // only two levels to prefent infinity recursion
                 $query->where('code', 'like', "%{$request->search}%")
                     ->orWhere('name', 'like', "%{$request->search}%")
                     ->orWhere('purpose', 'like', "%{$request->search}%")

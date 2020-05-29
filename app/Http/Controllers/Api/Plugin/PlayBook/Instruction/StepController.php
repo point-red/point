@@ -90,7 +90,7 @@ class StepController extends Controller
             $approval->instruction_id = $instruction->id;
             $approval->instruction_step_pending_id = $step->id;
             $approval->save();
-            
+
             foreach ($request->contents as $content) {
                 $approval->contents()->save(new InstructionStepContent($content));
             }
@@ -103,7 +103,6 @@ class StepController extends Controller
                 $step->contents()->save(new InstructionStepContent($content));
             }
         }
-
 
         return response()->json(compact('step'));
     }

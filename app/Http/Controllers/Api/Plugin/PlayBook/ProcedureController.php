@@ -7,6 +7,7 @@ use App\Http\Requests\Plugin\PlayBook\Procedure\StoreProcedureRequest;
 use App\Http\Resources\ApiCollection;
 use App\Model\Plugin\PlayBook\Procedure;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProcedureController extends Controller
 {
@@ -117,14 +118,24 @@ class ProcedureController extends Controller
     public function update(Request $request, Procedure $procedure)
     {
         $request->validate([
-            'code' => ['required', "unique:tenant.play_book_procedures,code,{$procedure->id}"],
+            'code' => [
+                'required',
+                Rule::unique('tenant.play_book_procedures', 'code')
+                    ->where(function ($query) use ($procedure) {
+                      return $query->whereNotIn('id', [$procedure->id, $procedure->procedure_pending_id]);
+                    })
+            ],
             'name' => ['required'],
         ]);
 
-        $approval = new Procedure($request->only('code', 'name', 'purpose', 'content', 'note'));
-        $approval->approval_action = 'update';
-        $approval->procedure_pending_id = $procedure->id;
-        $approval->save();
+        if ($procedure->approved_at && $procedure->approval_request_at) {
+            $approval = new Procedure($request->only('code', 'name', 'purpose', 'content', 'note'));
+            $approval->approval_action = 'update';
+            $approval->procedure_pending_id = $procedure->id;
+            $approval->save();
+        } else {
+            $procedure->update($request->all());
+        }
 
         return response()->json(compact('procedure'));
     }

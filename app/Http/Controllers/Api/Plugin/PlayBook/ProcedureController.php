@@ -34,7 +34,7 @@ class ProcedureController extends Controller
      */
     public function create(Request $request)
     {
-        $query = Procedure::latest();
+        $query = Procedure::latest()->filter($request);
 
         if ($request->has('procedure_id')) {
             $query->whereProcedureId($request->procedure_id);

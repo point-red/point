@@ -2,9 +2,12 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
+use App\Model\Form;
 use App\Model\Master\Allocation;
 use App\Model\Master\Item;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\TransactionModel;
 
 class PurchaseRequestItem extends TransactionModel
@@ -46,7 +49,14 @@ class PurchaseRequestItem extends TransactionModel
     {
         return $this->hasMany(PurchaseOrderItem::class)
             ->whereHas('purchaseOrder', function ($query) {
-                $query->active();
+                $query->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', PurchaseOrder::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), PurchaseOrder::$morphName);
+                })->whereNotNull(Form::getTableName('number'))
+                    ->where(function ($q) {
+                        $q->whereNull(Form::getTableName('cancellation_status'))
+                            ->orWhere(Form::getTableName('cancellation_status'), '!=', '1');
+                    });
             });
     }
 }

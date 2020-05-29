@@ -120,8 +120,7 @@ class PurchaseRequest extends TransactionModel
     public function updateIfDone()
     {
         $done = true;
-        $items = $this->items()->with('purchaseOrderItems')->get();
-        foreach ($items as $item) {
+        foreach ($this->items as $item) {
             $quantityOrdered = $item->purchaseOrderItems->sum('quantity');
             if ($item->quantity > $quantityOrdered) {
                 $done = false;

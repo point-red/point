@@ -29,7 +29,7 @@ class InstructionController extends Controller
             $query->approvalNotSent()->orWhereHas('steps', function ($query) {
                 $query->approvalNotSent();
             })->with(['steps' => function ($query) {
-                $query->approvalNotSent();
+                $query->with('contents.glossary')->approvalNotSent();
             }]);
         } else {
             $query->approvalRequested()->orWhereHas('steps', function ($query) {

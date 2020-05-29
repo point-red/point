@@ -84,15 +84,26 @@ class StepController extends Controller
             'contents.*.content' => ['required'],
         ]);
 
-        $approval = new InstructionStep($request->only('name'));
-        $approval->approval_action = 'update';
-        $approval->instruction_id = $instruction->id;
-        $approval->instruction_step_pending_id = $step->id;
-        $approval->save();
+        if ($step->approved_at && $step->approval_request_at) {
+            $approval = new InstructionStep($request->only('name'));
+            $approval->approval_action = 'update';
+            $approval->instruction_id = $instruction->id;
+            $approval->instruction_step_pending_id = $step->id;
+            $approval->save();
+            
+            foreach ($request->contents as $content) {
+                $approval->contents()->save(new InstructionStepContent($content));
+            }
+        } else {
+            $step->update($request->all());
 
-        foreach ($request->contents as $content) {
-            $approval->contents()->save(new InstructionStepContent($content));
+            $step->contents()->delete();
+
+            foreach ($request->contents as $content) {
+                $step->contents()->save(new InstructionStepContent($content));
+            }
         }
+
 
         return response()->json(compact('step'));
     }

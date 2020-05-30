@@ -114,16 +114,19 @@ class ProjectController extends Controller
         $invoice->total = 0;
         $invoice->save();
 
-        $invoiceItem = new InvoiceItem;
-        $invoiceItem->invoice_id = $invoice->id;
-        $invoiceItem->description = $request->get('package_notes');
-        $invoiceItem->quantity = $request->get('total_user');
-        $invoiceItem->amount = $request->get('package_total_price');
-        $invoiceItem->discount_percent = 0;
-        $invoiceItem->discount_value = 0;
-        $invoiceItem->save();
+        if ($request->get('package_id') > 1) {
+            $invoiceItem = new InvoiceItem;
+            $invoiceItem->invoice_id = $invoice->id;
+            $invoiceItem->description = $request->get('package_notes');
+            $invoiceItem->quantity = $request->get('total_user');
+            $invoiceItem->amount = $request->get('package_total_price');
+            $invoiceItem->discount_percent = 0;
+            $invoiceItem->discount_value = 0;
+            $invoiceItem->save();
 
-        $invoice->sub_total += $invoiceItem->amount;
+            $invoice->sub_total += $invoiceItem->amount;
+        }
+
 
         foreach ($request->get('plugins') as $plugin) {
             $project->plugins()->attach($plugin['id'], [

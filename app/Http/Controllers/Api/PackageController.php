@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Package;
+use App\Model\Project\Project;
 use Illuminate\Http\Request;
 
 class PackageController extends Controller
@@ -74,14 +75,21 @@ class PackageController extends Controller
     public function subscribe(Request $request, $id)
     {
         $package = Package::findOrFail($id);
+        $project = Project::findOrFail($request->get('project_id'));
 
-        return new ApiResource($package);
+        $project->package_id = $package->id;
+        $project->save();
+
+        return new ApiResource($project);
     }
 
     public function unsubscribe(Request $request, $id)
     {
-        $package = Package::findOrFail($id);
+        $project = Project::findOrFail($request->get('project_id'));
 
-        return new ApiResource($package);
+        $project->package_id = 1;
+        $project->save();
+
+        return new ApiResource($project);
     }
 }

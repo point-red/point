@@ -9,9 +9,13 @@ use App\Model\Purchase\PurchaseContract\PurchaseContract;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\TransactionModel;
+use App\Traits\Model\Purchase\PurchaseDownPaymentJoin;
+use App\Traits\Model\Purchase\PurchaseDownPaymentRelation;
 
 class PurchaseDownPayment extends TransactionModel
 {
+    use PurchaseDownPaymentRelation, PurchaseDownPaymentJoin;
+
     public static $morphName = 'PurchaseDownPayment';
 
     protected $connection = 'tenant';
@@ -29,37 +33,6 @@ class PurchaseDownPayment extends TransactionModel
     ];
 
     public $defaultNumberPrefix = 'PDP';
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    /**
-     * Get all of the owning downpaymentable models.
-     */
-    public function downpaymentable()
-    {
-        return $this->morphTo();
-    }
-
-    /**
-     * Get the invoice's payment.
-     */
-    public function payments()
-    {
-        return $this->morphToMany(Payment::class, 'referenceable', 'payment_details')->active();
-    }
-
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    public function invoices()
-    {
-        return $this->belongsToMany(PurchaseInvoice::class, 'purchase_down_payment_invoice', 'invoice_id', 'down_payment_id')->active();
-    }
 
     public function isAllowedToDelete()
     {

@@ -29,9 +29,4 @@ trait ManufactureFormulaRelation
     {
         return $this->belongsTo(ManufactureProcess::class);
     }
-
-    public function inputMaterials()
-    {
-        return $this->hasMany(ManufactureInput::class)->active();
-    }
 }

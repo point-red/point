@@ -83,7 +83,11 @@ class FormulaController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $manufactureFormula = ManufactureFormula::eloquentFilter($request)->findOrFail($id);
+        $manufactureFormula = ManufactureFormula::from(ManufactureFormula::getTableName().' as '.ManufactureFormula::$alias)->eloquentFilter($request);
+
+        $manufactureFormula = ManufactureFormula::joins($manufactureFormula, $request->get('join'));
+
+        $manufactureFormula = $manufactureFormula->with('form.createdBy')->where(ManufactureFormula::$alias.'.id', $id)->first();
 
         if ($request->has('with_archives')) {
             $manufactureFormula->archives = $manufactureFormula->archives();
@@ -106,7 +110,13 @@ class FormulaController extends Controller
      */
     public function update(UpdateManufactureFormulaRequest $request, $id)
     {
-        $manufactureFormula = ManufactureFormula::findOrFail($id);
+        $manufactureFormula = ManufactureFormula::from(ManufactureFormula::getTableName().' as '.ManufactureFormula::$alias)
+            ->joinForm()
+            ->where(ManufactureFormula::$alias.'.id', $id)
+            ->select(ManufactureFormula::$alias.'.*')
+            ->with('form')
+            ->first();
+
         $manufactureFormula->isAllowedToUpdate();
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $manufactureFormula) {
@@ -139,9 +149,6 @@ class FormulaController extends Controller
         DB::connection('tenant')->beginTransaction();
 
         $formula = ManufactureFormula::findOrFail($id);
-
-        $formula->isAllowedToDelete();
-
         $formula->requestCancel($request);
 
         DB::connection('tenant')->commit();

@@ -7,7 +7,7 @@ use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\Journal;
 use App\Model\Master\User;
 
-trait ChatOfAccountJoin
+trait ChartOfAccountJoin
 {
     public static function joins($query, $joins)
     {

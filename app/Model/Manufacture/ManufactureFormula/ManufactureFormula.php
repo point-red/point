@@ -32,13 +32,11 @@ class ManufactureFormula extends TransactionModel
     public function isAllowedToUpdate()
     {
         $this->updatedFormNotArchived();
-        $this->isNotReferenced();
     }
 
     public function isAllowedToDelete()
     {
         $this->updatedFormNotArchived();
-        $this->isNotReferenced();
     }
 
     public static function create($data)
@@ -78,13 +76,5 @@ class ManufactureFormula extends TransactionModel
 
             return $formulaFinishedGood;
         }, $finishedGoods);
-    }
-
-    private function isNotReferenced()
-    {
-        // Check if not referenced by input material
-        if ($this->inputMaterials->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by input material', $this->inputMaterials);
-        }
     }
 }

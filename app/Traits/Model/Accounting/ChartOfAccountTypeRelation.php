@@ -4,7 +4,7 @@ namespace App\Traits\Model\Accounting;
 
 use App\Model\Accounting\ChartOfAccount;
 
-trait ChatOfAccountTypeRelation
+trait ChartOfAccountTypeRelation
 {
     public function accounts()
     {

@@ -5,7 +5,7 @@ namespace App\Traits\Model\Accounting;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\User;
 
-trait ChatOfAccountTypeJoin
+trait ChartOfAccountTypeJoin
 {
     public static function joins($query, $joins)
     {

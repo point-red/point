@@ -7,7 +7,7 @@ use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\Journal;
 use App\Model\Form;
 
-trait ChatOfAccountRelation
+trait ChartOfAccountRelation
 {
     /**
      * Get the type that owns the chart of account.

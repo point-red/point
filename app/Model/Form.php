@@ -141,10 +141,6 @@ class Form extends PointModel
 
     public function archive($editedNotes = '')
     {
-        if ($this->approval_status != null && $this->approval_status == 1) {
-            throw new FormActiveException();
-        }
-
         // Archive form number
         $this->edited_number = $this->number;
         $this->edited_notes = $editedNotes;

@@ -8,17 +8,12 @@ use App\Http\Requests\Finance\Payment\Payment\UpdatePaymentRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Finance\Payment\Payment;
-use App\Model\Finance\PaymentOrder\PaymentOrder;
-use App\Model\Form;
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\Master\Customer;
-use App\Model\Master\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class PaymentController extends Controller
+class PaymentAccountController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -28,7 +23,7 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $payment = Payment::from(Payment::getTableName() . ' as ' . Payment::$alias)->eloquentFilter($request);
+        $payment = Payment::from(Payment::getTableName().' as '.Payment::$alias)->eloquentFilter($request);
 
         $payment = Payment::joins($payment, $request->get('join'));
 

@@ -4,10 +4,6 @@ namespace App\Model\Purchase\PurchaseOrder;
 
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
-use App\Model\Master\Supplier;
-use App\Model\Master\Warehouse;
-use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\TransactionModel;
 use App\Traits\Model\Purchase\PurchaseOrderJoin;
@@ -110,7 +106,7 @@ class PurchaseOrder extends TransactionModel
         if (get_if_set($data['purchase_request_id'])) {
             $done = true;
             $purchaseRequest = PurchaseRequest::findOrFail($data['purchase_request_id']);
-            foreach($purchaseRequest->items as $purchaseRequestItem) {
+            foreach ($purchaseRequest->items as $purchaseRequestItem) {
                 $quantity = PurchaseOrderItem::where('purchase_request_item_id', $purchaseRequestItem->id)->sum('quantity');
                 if ($quantity < $purchaseRequestItem->quantity) {
                     $done = false;

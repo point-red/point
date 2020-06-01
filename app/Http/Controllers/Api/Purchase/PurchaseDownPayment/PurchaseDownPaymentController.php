@@ -7,8 +7,6 @@ use App\Http\Requests\Purchase\PurchaseDownPayment\PurchaseDownPayment\StorePurc
 use App\Http\Requests\Purchase\PurchaseDownPayment\PurchaseDownPayment\UpdatePurchaseDownPaymentRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +21,7 @@ class PurchaseDownPaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $downPayments = PurchaseDownPayment::from(PurchaseDownPayment::getTableName() . ' as ' . PurchaseDownPayment::$alias)->eloquentFilter($request);
+        $downPayments = PurchaseDownPayment::from(PurchaseDownPayment::getTableName().' as '.PurchaseDownPayment::$alias)->eloquentFilter($request);
 
         $downPayments = PurchaseDownPayment::joins($downPayments, $request->get('join'));
 

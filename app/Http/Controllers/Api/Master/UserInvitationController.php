@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\UserInvitation\StoreUserInvitationRequest;
 use App\Http\Resources\Master\UserInvitation\UserInvitationCollection;
 use App\Http\Resources\Master\UserInvitation\UserInvitationResource;
-use App\Mail\ResetPasswordRequestMail;
 use App\Mail\UserInvitationMail;
 use App\Model\Auth\Role;
 use App\Model\Project\Project;
@@ -54,7 +53,7 @@ class UserInvitationController extends Controller
         if ($isInviteExists) {
             return response()->json([
                 'status' => 'error',
-                'message' => $request->get('user_email') . ' already invited to this project'
+                'message' => $request->get('user_email').' already invited to this project',
             ], 422);
         }
 

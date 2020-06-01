@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseReceiveRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
@@ -24,7 +23,7 @@ class PurchaseReceiveController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseReceives = PurchaseReceive::from(PurchaseReceive::getTableName() . ' as ' . PurchaseReceive::$alias)->eloquentFilter($request);
+        $purchaseReceives = PurchaseReceive::from(PurchaseReceive::getTableName().' as '.PurchaseReceive::$alias)->eloquentFilter($request);
 
         $purchaseReceives = PurchaseReceive::joins($purchaseReceives, $request->get('join'));
 

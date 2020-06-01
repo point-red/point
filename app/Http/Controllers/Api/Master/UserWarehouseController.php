@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Master;
 
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Requests\Master\UserWarehouse\SetDefaultRequest;
 use App\Http\Requests\Master\UserWarehouse\AttachRequest;
+use App\Http\Requests\Master\UserWarehouse\SetDefaultRequest;
 use App\Http\Resources\ApiResource;
 use App\Model\Master\User;
 use App\Model\Master\User as TenantUser;
@@ -39,7 +39,7 @@ class UserWarehouseController extends ApiController
         }
 
         $tenantUser->warehouses()->updateExistingPivot($request->get('warehouse_id'), [
-            'is_default' => $request->get('is_default')
+            'is_default' => $request->get('is_default'),
         ], false);
 
         return new ApiResource($tenantUser);

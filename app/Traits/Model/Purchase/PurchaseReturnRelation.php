@@ -2,13 +2,10 @@
 
 namespace App\Traits\Model\Purchase;
 
-
 use App\Model\Form;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestService;
 use App\Model\Purchase\PurchaseReturn\PurchaseReturnItem;
 
 trait PurchaseReturnRelation

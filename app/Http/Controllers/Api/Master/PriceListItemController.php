@@ -134,7 +134,7 @@ class PriceListItemController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $priceListItem = PriceListItem::from(PriceListItem::getTableName() . ' as ' . PriceListItem::$alias)->eloquentFilter($request);
+        $priceListItem = PriceListItem::from(PriceListItem::getTableName().' as '.PriceListItem::$alias)->eloquentFilter($request);
 
         $priceListItem = PriceListItem::joins($priceListItem, $request->get('join'));
 

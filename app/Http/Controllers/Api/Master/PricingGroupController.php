@@ -20,7 +20,7 @@ class PricingGroupController extends Controller
      */
     public function index(Request $request)
     {
-        $pricingGroup = PricingGroup::from(PricingGroup::getTableName() . ' as ' . PricingGroup::$alias)->eloquentFilter($request);
+        $pricingGroup = PricingGroup::from(PricingGroup::getTableName().' as '.PricingGroup::$alias)->eloquentFilter($request);
 
         $pricingGroup = PricingGroup::joins($pricingGroup, $request->get('join'));
 
@@ -53,7 +53,7 @@ class PricingGroupController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $pricingGroup = PricingGroup::from(PricingGroup::getTableName() . ' as ' . PricingGroup::$alias)->eloquentFilter($request);
+        $pricingGroup = PricingGroup::from(PricingGroup::getTableName().' as '.PricingGroup::$alias)->eloquentFilter($request);
 
         $pricingGroup = PricingGroup::joins($pricingGroup, $request->get('join'));
 

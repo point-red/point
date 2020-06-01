@@ -25,7 +25,7 @@ class AttachRequest extends FormRequest
     {
         return [
             'supplier_id' => 'required',
-            'supplier_group_id' => 'required'
+            'supplier_group_id' => 'required',
         ];
     }
 }

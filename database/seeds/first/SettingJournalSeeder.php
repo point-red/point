@@ -33,7 +33,7 @@ class SettingJournalSeeder extends Seeder
         ];
 
         foreach ($accounts as $key => $value) {
-            if (!$this->isExists('opening balance inventory', $key)) {
+            if (! $this->isExists('opening balance inventory', $key)) {
                 $settingJournal = new SettingJournal;
                 $settingJournal->feature = 'opening balance inventory';
                 $settingJournal->name = $key;
@@ -53,7 +53,7 @@ class SettingJournalSeeder extends Seeder
         ];
 
         foreach ($accounts as $key => $value) {
-            if (!$this->isExists('purchase', $key)) {
+            if (! $this->isExists('purchase', $key)) {
                 $settingJournal = new SettingJournal;
                 $settingJournal->feature = 'purchase';
                 $settingJournal->name = $key;
@@ -76,7 +76,7 @@ class SettingJournalSeeder extends Seeder
         ];
 
         foreach ($accounts as $key => $value) {
-            if (!$this->isExists('sales', $key)) {
+            if (! $this->isExists('sales', $key)) {
                 $settingJournal = new SettingJournal;
                 $settingJournal->feature = 'sales';
                 $settingJournal->name = $key;
@@ -96,7 +96,7 @@ class SettingJournalSeeder extends Seeder
         ];
 
         foreach ($accounts as $key => $value) {
-            if (!$this->isExists('expedition', $key)) {
+            if (! $this->isExists('expedition', $key)) {
                 $settingJournal = new SettingJournal;
                 $settingJournal->feature = 'expedition';
                 $settingJournal->name = $key;
@@ -106,7 +106,7 @@ class SettingJournalSeeder extends Seeder
             }
         }
     }
-    
+
     private function manufacture()
     {
         $accounts = [
@@ -114,7 +114,7 @@ class SettingJournalSeeder extends Seeder
         ];
 
         foreach ($accounts as $key => $value) {
-            if (!$this->isExists('manufacture', $key)) {
+            if (! $this->isExists('manufacture', $key)) {
                 $settingJournal = new SettingJournal;
                 $settingJournal->feature = 'manufacture';
                 $settingJournal->name = $key;
@@ -132,7 +132,7 @@ class SettingJournalSeeder extends Seeder
         ];
 
         foreach ($accounts as $key => $value) {
-            if (!$this->isExists('transfer item', $key)) {
+            if (! $this->isExists('transfer item', $key)) {
                 $settingJournal = new SettingJournal;
                 $settingJournal->feature = 'transfer item';
                 $settingJournal->name = $key;
@@ -151,7 +151,7 @@ class SettingJournalSeeder extends Seeder
         ];
 
         foreach ($accounts as $key => $value) {
-            if (!$this->isExists('stock correction', $key)) {
+            if (! $this->isExists('stock correction', $key)) {
                 $settingJournal = new SettingJournal;
                 $settingJournal->feature = 'stock correction';
                 $settingJournal->name = $key;
@@ -161,7 +161,7 @@ class SettingJournalSeeder extends Seeder
             }
         }
     }
-    
+
     private function getAccountId($account)
     {
         foreach ($this->chartOfAccounts as $chartOfAccount) {

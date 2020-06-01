@@ -199,8 +199,8 @@ class SalesInvoice extends TransactionModel
 
             if (isset($item['allocation_name'])) {
                 $salesInvoiceItem['allocation_id'] = Allocation::firstOrCreate([
-                   'code' => $item['allocation_code'],
-                   'name' => $item['allocation_name'],
+                    'code' => $item['allocation_code'],
+                    'name' => $item['allocation_name'],
                 ])->id;
             }
 

@@ -51,8 +51,8 @@ class CheckData extends Command
 
             if ($inventory > 0 || $input > 0) {
                 $this->line('check '.$project->code);
-                $this->line('inventory = ' . $inventory);
-                $this->line('manufacture = ' . $input);
+                $this->line('inventory = '.$inventory);
+                $this->line('manufacture = '.$input);
 
                 $this->line('-------');
             }

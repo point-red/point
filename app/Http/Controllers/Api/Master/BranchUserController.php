@@ -38,7 +38,7 @@ class BranchUserController extends ApiController
         }
 
         $tenantUser->branches()->updateExistingPivot($request->get('branch_id'), [
-            'is_default' => $request->get('is_default')
+            'is_default' => $request->get('is_default'),
         ], false);
 
         return new ApiResource($tenantUser);

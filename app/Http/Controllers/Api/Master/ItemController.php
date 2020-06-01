@@ -23,7 +23,7 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $items = Item::from(Item::getTableName() . ' as ' . Item::$alias)->eloquentFilter($request);
+        $items = Item::from(Item::getTableName().' as '.Item::$alias)->eloquentFilter($request);
 
         $items = Item::joins($items, $request->get('join'));
 
@@ -63,7 +63,7 @@ class ItemController extends Controller
 
         return (new ApiCollection($items))
             ->additional([
-                'next_id' => $id->id
+                'next_id' => $id->id,
             ]);
     }
 
@@ -121,7 +121,7 @@ class ItemController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $item = Item::from(Item::getTableName() . ' as ' . Item::$alias)->eloquentFilter($request);
+        $item = Item::from(Item::getTableName().' as '.Item::$alias)->eloquentFilter($request);
 
         $item = Item::joins($item, $request->get('join'));
 

@@ -19,7 +19,7 @@ class XenditCallbackController extends Controller
         } else {
             $isExists = XenditInvoicePaid::where('xendit_id', $request->get('id'))->first();
 
-            if (!$isExists) {
+            if (! $isExists) {
                 $data = new XenditInvoicePaid;
                 $data->xendit_id = $request->get('id');
                 $data->fill($request->all());

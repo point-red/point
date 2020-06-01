@@ -18,7 +18,7 @@ class ChartOfAccountTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $types = ChartOfAccountType::from('chart_of_account_types as ' . ChartOfAccountType::$alias)->eloquentFilter($request);
+        $types = ChartOfAccountType::from('chart_of_account_types as '.ChartOfAccountType::$alias)->eloquentFilter($request);
 
         $types = ChartOfAccountType::joins($types, $request->get('join'));
 

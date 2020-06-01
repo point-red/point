@@ -5,21 +5,15 @@ namespace App\Http\Controllers\Api\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Customer\StoreCustomerRequest;
 use App\Http\Requests\Master\Customer\UpdateCustomerRequest;
-use App\Http\Requests\Master\CustomerGroup\AttachRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Accounting\Journal;
-use App\Model\Finance\Payment\Payment;
 use App\Model\Master\Address;
 use App\Model\Master\Bank;
 use App\Model\Master\ContactPerson;
 use App\Model\Master\Customer;
 use App\Model\Master\CustomerGroup;
 use App\Model\Master\Email;
-use App\Model\Master\Group;
 use App\Model\Master\Phone;
-use Carbon\Carbon;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -35,7 +29,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::from(Customer::getTableName() . ' as ' . Customer::$alias)->eloquentFilter($request);
+        $customers = Customer::from(Customer::getTableName().' as '.Customer::$alias)->eloquentFilter($request);
 
         $customers = Customer::joins($customers, $request->get('join'));
 
@@ -109,7 +103,7 @@ class CustomerController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $customer = Customer::from(Customer::getTableName() . ' as ' . Customer::$alias)->eloquentFilter($request);
+        $customer = Customer::from(Customer::getTableName().' as '.Customer::$alias)->eloquentFilter($request);
 
         $customer = Customer::joins($customer, $request->get('join'));
 

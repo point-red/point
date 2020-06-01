@@ -13,7 +13,7 @@ trait WarehouseRelation
      */
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_warehouse')->withPivot(['is_default']);;
+        return $this->belongsToMany(User::class, 'user_warehouse')->withPivot(['is_default']);
     }
 
     public function inventories()

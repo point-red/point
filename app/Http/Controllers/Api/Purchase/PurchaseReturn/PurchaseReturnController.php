@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Purchase\PurchaseReturn;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReturn\PurchaseReturn;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -22,7 +21,7 @@ class PurchaseReturnController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseReturns = PurchaseReturn::from(PurchaseReturn::getTableName() . ' as ' . PurchaseReturn::$alias)->eloquentFilter($request);
+        $purchaseReturns = PurchaseReturn::from(PurchaseReturn::getTableName().' as '.PurchaseReturn::$alias)->eloquentFilter($request);
 
         $purchaseReturns = PurchaseReturn::joins($purchaseReturns, $request->get('join'));
 

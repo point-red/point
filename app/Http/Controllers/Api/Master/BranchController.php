@@ -20,7 +20,7 @@ class BranchController extends Controller
      */
     public function index(Request $request)
     {
-        $branches = Branch::from(Branch::getTableName() . ' as ' . Branch::$alias)->eloquentFilter($request);
+        $branches = Branch::from(Branch::getTableName().' as '.Branch::$alias)->eloquentFilter($request);
 
         $branches = Branch::joins($branches, $request->get('join'));
 
@@ -59,7 +59,7 @@ class BranchController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $branch = Branch::from(Branch::getTableName() . ' as ' . Branch::$alias)->eloquentFilter($request);
+        $branch = Branch::from(Branch::getTableName().' as '.Branch::$alias)->eloquentFilter($request);
 
         $branch = Branch::joins($branch, $request->get('join'));
 

@@ -2,7 +2,6 @@
 
 namespace App\Traits\Model\Purchase;
 
-
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;

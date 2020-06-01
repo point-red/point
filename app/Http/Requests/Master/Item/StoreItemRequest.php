@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Master\Item;
 
-use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreItemRequest extends FormRequest

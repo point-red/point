@@ -242,8 +242,6 @@ if (! function_exists('get_if_set')) {
         if (isset($var)) {
             return $var;
         }
-
-        return null;
     }
 }
 
@@ -305,7 +303,7 @@ if (! function_exists('convert_javascript_object_to_array')) {
 
 if (! function_exists('base64_to_jpeg')) {
     /**
-     * convert base64 to jpg file
+     * convert base64 to jpg file.
      *
      * @param $base64_string
      * @param $output_file

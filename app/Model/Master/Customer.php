@@ -5,7 +5,6 @@ namespace App\Model\Master;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\Journal;
-use App\Model\Finance\Payment\Payment;
 use App\Model\MasterModel;
 use App\Traits\Model\Master\CustomerJoin;
 use App\Traits\Model\Master\CustomerRelation;
@@ -36,9 +35,9 @@ class Customer extends MasterModel
 
     public function getLabelAttribute()
     {
-        $label = $this->code ? '[' . $this->code . '] ' : '';
+        $label = $this->code ? '['.$this->code.'] ' : '';
 
-        return $label . $this->name;
+        return $label.$this->name;
     }
 
     /**

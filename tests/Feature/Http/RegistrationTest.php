@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Http;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {

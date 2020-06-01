@@ -47,13 +47,13 @@ class StorageController extends Controller
 
         $cloudStorages = pagination($cloudStorages, $request->get('limit'));
 
-        $allowedMimeTypes = ['image/jpeg','image/gif','image/png','image/bmp','image/svg+xml'];
+        $allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'image/bmp', 'image/svg+xml'];
         foreach ($cloudStorages as $key => $cloudStorage) {
-            if (!Storage::disk($cloudStorage->disk)->exists($cloudStorage->path)) {
+            if (! Storage::disk($cloudStorage->disk)->exists($cloudStorage->path)) {
                 continue;
             }
             $base64 = base64_encode(Storage::disk($cloudStorage->disk)->get($cloudStorage->path));
-            $preview = 'data:' . $cloudStorage->mime_type . ';base64,' . $base64;
+            $preview = 'data:'.$cloudStorage->mime_type.';base64,'.$base64;
             if (in_array($cloudStorage->mime_type, $allowedMimeTypes)) {
                 $cloudStorage->preview = $preview;
             }
@@ -87,7 +87,7 @@ class StorageController extends Controller
         if ($cloudStorage && $cloudStorage->key == $request->get('key')) {
             $cloudStorage->delete();
 
-            $path = $cloudStorage->path . '' . $cloudStorage->key . '.' . $cloudStorage->file_ext;
+            $path = $cloudStorage->path.''.$cloudStorage->key.'.'.$cloudStorage->file_ext;
             if (Storage::disk(env('STORAGE_DISK'))->exists($path)) {
                 Storage::disk(env('STORAGE_DISK'))->delete($path);
             }
@@ -114,7 +114,7 @@ class StorageController extends Controller
         );
 
         $cloudStorage = new CloudStorage;
-        $fileName = basename($request->file('file')->getClientOriginalName(), '.' . $request->file('file')->getClientOriginalExtension());
+        $fileName = basename($request->file('file')->getClientOriginalName(), '.'.$request->file('file')->getClientOriginalExtension());
         $cloudStorage->file_name = $fileName;
         $cloudStorage->file_ext = $request->file('file')->getClientOriginalExtension();
         $cloudStorage->mime_type = $request->file('file')->getClientMimeType();
@@ -123,7 +123,7 @@ class StorageController extends Controller
             $cloudStorage->feature_id = $featureId;
         }
         $cloudStorage->key = $key;
-        $cloudStorage->path = $path . $key.'.'.$file->getClientOriginalExtension();
+        $cloudStorage->path = $path.$key.'.'.$file->getClientOriginalExtension();
         $cloudStorage->disk = env('STORAGE_DISK');
         $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
         $cloudStorage->owner_id = auth()->user()->id;

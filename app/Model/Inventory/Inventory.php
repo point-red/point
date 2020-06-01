@@ -34,7 +34,7 @@ class Inventory extends PointModel
 
     public function getExpiryDateAttribute($value)
     {
-        return !$value ? null : convert_to_local_timezone($value);
+        return ! $value ? null : convert_to_local_timezone($value);
     }
 
     /**

@@ -22,7 +22,7 @@ class SupplierGroupController extends ApiController
      */
     public function index(Request $request)
     {
-        $groups = SupplierGroup::from(SupplierGroup::getTableName() . ' as ' . SupplierGroup::$alias)->eloquentFilter($request);
+        $groups = SupplierGroup::from(SupplierGroup::getTableName().' as '.SupplierGroup::$alias)->eloquentFilter($request);
 
         $groups = SupplierGroup::joins($groups, $request->get('join'));
 
@@ -55,7 +55,7 @@ class SupplierGroupController extends ApiController
      */
     public function show(Request $request, $id)
     {
-        $group = SupplierGroup::from(SupplierGroup::getTableName() . ' as ' . SupplierGroup::$alias)->eloquentFilter($request);
+        $group = SupplierGroup::from(SupplierGroup::getTableName().' as '.SupplierGroup::$alias)->eloquentFilter($request);
 
         $group = SupplierGroup::joins($group, $request->get('join'));
 

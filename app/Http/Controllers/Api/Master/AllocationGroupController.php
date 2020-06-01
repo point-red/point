@@ -22,7 +22,7 @@ class AllocationGroupController extends ApiController
      */
     public function index(Request $request)
     {
-        $groups = AllocationGroup::from(AllocationGroup::getTableName() . ' as ' . AllocationGroup::$alias)->eloquentFilter($request);
+        $groups = AllocationGroup::from(AllocationGroup::getTableName().' as '.AllocationGroup::$alias)->eloquentFilter($request);
 
         $groups = AllocationGroup::joins($groups, $request->get('join'));
 
@@ -55,7 +55,7 @@ class AllocationGroupController extends ApiController
      */
     public function show(Request $request, $id)
     {
-        $group = AllocationGroup::from(AllocationGroup::getTableName() . ' as ' . AllocationGroup::$alias)->eloquentFilter($request);
+        $group = AllocationGroup::from(AllocationGroup::getTableName().' as '.AllocationGroup::$alias)->eloquentFilter($request);
 
         $group = AllocationGroup::joins($group, $request->get('join'));
 

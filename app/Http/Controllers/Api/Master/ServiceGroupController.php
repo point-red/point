@@ -22,7 +22,7 @@ class ServiceGroupController extends ApiController
      */
     public function index(Request $request)
     {
-        $groups = ServiceGroup::from(ServiceGroup::getTableName() . ' as ' . ServiceGroup::$alias)->eloquentFilter($request);
+        $groups = ServiceGroup::from(ServiceGroup::getTableName().' as '.ServiceGroup::$alias)->eloquentFilter($request);
 
         $groups = ServiceGroup::joins($groups, $request->get('join'));
 
@@ -55,7 +55,7 @@ class ServiceGroupController extends ApiController
      */
     public function show(Request $request, $id)
     {
-        $group = ServiceGroup::from(ServiceGroup::getTableName() . ' as ' . ServiceGroup::$alias)->eloquentFilter($request);
+        $group = ServiceGroup::from(ServiceGroup::getTableName().' as '.ServiceGroup::$alias)->eloquentFilter($request);
 
         $group = ServiceGroup::joins($group, $request->get('join'));
 

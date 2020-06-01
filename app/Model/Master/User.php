@@ -30,7 +30,7 @@ class User extends MasterModel
 
     public function getFullNameAttribute()
     {
-        return $this->first_name . ' ' . $this->last_name;
+        return $this->first_name.' '.$this->last_name;
     }
 
     public function getPermissions()

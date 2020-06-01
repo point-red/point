@@ -25,7 +25,7 @@ class AttachRequest extends FormRequest
     {
         return [
             'allocation_id' => 'required',
-            'allocation_group_id' => 'required'
+            'allocation_group_id' => 'required',
         ];
     }
 }

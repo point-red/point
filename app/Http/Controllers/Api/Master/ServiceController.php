@@ -21,7 +21,7 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $services = Service::from(Service::getTableName() . ' as ' . Service::$alias)->eloquentFilter($request);
+        $services = Service::from(Service::getTableName().' as '.Service::$alias)->eloquentFilter($request);
 
         $services = Service::joins($services, $request->get('join'));
 
@@ -64,7 +64,7 @@ class ServiceController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $service = Service::from(Service::getTableName() . ' as ' . Service::$alias)->eloquentFilter($request);
+        $service = Service::from(Service::getTableName().' as '.Service::$alias)->eloquentFilter($request);
 
         $service = Service::joins($service, $request->get('join'));
 

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\Inventory;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Http\Resources\Inventory\InventoryCollection;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
 use Illuminate\Http\Request;

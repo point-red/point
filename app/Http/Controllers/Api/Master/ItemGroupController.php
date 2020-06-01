@@ -3,15 +3,13 @@
 namespace App\Http\Controllers\Api\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\ItemGroup\StoreItemGroupRequest;
-use App\Http\Requests\Master\ItemGroup\StoreRequest;
-use App\Http\Requests\Master\ItemGroup\UpdateItemGroupRequest;
 use App\Http\Requests\Master\ItemGroup\AttachRequest;
+use App\Http\Requests\Master\ItemGroup\StoreRequest;
 use App\Http\Requests\Master\ItemGroup\UpdateRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Master\ItemGroup;
 use App\Model\Master\Item;
+use App\Model\Master\ItemGroup;
 use Illuminate\Http\Request;
 
 class ItemGroupController extends Controller
@@ -24,7 +22,7 @@ class ItemGroupController extends Controller
      */
     public function index(Request $request)
     {
-        $groups = ItemGroup::from(ItemGroup::getTableName() . ' as ' . ItemGroup::$alias)->eloquentFilter($request);
+        $groups = ItemGroup::from(ItemGroup::getTableName().' as '.ItemGroup::$alias)->eloquentFilter($request);
 
         $groups = ItemGroup::joins($groups, $request->get('join'));
 
@@ -57,7 +55,7 @@ class ItemGroupController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $group = ItemGroup::from(ItemGroup::getTableName() . ' as ' . ItemGroup::$alias)->eloquentFilter($request);
+        $group = ItemGroup::from(ItemGroup::getTableName().' as '.ItemGroup::$alias)->eloquentFilter($request);
 
         $group = ItemGroup::joins($group, $request->get('join'));
 

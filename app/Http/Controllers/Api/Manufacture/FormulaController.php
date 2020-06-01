@@ -7,7 +7,6 @@ use App\Http\Requests\Manufacture\ManufactureFormula\StoreManufactureFormulaRequ
 use App\Http\Requests\Manufacture\ManufactureFormula\UpdateManufactureFormulaRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
 use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +22,7 @@ class FormulaController extends Controller
      */
     public function index(Request $request)
     {
-        $formulas = ManufactureFormula::from(ManufactureFormula::getTableName() . ' as ' . ManufactureFormula::$alias)->eloquentFilter($request);
+        $formulas = ManufactureFormula::from(ManufactureFormula::getTableName().' as '.ManufactureFormula::$alias)->eloquentFilter($request);
 
         $formulas = ManufactureFormula::joins($formulas, $request->get('join'));
 

@@ -2,7 +2,6 @@
 
 namespace App\Traits\Model\Purchase;
 
-
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoiceItem;
@@ -23,5 +22,4 @@ trait PurchaseInvoiceRelation
     {
         return $this->belongsTo(Supplier::class);
     }
-
 }

@@ -71,21 +71,6 @@ class PurchaseOrder extends TransactionModel
         $this->attributes['eta'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
 
-    public function updateIfDone()
-    {
-        $done = true;
-        $items = $this->items()->with('purchaseReceiveItems')->get();
-        foreach ($items as $item) {
-            $quantityReceived = $item->purchaseReceiveItems->sum('quantity');
-            if ($item->quantity > $quantityReceived) {
-                $done = false;
-                break;
-            }
-        }
-
-        $this->form()->update(['done' => $done]);
-    }
-
     public function isAllowedToUpdate()
     {
         // Check if not referenced by purchase order
@@ -123,8 +108,18 @@ class PurchaseOrder extends TransactionModel
         $form->saveData($data, $purchaseOrder);
 
         if (get_if_set($data['purchase_request_id'])) {
+            $done = true;
             $purchaseRequest = PurchaseRequest::findOrFail($data['purchase_request_id']);
-            $purchaseRequest->updateIfDone();
+            foreach($purchaseRequest->items as $purchaseRequestItem) {
+                $quantity = PurchaseOrderItem::where('purchase_request_item_id', $purchaseRequestItem->id)->sum('quantity');
+                if ($quantity < $purchaseRequestItem->quantity) {
+                    $done = false;
+                    break;
+                }
+            }
+            if ($done) {
+                $purchaseRequest->form()->update(['done' => $done]);
+            }
         }
 
         return $purchaseOrder;

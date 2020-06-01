@@ -7,9 +7,13 @@ use App\Model\Form;
 use App\Model\Manufacture\ManufactureProcess\ManufactureProcess;
 use App\Model\Manufacture\ManufactureInput\ManufactureInput;
 use App\Model\TransactionModel;
+use App\Traits\Model\Manufacture\ManufactureFormulaJoin;
+use App\Traits\Model\Manufacture\ManufactureFormulaRelation;
 
 class ManufactureFormula extends TransactionModel
 {
+    use ManufactureFormulaJoin, ManufactureFormulaRelation;
+
     public static $morphName = 'ManufactureFormula';
 
     public $timestamps = false;
@@ -26,31 +30,6 @@ class ManufactureFormula extends TransactionModel
     ];
 
     public $defaultNumberPrefix = 'MF';
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function rawMaterials()
-    {
-        return $this->hasMany(ManufactureFormulaRawMaterial::class);
-    }
-
-    public function finishedGoods()
-    {
-        return $this->hasMany(ManufactureFormulaFinishedGood::class);
-    }
-
-    public function manufactureProcess()
-    {
-        return $this->belongsTo(ManufactureProcess::class);
-    }
-
-    public function inputMaterials()
-    {
-        return $this->hasMany(ManufactureInput::class)->active();
-    }
 
     public function isAllowedToUpdate()
     {

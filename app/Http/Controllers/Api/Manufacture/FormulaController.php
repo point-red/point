@@ -23,18 +23,9 @@ class FormulaController extends Controller
      */
     public function index(Request $request)
     {
-        $formulas = ManufactureFormula::eloquentFilter($request);
+        $formulas = ManufactureFormula::from(ManufactureFormula::getTableName() . ' as ' . ManufactureFormula::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('form', $fields)) {
-                $formulas = $formulas->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', ManufactureFormula::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), ManufactureFormula::$morphName);
-                });
-            }
-        }
+        $formulas = ManufactureFormula::joins($formulas, $request->get('join'));
 
         $formulas = pagination($formulas, $request->get('limit'));
 

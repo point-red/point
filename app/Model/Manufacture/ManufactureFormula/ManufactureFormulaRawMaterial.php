@@ -5,9 +5,13 @@ namespace App\Model\Manufacture\ManufactureFormula;
 use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
+use App\Traits\Model\Manufacture\ManufactureFormulaRawMaterialJoin;
+use App\Traits\Model\Manufacture\ManufactureFormulaRawMaterialRelation;
 
 class ManufactureFormulaRawMaterial extends TransactionModel
 {
+    use ManufactureFormulaRawMaterialJoin, ManufactureFormulaRawMaterialRelation;
+
     protected $connection = 'tenant';
 
     public static $alias = 'manufacture_formula_raw_material';
@@ -26,14 +30,4 @@ class ManufactureFormulaRawMaterial extends TransactionModel
         'quantity' => 'double',
         'converter' => 'double',
     ];
-
-    public function manufactureFormula()
-    {
-        return $this->belongsTo(ManufactureFormula::class);
-    }
-
-    public function item()
-    {
-        return $this->belongsTo(Item::class);
-    }
 }

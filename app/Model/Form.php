@@ -141,7 +141,7 @@ class Form extends PointModel
 
     public function archive($editedNotes = '')
     {
-        if ($this->cancellation_status != null && $this->cancellation_status != 1) {
+        if ($this->approval_status != null && $this->approval_status == 1) {
             throw new FormActiveException();
         }
 

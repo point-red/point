@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Purchase\PurchaseReturn;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReturn\PurchaseReturn;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -22,24 +21,9 @@ class PurchaseReturnController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseReturns = PurchaseReturn::eloquentFilter($request);
+        $purchaseReturns = PurchaseReturn::from(PurchaseReturn::getTableName().' as '.PurchaseReturn::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('supplier', $fields)) {
-                $purchaseReturns = $purchaseReturns->join(Supplier::getTableName(), function ($q) {
-                    $q->on(Supplier::getTableName('id'), '=', PurchaseReturn::getTableName('supplier_id'));
-                });
-            }
-
-            if (in_array('form', $fields)) {
-                $purchaseReturns = $purchaseReturns->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', PurchaseReturn::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseReturn::$morphName);
-                });
-            }
-        }
+        $purchaseReturns = PurchaseReturn::joins($purchaseReturns, $request->get('join'));
 
         $purchaseReturns = pagination($purchaseReturns, $request->get('limit'));
 
@@ -121,17 +105,13 @@ class PurchaseReturnController extends Controller
      */
     public function destroy($id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $purchaseReturn = PurchaseReturn::findOrFail($id);
         $purchaseReturn->isAllowedToDelete();
+        $purchaseReturn->requestCancel($request);
 
-        $response = $purchaseReturn->requestCancel($request);
-
-        if (! $response) {
-            foreach ($purchaseReturn->purchaseInvoices as $purchaseInvoice) {
-                $purchaseInvoice->form->done = false;
-                $purchaseInvoice->form->save();
-            }
-        }
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

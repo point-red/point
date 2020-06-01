@@ -5,7 +5,6 @@ namespace App\Mail;
 use App\Model\Project\Project;
 use App\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -38,12 +37,12 @@ class UserInvitationMail extends Mailable
      */
     public function build()
     {
-        return $this->subject(strtoupper($this->project->name) . ' invite you to join project')
+        return $this->subject(strtoupper($this->project->name).' invite you to join project')
             ->view('emails.user.user-invitation')
             ->with([
                 'project' => $this->project,
                 'user' => $this->user,
-                'name' => $this->name
+                'name' => $this->name,
             ]);
     }
 }

@@ -13,7 +13,7 @@ class DeleteRequest extends FormRequest
      */
     public function authorize()
     {
-        if (!tenant(auth()->user()->id)->hasPermissionTo('delete employee')) {
+        if (! tenant(auth()->user()->id)->hasPermissionTo('delete employee')) {
             return false;
         }
 

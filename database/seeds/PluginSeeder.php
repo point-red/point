@@ -68,7 +68,7 @@ class PluginSeeder extends Seeder
     private function create($plugins)
     {
         foreach ($plugins as $array) {
-            if (!$this->isExists($array['name'])) {
+            if (! $this->isExists($array['name'])) {
                 continue;
             }
 

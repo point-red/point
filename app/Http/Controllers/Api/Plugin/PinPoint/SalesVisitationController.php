@@ -7,12 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Http\Resources\Plugin\PinPoint\SalesVisitation\SalesVisitationCollection;
 use App\Model\CloudStorage;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\CustomerGroup;
-use App\Model\Master\Item;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
@@ -36,8 +34,8 @@ class SalesVisitationController extends Controller
      */
     public function index(Request $request)
     {
-        $salesVisitationForm = SalesVisitation::from(SalesVisitation::getTableName() . ' as ' . SalesVisitation::$alias)
-            ->join(Form::getTableName() . ' as ' . Form::$alias, 'form.id', '=', 'sales_visitation.form_id')
+        $salesVisitationForm = SalesVisitation::from(SalesVisitation::getTableName().' as '.SalesVisitation::$alias)
+            ->join(Form::getTableName().' as '.Form::$alias, 'form.id', '=', 'sales_visitation.form_id')
             ->with('form.createdBy')
             ->with('interestReasons')
             ->with('noInterestReasons')
@@ -70,7 +68,7 @@ class SalesVisitationController extends Controller
                 ->first();
             if ($photo) {
                 $base64 = base64_encode(Storage::disk($photo->disk)->get($photo->path));
-                $preview = 'data:' . $photo->mime_type . ';base64,' . $base64;
+                $preview = 'data:'.$photo->mime_type.';base64,'.$base64;
                 $svf->photo = $preview;
             }
         }
@@ -116,7 +114,7 @@ class SalesVisitationController extends Controller
                 return response()->json([
                     'code' => 422,
                     'message' => 'form kunjungan sales hanya bisa di isi setiap 10 menit sekali, anda harus menunggu '
-                        . $wait . ' menit untuk bisa membuat form baru',
+                        .$wait.' menit untuk bisa membuat form baru',
                     // TODO: see user language preference to translate each message
                     // 'message' => 'Sales visitation form is applicable every 10 minutes, you need to wait '
                     //    . $wait . ' more minutes before create new form',

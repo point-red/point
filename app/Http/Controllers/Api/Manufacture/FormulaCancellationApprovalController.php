@@ -41,7 +41,7 @@ class FormulaCancellationApprovalController extends Controller
         $formula = ManufactureFormula::findOrFail($id);
         $formula->form->cancellation_approval_by = auth()->user()->id;
         $formula->form->cancellation_approval_at = now();
-        $formula->form->cancellation_reason = $request->get('cancellation_reason');
+        $formula->form->cancellation_approval_reason = $request->get('reason');
         $formula->form->cancellation_status = -1;
         $formula->form->save();
 

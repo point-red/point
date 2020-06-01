@@ -163,7 +163,7 @@ class AlterData extends Command
         $users = User::all();
 
         DB::connection('tenant')->table('branch_user')->update([
-            'is_default' => false
+            'is_default' => false,
         ]);
 
         foreach ($users as $user) {

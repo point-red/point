@@ -128,7 +128,7 @@ class PriceListServiceController extends Controller
      */
     public function show($id)
     {
-        $priceListService = PriceListService::from(PriceListService::getTableName() . ' as ' . PriceListService::$alias)->eloquentFilter($request);
+        $priceListService = PriceListService::from(PriceListService::getTableName().' as '.PriceListService::$alias)->eloquentFilter($request);
 
         $priceListService = PriceListService::joins($priceListService, $request->get('join'));
 

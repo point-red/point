@@ -30,7 +30,7 @@ class InventoryDetailCollection extends ResourceCollection
             'ending_balance' => $this->getEndingBalance($request->route('itemId'), $request->warehouse_id),
             'stock_in' => $stockIn['total'],
             'stock_out' => $stockOut['total'],
-            'data' => $this->collection
+            'data' => $this->collection,
         ];
     }
 
@@ -51,7 +51,7 @@ class InventoryDetailCollection extends ResourceCollection
 
     private function getOpeningBalance($itemId, $warehouseId, $page)
     {
-        if (!$this->dateFrom) {
+        if (! $this->dateFrom) {
             return 0;
         }
 
@@ -72,14 +72,14 @@ class InventoryDetailCollection extends ResourceCollection
             ->sum('quantity');
 
         return [
-            'opening_balance' => (double) $openingBalance,
-            'opening_balance_current_page' => (double) $openingBalance + $previousBalance
+            'opening_balance' => (float) $openingBalance,
+            'opening_balance_current_page' => (float) $openingBalance + $previousBalance,
         ];
     }
 
     private function getTotalStockIn($itemId, $warehouseId, $page)
     {
-        if (!$this->dateFrom) {
+        if (! $this->dateFrom) {
             return 0;
         }
 
@@ -93,12 +93,12 @@ class InventoryDetailCollection extends ResourceCollection
             ->get()
             ->sum('quantity');
 
-        return ['total' => (double) $total];
+        return ['total' => (float) $total];
     }
 
     private function getTotalStockOut($itemId, $warehouseId, $page)
     {
-        if (!$this->dateFrom) {
+        if (! $this->dateFrom) {
             return 0;
         }
 
@@ -112,7 +112,7 @@ class InventoryDetailCollection extends ResourceCollection
             ->get()
             ->sum('quantity');
 
-        return ['total' => (double) $total];
+        return ['total' => (float) $total];
     }
 
     private function getEndingBalance($itemId, $warehouseId)
@@ -121,10 +121,10 @@ class InventoryDetailCollection extends ResourceCollection
             ->where('item_id', $itemId)
             ->where('warehouse_id', $warehouseId);
 
-        if (!$this->dateTo) {
-            return (double) $query->sum('quantity');
+        if (! $this->dateTo) {
+            return (float) $query->sum('quantity');
         }
 
-        return (double) $query->where('forms.date', '<=', $this->dateTo)->sum('quantity');
+        return (float) $query->where('forms.date', '<=', $this->dateTo)->sum('quantity');
     }
 }

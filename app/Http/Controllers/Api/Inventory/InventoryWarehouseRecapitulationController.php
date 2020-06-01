@@ -60,7 +60,6 @@ class InventoryWarehouseRecapitulationController extends Controller
             ->addSelect(DB::raw('COALESCE(subQueryInventoryOut.totalQty, 0) as stock_out'))
             ->addSelect(DB::raw('COALESCE(subQueryInventoryStart.totalQty, 0) + COALESCE(subQueryInventoryIn.totalQty, 0) + COALESCE(subQueryInventoryOut.totalQty, 0) as ending_balance'));
 
-
         $items = pagination($items, 10);
 
         return new ApiCollection($items);

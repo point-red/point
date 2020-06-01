@@ -11,7 +11,6 @@ use App\Http\Resources\ApiResource;
 use App\Model\CloudStorage;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\HumanResource\Employee\EmployeeContract;
-use App\Model\HumanResource\Employee\EmployeeEmail;
 use App\Model\HumanResource\Employee\EmployeeGroup;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
 use App\Model\HumanResource\Employee\EmployeeScorer;
@@ -162,7 +161,6 @@ class EmployeeController extends Controller
             }
         }
 
-
         DB::connection('tenant')->commit();
 
         return new ApiResource($employee);
@@ -177,7 +175,7 @@ class EmployeeController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $employee = Employee::from(Employee::getTableName() . ' as ' . Employee::$alias)->eloquentFilter($request);
+        $employee = Employee::from(Employee::getTableName().' as '.Employee::$alias)->eloquentFilter($request);
 
         $employee = $employee->with('group')
             ->with('gender')
@@ -243,7 +241,7 @@ class EmployeeController extends Controller
         for ($i = 0; $i < count($request->get('company_emails') ?? []); $i++) {
             if ($request->get('company_emails')[$i]['email']) {
                 $employeeEmails = Employee\EmployeeCompanyEmail::first();
-                if (!$employeeEmails) {
+                if (! $employeeEmails) {
                     info('here');
                     $employeeEmails = new Employee\EmployeeCompanyEmail;
                 }

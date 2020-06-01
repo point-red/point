@@ -2,10 +2,10 @@
 
 namespace App\Model\Manufacture\ManufactureOutput;
 
+use App\Model\Manufacture\ManufactureInput\ManufactureInputFinishedGood;
 use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
-use App\Model\Manufacture\ManufactureInput\ManufactureInputFinishedGood;
 
 class ManufactureOutputFinishedGood extends TransactionModel
 {

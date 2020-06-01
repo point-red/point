@@ -7,7 +7,6 @@ use App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder\StorePurchaseOrderReq
 use App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder\UpdatePurchaseOrderRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use Illuminate\Http\Request;
@@ -24,7 +23,7 @@ class PurchaseOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseOrders = PurchaseOrder::from(PurchaseOrder::getTableName() . ' as ' . PurchaseOrder::$alias)->eloquentFilter($request);
+        $purchaseOrders = PurchaseOrder::from(PurchaseOrder::getTableName().' as '.PurchaseOrder::$alias)->eloquentFilter($request);
 
         $purchaseOrders = PurchaseOrder::joins($purchaseOrders, $request->get('join'));
 
@@ -61,7 +60,7 @@ class PurchaseOrderController extends Controller
      *      - discount_value (Decimal, Optional)
      *      - taxable (Boolean, Optional)
      *      - description (String)
-     *      - allocation_id (Int, Optional)
+     *      - allocation_id (Int, Optional).
      *
      * @param StorePurchaseOrderRequest $request
      * @return ApiResource
@@ -92,7 +91,11 @@ class PurchaseOrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseOrder = PurchaseOrder::eloquentFilter($request)->findOrFail($id);
+        $purchaseOrder = PurchaseOrder::from(PurchaseOrder::getTableName().' as '.PurchaseOrder::$alias)->eloquentFilter($request);
+
+        $purchaseOrder = PurchaseOrder::joins($purchaseOrder, $request->get('join'));
+
+        $purchaseOrder = $purchaseOrder->where(PurchaseOrder::$alias.'.id', $id)->first();
 
         /*
          * anything except 0 is considered true, including string "false"
@@ -155,17 +158,13 @@ class PurchaseOrderController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $purchaseOrder = PurchaseOrder::findOrFail($id);
         $purchaseOrder->isAllowedToDelete();
+        $purchaseOrder->requestCancel($request);
 
-        $response = $purchaseOrder->requestCancel($request);
-
-        if (! $response) {
-            if ($purchaseOrder->purchaseRequest) {
-                $purchaseOrder->purchaseRequest->form->done = false;
-                $purchaseOrder->purchaseRequest->form->save();
-            }
-        }
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

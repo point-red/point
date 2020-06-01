@@ -124,13 +124,13 @@ class InventoryHelper
 
         if ($quantity > $stock) {
             self::insert($form, $warehouse, $item, abs($diff), $unit, $converter, $options);
-        } else if ($quantity < $stock) {
+        } elseif ($quantity < $stock) {
             self::insert($form, $warehouse, $item, abs($diff) * -1, $unit, $converter, $options);
         }
     }
 
     /**
-     * Check how much stock is available
+     * Check how much stock is available.
      *
      * @param $item
      * @param $date
@@ -156,7 +156,7 @@ class InventoryHelper
             $inventories = $inventories->where('production_number', $options['production_number']);
         }
 
-        if (!$inventories->first()) {
+        if (! $inventories->first()) {
             return 0;
         }
 
@@ -165,7 +165,7 @@ class InventoryHelper
 
     /**
      * Check if audit exists
-     * Item input before audit is forbidden
+     * Item input before audit is forbidden.
      *
      * @param $item
      * @param $date
@@ -196,8 +196,6 @@ class InventoryHelper
         if ($inventoryExist) {
             return $inventoryExist;
         }
-
-        return null;
     }
 
     public static function posting($formId)

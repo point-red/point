@@ -21,7 +21,7 @@ class ChartOfAccountController extends Controller
      */
     public function index(Request $request)
     {
-        $accounts = ChartOfAccount::from('chart_of_accounts as ' . ChartOfAccount::$alias)->eloquentFilter($request);
+        $accounts = ChartOfAccount::from('chart_of_accounts as '.ChartOfAccount::$alias)->eloquentFilter($request);
 
         $accounts = ChartOfAccount::joins($accounts, $request->get('join'));
 
@@ -69,7 +69,7 @@ class ChartOfAccountController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $account = ChartOfAccount::from('chart_of_accounts as ' . ChartOfAccount::$alias)->eloquentFilter($request);
+        $account = ChartOfAccount::from('chart_of_accounts as '.ChartOfAccount::$alias)->eloquentFilter($request);
 
         $account = ChartOfAccount::joins($account, $request->get('join'));
 
@@ -112,7 +112,7 @@ class ChartOfAccountController extends Controller
     {
         $chartOfAccount = ChartOfAccount::findOrFail($id);
 
-        if (!$chartOfAccount->is_locked) {
+        if (! $chartOfAccount->is_locked) {
             $chartOfAccount->delete();
         }
 

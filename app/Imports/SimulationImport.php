@@ -13,15 +13,15 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 class SimulationImport implements ToCollection, WithHeadingRow
 {
     /**
-    * @param Collection $collection
-    */
+     * @param Collection $collection
+     */
     public function collection(Collection $collection)
     {
         if (env('APP_ENV') == 'local') {
             DB::connection('tenant')->beginTransaction();
             foreach ($collection as $row) {
                 $form = Form::where('number', $row['form'])->first();
-                if (!$form) {
+                if (! $form) {
                     $form = new Form;
                     $form->date = $row['date'];
                     $form->number = $row['form'];
@@ -32,7 +32,7 @@ class SimulationImport implements ToCollection, WithHeadingRow
 
                 $journal = new Journal;
                 $journal->form_id = $form->id;
-                $journal->chart_of_account_id = ChartOfAccount::where('alias','=',$row['chart_of_account'])->first()->id;
+                $journal->chart_of_account_id = ChartOfAccount::where('alias', '=', $row['chart_of_account'])->first()->id;
                 $journal->debit = $row['debit'] ?? 0;
                 $journal->credit = $row['credit'] ?? 0;
                 $journal->notes = $row['notes'];

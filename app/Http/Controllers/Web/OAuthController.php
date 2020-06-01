@@ -51,17 +51,17 @@ class OAuthController extends WebController
         $data->token_expires_in = $tokenResult->token->expires_at->timestamp;
 
         return Redirect::away('/oauth/login/callback?'
-            .'access_token=' . $tokenResult->accessToken
-            .'&id=' . $tokenResult->token->id
-            .'&ed=' . $tokenResult->token->expires_at);
+            .'access_token='.$tokenResult->accessToken
+            .'&id='.$tokenResult->token->id
+            .'&ed='.$tokenResult->token->expires_at);
     }
 
     public function handleCallback(Request $request)
     {
-        return Redirect::away(session()->get('callback') .'?'
-            .'access_token=' . $request->get('access_token')
-            .'&id=' . $request->get('id')
-            .'&ed=' . $request->get('ed'));
+        return Redirect::away(session()->get('callback').'?'
+            .'access_token='.$request->get('access_token')
+            .'&id='.$request->get('id')
+            .'&ed='.$request->get('ed'));
     }
 
     /**
@@ -95,19 +95,19 @@ class OAuthController extends WebController
             $lastName = $fullName[1];
         }
 
-        if (!$user) {
+        if (! $user) {
             return Redirect::away(env('WEBSITE_URL').'/signup?'
-                .'email=' . $oAuthUser->getEmail()
-                .'&name=' . $oAuthUser->getNickname()
-                .'&first_name=' . $firstName
-                .'&last_name=' . $lastName);
+                .'email='.$oAuthUser->getEmail()
+                .'&name='.$oAuthUser->getNickname()
+                .'&first_name='.$firstName
+                .'&last_name='.$lastName);
         }
 
         $tokenResult = $user->createToken($user->name);
 
-        return Redirect::away(session()->get('callback') .'?'
-            .'access_token=' . $tokenResult->accessToken
-            .'&id=' . $tokenResult->token->id
-            .'&ed=' . $tokenResult->token->expires_at);
+        return Redirect::away(session()->get('callback').'?'
+            .'access_token='.$tokenResult->accessToken
+            .'&id='.$tokenResult->token->id
+            .'&ed='.$tokenResult->token->expires_at);
     }
 }

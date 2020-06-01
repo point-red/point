@@ -18,7 +18,7 @@ class InvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $invoices = Invoice::from('invoices as ' . Invoice::$alias);
+        $invoices = Invoice::from('invoices as '.Invoice::$alias);
 
         $invoices = pagination($invoices, $request->get('limit'));
 
@@ -45,7 +45,7 @@ class InvoiceController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $invoice = Invoice::from('invoices as ' . Invoice::$alias)->eloquentFilter($request);
+        $invoice = Invoice::from('invoices as '.Invoice::$alias)->eloquentFilter($request);
 
         $invoice = $invoice->where(Invoice::$alias.'.id', $id)->first();
 

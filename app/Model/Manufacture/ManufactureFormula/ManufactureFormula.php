@@ -4,12 +4,14 @@ namespace App\Model\Manufacture\ManufactureFormula;
 
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
-use App\Model\Manufacture\ManufactureProcess\ManufactureProcess;
-use App\Model\Manufacture\ManufactureInput\ManufactureInput;
 use App\Model\TransactionModel;
+use App\Traits\Model\Manufacture\ManufactureFormulaJoin;
+use App\Traits\Model\Manufacture\ManufactureFormulaRelation;
 
 class ManufactureFormula extends TransactionModel
 {
+    use ManufactureFormulaJoin, ManufactureFormulaRelation;
+
     public static $morphName = 'ManufactureFormula';
 
     public $timestamps = false;
@@ -27,41 +29,14 @@ class ManufactureFormula extends TransactionModel
 
     public $defaultNumberPrefix = 'MF';
 
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function rawMaterials()
-    {
-        return $this->hasMany(ManufactureFormulaRawMaterial::class);
-    }
-
-    public function finishedGoods()
-    {
-        return $this->hasMany(ManufactureFormulaFinishedGood::class);
-    }
-
-    public function manufactureProcess()
-    {
-        return $this->belongsTo(ManufactureProcess::class);
-    }
-
-    public function inputMaterials()
-    {
-        return $this->hasMany(ManufactureInput::class)->active();
-    }
-
     public function isAllowedToUpdate()
     {
         $this->updatedFormNotArchived();
-        $this->isNotReferenced();
     }
 
     public function isAllowedToDelete()
     {
         $this->updatedFormNotArchived();
-        $this->isNotReferenced();
     }
 
     public static function create($data)
@@ -101,13 +76,5 @@ class ManufactureFormula extends TransactionModel
 
             return $formulaFinishedGood;
         }, $finishedGoods);
-    }
-
-    private function isNotReferenced()
-    {
-        // Check if not referenced by input material
-        if ($this->inputMaterials->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by input material', $this->inputMaterials);
-        }
     }
 }

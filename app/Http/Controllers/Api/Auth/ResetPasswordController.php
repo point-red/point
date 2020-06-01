@@ -48,7 +48,7 @@ class ResetPasswordController extends Controller
         DB::connection('mysql')->commit();
 
         return response()->json([
-           'message' => 'Update password success',
+            'message' => 'Update password success',
         ]);
     }
 }

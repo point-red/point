@@ -35,7 +35,7 @@ class ApiExceptionTest extends TestCase
 
         $response->assertJson([
             'code' => 404,
-            'message' => 'Http not found.'
+            'message' => 'Http not found.',
         ]);
     }
 }

@@ -33,7 +33,7 @@ class MachineController extends Controller
 
         return (new ApiCollection($machines))
             ->additional([
-                'next_id' => $id->id
+                'next_id' => $id->id,
             ]);
     }
 

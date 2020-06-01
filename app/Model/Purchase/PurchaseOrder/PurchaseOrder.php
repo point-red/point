@@ -4,10 +4,6 @@ namespace App\Model\Purchase\PurchaseOrder;
 
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
-use App\Model\Master\Supplier;
-use App\Model\Master\Warehouse;
-use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\TransactionModel;
 use App\Traits\Model\Purchase\PurchaseOrderJoin;
@@ -71,21 +67,6 @@ class PurchaseOrder extends TransactionModel
         $this->attributes['eta'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
 
-    public function updateIfDone()
-    {
-        $done = true;
-        $items = $this->items()->with('purchaseReceiveItems')->get();
-        foreach ($items as $item) {
-            $quantityReceived = $item->purchaseReceiveItems->sum('quantity');
-            if ($item->quantity > $quantityReceived) {
-                $done = false;
-                break;
-            }
-        }
-
-        $this->form()->update(['done' => $done]);
-    }
-
     public function isAllowedToUpdate()
     {
         // Check if not referenced by purchase order
@@ -123,8 +104,18 @@ class PurchaseOrder extends TransactionModel
         $form->saveData($data, $purchaseOrder);
 
         if (get_if_set($data['purchase_request_id'])) {
+            $done = true;
             $purchaseRequest = PurchaseRequest::findOrFail($data['purchase_request_id']);
-            $purchaseRequest->updateIfDone();
+            foreach ($purchaseRequest->items as $purchaseRequestItem) {
+                $quantity = PurchaseOrderItem::where('purchase_request_item_id', $purchaseRequestItem->id)->sum('quantity');
+                if ($quantity < $purchaseRequestItem->quantity) {
+                    $done = false;
+                    break;
+                }
+            }
+            if ($done) {
+                $purchaseRequest->form()->update(['done' => $done]);
+            }
         }
 
         return $purchaseOrder;
@@ -143,7 +134,7 @@ class PurchaseOrder extends TransactionModel
     private static function calculateAmount($purchaseOrder, $items)
     {
         $amount = array_reduce($items, function ($carry, $item) {
-            return $carry + $item->quantity * ($item->price - $item->discount_value) * $item->converter;
+            return $carry + $item->quantity * ($item->price - $item->discount_value);
         }, 0);
 
         $amount -= $purchaseOrder->discount_value;

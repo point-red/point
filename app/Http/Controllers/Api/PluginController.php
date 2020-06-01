@@ -19,7 +19,7 @@ class PluginController extends Controller
      */
     public function index(Request $request)
     {
-        $plugins = Plugin::from('plugins as ' . Plugin::$alias);
+        $plugins = Plugin::from('plugins as '.Plugin::$alias);
 
         $plugins = pagination($plugins, $request->input('limit'));
 
@@ -78,7 +78,7 @@ class PluginController extends Controller
         $plugin->projects()->attach($request->get('project_id'), [
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
-            'expired_date' => date('Y-m-t 23:59:59')
+            'expired_date' => date('Y-m-t 23:59:59'),
         ]);
 
         return new ApiResource($plugin);

@@ -20,7 +20,7 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        $roles = Role::from(Role::getTableName() . ' as ' . Role::$alias)->eloquentFilter($request);
+        $roles = Role::from(Role::getTableName().' as '.Role::$alias)->eloquentFilter($request);
 
         $roles = Role::joins($roles, $request->get('join'));
 
@@ -60,7 +60,7 @@ class RoleController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $role = Role::from(Role::getTableName() . ' as ' . Role::$alias)->eloquentFilter($request);
+        $role = Role::from(Role::getTableName().' as '.Role::$alias)->eloquentFilter($request);
 
         $role = Role::joins($role, $request->get('join'));
 

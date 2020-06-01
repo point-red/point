@@ -3,11 +3,8 @@
 namespace App\Traits\Model\HumanResource;
 
 use App\Model\Finance\Payment\Payment;
-use App\Model\HumanResource\Employee\Employee\EmployeeAddress;
 use App\Model\HumanResource\Employee\Employee\EmployeeCompanyEmail;
-use App\Model\HumanResource\Employee\Employee\EmployeePhone;
 use App\Model\HumanResource\Employee\EmployeeContract;
-use App\Model\HumanResource\Employee\EmployeeEmail;
 use App\Model\HumanResource\Employee\EmployeeGender;
 use App\Model\HumanResource\Employee\EmployeeGroup;
 use App\Model\HumanResource\Employee\EmployeeJobLocation;

@@ -13,10 +13,11 @@ use App\Model\Master\Supplier;
 
 trait SupplierJoin
 {
-    public static function joins($query, $joins) {
+    public static function joins($query, $joins)
+    {
         $joins = explode(',', $joins);
 
-        if (!$joins) {
+        if (! $joins) {
             return $query;
         }
 

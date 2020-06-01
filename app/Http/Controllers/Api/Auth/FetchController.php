@@ -31,7 +31,7 @@ class FetchController extends Controller
             $project = Project::where('code', $request->header('Tenant'))->first();
 
             if ($project) {
-                if (!ProjectUser::where('user_id', $request->user()->id)->where('project_id', $project->id)->first()) {
+                if (! ProjectUser::where('user_id', $request->user()->id)->where('project_id', $project->id)->first()) {
                     return response()->json([
                         'code' => 401,
                         'message' => 'Unauthenticated',
@@ -46,7 +46,7 @@ class FetchController extends Controller
                 $response->tenant_package_id = $project->package_id;
                 $response->tenant_user_full_name = tenant($request->user()->id)->full_name;
                 $response->is_owner = $project->owner_id == $request->user()->id;
-                $response->plugins = Arr::pluck($project->plugins, 'name');;
+                $response->plugins = Arr::pluck($project->plugins, 'name');
                 $response->permissions = tenant($request->user()->id)->getPermissions();
                 $response->branches = tenant($request->user()->id)->branches;
                 $response->branch = null;

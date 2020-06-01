@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
 use App\Http\Resources\HumanResource\Kpi\Kpi\KpiIndicatorResource;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
 use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
@@ -212,23 +211,23 @@ class EmployeeAssessmentController extends Controller
         }
         $kpis = $kpis->get();
 
-        $result = array();
-        $templates = array();
-        $scorer = array();
+        $result = [];
+        $templates = [];
+        $scorer = [];
         // splite based by template
         foreach ($kpis as $kpi) {
-            if (!in_array($kpi->name, $templates)) {
+            if (! in_array($kpi->name, $templates)) {
                 array_push($templates, $kpi->name);
             }
             $index = array_search($kpi->name, $templates);
             $result['data'][$index][] = $kpi;
         }
         // create data table
-        $response = array();
+        $response = [];
         foreach ($templates as $index => $tmp) {
-            $rows = array();
-            $scorer = array();
-            $employee = array();
+            $rows = [];
+            $scorer = [];
+            $employee = [];
             // combine every kpi score into one row per template
             foreach ($result['data'][$index] as $index2 => $kpi) {
                 $kpi = new KpiResource($kpi);
@@ -236,12 +235,12 @@ class EmployeeAssessmentController extends Controller
                 $scorer[] = $kpi->scorer;
                 foreach ($kpi->groups as $index3 => $group) {
                     $group = new KpiGroupResource($group);
-                    $sum = array(
-                            'weight' => 0,
-                            'target' => 0,
-                            'score' => 0,
-                            'score_percentage' => 0
-                        );
+                    $sum = [
+                        'weight' => 0,
+                        'target' => 0,
+                        'score' => 0,
+                        'score_percentage' => 0,
+                    ];
                     foreach ($group->indicators as $indicator) {
                         $indicator = new KpiIndicatorResource($indicator);
                         $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['name'] = $indicator->name;
@@ -261,8 +260,8 @@ class EmployeeAssessmentController extends Controller
                 }
             }
             // transpose
-            $cols = array();
-            $colsSum = array();
+            $cols = [];
+            $colsSum = [];
             foreach ($rows as $i => $row) {
                 foreach ($row as $group => $col) {
                     $cols[$group]['data'][0] = $group;
@@ -298,15 +297,15 @@ class EmployeeAssessmentController extends Controller
                     }
                 }
             }
-            $data = array(
+            $data = [
                 'template' => $tmp,
                 'date' => $dateFilter,
                 'employee' => $employee,
                 'scorer' => $scorer,
                 'group' => array_keys($cols),
                 'data' => $cols,
-                'total' => $colsSum
-            );
+                'total' => $colsSum,
+            ];
             $response[] = $data;
         }
 

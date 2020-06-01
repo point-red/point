@@ -157,15 +157,15 @@ class Payment extends TransactionModel
      */
     private static function getLastPaymentIncrement($payment, $incrementGroup)
     {
-        $lastPayment = Payment::from(Payment::getTableName() .' as ' . Payment::$alias)
+        $lastPayment = self::from(self::getTableName().' as '.self::$alias)
             ->joinForm()
             ->where('form.increment_group', $incrementGroup)
             ->whereNotNull('form.number')
-            ->where(Payment::$alias . '.payment_type', $payment->payment_type)
-            ->where(Payment::$alias . '.disbursed', $payment->disbursed)
+            ->where(self::$alias.'.payment_type', $payment->payment_type)
+            ->where(self::$alias.'.disbursed', $payment->disbursed)
             ->with('form')
             ->orderBy('form.increment', 'desc')
-            ->select(Payment::$alias . '.*')
+            ->select(self::$alias.'.*')
             ->first();
 
         $increment = 1;

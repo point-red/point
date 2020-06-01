@@ -108,7 +108,7 @@ trait EloquentFilters
      * Single group by
      * ?group_by=id
      * Multiple group by
-     * ?group_by=id;name
+     * ?group_by=id;name.
      *
      * @param $query
      * @param $values
@@ -522,7 +522,6 @@ trait EloquentFilters
             }
         }
     }
-
 
     public function scopeOrFilterWhereHasLike($query, $values)
     {

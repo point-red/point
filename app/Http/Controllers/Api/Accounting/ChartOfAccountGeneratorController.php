@@ -14,7 +14,6 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ChartOfAccountGeneratorController extends Controller
 {
-
     /**
      * Store a newly created resource in storage.
      *
@@ -36,7 +35,7 @@ class ChartOfAccountGeneratorController extends Controller
         $cutOff = CutOff::where('id', '>', 0)->first();
         if ($cutOff) {
             foreach ($accounts as $account) {
-                if (!CutOffAccount::where('chart_of_account_id', $account->id)
+                if (! CutOffAccount::where('chart_of_account_id', $account->id)
                     ->where('cut_off_id', $cutOff->id)
                     ->first()) {
                     $cutOffAccount = new CutOffAccount;
@@ -57,7 +56,7 @@ class ChartOfAccountGeneratorController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'generate account succeed'
+            'message' => 'generate account succeed',
         ], 200);
     }
 }

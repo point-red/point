@@ -6,20 +6,19 @@ use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountGroup;
 use App\Model\Accounting\ChartOfAccountType;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class ChartOfAccountImport implements ToCollection, WithHeadingRow
 {
     /**
-    * @param Collection $collection
-    */
+     * @param Collection $collection
+     */
     public function collection(Collection $collection)
     {
         foreach ($collection as $row) {
             $type = ChartOfAccountType::where('name', $row['type'])->first();
-            if (!$type) {
+            if (! $type) {
                 $type = new ChartOfAccountType;
                 $type->name = strtoupper($row['type']);
                 $type->alias = strtoupper($row['type_alias']);
@@ -27,7 +26,7 @@ class ChartOfAccountImport implements ToCollection, WithHeadingRow
             }
 
             $group = ChartOfAccountGroup::where('name', $row['group'])->first();
-            if ($row['group'] && !$group) {
+            if ($row['group'] && ! $group) {
                 $group = new ChartOfAccountGroup();
                 $group->name = strtoupper($row['group']);
                 $group->alias = strtoupper($row['group_alias']);
@@ -35,7 +34,7 @@ class ChartOfAccountImport implements ToCollection, WithHeadingRow
             }
 
             $account = ChartOfAccount::where('name', $row['name'])->first();
-            if (!$account) {
+            if (! $account) {
                 $account = new ChartOfAccount;
                 $account->type_id = $type->id;
                 if ($group) {

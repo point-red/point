@@ -2,7 +2,6 @@
 
 namespace App\Traits\Model\Purchase;
 
-
 use App\Model\Form;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Supplier;

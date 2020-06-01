@@ -7,7 +7,6 @@ use Tests\TestCase;
 
 class AllocationTest extends TestCase
 {
-
     public function setUp(): void
     {
         parent::setUp();

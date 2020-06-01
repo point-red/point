@@ -16,11 +16,14 @@ class PurchaseContractController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return ApiCollection
      */
     public function index(Request $request)
     {
-        $purchaseContracts = PurchaseContract::eloquentFilter($request);
+        $purchaseContracts = PurchaseContract::from(PurchaseContract::getTableName().' as '.PurchaseContract::$alias)->eloquentFilter($request);
+
+        $purchaseContracts = PurchaseContract::joins($purchaseContracts, $request->get('join'));
 
         $purchaseContracts = pagination($purchaseContracts, $request->get('limit'));
 
@@ -30,7 +33,7 @@ class PurchaseContractController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  App\Http\Requests\Purchase\PurchaseContract\StorePurchaseContractRequest $request
+     * @param StorePurchaseContractRequest $request
      * @return App\Http\Resources\ApiResource
      * @throws \Throwable
      */

@@ -15,13 +15,13 @@ class ManufactureMachine extends MasterModel
     protected $fillable = [
         'code',
         'name',
-        'notes'
+        'notes',
     ];
 
     public function getLabelAttribute()
     {
-        $label = $this->code ? '[' . $this->code . '] ' : '';
+        $label = $this->code ? '['.$this->code.'] ' : '';
 
-        return $label . $this->name;
+        return $label.$this->name;
     }
 }

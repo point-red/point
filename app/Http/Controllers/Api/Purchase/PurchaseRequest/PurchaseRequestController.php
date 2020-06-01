@@ -6,12 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
-use App\Traits\Model\Purchase\PurchaseRequestJoin;
-use App\Traits\Model\Purchase\PurchaseRequestRelation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +22,7 @@ class PurchaseRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseRequests = PurchaseRequest::from(PurchaseRequest::getTableName() . ' as ' . PurchaseRequest::$alias)->eloquentFilter($request);
+        $purchaseRequests = PurchaseRequest::from(PurchaseRequest::getTableName().' as '.PurchaseRequest::$alias)->eloquentFilter($request);
 
         $purchaseRequests = PurchaseRequest::joins($purchaseRequests, $request->get('join'));
 
@@ -87,11 +84,11 @@ class PurchaseRequestController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName() . ' as ' . PurchaseRequest::$alias)->eloquentFilter($request);
+        $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName().' as '.PurchaseRequest::$alias)->eloquentFilter($request);
 
         $purchaseRequest = PurchaseRequest::joins($purchaseRequest, $request->get('join'));
 
-        $purchaseRequest = $purchaseRequest->with('form.createdBy')->where(PurchaseRequest::$alias . '.id', $id)->first();
+        $purchaseRequest = $purchaseRequest->with('form.createdBy')->where(PurchaseRequest::$alias.'.id', $id)->first();
 
         if ($request->has('with_archives')) {
             $purchaseRequest->archives = $purchaseRequest->archives();
@@ -114,10 +111,10 @@ class PurchaseRequestController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName() . ' as ' . PurchaseRequest::$alias)
+        $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName().' as '.PurchaseRequest::$alias)
             ->joinForm()
-            ->where(PurchaseRequest::$alias . '.id', $id)
-            ->select(PurchaseRequest::$alias . '.*')
+            ->where(PurchaseRequest::$alias.'.id', $id)
+            ->select(PurchaseRequest::$alias.'.*')
             ->with('form')
             ->first();
 
@@ -153,9 +150,13 @@ class PurchaseRequestController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $purchaseRequest->isAllowedToDelete();
         $purchaseRequest->requestCancel($request);
+
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

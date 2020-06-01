@@ -18,7 +18,7 @@ class ChartOfAccountTypeSeeder extends Seeder
     private function chartAccountTypes()
     {
         $assets = [
-            ['CASH','KAS'],
+            ['CASH', 'KAS'],
             ['CASH-BANK TRANSFER', 'AYAT SILANG KAS BANK'],
             ['BANK', 'BANK'],
             ['SUPPLIES', 'PERLENGKAPAN'],

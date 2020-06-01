@@ -153,9 +153,13 @@ class PurchaseRequestController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $purchaseRequest->isAllowedToDelete();
         $purchaseRequest->requestCancel($request);
+
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

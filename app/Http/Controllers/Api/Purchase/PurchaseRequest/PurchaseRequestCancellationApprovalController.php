@@ -15,8 +15,6 @@ class PurchaseRequestCancellationApprovalController extends Controller
      * @param Request $request
      * @param $id
      * @return ApiResource
-     * @throws UnauthorizedException
-     * @throws ApprovalNotFoundException
      */
     public function approve(Request $request, $id)
     {
@@ -33,8 +31,6 @@ class PurchaseRequestCancellationApprovalController extends Controller
      * @param Request $request
      * @param $id
      * @return ApiResource
-     * @throws ApprovalNotFoundException
-     * @throws UnauthorizedException
      */
     public function reject(Request $request, $id)
     {

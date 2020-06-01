@@ -159,16 +159,13 @@ class PurchaseOrderController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $purchaseOrder = PurchaseOrder::findOrFail($id);
         $purchaseOrder->isAllowedToDelete();
-        $response = $purchaseOrder->requestCancel($request);
+        $purchaseOrder->requestCancel($request);
 
-        if (! $response) {
-            if ($purchaseOrder->purchaseRequest) {
-                $purchaseOrder->purchaseRequest->form->done = false;
-                $purchaseOrder->purchaseRequest->form->save();
-            }
-        }
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

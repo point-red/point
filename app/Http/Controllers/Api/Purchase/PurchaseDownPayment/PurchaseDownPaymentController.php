@@ -23,24 +23,9 @@ class PurchaseDownPaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $downPayments = PurchaseDownPayment::eloquentFilter($request)->with('downpaymentable');
+        $downPayments = PurchaseDownPayment::from(PurchaseDownPayment::getTableName() . ' as ' . PurchaseDownPayment::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('supplier', $fields)) {
-                $downPayments = $downPayments->join(Supplier::getTableName(), function ($q) {
-                    $q->on(Supplier::getTableName('id'), '=', PurchaseDownPayment::getTableName('supplier_id'));
-                });
-            }
-
-            if (in_array('form', $fields)) {
-                $downPayments = $downPayments->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', PurchaseDownPayment::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseDownPayment::$morphName);
-                });
-            }
-        }
+        $downPayments = PurchaseDownPayment::joins($downPayments, $request->get('join'));
 
         $downPayments = pagination($downPayments, $request->get('limit'));
 
@@ -128,23 +113,13 @@ class PurchaseDownPaymentController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $downPayment = PurchaseDownPayment::findOrFail($id);
         $downPayment->isAllowedToDelete();
-
-        $hasPayment = $downPayment->payments()->exists();
-
-        if ($hasPayment && ! $request->get('force')) {
-            // Throw error referenced by payment, need parameter force (and maybe need extra permission role)
-            throw new IsReferencedException('Cannot delete because referenced by payment.', $downPayment->payments->first());
-
-            return;
-        }
-
-        $payment = $downPayment->payments->first();
-        $payment->isAllowedToDelete();
-        $payment->requestCancel($request);
-
         $downPayment->requestCancel($request);
+
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

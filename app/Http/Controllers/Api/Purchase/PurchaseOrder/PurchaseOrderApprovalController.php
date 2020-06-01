@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseOrder;
 
-use App\Exceptions\ApprovalNotFoundException;
-use App\Exceptions\UnauthorizedException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
@@ -15,8 +13,6 @@ class PurchaseOrderApprovalController extends Controller
      * @param Request $request
      * @param $id
      * @return ApiResource
-     * @throws UnauthorizedException
-     * @throws ApprovalNotFoundException
      */
     public function approve(Request $request, $id)
     {
@@ -33,8 +29,6 @@ class PurchaseOrderApprovalController extends Controller
      * @param Request $request
      * @param $id
      * @return ApiResource
-     * @throws ApprovalNotFoundException
-     * @throws UnauthorizedException
      */
     public function reject(Request $request, $id)
     {

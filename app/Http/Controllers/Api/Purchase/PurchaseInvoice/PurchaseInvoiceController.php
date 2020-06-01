@@ -24,24 +24,9 @@ class PurchaseInvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseInvoices = PurchaseInvoice::eloquentFilter($request);
+        $purchaseInvoices = PurchaseInvoice::from(PurchaseInvoice::getTableName() . ' as ' . PurchaseInvoice::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('supplier', $fields)) {
-                $purchaseInvoices = $purchaseInvoices->join(Supplier::getTableName(), function ($q) {
-                    $q->on(Supplier::getTableName('id'), '=', PurchaseInvoice::getTableName('supplier_id'));
-                });
-            }
-
-            if (in_array('form', $fields)) {
-                $purchaseInvoices = $purchaseInvoices->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', PurchaseInvoice::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseInvoice::$morphName);
-                });
-            }
-        }
+        $purchaseInvoices = PurchaseInvoice::joins($purchaseInvoices, $request->get('join'));
 
         $purchaseInvoices = pagination($purchaseInvoices, $request->get('limit'));
 
@@ -131,17 +116,13 @@ class PurchaseInvoiceController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $purchaseInvoice = PurchaseInvoice::findOrFail($id);
         $purchaseInvoice->isAllowedToDelete();
+        $purchaseInvoice->requestCancel($request);
 
-        $response = $purchaseInvoice->requestCancel($request);
-
-        if (! $response) {
-            foreach ($purchaseInvoice->purchaseReceives as $purchaseReceive) {
-                $purchaseReceive->form->done = false;
-                $purchaseReceive->form->save();
-            }
-        }
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

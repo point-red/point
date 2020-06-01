@@ -138,7 +138,7 @@ class PurchaseOrder extends TransactionModel
     private static function calculateAmount($purchaseOrder, $items)
     {
         $amount = array_reduce($items, function ($carry, $item) {
-            return $carry + $item->quantity * ($item->price - $item->discount_value) * $item->converter;
+            return $carry + $item->quantity * ($item->price - $item->discount_value);
         }, 0);
 
         $amount -= $purchaseOrder->discount_value;

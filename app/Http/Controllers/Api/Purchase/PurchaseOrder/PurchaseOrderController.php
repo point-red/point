@@ -92,7 +92,11 @@ class PurchaseOrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseOrder = PurchaseOrder::eloquentFilter($request)->findOrFail($id);
+        $purchaseOrder = PurchaseOrder::from(PurchaseOrder::getTableName() . ' as ' . PurchaseOrder::$alias)->eloquentFilter($request);
+
+        $purchaseOrder = PurchaseOrder::joins($purchaseOrder, $request->get('join'));
+
+        $purchaseOrder = $purchaseOrder->where(PurchaseOrder::$alias . '.id', $id)->first();
 
         /*
          * anything except 0 is considered true, including string "false"

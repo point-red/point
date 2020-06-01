@@ -2,8 +2,6 @@
 
 namespace App\Model\Manufacture\ManufactureFormula;
 
-use App\Model\Master\Item;
-use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
 use App\Traits\Model\Manufacture\ManufactureFormulaFinishedGoodsJoin;
 use App\Traits\Model\Manufacture\ManufactureFormulaFinishedGoodsRelation;

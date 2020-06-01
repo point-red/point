@@ -34,5 +34,4 @@ trait ManufactureFormulaRelation
     {
         return $this->hasMany(ManufactureInput::class)->active();
     }
-
 }

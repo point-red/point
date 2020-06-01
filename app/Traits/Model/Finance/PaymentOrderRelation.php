@@ -2,13 +2,10 @@
 
 namespace App\Traits\Model\Finance;
 
-
 use App\Model\Finance\Payment\Payment;
 use App\Model\Finance\PaymentOrder\PaymentOrderDetail;
 use App\Model\Form;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestService;
 
 trait PaymentOrderRelation
 {

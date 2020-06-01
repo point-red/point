@@ -21,7 +21,7 @@ class PurchaseContractController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseContracts = PurchaseContract::from(PurchaseContract::getTableName() . ' as ' . PurchaseContract::$alias)->eloquentFilter($request);
+        $purchaseContracts = PurchaseContract::from(PurchaseContract::getTableName().' as '.PurchaseContract::$alias)->eloquentFilter($request);
 
         $purchaseContracts = PurchaseContract::joins($purchaseContracts, $request->get('join'));
 

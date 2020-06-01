@@ -4,13 +4,8 @@ namespace App\Console\Commands;
 
 use App\Model\Account\Invoice;
 use App\Model\Account\InvoiceItem;
-use App\Model\Accounting\CutOffInventory;
-use App\Model\Master\ItemUnit;
-use App\Model\Master\PricingGroup;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
 
 class InvoiceGeneratorCommand extends Command
 {

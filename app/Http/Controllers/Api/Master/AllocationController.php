@@ -8,7 +8,6 @@ use App\Http\Requests\Master\Allocation\UpdateAllocationRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Master\Allocation;
-use App\Model\Master\AllocationGroup;
 use Illuminate\Http\Request;
 
 class AllocationController extends Controller
@@ -21,7 +20,7 @@ class AllocationController extends Controller
      */
     public function index(Request $request)
     {
-        $allocations = Allocation::from(Allocation::getTableName() . ' as ' . Allocation::$alias)->eloquentFilter($request);
+        $allocations = Allocation::from(Allocation::getTableName().' as '.Allocation::$alias)->eloquentFilter($request);
 
         $allocations = Allocation::joins($allocations, $request->get('join'));
 
@@ -60,7 +59,7 @@ class AllocationController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $allocation = Allocation::from(Allocation::getTableName() . ' as ' . Allocation::$alias)->eloquentFilter($request);
+        $allocation = Allocation::from(Allocation::getTableName().' as '.Allocation::$alias)->eloquentFilter($request);
 
         $allocation = Allocation::joins($allocation, $request->get('join'));
 

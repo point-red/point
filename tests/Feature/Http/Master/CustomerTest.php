@@ -6,7 +6,6 @@ use Tests\TestCase;
 
 class CustomerTest extends TestCase
 {
-
     public function setUp(): void
     {
         parent::setUp();

@@ -5,7 +5,6 @@ namespace App\Model\Master;
 use App\Model\MasterModel;
 use App\Traits\Model\Master\CustomerGroupJoin;
 use App\Traits\Model\Master\CustomerGroupRelation;
-use Carbon\Carbon;
 
 class CustomerGroup extends MasterModel
 {
@@ -16,5 +15,4 @@ class CustomerGroup extends MasterModel
     protected $fillable = ['name'];
 
     public static $alias = 'customer_group';
-
 }

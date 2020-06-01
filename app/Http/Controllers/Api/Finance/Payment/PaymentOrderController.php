@@ -7,9 +7,6 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Form;
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\Master\Customer;
-use App\Model\Master\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +22,7 @@ class PaymentOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $paymentOrder = PaymentOrder::from(PaymentOrder::getTableName() . ' as ' . PaymentOrder::$alias)->eloquentFilter($request);
+        $paymentOrder = PaymentOrder::from(PaymentOrder::getTableName().' as '.PaymentOrder::$alias)->eloquentFilter($request);
 
         $paymentOrder = PaymentOrder::joins($paymentOrder, $request->get('join'));
 
@@ -65,9 +62,9 @@ class PaymentOrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $paymentOrder = PaymentOrder::from(PaymentOrder::getTableName() . ' as ' . PaymentOrder::$alias)
+        $paymentOrder = PaymentOrder::from(PaymentOrder::getTableName().' as '.PaymentOrder::$alias)
             ->eloquentFilter($request)
-            ->where(PaymentOrder::$alias . '.id', $id)
+            ->where(PaymentOrder::$alias.'.id', $id)
             ->first();
 
         return new ApiResource($paymentOrder);

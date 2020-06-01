@@ -15,5 +15,4 @@ class EmployeeGroup extends MasterModel
     protected $fillable = ['name'];
 
     public static $alias = 'employee_group';
-
 }

@@ -2,7 +2,6 @@
 
 namespace App\Traits\Model\Purchase;
 
-
 use App\Model\Finance\Payment\Payment;
 use App\Model\Form;
 use App\Model\Master\Supplier;
@@ -40,5 +39,4 @@ trait PurchaseDownPaymentRelation
     {
         return $this->belongsToMany(PurchaseInvoice::class, 'purchase_down_payment_invoice', 'invoice_id', 'down_payment_id')->active();
     }
-
 }

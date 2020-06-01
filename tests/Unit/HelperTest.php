@@ -39,9 +39,8 @@ class HelperTest extends TestCase
     {
         /**
          * UTC = 0
-         * Asia/Jakarta = +7
+         * Asia/Jakarta = +7.
          */
-
         $date = date_tz('01/10/2019 00:00:00', 'UTC', 'Asia/Jakarta');
 
         $this->assertStringContainsString('2019-01-10 07:00:00', $date);

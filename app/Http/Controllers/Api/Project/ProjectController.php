@@ -94,7 +94,7 @@ class ProjectController extends Controller
         $invoiceCount = Invoice::where('date', '>=', date('Y-m-01 00:00:00'))
             ->where('date', '<=', date('Y-m-t 23:59:59'))
             ->count();
-        $invoiceNumber = $invoiceNumber . sprintf('%04d', $invoiceCount + 1);
+        $invoiceNumber = $invoiceNumber.sprintf('%04d', $invoiceCount + 1);
 
         // Create invoice
         $invoice = new Invoice;
@@ -127,12 +127,11 @@ class ProjectController extends Controller
             $invoice->sub_total += $invoiceItem->amount;
         }
 
-
         foreach ($request->get('plugins') as $plugin) {
             $project->plugins()->attach($plugin['id'], [
                 'created_at' => now(),
                 'updated_at' => now(),
-                'expired_date' => date('Y-m-t 23:59:59')
+                'expired_date' => date('Y-m-t 23:59:59'),
             ]);
 
             $invoiceItem = new InvoiceItem;
@@ -161,8 +160,8 @@ class ProjectController extends Controller
 
         return (new ProjectResource($project))->additional([
             'data' => [
-                'invoice_id' => $invoice->id
-            ]
+                'invoice_id' => $invoice->id,
+            ],
         ]);
     }
 

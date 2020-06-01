@@ -2,13 +2,12 @@
 
 namespace App\Traits\Model\Accounting;
 
-
 use App\Model\Accounting\ChartOfAccountGroup;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\Journal;
 use App\Model\Form;
 
-trait ChartOfAccountRelation
+trait ChatOfAccountRelation
 {
     /**
      * Get the type that owns the chart of account.

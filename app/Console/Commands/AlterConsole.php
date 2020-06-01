@@ -46,10 +46,10 @@ class AlterConsole extends Command
             DB::connection('tenant')->reconnect();
             $employees = Employee::where('updated_at', '>', '2020-04-21')->get();
             if ($employees->count() > 0) {
-                $this->line('PROJECT:  '.$project->code .' = '. $employees->count());
+                $this->line('PROJECT:  '.$project->code.' = '.$employees->count());
 
                 foreach ($employees as $employee) {
-                    $this->line($employee->id . '. ' . $employee->name .' ('.$employee->updated_at.')');
+                    $this->line($employee->id.'. '.$employee->name.' ('.$employee->updated_at.')');
                 }
             }
         }

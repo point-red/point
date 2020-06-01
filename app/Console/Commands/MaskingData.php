@@ -55,57 +55,57 @@ class MaskingData extends Command
 
                 $users = \App\Model\Master\User::all();
                 foreach ($users as $key => $user) {
-                    $user->email = $key . 'mail@mail.mail';
-                    $user->name = 'user' . $key;
-                    $user->address = 'address' . $key;
-                    $user->phone = 'phone' . $key;
-                    $user->first_name = 'user' . $key;
-                    $user->last_name = 'user' . $key;
+                    $user->email = $key.'mail@mail.mail';
+                    $user->name = 'user'.$key;
+                    $user->address = 'address'.$key;
+                    $user->phone = 'phone'.$key;
+                    $user->first_name = 'user'.$key;
+                    $user->last_name = 'user'.$key;
                     $user->save();
                 }
 
                 $employees = Employee::all();
                 foreach ($employees as $key => $employee) {
-                    $employee->personal_identity = rand(10000000, 99990000) . '-' . $key;
-                    $employee->name = 'user' . $key;
-                    $employee->last_education = 'last_education' . $key;
-                    $employee->married_with = 'married_with' . $key;
+                    $employee->personal_identity = rand(10000000, 99990000).'-'.$key;
+                    $employee->name = 'user'.$key;
+                    $employee->last_education = 'last_education'.$key;
+                    $employee->married_with = 'married_with'.$key;
                     $employee->save();
                 }
 
                 $addresses = Employee\EmployeeAddress::all();
                 foreach ($addresses as $key => $address) {
-                    $address->address = 'address-' . $key;
+                    $address->address = 'address-'.$key;
                     $address->save();
                 }
 
                 $phones = Employee\EmployeePhone::all();
                 foreach ($phones as $key => $phone) {
-                    $phone->phone = 'phone-' . $key;
+                    $phone->phone = 'phone-'.$key;
                     $phone->save();
                 }
 
                 $emails = Employee\EmployeeCompanyEmail::all();
                 foreach ($emails as $key => $email) {
-                    $email->email = 'email-' . $key . '@a.cm';
+                    $email->email = 'email-'.$key.'@a.cm';
                     $email->save();
                 }
 
                 $emails = EmployeeEmail::all();
                 foreach ($emails as $key => $email) {
-                    $email->email = 'email-' . $key . '@a.cm';
+                    $email->email = 'email-'.$key.'@a.cm';
                     $email->save();
                 }
 
                 $groups = EmployeeGroup::all();
                 foreach ($groups as $key => $group) {
-                    $group->name = 'group-' . $key;
+                    $group->name = 'group-'.$key;
                     $group->save();
                 }
 
                 $medias = EmployeeSocialMedia::all();
                 foreach ($medias as $key => $media) {
-                    $media->account = 'account-' . $key;
+                    $media->account = 'account-'.$key;
                     $media->save();
                 }
             }

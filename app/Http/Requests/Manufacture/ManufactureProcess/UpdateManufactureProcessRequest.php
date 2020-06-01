@@ -24,7 +24,7 @@ class UpdateManufactureProcessRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:tenant.manufacture_processes,name,'.$this->id
+            'name' => 'required|string|unique:tenant.manufacture_processes,name,'.$this->id,
         ];
     }
 }

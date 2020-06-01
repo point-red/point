@@ -22,9 +22,9 @@ class ChartOfAccount extends MasterModel
 
     public function getLabelAttribute()
     {
-        $label = $this->number ? '[' . $this->number . '] ' : '';
+        $label = $this->number ? '['.$this->number.'] ' : '';
 
-        return $label . $this->alias;
+        return $label.$this->alias;
     }
 
     public function totalDebit($date)

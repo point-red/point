@@ -19,7 +19,7 @@ class KpiTemplateImportController extends Controller
     public function check(Request $request)
     {
         $request->validate([
-          'file' => 'required|mimes:xlsx,xls,csv|max:1024',
+            'file' => 'required|mimes:xlsx,xls,csv|max:1024',
         ]);
 
         $file = $this->saveStorage($request->header('Tenant'), request()->file('file'));
@@ -34,9 +34,9 @@ class KpiTemplateImportController extends Controller
             return $response;
         } else {
             return response()->json([
-              'message' => 'exist',
-              'replace' => $exist->id,
-              'name'    => $exist->name,
+                'message' => 'exist',
+                'replace' => $exist->id,
+                'name'    => $exist->name,
             ], 200);
         }
     }
@@ -56,7 +56,7 @@ class KpiTemplateImportController extends Controller
 
         if (Excel::import($import, $file)) {
             return response()->json([
-              'message' => 'success',
+                'message' => 'success',
             ], 200);
         }
     }

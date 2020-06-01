@@ -17,7 +17,7 @@ class InventoryUsage extends TransactionModel
     public $timestamps = false;
 
     protected $fillable = [
-      'warehouse_id'
+        'warehouse_id',
     ];
 
     public $defaultNumberPrefix = 'IU';
@@ -49,7 +49,6 @@ class InventoryUsage extends TransactionModel
 
     public static function create($data)
     {
-
         $inventoryUsage = new self;
         $inventoryUsage->fill($data);
         $inventoryUsage->save();

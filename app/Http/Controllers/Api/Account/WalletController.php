@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
 use App\Model\Account\Invoice;
 use App\Model\Account\Wallet;
-use App\Model\PaymentGateway\Xendit\XenditInvoicePaid;
-use App\Model\Plugin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Xendit\Xendit;
@@ -27,8 +25,8 @@ class WalletController extends Controller
 
         return response()->json([
             'data' => [
-                'amount' => (double) $amount
-            ]
+                'amount' => (float) $amount,
+            ],
         ], 200);
     }
 
@@ -82,17 +80,17 @@ class WalletController extends Controller
             if ($request->get('invoice_id')) {
                 $invoice = Invoice::find($request->get('invoice_id'));
                 $params = [
-                    'external_id' => 'invoice-' . $request->get('invoice_id'),
+                    'external_id' => 'invoice-'.$request->get('invoice_id'),
                     'payer_email' => auth()->user()->email,
                     'description' => 'INVOICE #'.$invoice->number,
-                    'amount' => $request->get('amount')
+                    'amount' => $request->get('amount'),
                 ];
             } else {
                 $params = [
-                    'external_id' => 'user-' . auth()->user()->id,
+                    'external_id' => 'user-'.auth()->user()->id,
                     'payer_email' => auth()->user()->email,
                     'description' => 'Top-up',
-                    'amount' => $request->get('amount')
+                    'amount' => $request->get('amount'),
                 ];
             }
 

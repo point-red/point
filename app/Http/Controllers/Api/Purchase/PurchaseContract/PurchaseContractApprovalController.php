@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseContract;
 
-use App\Exceptions\ApprovalNotFoundException;
-use App\Exceptions\UnauthorizedException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
 use App\Model\Purchase\PurchaseContract\PurchaseContract;

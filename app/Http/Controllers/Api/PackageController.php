@@ -19,7 +19,7 @@ class PackageController extends Controller
      */
     public function index(Request $request)
     {
-        $packages = Package::from('packages as ' . Package::$alias)->where('is_active', true);
+        $packages = Package::from('packages as '.Package::$alias)->where('is_active', true);
 
         $packages = pagination($packages, $request->input('limit'));
 

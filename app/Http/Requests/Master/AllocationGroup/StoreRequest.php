@@ -24,7 +24,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:tenant.allocation_groups'
+            'name' => 'required|unique:tenant.allocation_groups',
         ];
     }
 }

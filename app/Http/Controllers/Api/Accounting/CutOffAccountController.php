@@ -28,7 +28,7 @@ class CutOffAccountController extends Controller
 
         // create cut off account
         foreach ($chartOfAccounts as $chartOfAccount) {
-            if (!CutOffAccount::where('chart_of_account_id', $chartOfAccount->id)->first()) {
+            if (! CutOffAccount::where('chart_of_account_id', $chartOfAccount->id)->first()) {
                 $cutOffAccount = new CutOffAccount;
                 $cutOffAccount->chart_of_account_id = $chartOfAccount->id;
                 $cutOffAccount->cut_off_id = CutOff::where('id', '>', 0)->orderBy('id', 'desc')->first()->id;
@@ -79,7 +79,7 @@ class CutOffAccountController extends Controller
         $chartOfAccount->save();
 
         // create cut off account
-        if (!CutOffAccount::where('chart_of_account_id', $chartOfAccount->id)->where('cut_off_id', CutOff::where('id', '>', 0)->first()->id)->first()) {
+        if (! CutOffAccount::where('chart_of_account_id', $chartOfAccount->id)->where('cut_off_id', CutOff::where('id', '>', 0)->first()->id)->first()) {
             $cutOffAccount = new CutOffAccount;
             $cutOffAccount->chart_of_account_id = $chartOfAccount->id;
             $cutOffAccount->cut_off_id = CutOff::where('id', '>', 0)->orderBy('id', 'desc')->first()->id;

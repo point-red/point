@@ -35,8 +35,8 @@ class PerformanceReportExportController extends Controller
 
             if (! $result) {
                 return response()->json([
-                  'message' => 'Failed to export',
-              ], 422);
+                    'message' => 'Failed to export',
+                ], 422);
             }
 
             $cloudStorage = new CloudStorage;

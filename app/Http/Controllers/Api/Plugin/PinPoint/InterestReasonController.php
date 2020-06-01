@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\Customer\StoreCustomerRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Plugin\PinPoint\InterestReason;

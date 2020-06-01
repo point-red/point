@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Model\Master\User as TenantUser;
 use App\User;
 use Tests\TestCase;
-use App\Model\Master\User as TenantUser;
 
 class HelperTest extends TestCase
 {
@@ -43,5 +43,4 @@ class HelperTest extends TestCase
         $this->assertArrayHasKey('path', $users);
         $this->assertArrayHasKey('total', $users);
     }
-
 }

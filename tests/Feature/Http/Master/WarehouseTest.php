@@ -7,7 +7,6 @@ use Tests\TestCase;
 
 class WarehouseTest extends TestCase
 {
-
     public function setUp(): void
     {
         parent::setUp();

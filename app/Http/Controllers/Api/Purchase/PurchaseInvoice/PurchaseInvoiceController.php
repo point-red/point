@@ -7,8 +7,6 @@ use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\StorePurchaseInvo
 use App\Http\Requests\Purchase\PurchaseInvoice\PurchaseInvoice\UpdatePurchaseInvoiceRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +22,7 @@ class PurchaseInvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseInvoices = PurchaseInvoice::from(PurchaseInvoice::getTableName() . ' as ' . PurchaseInvoice::$alias)->eloquentFilter($request);
+        $purchaseInvoices = PurchaseInvoice::from(PurchaseInvoice::getTableName().' as '.PurchaseInvoice::$alias)->eloquentFilter($request);
 
         $purchaseInvoices = PurchaseInvoice::joins($purchaseInvoices, $request->get('join'));
 

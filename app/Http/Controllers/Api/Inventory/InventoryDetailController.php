@@ -19,16 +19,15 @@ class InventoryDetailController extends Controller
      */
     public function index(Request $request, $itemId)
     {
-        $inventories = Inventory::eloquentFilter($request)
-            ->join(Form::getTableName(), Form::getTableName('id'), '=', Inventory::getTableName('form_id'))
-            ->where('item_id', $itemId)
-            ->select(Inventory::getTableName('*'));
+        $inventories = Inventory::from(Inventory::getTableName() . ' as ' . Inventory::$alias)->eloquentFilter($request)
+            ->join(Form::getTableName() . ' as ' . Form::$alias, Form::$alias . '.id', '=', Inventory::$alias . '.form_id')
+            ->where('inventory.item_id', $itemId);
 
         if ($request->has('warehouse_id')) {
-            $inventories = $inventories->where('warehouse_id', $request->get('warehouse_id'));
+            $inventories = $inventories->where('inventory.warehouse_id', $request->get('warehouse_id'));
         }
 
-        $inventories = $inventories->orderBy('forms.date', 'asc');
+        $inventories = $inventories->orderBy('form.date', 'asc');
 
         $inventories = pagination($inventories, $request->get('limit'));
 
@@ -36,20 +35,6 @@ class InventoryDetailController extends Controller
 
         $inventoryCollection->limit($request->get('limit'));
         $inventoryCollection->currentPage($request->get('page'));
-
-        if ($request->filter_date_min) {
-            $filterMin = convert_javascript_object_to_array($request->filter_date_min);
-            if (array_has($filterMin, 'form.date')) {
-                $inventoryCollection->dateFrom($filterMin['form.date']);
-            }
-        }
-
-        if ($request->filter_date_max) {
-            $filterMax = convert_javascript_object_to_array($request->filter_date_max);
-            if (array_has($filterMax, 'form.date')) {
-                $inventoryCollection->dateTo($filterMax['form.date']);
-            }
-        }
 
         return $inventoryCollection;
     }

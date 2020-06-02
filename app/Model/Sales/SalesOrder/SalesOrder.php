@@ -11,10 +11,14 @@ use App\Model\Sales\SalesContract\SalesContract;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\TransactionModel;
+use App\Traits\Model\Sales\SalesOrderJoin;
+use App\Traits\Model\Sales\SalesOrderRelation;
 use Carbon\Carbon;
 
 class SalesOrder extends TransactionModel
 {
+    use SalesOrderRelation, SalesOrderJoin;
+
     public static $morphName = 'SalesOrder';
 
     protected $connection = 'tenant';
@@ -68,87 +72,32 @@ class SalesOrder extends TransactionModel
         $this->attributes['eta'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
 
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(SalesOrderItem::class);
-    }
-
-    public function services()
-    {
-        return $this->hasMany(SalesOrderService::class);
-    }
-
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class);
-    }
-
-    public function salesQuotation()
-    {
-        return $this->belongsTo(SalesQuotation::class, 'sales_quotation_id');
-    }
-
-    public function deliveryOrders()
-    {
-        return $this->hasMany(DeliveryOrder::class)->active();
-    }
-
-    public function warehouse()
-    {
-        return $this->belongsTo(Warehouse::class);
-    }
-
-    public function downPayments()
-    {
-        return $this->morphMany(SalesDownPayment::class, 'downpaymentable')->active();
-    }
-
-    public function paidDownPayments()
-    {
-        return $this->downPayments()->whereNotNull('paid_by');
-    }
-
-    public function remainingDownPayments()
-    {
-        return $this->paidDownPayments()->where('remaining', '>', 0);
-    }
-
-    public function salesContract()
-    {
-        return $this->belongsTo(SalesContract::class);
-    }
-
     public function updateIfDone()
     {
         // TODO check service too
-        $done = true;
-        $items = $this->items()->with('deliveryOrderItems')->get();
-        foreach ($items as $item) {
-            $quantitySent = $item->deliveryOrderItems->sum('quantity');
-            if ($item->quantity > $quantitySent) {
-                $done = false;
-                break;
-            }
-        }
-
-        $this->form()->update(['done' => $done]);
+//        $done = true;
+//        $items = $this->items()->with('deliveryOrderItems')->get();
+//        foreach ($items as $item) {
+//            $quantitySent = $item->deliveryOrderItems->sum('quantity');
+//            if ($item->quantity > $quantitySent) {
+//                $done = false;
+//                break;
+//            }
+//        }
+//
+//        $this->form()->update(['done' => $done]);
     }
 
     public function isAllowedToUpdate()
     {
-        $this->updatedFormNotArchived();
-        $this->isNotReferenced();
+//        $this->updatedFormNotArchived();
+//        $this->isNotReferenced();
     }
 
     public function isAllowedToDelete()
     {
-        $this->updatedFormNotArchived();
-        $this->isNotReferenced();
+//        $this->updatedFormNotArchived();
+//        $this->isNotReferenced();
     }
 
     public static function create($data)
@@ -157,13 +106,11 @@ class SalesOrder extends TransactionModel
         $salesOrder->fill($data);
 
         $items = self::mapItems($data['items'] ?? []);
-        $services = self::mapServices($data['services'] ?? []);
 
-        $salesOrder->amount = self::calculateAmount($salesOrder, $items, $services);
+        $salesOrder->amount = self::calculateAmount($salesOrder, $items);
         $salesOrder->save();
 
         $salesOrder->items()->saveMany($items);
-        $salesOrder->services()->saveMany($services);
 
         $form = new Form;
         $form->saveData($data, $salesOrder);
@@ -188,16 +135,6 @@ class SalesOrder extends TransactionModel
 
             return $salesOrderItem;
         }, $items);
-    }
-
-    private static function mapServices($services)
-    {
-        return array_map(function ($service) {
-            $salesOrderService = new SalesOrderService;
-            $salesOrderService->fill($service);
-
-            return $salesOrderService;
-        }, $services);
     }
 
     private static function calculateAmount($salesOrder, $items, $services)
@@ -229,11 +166,11 @@ class SalesOrder extends TransactionModel
     private function isNotReferenced()
     {
         // Check if not referenced by purchase order
-        if ($this->deliveryOrders->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by delivery order(s)', $this->deliveryOrders);
-        }
-        if ($this->downPayments->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by down payment(s)', $this->downPayments);
-        }
+//        if ($this->deliveryOrders->count()) {
+//            throw new IsReferencedException('Cannot edit form because referenced by delivery order(s)', $this->deliveryOrders);
+//        }
+//        if ($this->downPayments->count()) {
+//            throw new IsReferencedException('Cannot edit form because referenced by down payment(s)', $this->downPayments);
+//        }
     }
 }

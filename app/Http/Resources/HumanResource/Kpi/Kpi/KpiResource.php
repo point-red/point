@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\HumanResource\Kpi\KpiCategory;
+namespace App\Http\Resources\HumanResource\Kpi\Kpi;
 
 use App\Http\Resources\ApiResource;
 use App\Http\Resources\HumanResource\Kpi\KpiGroup\KpiGroupResource;

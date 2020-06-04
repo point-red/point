@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\HumanResource\Kpi\Kpi\KpiIndicatorResource;
-use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiCollection;
-use App\Http\Resources\HumanResource\Kpi\KpiCategory\KpiResource;
+use App\Http\Resources\HumanResource\Kpi\Kpi\KpiCollection;
+use App\Http\Resources\HumanResource\Kpi\Kpi\KpiResource;
 use App\Http\Resources\HumanResource\Kpi\KpiGroup\KpiGroupResource;
+use App\Http\Resources\HumanResource\Kpi\KpiIndicator\KpiIndicatorResource;
 use App\Model\HumanResource\Kpi\Automated;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;

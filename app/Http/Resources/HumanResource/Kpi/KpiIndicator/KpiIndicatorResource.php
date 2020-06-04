@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\HumanResource\Kpi\Kpi;
+namespace App\Http\Resources\HumanResource\Kpi\KpiIndicator;
 
 use App\Http\Resources\HumanResource\Kpi\KpiScore\KpiScoreResource;
 use Illuminate\Http\Resources\Json\JsonResource;

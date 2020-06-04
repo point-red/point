@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\HumanResource\Kpi\Kpi;
+namespace App\Http\Resources\HumanResource\Kpi\KpiIndicator;
 
 use App\Model\HumanResource\Kpi\KpiIndicator;
 use Illuminate\Http\Resources\Json\ResourceCollection;

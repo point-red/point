@@ -33,7 +33,7 @@ trait SalesOrderJoin
 
         if (in_array('items', $joins)) {
             $query = $query->leftjoin(SalesOrderItem::getTableName().' as '.SalesOrderItem::$alias,
-                SalesOrderItem::$alias.'.sales_quotation_id', '=', SalesOrder::$alias.'.id');
+                SalesOrderItem::$alias.'.sales_order_id', '=', SalesOrder::$alias.'.id');
             if (in_array('item', $joins)) {
                 $query = $query->leftjoin(Item::getTableName().' as '.Item::$alias,
                     Item::$alias.'.id', '=', SalesOrderItem::$alias.'.item_id');

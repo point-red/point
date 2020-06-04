@@ -22,12 +22,12 @@ class CreateSalesOrderItemsTable extends Migration
             $table->unsignedInteger('item_id');
             $table->string('item_name');
             $table->decimal('quantity', 65, 30);
+            $table->string('unit');
+            $table->decimal('converter', 65, 30);
             $table->unsignedDecimal('price', 65, 30);
             $table->unsignedDecimal('discount_percent', 33, 30)->nullable();
             $table->unsignedDecimal('discount_value', 65, 30)->default(0);
             $table->boolean('taxable')->default(true);
-            $table->string('unit');
-            $table->decimal('converter', 65, 30);
             $table->text('notes')->nullable();
             $table->unsignedInteger('allocation_id')->nullable();
 

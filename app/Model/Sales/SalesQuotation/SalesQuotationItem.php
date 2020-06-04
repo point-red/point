@@ -22,6 +22,8 @@ class SalesQuotationItem extends TransactionModel
         'unit',
         'converter',
         'price',
+        'discount_percent',
+        'discount_value',
         'notes',
     ];
 
@@ -48,9 +50,6 @@ class SalesQuotationItem extends TransactionModel
 
     public function salesOrderItems()
     {
-        return $this->hasMany(SalesOrderItem::class)
-            ->whereHas('salesOrder', function ($query) {
-                $query->active();
-            });
+        return $this->hasMany(SalesOrderItem::class);
     }
 }

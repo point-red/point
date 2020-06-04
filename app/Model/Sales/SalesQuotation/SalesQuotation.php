@@ -91,4 +91,20 @@ class SalesQuotation extends TransactionModel
 
         return $amount;
     }
+
+    public function updateIfDone()
+    {
+        $done = true;
+        foreach ($this->items as $item) {
+            $quantityOrdered = $item->salesOrderItems->sum('quantity');
+            if ($item->quantity > $quantityOrdered) {
+                $done = false;
+                break;
+            }
+        }
+
+        $this->form()->update(['done' => $done]);
+    }
+
+
 }

@@ -7,6 +7,10 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::post('quotations/{id}/cancellation-approve', 'SalesQuotation\\SalesQuotationCancellationApprovalController@approve');
     Route::post('quotations/{id}/cancellation-reject', 'SalesQuotation\\SalesQuotationCancellationApprovalController@reject');
     Route::apiResource('quotations', 'SalesQuotation\\SalesQuotationController');
+    Route::post('orders/{id}/approve', 'SalesOrder\\SalesOrderApprovalController@approve');
+    Route::post('orders/{id}/reject', 'SalesOrder\\SalesOrderApprovalController@reject');
+    Route::post('orders/{id}/cancellation-approve', 'SalesOrder\\SalesOrderCancellationApprovalController@approve');
+    Route::post('orders/{id}/cancellation-reject', 'SalesOrder\\SalesOrderCancellationApprovalController@reject');
     Route::apiResource('orders', 'SalesOrder\\SalesOrderController');
     Route::apiResource('down-payments', 'SalesDownPayment\\SalesDownPaymentController');
     Route::apiResource('delivery-orders', 'DeliveryOrder\\DeliveryOrderController');

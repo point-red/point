@@ -57,11 +57,11 @@ class AlterData extends Command
     {
         $projects = Project::where('is_generated', true)->get();
         foreach ($projects as $project) {
-            if ($project->code == 'bimoker' || $project->code == 'bipati' || $project->code == 'bitegal') {
+            if (strtolower($project->code) == 'bimoker' || strtolower($project->code) == 'bipati' || strtolower($project->code) == 'bitegal') {
                 $project->plugins()->syncWithoutDetaching(3);
             }
 
-            if ($project->group == 'kopibara' || $project->code == 'sagmb') {
+            if (strtolower($project->group) == 'kopibara' || strtolower($project->code) == 'sagmb') {
                 $project->plugins()->syncWithoutDetaching(2);
             }
 

@@ -61,21 +61,21 @@ class WalletController extends Controller
     {
         Xendit::setApiKey(env('XENDIT_SECRET_API_KEY'));
 
-        $invoices = \Xendit\Invoice::retrieveAll();
-        $count = 0;
+//        $invoices = \Xendit\Invoice::retrieveAll();
+//        $count = 0;
         $createInvoice = null;
-        foreach ($invoices as $invoice) {
-            if (strtolower($invoice['status']) == 'pending'
-                && $invoice['amount'] == $request->get('amount')
-                && date('Y-m-d H:i:s', strtotime($invoice['expiry_date'])) > date('Y-m-d H:i:s')) {
-                // there is still pending invoice, avoid create new one
-                $count++;
-                $createInvoice = $invoice;
-                break;
-            }
-        }
+//        foreach ($invoices as $invoice) {
+//            if (strtolower($invoice['status']) == 'pending'
+//                && $invoice['amount'] == $request->get('amount')
+//                && date('Y-m-d H:i:s', strtotime($invoice['expiry_date'])) > date('Y-m-d H:i:s')) {
+//                // there is still pending invoice, avoid create new one
+//                $count++;
+//                $createInvoice = $invoice;
+//                break;
+//            }
+//        }
 
-        if ($count == 0) {
+//        if ($count == 0) {
             // create new invoice
             if ($request->get('invoice_id')) {
                 $invoice = Invoice::find($request->get('invoice_id'));
@@ -97,9 +97,9 @@ class WalletController extends Controller
             $createInvoice = \Xendit\Invoice::create($params);
 
             return response()->json(['data' => ['invoice_url' => $createInvoice['invoice_url']]], 201);
-        } else {
-            // return invoice url
-            return response()->json(['data' => ['invoice_url' => $createInvoice['invoice_url']]], 201);
-        }
+//        } else {
+//            // return invoice url
+//            return response()->json(['data' => ['invoice_url' => $createInvoice['invoice_url']]], 201);
+//        }
     }
 }

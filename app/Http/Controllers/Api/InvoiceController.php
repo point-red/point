@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Account\Invoice;
+use App\Model\Project\Project;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
@@ -19,6 +20,10 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         $invoices = Invoice::from('invoices as '.Invoice::$alias);
+
+        $projects = Project::where('owner_id', auth()->user()->id)->pluck('id');
+
+        $invoices = $invoices->whereIn('project_id', $projects);
 
         $invoices = pagination($invoices, $request->get('limit'));
 

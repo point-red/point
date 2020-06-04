@@ -3,7 +3,7 @@
 namespace App\Traits\Model\HumanResource;
 
 use App\Model\Finance\Payment\Payment;
-use App\Model\HumanResource\Employee\Employee\EmployeeCompanyEmail;
+use App\Model\HumanResource\Employee\EmployeeCompanyEmail;
 use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeGender;
 use App\Model\HumanResource\Employee\EmployeeGroup;

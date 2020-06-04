@@ -17,34 +17,40 @@ class XenditCallbackController extends Controller
         if ($verifyToken != env('XENDIT_CALLBACK_VERIFICATION_TOKEN')) {
             return response()->json([], 400);
         } else {
-            $data = new XenditInvoicePaid;
-            $data->xendit_id = $request->get('id');
-            $data->fill($request->all());
-            $data->save();
+            $isExists = XenditInvoicePaid::where('xendit_id', $request->get('id'))->first();
 
-            $externalId = explode('-', $data->external_id);
+            if (! $isExists) {
+                $data = new XenditInvoicePaid;
+                $data->xendit_id = $request->get('id');
+                $data->fill($request->all());
+                $data->save();
 
-            if ($externalId[0] == 'user') {
-                $wallet = new Wallet;
-                $wallet->user_id = $externalId[1];
-                $wallet->source_id = $data->id;
-                $wallet->source_type = get_class($data);
-                $wallet->amount = $data->amount;
-                $wallet->save();
+                $externalId = explode('-', $data->external_id);
+
+                if ($externalId[0] == 'user') {
+                    $wallet = new Wallet;
+                    $wallet->user_id = $externalId[1];
+                    $wallet->source_id = $data->id;
+                    $wallet->source_type = get_class($data);
+                    $wallet->amount = $data->amount;
+                    $wallet->save();
+                }
+
+                if ($externalId[0] == 'invoice') {
+                    $invoice = Invoice::find($externalId[1]);
+                    $invoice->paidable_type = XenditInvoicePaid::class;
+                    $invoice->paidable_id = $data->id;
+                    $invoice->save();
+                }
+
+                if ($invoice->project->is_generated == false) {
+                    $invoice->project->generate();
+                }
+
+                return new ApiResource($data);
+            } else {
+                return response()->json([]);
             }
-
-            if ($externalId[0] == 'invoice') {
-                $invoice = Invoice::find($externalId[1]);
-                $invoice->paidable_type = XenditInvoicePaid::class;
-                $invoice->paidable_id = $data->id;
-                $invoice->save();
-            }
-
-            if ($invoice->project->is_generated == false) {
-                $invoice->project->generate();
-            }
-
-            return new ApiResource($data);
         }
     }
 

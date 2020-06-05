@@ -61,6 +61,10 @@ class LoginController extends Controller
             if ($project) {
                 $response->tenant_code = $project->code;
                 $response->tenant_name = $project->name;
+                $response->tenant_address = $project->address;
+                $response->tenant_phone = $project->phone;
+                $response->tenant_owner_id = $project->owner_id;
+                $response->tenant_package_id = $project->package_id;
                 $response->permissions = tenant($user->id)->getPermissions();
                 $response->branches = tenant($user->id)->branches;
                 $response->branch = null;

@@ -27,9 +27,9 @@ class Service extends MasterModel
 
     public function getLabelAttribute()
     {
-        $label = $this->code ? '[' . $this->code . '] ' : '';
-        
-        return $label . $this->name;
+        $label = $this->code ? '['.$this->code.'] ' : '';
+
+        return $label.$this->name;
     }
 
     /**

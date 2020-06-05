@@ -2,7 +2,7 @@
 
 if (! function_exists('get_table_class')) {
     /**
-     * Class name
+     * Class name.
      *
      * @param $name
      * @return mixed

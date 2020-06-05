@@ -25,7 +25,7 @@ class AttachRequest extends FormRequest
     {
         return [
             'customer_id' => 'required',
-            'customer_group_id' => 'required'
+            'customer_group_id' => 'required',
         ];
     }
 }

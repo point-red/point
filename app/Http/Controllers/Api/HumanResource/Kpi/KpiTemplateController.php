@@ -123,7 +123,7 @@ class KpiTemplateController extends Controller
         $kpiTemplate = KpiTemplate::find($request->input('kpi_template_id'));
 
         $newKpiTemplate = new KpiTemplate;
-        $newKpiTemplate->name = $kpiTemplate->name . ' (duplicate)';
+        $newKpiTemplate->name = $kpiTemplate->name.' (duplicate)';
         $newKpiTemplate->save();
 
         foreach ($kpiTemplate->groups as $group) {

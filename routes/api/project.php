@@ -17,3 +17,7 @@ Route::prefix('project')->namespace('Project')->group(function () {
 Route::post('plugins/{id}/subscribe', 'PluginController@subscribe');
 Route::post('plugins/{id}/unsubscribe', 'PluginController@unsubscribe');
 Route::apiResource('plugins', 'PluginController');
+
+Route::post('packages/{id}/subscribe', 'PackageController@subscribe');
+Route::post('packages/{id}/unsubscribe', 'PackageController@unsubscribe');
+Route::apiResource('packages', 'PackageController');

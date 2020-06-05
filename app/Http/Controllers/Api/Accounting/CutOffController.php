@@ -53,7 +53,7 @@ class CutOffController extends Controller
         if (CutOff::all()->count() > 1) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'cutoff already exists'
+                'message' => 'cutoff already exists',
             ], 422);
         }
 

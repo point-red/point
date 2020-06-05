@@ -31,7 +31,7 @@ class ChartNoInterestReasonExport implements FromView, WithCharts, WithTitle, Sh
         return 'NoInterestReason';
     }
 
-    public function view():view
+    public function view(): view
     {
         $weeklyNoInterest = [];
 
@@ -45,8 +45,8 @@ class ChartNoInterestReasonExport implements FromView, WithCharts, WithTitle, Sh
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
 
                 $weeklyNoInterest[] = (object) [
-                  'week' => $j.' - '.$i,
-                  'reasons' => $this->query($dateFrom, $dateTo),
+                    'week' => $j.' - '.$i,
+                    'reasons' => $this->query($dateFrom, $dateTo),
                 ];
 
                 $j = $i + 1;
@@ -57,8 +57,8 @@ class ChartNoInterestReasonExport implements FromView, WithCharts, WithTitle, Sh
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
 
                 $weeklyNoInterest[] = (object) [
-                  'week' => $j.' - '.$i,
-                  'reasons' => $this->query($dateFrom, $dateTo),
+                    'week' => $j.' - '.$i,
+                    'reasons' => $this->query($dateFrom, $dateTo),
                 ];
 
                 $j = $i + 1;

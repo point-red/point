@@ -12,14 +12,13 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
     use WithFaker;
-
     /**
      * Database migration can be so slow on local machine
      * Instead run migrate on each test, you can run manually
      * "php artisan migrate:fresh --env=testing"
      * "php artisan migrate:fresh --env=testing --database=tenant --path=database/migrations/tenant"
      * and comment this code below "use RefreshTenantDatabase;"
-     * and uncomment "use DatabaseTransactions;"
+     * and uncomment "use DatabaseTransactions;".
      *
      * By default we still use "use RefreshTenantDatabase;" for integration with travis, etc
      * So you shouldn't commit this change
@@ -39,7 +38,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        if (!defined('LARAVEL_START')) {
+        if (! defined('LARAVEL_START')) {
             define('LARAVEL_START', microtime(true));
         }
 
@@ -60,9 +59,6 @@ abstract class TestCase extends BaseTestCase
         parent::tearDown();
     }
 
-    /**
-     *
-     */
     protected function signIn()
     {
         $this->user = factory(User::class)->create();

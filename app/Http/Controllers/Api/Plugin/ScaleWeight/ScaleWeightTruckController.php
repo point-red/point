@@ -9,7 +9,6 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Plugin\ScaleWeight\ScaleWeightTruck;
 use Illuminate\Http\Request;
-use Zend\Diactoros\Response\EmptyResponse;
 
 class ScaleWeightTruckController extends Controller
 {

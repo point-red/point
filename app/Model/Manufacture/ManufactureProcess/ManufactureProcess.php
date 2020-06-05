@@ -3,8 +3,8 @@
 namespace App\Model\Manufacture\ManufactureProcess;
 
 use App\Exceptions\IsReferencedException;
-use App\Model\PointModel;
 use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
+use App\Model\PointModel;
 
 class ManufactureProcess extends PointModel
 {
@@ -14,7 +14,7 @@ class ManufactureProcess extends PointModel
 
     protected $fillable = [
         'name',
-        'notes'
+        'notes',
     ];
 
     public function manufactureFormulas()

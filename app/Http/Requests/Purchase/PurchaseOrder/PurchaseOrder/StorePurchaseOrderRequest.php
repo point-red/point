@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Purchase\PurchaseOrder\PurchaseOrder;
 
 use App\Http\Requests\ValidationRule;
+use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePurchaseOrderRequest extends FormRequest
@@ -45,7 +46,7 @@ class StorePurchaseOrderRequest extends FormRequest
         ];
 
         $rulesPurchaseOrderItems = [
-            'items.*.purchase_request_item_id' => ValidationRule::foreignKeyNullable('items'),
+            'items.*.purchase_request_item_id' => ValidationRule::foreignKeyNullable(PurchaseRequestItem::getTableName()),
             'items.*.item_id' => ValidationRule::foreignKey('items'),
             'items.*.item_name' => 'required|string',
             'items.*.quantity' => ValidationRule::quantity(),

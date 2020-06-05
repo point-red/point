@@ -52,7 +52,7 @@ class DummyMasterSeeder extends Seeder
 
         factory(\App\Model\Master\Item::class, 5)
             ->create(['chart_of_account_id' => $chartOfAccount->id])
-            ->each(function($item) {
+            ->each(function ($item) {
                 $unit = factory(ItemUnit::class, 1)->make()->first();
                 $item->units()->save($unit);
             });

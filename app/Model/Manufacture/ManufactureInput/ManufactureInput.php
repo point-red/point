@@ -5,10 +5,10 @@ namespace App\Model\Manufacture\ManufactureInput;
 use App\Exceptions\IsReferencedException;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
-use App\Model\Manufacture\ManufactureMachine\ManufactureMachine;
-use App\Model\Manufacture\ManufactureProcess\ManufactureProcess;
 use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
+use App\Model\Manufacture\ManufactureMachine\ManufactureMachine;
 use App\Model\Manufacture\ManufactureOutput\ManufactureOutput;
+use App\Model\Manufacture\ManufactureProcess\ManufactureProcess;
 use App\Model\TransactionModel;
 
 class ManufactureInput extends TransactionModel

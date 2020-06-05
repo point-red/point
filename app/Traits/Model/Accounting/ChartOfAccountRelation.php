@@ -2,7 +2,6 @@
 
 namespace App\Traits\Model\Accounting;
 
-
 use App\Model\Accounting\ChartOfAccountGroup;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\Journal;

@@ -22,7 +22,7 @@ class EmployeeGroupController extends ApiController
      */
     public function index(Request $request)
     {
-        $groups = EmployeeGroup::from(EmployeeGroup::getTableName() . ' as ' . EmployeeGroup::$alias)->eloquentFilter($request);
+        $groups = EmployeeGroup::from(EmployeeGroup::getTableName().' as '.EmployeeGroup::$alias)->eloquentFilter($request);
 
         $groups = EmployeeGroup::joins($groups, $request->get('join'));
 
@@ -55,7 +55,7 @@ class EmployeeGroupController extends ApiController
      */
     public function show(Request $request, $id)
     {
-        $group = EmployeeGroup::from(EmployeeGroup::getTableName() . ' as ' . EmployeeGroup::$alias)->eloquentFilter($request);
+        $group = EmployeeGroup::from(EmployeeGroup::getTableName().' as '.EmployeeGroup::$alias)->eloquentFilter($request);
 
         $group = EmployeeGroup::joins($group, $request->get('join'));
 

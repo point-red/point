@@ -23,7 +23,7 @@ class ExpeditionController extends Controller
      */
     public function index(Request $request)
     {
-        $expeditions = Expedition::from(Expedition::getTableName() . ' as ' . Expedition::$alias)->eloquentFilter($request);
+        $expeditions = Expedition::from(Expedition::getTableName().' as '.Expedition::$alias)->eloquentFilter($request);
 
         $expeditions = Expedition::joins($expeditions, $request->get('join'));
 
@@ -66,7 +66,7 @@ class ExpeditionController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $expedition = Expedition::from(Expedition::getTableName() . ' as ' . Expedition::$alias)->eloquentFilter($request);
+        $expedition = Expedition::from(Expedition::getTableName().' as '.Expedition::$alias)->eloquentFilter($request);
 
         $expedition = Expedition::joins($expedition, $request->get('join'));
 

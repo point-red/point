@@ -22,14 +22,14 @@ class CreateChartOfAccountsTable extends Migration
              * ==================
              * if an account is a sub ledger
              * that account should have detail / master data
-             * to be able filter or grouping
+             * to be able filter or grouping.
              */
             $table->boolean('is_sub_ledger')->default(false);
             $table->string('sub_ledger')->nullable();
             /**
              * position string
              * ==================
-             * position surplus is on debit or credit
+             * position surplus is on debit or credit.
              */
             $table->string('position');
             /**
@@ -37,13 +37,13 @@ class CreateChartOfAccountsTable extends Migration
              * ==================
              * if an account is locked that means that account cannot be deleted
              * because it used to calculate or automate feature
-             * but you still be able to rename the account to match your language
+             * but you still be able to rename the account to match your language.
              */
             $table->boolean('is_locked')->default(false);
             /**
              * cash_flow string
              * cash_flow_position string
-             * ==================
+             * ==================.
              */
             $table->string('cash_flow')->nullable();
             $table->string('cash_flow_position')->nullable();

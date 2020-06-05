@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
@@ -23,24 +22,9 @@ class PurchaseRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseRequests = PurchaseRequest::eloquentFilter($request);
+        $purchaseRequests = PurchaseRequest::from(PurchaseRequest::getTableName().' as '.PurchaseRequest::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('supplier', $fields)) {
-                $purchaseRequests = $purchaseRequests->join(Supplier::getTableName(), function ($q) {
-                    $q->on(Supplier::getTableName('id'), '=', PurchaseRequest::getTableName('supplier_id'));
-                });
-            }
-
-            if (in_array('form', $fields)) {
-                $purchaseRequests = $purchaseRequests->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', PurchaseRequest::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseRequest::$morphName);
-                });
-            }
-        }
+        $purchaseRequests = PurchaseRequest::joins($purchaseRequests, $request->get('join'));
 
         $purchaseRequests = pagination($purchaseRequests, $request->get('limit'));
 
@@ -82,11 +66,8 @@ class PurchaseRequestController extends Controller
             $purchaseRequest
                 ->load('form')
                 ->load('employee')
-                ->load('supplier')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($purchaseRequest);
         });
@@ -103,7 +84,11 @@ class PurchaseRequestController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::eloquentFilter($request)->with('form.createdBy')->findOrFail($id);
+        $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName().' as '.PurchaseRequest::$alias)->eloquentFilter($request);
+
+        $purchaseRequest = PurchaseRequest::joins($purchaseRequest, $request->get('join'));
+
+        $purchaseRequest = $purchaseRequest->with('form.createdBy')->where(PurchaseRequest::$alias.'.id', $id)->first();
 
         if ($request->has('with_archives')) {
             $purchaseRequest->archives = $purchaseRequest->archives();
@@ -126,7 +111,12 @@ class PurchaseRequestController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::with('form')->findOrFail($id);
+        $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName().' as '.PurchaseRequest::$alias)
+            ->joinForm()
+            ->where(PurchaseRequest::$alias.'.id', $id)
+            ->select(PurchaseRequest::$alias.'.*')
+            ->with('form')
+            ->first();
 
         $purchaseRequest->isAllowedToUpdate();
 
@@ -160,10 +150,13 @@ class PurchaseRequestController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $purchaseRequest->isAllowedToDelete();
-
         $purchaseRequest->requestCancel($request);
+
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

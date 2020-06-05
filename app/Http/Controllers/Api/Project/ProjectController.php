@@ -79,7 +79,7 @@ class ProjectController extends Controller
         $project->is_generated = false;
         $project->total_user = $request->get('total_user');
         $project->expired_date = date('Y-m-t 23:59:59');
-        $project->package_id = 1;
+        $project->package_id = $request->get('package_id');
         $project->save();
 
         $projectUser = new ProjectUser;
@@ -94,7 +94,7 @@ class ProjectController extends Controller
         $invoiceCount = Invoice::where('date', '>=', date('Y-m-01 00:00:00'))
             ->where('date', '<=', date('Y-m-t 23:59:59'))
             ->count();
-        $invoiceNumber = $invoiceNumber . sprintf('%04d', $invoiceCount + 1);
+        $invoiceNumber = $invoiceNumber.sprintf('%04d', $invoiceCount + 1);
 
         // Create invoice
         $invoice = new Invoice;
@@ -114,45 +114,39 @@ class ProjectController extends Controller
         $invoice->total = 0;
         $invoice->save();
 
-        $invoiceItem = new InvoiceItem;
-        $invoiceItem->invoice_id = $invoice->id;
-        $invoiceItem->description = 'ERP PACKAGE - COMMUNITY EDITION';
-        $invoiceItem->quantity = 1;
-        $invoiceItem->amount = 0;
-        $invoiceItem->discount_percent = 0;
-        $invoiceItem->discount_value = 0;
-        $invoiceItem->save();
+        if ($request->get('package_id') > 1) {
+            $invoiceItem = new InvoiceItem;
+            $invoiceItem->invoice_id = $invoice->id;
+            $invoiceItem->description = $request->get('package_notes');
+            $invoiceItem->quantity = $request->get('total_user');
+            $invoiceItem->amount = $request->get('package_total_price');
+            $invoiceItem->discount_percent = 0;
+            $invoiceItem->discount_value = 0;
+            $invoiceItem->save();
+
+            $invoice->sub_total += $invoiceItem->amount;
+        }
 
         foreach ($request->get('plugins') as $plugin) {
             $project->plugins()->attach($plugin['id'], [
                 'created_at' => now(),
                 'updated_at' => now(),
-                'expired_date' => date('Y-m-t 23:59:59')
+                'expired_date' => date('Y-m-t 23:59:59'),
             ]);
 
-            if ($plugin['price_per_user']) {
-                $invoiceItem = new InvoiceItem;
-                $invoiceItem->invoice_id = $invoice->id;
-                $invoiceItem->description = $plugin['notes'];
+            $invoiceItem = new InvoiceItem;
+            $invoiceItem->invoice_id = $invoice->id;
+            $invoiceItem->description = $plugin['notes'];
+            $invoiceItem->quantity = 1;
+            if ($plugin['is_monthly_price_per_user']) {
                 $invoiceItem->quantity = $project->total_user;
-                $invoiceItem->amount = $plugin['price_per_user_proportional'];
-                $invoiceItem->discount_percent = 0;
-                $invoiceItem->discount_value = 0;
-                $invoiceItem->save();
-
-                $invoice->sub_total += $invoiceItem->amount * $project->total_user;
-            } else {
-                $invoiceItem = new InvoiceItem;
-                $invoiceItem->invoice_id = $invoice->id;
-                $invoiceItem->description = $plugin['description'];
-                $invoiceItem->quantity = 1;
-                $invoiceItem->amount = $plugin['price_proportional'];
-                $invoiceItem->discount_percent = 0;
-                $invoiceItem->discount_value = 0;
-                $invoiceItem->save();
-
-                $invoice->sub_total += $invoiceItem->amount;
             }
+            $invoiceItem->amount = $plugin['current_price'];
+            $invoiceItem->discount_percent = 0;
+            $invoiceItem->discount_value = 0;
+            $invoiceItem->save();
+
+            $invoice->sub_total += $invoiceItem->amount * $invoiceItem->quantity;
         }
         $invoice->vat = $invoice->sub_total * 10 / 100;
         $invoice->total = $invoice->sub_total + $invoice->vat;
@@ -164,7 +158,11 @@ class ProjectController extends Controller
 
         DB::connection('mysql')->commit();
 
-        return new ProjectResource($project);
+        return (new ProjectResource($project))->additional([
+            'data' => [
+                'invoice_id' => $invoice->id,
+            ],
+        ]);
     }
 
     /**

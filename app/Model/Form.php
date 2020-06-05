@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Exceptions\BranchNullException;
 use App\Exceptions\FormActiveException;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
@@ -113,7 +114,12 @@ class Form extends PointModel
         foreach ($branches as $branch) {
             if ($branch->pivot->is_default) {
                 $this->branch_id = $branch->id;
+                break;
             }
+        }
+
+        if ($this->branch_id == null) {
+            throw new BranchNullException();
         }
 
         $this->generateFormNumber(
@@ -135,10 +141,6 @@ class Form extends PointModel
 
     public function archive($editedNotes = '')
     {
-        if ($this->cancellation_status != null && $this->cancellation_status != 1) {
-            throw new FormActiveException();
-        }
-
         // Archive form number
         $this->edited_number = $this->number;
         $this->edited_notes = $editedNotes;

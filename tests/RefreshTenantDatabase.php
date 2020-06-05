@@ -19,7 +19,6 @@ trait RefreshTenantDatabase
     protected function refreshTestDatabase()
     {
         if (! RefreshTenantDatabaseState::$migrated) {
-
             $this->artisan('migrate:fresh', [
                 '--drop-views' => $this->shouldDropViews(),
                 '--drop-types' => $this->shouldDropTypes(),

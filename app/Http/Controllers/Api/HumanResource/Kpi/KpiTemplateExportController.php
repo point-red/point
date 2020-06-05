@@ -17,8 +17,8 @@ class KpiTemplateExportController extends Controller
     public function export(Request $request)
     {
         $request->validate([
-        'id' => 'required|integer',
-      ]);
+            'id' => 'required|integer',
+        ]);
         $kpiTemplate = KpiTemplate::where('id', $request->id)->first();
 
         $tenant = strtolower($request->header('Tenant'));
@@ -31,8 +31,8 @@ class KpiTemplateExportController extends Controller
 
         if (! $result) {
             return response()->json([
-              'message' => 'Failed to export',
-          ], 422);
+                'message' => 'Failed to export',
+            ], 422);
         }
 
         $cloudStorage = new CloudStorage();
@@ -49,9 +49,9 @@ class KpiTemplateExportController extends Controller
         $cloudStorage->save();
 
         return response()->json([
-          'data' => [
-              'url' => $cloudStorage->download_url,
-          ],
-      ], 200);
+            'data' => [
+                'url' => $cloudStorage->download_url,
+            ],
+        ], 200);
     }
 }

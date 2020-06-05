@@ -19,8 +19,9 @@ class CloudStorage extends Model
     public function getExpiredAtAttribute($value)
     {
         if ($value == null) {
-            return null;
+            return;
         }
+
         return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
     }
 

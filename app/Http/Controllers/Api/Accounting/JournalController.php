@@ -17,7 +17,9 @@ class JournalController extends Controller
      */
     public function index(Request $request)
     {
-        $journals = Journal::eloquentFilter($request);
+        $journals = Journal::from(Journal::getTableName().' as '.Journal::$alias)->eloquentFilter($request);
+
+        $journals = Journal::joins($journals, $request->get('join'));
 
         $journals = pagination($journals, $request->get('limit'));
 

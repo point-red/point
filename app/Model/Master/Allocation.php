@@ -27,8 +27,8 @@ class Allocation extends MasterModel
 
     public function getLabelAttribute()
     {
-        $label = $this->code ? '[' . $this->code . '] ' : '';
+        $label = $this->code ? '['.$this->code.'] ' : '';
 
-        return $label . $this->name;
+        return $label.$this->name;
     }
 }

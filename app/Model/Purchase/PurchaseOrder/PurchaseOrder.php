@@ -4,16 +4,16 @@ namespace App\Model\Purchase\PurchaseOrder;
 
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
-use App\Model\Master\Supplier;
-use App\Model\Master\Warehouse;
-use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\TransactionModel;
+use App\Traits\Model\Purchase\PurchaseOrderJoin;
+use App\Traits\Model\Purchase\PurchaseOrderRelation;
 use Carbon\Carbon;
 
 class PurchaseOrder extends TransactionModel
 {
+    use PurchaseOrderJoin, PurchaseOrderRelation;
+
     public static $morphName = 'PurchaseOrder';
 
     protected $connection = 'tenant';
@@ -67,73 +67,6 @@ class PurchaseOrder extends TransactionModel
         $this->attributes['eta'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
 
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(PurchaseOrderItem::class);
-    }
-
-    public function services()
-    {
-        return $this->hasMany(PurchaseOrderService::class);
-    }
-
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    public function purchaseRequest()
-    {
-        return $this->belongsTo(PurchaseRequest::class, 'purchase_request_id');
-    }
-
-    public function purchaseReceives()
-    {
-        return $this->hasMany(PurchaseReceive::class)->active();
-    }
-
-    public function downPayments()
-    {
-        return $this->morphMany(PurchaseDownPayment::class, 'downpaymentable')
-            ->active();
-    }
-
-    public function paidDownPayments()
-    {
-        return $this->downPayments()->whereNotNull('paid_by');
-    }
-
-    public function remainingDownPayments()
-    {
-        return $this->paidDownPayments()->where('remaining', '>', 0);
-    }
-
-    public function warehouse()
-    {
-        return $this->belongsTo(Warehouse::class);
-    }
-
-    public function updateIfDone()
-    {
-        // TODO check service too
-        $done = true;
-        $items = $this->items()->with('purchaseReceiveItems')->get();
-        foreach ($items as $item) {
-            $quantityReceived = $item->purchaseReceiveItems->sum('quantity');
-            if ($item->quantity > $quantityReceived) {
-                $done = false;
-                break;
-            }
-        }
-
-        $this->form()->update(['done' => $done]);
-    }
-
     public function isAllowedToUpdate()
     {
         // Check if not referenced by purchase order
@@ -161,20 +94,28 @@ class PurchaseOrder extends TransactionModel
         $purchaseOrder->fill($data);
 
         $items = self::mapItems($data['items'] ?? []);
-        $services = self::mapServices($data['services'] ?? []);
 
-        $purchaseOrder->amount = self::calculateAmount($purchaseOrder, $items, $services);
+        $purchaseOrder->amount = self::calculateAmount($purchaseOrder, $items);
         $purchaseOrder->save();
 
         $purchaseOrder->items()->saveMany($items);
-        $purchaseOrder->services()->saveMany($services);
 
         $form = new Form;
         $form->saveData($data, $purchaseOrder);
 
         if (get_if_set($data['purchase_request_id'])) {
+            $done = true;
             $purchaseRequest = PurchaseRequest::findOrFail($data['purchase_request_id']);
-            $purchaseRequest->updateIfDone();
+            foreach ($purchaseRequest->items as $purchaseRequestItem) {
+                $quantity = PurchaseOrderItem::where('purchase_request_item_id', $purchaseRequestItem->id)->sum('quantity');
+                if ($quantity < $purchaseRequestItem->quantity) {
+                    $done = false;
+                    break;
+                }
+            }
+            if ($done) {
+                $purchaseRequest->form()->update(['done' => $done]);
+            }
         }
 
         return $purchaseOrder;
@@ -190,24 +131,10 @@ class PurchaseOrder extends TransactionModel
         }, $items);
     }
 
-    private static function mapServices($services)
-    {
-        return array_map(function ($service) {
-            $purchaseOrderService = new PurchaseOrderService;
-            $purchaseOrderService->fill($service);
-
-            return $purchaseOrderService;
-        }, $services);
-    }
-
-    private static function calculateAmount($purchaseOrder, $items, $services)
+    private static function calculateAmount($purchaseOrder, $items)
     {
         $amount = array_reduce($items, function ($carry, $item) {
-            return $carry + $item->quantity * ($item->price - $item->discount_value) * $item->converter;
-        }, 0);
-
-        $amount += array_reduce($services, function ($carry, $service) {
-            return $carry + $service->quantity * ($service->price - $service->discount_value);
+            return $carry + $item->quantity * ($item->price - $item->discount_value);
         }, 0);
 
         $amount -= $purchaseOrder->discount_value;

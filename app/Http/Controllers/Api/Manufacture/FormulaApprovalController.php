@@ -41,7 +41,7 @@ class FormulaApprovalController extends Controller
         $formula = ManufactureFormula::findOrFail($id);
         $formula->form->approval_by = auth()->user()->id;
         $formula->form->approval_at = now();
-        $formula->form->approval_reason = $request->get('approval_reason');
+        $formula->form->approval_reason = $request->get('reason');
         $formula->form->approval_status = -1;
         $formula->form->save();
 

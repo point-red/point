@@ -7,7 +7,6 @@ use App\Http\Requests\Manufacture\ManufactureFormula\StoreManufactureFormulaRequ
 use App\Http\Requests\Manufacture\ManufactureFormula\UpdateManufactureFormulaRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
 use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,18 +22,9 @@ class FormulaController extends Controller
      */
     public function index(Request $request)
     {
-        $formulas = ManufactureFormula::eloquentFilter($request);
+        $formulas = ManufactureFormula::from(ManufactureFormula::getTableName().' as '.ManufactureFormula::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('form', $fields)) {
-                $formulas = $formulas->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', ManufactureFormula::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), ManufactureFormula::$morphName);
-                });
-            }
-        }
+        $formulas = ManufactureFormula::joins($formulas, $request->get('join'));
 
         $formulas = pagination($formulas, $request->get('limit'));
 
@@ -93,7 +83,11 @@ class FormulaController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $manufactureFormula = ManufactureFormula::eloquentFilter($request)->findOrFail($id);
+        $manufactureFormula = ManufactureFormula::from(ManufactureFormula::getTableName().' as '.ManufactureFormula::$alias)->eloquentFilter($request);
+
+        $manufactureFormula = ManufactureFormula::joins($manufactureFormula, $request->get('join'));
+
+        $manufactureFormula = $manufactureFormula->with('form.createdBy')->where(ManufactureFormula::$alias.'.id', $id)->first();
 
         if ($request->has('with_archives')) {
             $manufactureFormula->archives = $manufactureFormula->archives();
@@ -116,7 +110,13 @@ class FormulaController extends Controller
      */
     public function update(UpdateManufactureFormulaRequest $request, $id)
     {
-        $manufactureFormula = ManufactureFormula::findOrFail($id);
+        $manufactureFormula = ManufactureFormula::from(ManufactureFormula::getTableName().' as '.ManufactureFormula::$alias)
+            ->joinForm()
+            ->where(ManufactureFormula::$alias.'.id', $id)
+            ->select(ManufactureFormula::$alias.'.*')
+            ->with('form')
+            ->first();
+
         $manufactureFormula->isAllowedToUpdate();
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $manufactureFormula) {
@@ -149,9 +149,6 @@ class FormulaController extends Controller
         DB::connection('tenant')->beginTransaction();
 
         $formula = ManufactureFormula::findOrFail($id);
-
-        $formula->isAllowedToDelete();
-
         $formula->requestCancel($request);
 
         DB::connection('tenant')->commit();

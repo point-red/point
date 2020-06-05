@@ -7,8 +7,6 @@ use App\Http\Requests\Master\User\StoreUserRequest;
 use App\Http\Requests\Master\User\UpdateUserRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Http\Resources\Master\User\UserCollection;
-use App\Http\Resources\Master\User\UserResource;
 use App\Model\Master\User as TenantUser;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
@@ -25,7 +23,7 @@ class UserController extends ApiController
      */
     public function index(Request $request)
     {
-        $users = TenantUser::from(TenantUser::getTableName() . ' as ' . TenantUser::$alias)->eloquentFilter($request);
+        $users = TenantUser::from(TenantUser::getTableName().' as '.TenantUser::$alias)->eloquentFilter($request);
 
         $users = TenantUser::joins($users, $request->get('join'));
 
@@ -60,7 +58,7 @@ class UserController extends ApiController
      */
     public function show(Request $request, $id)
     {
-        $user = TenantUser::from(TenantUser::getTableName() . ' as ' . TenantUser::$alias)->eloquentFilter($request);
+        $user = TenantUser::from(TenantUser::getTableName().' as '.TenantUser::$alias)->eloquentFilter($request);
 
         $user = TenantUser::joins($user, $request->get('join'));
 
@@ -101,7 +99,7 @@ class UserController extends ApiController
         TenantUser::findOrFail($id)->delete();
 
         $project = Project::where('code', $request->header('Tenant'))->first();
-        
+
         ProjectUser::where('user_id', $id)->where('project_id', $project->id)->delete();
 
         return response(null, 204);

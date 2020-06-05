@@ -3,13 +3,17 @@
 namespace App\Model\Finance\PaymentOrder;
 
 use App\Exceptions\IsReferencedException;
-use App\Model\Finance\Payment\Payment;
+use App\Exceptions\PointException;
 use App\Model\Form;
 use App\Model\TransactionModel;
+use App\Traits\Model\Finance\PaymentOrderJoin;
+use App\Traits\Model\Finance\PaymentOrderRelation;
 use Carbon\Carbon;
 
 class PaymentOrder extends TransactionModel
 {
+    use PaymentOrderJoin, PaymentOrderRelation;
+
     public static $morphName = 'PaymentOrder';
 
     protected $connection = 'tenant';
@@ -43,29 +47,6 @@ class PaymentOrder extends TransactionModel
         $this->attributes['due_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
 
-    /**
-     * Get all of the owning paymentable models.
-     */
-    public function paymentable()
-    {
-        return $this->morphTo();
-    }
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function payment()
-    {
-        return $this->belongsTo(Payment::class);
-    }
-
-    public function details()
-    {
-        return $this->hasMany(PaymentOrderDetail::class);
-    }
-
     public function setPaymentTypeAttribute($value)
     {
         $this->attributes['payment_type'] = strtoupper($value);
@@ -73,17 +54,17 @@ class PaymentOrder extends TransactionModel
 
     public function isAllowedToUpdate()
     {
-        // Check if not referenced by purchase order
+        // Check if not referenced by another form
         if (optional($this->payment)->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->payment);
+            throw new IsReferencedException('Cannot edit form because it is already paid', $this->payment);
         }
     }
 
     public function isAllowedToDelete()
     {
-        // Check if not referenced by purchase order
+        // Check if not referenced by another form
         if (optional($this->payment)->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->payment);
+            throw new IsReferencedException('Cannot delete form because it is already paid', $this->payment);
         }
     }
 
@@ -95,6 +76,11 @@ class PaymentOrder extends TransactionModel
         $paymentOrderDetails = self::mapPaymentOrderDetails($data['details'] ?? []);
 
         $paymentOrder->amount = self::calculateAmount($paymentOrderDetails);
+
+        if ($paymentOrder->amount < 0) {
+            throw new PointException('You have negative amount');
+        }
+
         $paymentOrder->paymentable_name = $paymentOrder->paymentable->name;
         $paymentOrder->save();
 

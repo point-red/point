@@ -56,7 +56,7 @@ class EndContractNotificationCommand extends Command
             $nextMonth = Carbon::now()->addMonth(1);
 
             $employeeContractExpiredSoon = EmployeeContract::where('contract_end', '>', now())->where('contract_end', '<', $nextMonth)->orderBy('contract_end', 'asc')->get();
-            $employeeContractExpired= EmployeeContract::where('contract_end', '<', now())->orderBy('contract_end', 'asc')->get();
+            $employeeContractExpired = EmployeeContract::where('contract_end', '<', now())->orderBy('contract_end', 'asc')->get();
 
             $users = TenantUser::all();
 

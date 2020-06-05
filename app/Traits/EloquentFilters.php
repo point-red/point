@@ -28,6 +28,7 @@ trait EloquentFilters
             ->filterHas($request->get('filter_has'))
             ->filterDoesntHave($request->get('filter_doesnt_have'))
             ->filterWhereHas($request->get('filter_where_has'))
+            ->filterWhereHasLike($request->get('filter_where_has_like'))
             ->filterForm($request->get('filter_form'))
             ->orFilterNotEqual($request->get('or_filter_not_equal'))
             ->orFilterLike($request->get('or_filter_like'))
@@ -107,7 +108,7 @@ trait EloquentFilters
      * Single group by
      * ?group_by=id
      * Multiple group by
-     * ?group_by=id;name
+     * ?group_by=id;name.
      *
      * @param $query
      * @param $values
@@ -169,19 +170,7 @@ trait EloquentFilters
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $array = explode('.', $key);
-            $column = array_pop($array);
-            $relation = array_pop($array);
-
-            foreach (array_filter(explode(';', $value)) as $value2) {
-                if (!empty($relation)) {
-                    $query->whereHas($relation, function ($query) use ($column, $value2) {
-                        $query->where($column, '!=', $value2);
-                    });
-                } else {
-                    $query->where($key, '!=', $value2);
-                }
-            }
+            $query->where($key, '!=', $value);
         }
     }
 
@@ -253,17 +242,7 @@ trait EloquentFilters
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $relation = explode('.', $key);
-            $column = array_pop($relation);
-            $relation = implode('.', $relation);
-
-            if (! empty($relation)) {
-                $query->whereHas($relation, function ($query) use ($column, $value) {
-                    $query->where($column, '>=', convert_to_server_timezone($value));
-                });
-            } else {
-                $query->where($key, '>=', convert_to_server_timezone($value));
-            }
+            $query->where($key, '>=', convert_to_server_timezone($value));
         }
     }
 
@@ -279,17 +258,7 @@ trait EloquentFilters
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $relation = explode('.', $key);
-            $column = array_pop($relation);
-            $relation = implode('.', $relation);
-
-            if (! empty($relation)) {
-                $query->whereHas($relation, function ($query) use ($column, $value) {
-                    $query->where($column, '<=', convert_to_server_timezone($value));
-                });
-            } else {
-                $query->where($key, '<=', convert_to_server_timezone($value));
-            }
+            $query->where($key, '<=', convert_to_server_timezone($value));
         }
     }
 
@@ -306,17 +275,7 @@ trait EloquentFilters
             $columns = explode(',', $values);
 
             foreach ($columns as $column) {
-                $relation = explode('.', $column);
-                $columnName = array_pop($relation);
-                $relation = implode('.', $relation);
-
-                if (! empty($relation)) {
-                    $query->whereHas($relation, function ($query) use ($columnName) {
-                        $query->whereNull($columnName);
-                    });
-                } else {
-                    $query->whereNull($columnName);
-                }
+                $query->whereNull($column);
             }
         }
     }
@@ -334,17 +293,7 @@ trait EloquentFilters
             $columns = explode(',', $values);
 
             foreach ($columns as $column) {
-                $relation = explode('.', $column);
-                $columnName = array_pop($relation);
-                $relation = implode('.', $relation);
-
-                if (! empty($relation)) {
-                    $query->whereHas($relation, function ($query) use ($columnName) {
-                        $query->whereNotNull($columnName);
-                    });
-                } else {
-                    $query->whereNotNull($columnName);
-                }
+                $query->whereNotNull($column);
             }
         }
     }
@@ -549,6 +498,26 @@ trait EloquentFilters
                             $query->where($attribute, $value);
                         });
                     }
+                }
+            }
+        }
+    }
+
+    public function scopeFilterWhereHasLike($query, $values)
+    {
+        if (! is_null($values)) {
+            $values = $this->convertJavascriptObjectToArray($values);
+            foreach ($values as $relation => $filters) {
+                $filters = $this->convertJavascriptObjectToArray($filters);
+                foreach ($filters as $attribute => $value) {
+                    $query->whereHas($relation, function ($query) use ($attribute, $value) {
+                        $query->where(function ($query) use ($value, $attribute) {
+                            $words = explode(' ', $value);
+                            foreach ($words as $word) {
+                                $query->orWhere($attribute, 'like', '%'.$word.'%');
+                            }
+                        });
+                    });
                 }
             }
         }

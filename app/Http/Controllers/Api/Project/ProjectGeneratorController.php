@@ -3,16 +3,11 @@
 namespace App\Http\Controllers\Api\Project;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Project\Project\DeleteProjectRequest;
 use App\Http\Requests\Project\Project\StoreProjectRequest;
-use App\Http\Requests\Project\Project\UpdateProjectRequest;
-use App\Http\Resources\ApiCollection;
-use App\Http\Resources\ApiResource;
 use App\Http\Resources\Project\Project\ProjectResource;
 use App\Model\Master\User;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
@@ -28,7 +23,7 @@ class ProjectGeneratorController extends Controller
     {
         // User only allowed to create max 1 project
         $numberOfProject = Project::where('owner_id', auth()->user()->id)->count();
-            // TODO: disable new project creation
+        // TODO: disable new project creation
         if ($numberOfProject >= 100) {
             return response()->json([
                 'code' => 422,

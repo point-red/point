@@ -24,7 +24,7 @@ class StoreSalesDownPaymentRequest extends FormRequest
     public function rules()
     {
         return [
-            'chart_of_account_id' => 'required'
+            'chart_of_account_id' => 'required',
         ];
     }
 }

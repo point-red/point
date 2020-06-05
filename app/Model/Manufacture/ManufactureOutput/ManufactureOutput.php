@@ -4,9 +4,9 @@ namespace App\Model\Manufacture\ManufactureOutput;
 
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
+use App\Model\Manufacture\ManufactureInput\ManufactureInput;
 use App\Model\Manufacture\ManufactureMachine\ManufactureMachine;
 use App\Model\Manufacture\ManufactureProcess\ManufactureProcess;
-use App\Model\Manufacture\ManufactureInput\ManufactureInput;
 use App\Model\TransactionModel;
 
 class ManufactureOutput extends TransactionModel

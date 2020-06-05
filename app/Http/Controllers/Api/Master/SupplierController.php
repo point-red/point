@@ -28,7 +28,7 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
-        $suppliers = Supplier::from(Supplier::getTableName() . ' as ' . Supplier::$alias)->eloquentFilter($request);
+        $suppliers = Supplier::from(Supplier::getTableName().' as '.Supplier::$alias)->eloquentFilter($request);
 
         $suppliers = Supplier::joins($suppliers, $request->get('join'));
 
@@ -106,7 +106,7 @@ class SupplierController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $supplier = Supplier::from(Supplier::getTableName() . ' as ' . Supplier::$alias)->eloquentFilter($request);
+        $supplier = Supplier::from(Supplier::getTableName().' as '.Supplier::$alias)->eloquentFilter($request);
 
         $supplier = Supplier::joins($supplier, $request->get('join'));
 

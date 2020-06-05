@@ -31,7 +31,7 @@ class ChartSimilarProductExport implements FromView, WithCharts, WithTitle, Shou
         return 'SimilarProduct';
     }
 
-    public function view():view
+    public function view(): view
     {
         $weeklySimilarProduct = [];
 
@@ -45,8 +45,8 @@ class ChartSimilarProductExport implements FromView, WithCharts, WithTitle, Shou
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
 
                 $weeklySimilarProduct[] = (object) [
-                  'week' => $j.' - '.$i,
-                  'products' => $this->query($dateFrom, $dateTo),
+                    'week' => $j.' - '.$i,
+                    'products' => $this->query($dateFrom, $dateTo),
                 ];
 
                 $j = $i + 1;
@@ -57,8 +57,8 @@ class ChartSimilarProductExport implements FromView, WithCharts, WithTitle, Shou
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
 
                 $weeklySimilarProduct[] = (object) [
-                  'week' => $j.' - '.$i,
-                  'products' => $this->query($dateFrom, $dateTo),
+                    'week' => $j.' - '.$i,
+                    'products' => $this->query($dateFrom, $dateTo),
                 ];
 
                 $j = $i + 1;

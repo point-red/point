@@ -22,7 +22,7 @@ class CustomerGroupController extends ApiController
      */
     public function index(Request $request)
     {
-        $groups = CustomerGroup::from(CustomerGroup::getTableName() . ' as ' . CustomerGroup::$alias)->eloquentFilter($request);
+        $groups = CustomerGroup::from(CustomerGroup::getTableName().' as '.CustomerGroup::$alias)->eloquentFilter($request);
 
         $groups = CustomerGroup::joins($groups, $request->get('join'));
 
@@ -55,7 +55,7 @@ class CustomerGroupController extends ApiController
      */
     public function show(Request $request, $id)
     {
-        $group = CustomerGroup::from(CustomerGroup::getTableName() . ' as ' . CustomerGroup::$alias)->eloquentFilter($request);
+        $group = CustomerGroup::from(CustomerGroup::getTableName().' as '.CustomerGroup::$alias)->eloquentFilter($request);
 
         $group = CustomerGroup::joins($group, $request->get('join'));
 

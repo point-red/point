@@ -25,7 +25,7 @@ class UpdateManufactureMachineRequest extends FormRequest
     {
         return [
             'code' => 'string|unique:tenant.manufacture_machines,code,'.$this->id,
-            'name' => 'required|string|unique:tenant.manufacture_machines,name,'.$this->id
+            'name' => 'required|string|unique:tenant.manufacture_machines,name,'.$this->id,
         ];
     }
 }

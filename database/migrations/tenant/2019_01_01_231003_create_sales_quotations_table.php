@@ -19,6 +19,8 @@ class CreateSalesQuotationsTable extends Migration
             $table->string('customer_name');
             $table->string('customer_address')->nullable();
             $table->string('customer_phone')->nullable();
+            $table->unsignedDecimal('discount_percent', 33, 30)->nullable();
+            $table->unsignedDecimal('discount_value', 65, 30)->default(0);
             $table->decimal('amount', 65, 30);
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('restrict');

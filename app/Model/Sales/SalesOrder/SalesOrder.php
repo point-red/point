@@ -137,14 +137,10 @@ class SalesOrder extends TransactionModel
         }, $items);
     }
 
-    private static function calculateAmount($salesOrder, $items, $services)
+    private static function calculateAmount($salesOrder, $items)
     {
         $amount = array_reduce($items, function ($carry, $item) {
             return $carry + ($item->price - $item->discount_value) * $item->quantity * $item->converter;
-        }, 0);
-
-        $amount += array_reduce($services, function ($carry, $service) {
-            return $carry + ($service->price - $service->discount_value) * $service->quantity;
         }, 0);
 
         $amount -= $salesOrder->discount_value;

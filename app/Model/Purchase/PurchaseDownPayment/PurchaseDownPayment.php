@@ -60,7 +60,7 @@ class PurchaseDownPayment extends TransactionModel
             $downPayment->downpaymentable_id = $data['purchase_contract_id'];
             $downPayment->downpaymentable_type = PurchaseContract::$morphName;
 
-            $reference = findOrFail($data['purchase_contract_id']);
+            $reference = PurchaseContract::findOrFail($data['purchase_contract_id']);
         }
 
         $downPayment->fill($data);

@@ -10,9 +10,13 @@ use App\Model\Master\Warehouse;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\TransactionModel;
+use App\Traits\Model\Purchase\PurchaseReceiveJoin;
+use App\Traits\Model\Purchase\PurchaseReceiveRelation;
 
 class PurchaseReceive extends TransactionModel
 {
+    use PurchaseReceiveJoin, PurchaseReceiveRelation;
+
     public static $morphName = 'PurchaseReceive';
 
     protected $connection = 'tenant';
@@ -64,7 +68,16 @@ class PurchaseReceive extends TransactionModel
 
     public function purchaseInvoices()
     {
-        return $this->belongsToMany(PurchaseInvoice::class, 'purchase_invoice_items')->active();
+        return $this->belongsToMany(PurchaseInvoice::class, 'purchase_invoice_items')
+            ->join(Form::getTableName(), function ($q) {
+                $q->on(Form::getTableName('formable_id'), '=', PurchaseReceive::getTableName('id'))
+                    ->where(Form::getTableName('formable_type'), PurchaseReceive::$morphName);
+            })
+            ->whereNotNull(Form::getTableName('number'))
+            ->where(function ($q) {
+                $q->whereNull(Form::getTableName('cancellation_status'))
+                    ->orWhere(Form::getTableName('cancellation_status'), '!=', '1');
+            });
     }
 
     public function warehouse()

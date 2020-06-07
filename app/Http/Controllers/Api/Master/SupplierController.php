@@ -11,9 +11,9 @@ use App\Model\Master\Address;
 use App\Model\Master\Bank;
 use App\Model\Master\ContactPerson;
 use App\Model\Master\Email;
-use App\Model\Master\Group;
 use App\Model\Master\Phone;
 use App\Model\Master\Supplier;
+use App\Model\Master\SupplierGroup;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -69,14 +69,14 @@ class SupplierController extends Controller
         if ($request->has('group')) {
             $group = null;
             if (! empty($request->get('group')['id'])) {
-                $group = Group::findOrFail($request->get('group')['id']);
+                $group = SupplierGroup::findOrFail($request->get('group')['id']);
             } elseif (! empty($request->get('group')['name'])) {
-                $group = Group::where('name', $request->get('group')['name'])
+                $group = SupplierGroup::where('name', $request->get('group')['name'])
                     ->where('class_reference', Supplier::class)
                     ->first();
 
                 if (! $group) {
-                    $group = new Group;
+                    $group = new SupplierGroup;
                     $group->name = $request->get('group')['name'];
                     $group->class_reference = 'supplier';
                     $group->save();
@@ -141,14 +141,14 @@ class SupplierController extends Controller
         if ($request->has('group')) {
             $group = null;
             if (! empty($request->get('group')['id'])) {
-                $group = Group::findOrFail($request->get('group')['id']);
+                $group = SupplierGroup::findOrFail($request->get('group')['id']);
             } elseif (! empty($request->get('group')['name'])) {
-                $group = Group::where('name', $request->get('group')['name'])
+                $group = SupplierGroup::where('name', $request->get('group')['name'])
                     ->where('class_reference', Supplier::class)
                     ->first();
 
                 if (! $group) {
-                    $group = new Group;
+                    $group = new SupplierGroup;
                     $group->name = $request->get('group')['name'];
                     $group->class_reference = 'supplier';
                     $group->save();

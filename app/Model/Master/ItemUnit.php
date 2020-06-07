@@ -24,14 +24,4 @@ class ItemUnit extends MasterModel
     ];
 
     public static $alias = 'item_unit';
-
-    /**
-     * Get the price for this unit.
-     */
-    public function prices()
-    {
-        return $this
-            ->belongsToMany(PricingGroup::class, PriceListItem::getTableName(), 'item_unit_id', 'pricing_group_id')
-            ->withPivot(['price', 'discount_value', 'discount_percent', 'date', 'pricing_group_id']);
-    }
 }

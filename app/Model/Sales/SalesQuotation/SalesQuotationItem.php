@@ -29,8 +29,10 @@ class SalesQuotationItem extends TransactionModel
 
     protected $casts = [
         'quantity' => 'double',
-        'price' => 'double',
         'converter' => 'double',
+        'price' => 'double',
+        'discount_percent' => 'double',
+        'discount_value' => 'double',
     ];
 
     public function salesQuotation()

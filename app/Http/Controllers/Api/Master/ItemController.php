@@ -7,8 +7,8 @@ use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Master\Group;
 use App\Model\Master\Item;
+use App\Model\Master\ItemGroup;
 use App\Model\Master\ItemUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -163,7 +163,7 @@ class ItemController extends Controller
             $groups = $request->get('groups');
             foreach ($groups as $group) {
                 if (! $group['id'] && $group['name']) {
-                    $newGroup = new Group;
+                    $newGroup = new ItemGroup();
                     $newGroup->name = $group['name'];
                     $newGroup->save();
                     $group['id'] = $newGroup->id;

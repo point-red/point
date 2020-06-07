@@ -7,8 +7,6 @@ use App\Http\Requests\Pos\PosBill\StorePosBillRequest;
 use App\Http\Requests\Pos\PosBill\UpdatePosBillRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
-use App\Model\Master\Customer;
 use App\Model\Pos\PosBill;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,24 +22,9 @@ class BillController extends Controller
      */
     public function index(Request $request)
     {
-        $bills = PosBill::eloquentFilter($request);
+        $bills = PosBill::from(PosBill::getTableName().' as '.PosBill::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('customer', $fields)) {
-                $bills = $bills->leftJoin(Customer::getTableName(), function ($q) {
-                    $q->on(Customer::getTableName('id'), '=', PosBill::getTableName('customer_id'));
-                });
-            }
-
-            if (in_array('form', $fields)) {
-                $bills = $bills->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', PosBill::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PosBill::$morphName);
-                });
-            }
-        }
+        $bills = PosBill::joins($bills, $request->get('join'));
 
         $bills = pagination($bills, $request->get('limit'));
 

@@ -4,11 +4,14 @@ namespace App\Model\Pos;
 
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
-use App\Model\Master\Customer;
 use App\Model\TransactionModel;
+use App\Traits\Model\Pos\PosBillJoin;
+use App\Traits\Model\Pos\PosBillRelation;
 
 class PosBill extends TransactionModel
 {
+    use PosBillJoin, PosBillRelation;
+
     public static $morphName = 'PosBill';
 
     protected $connection = 'tenant';
@@ -38,28 +41,6 @@ class PosBill extends TransactionModel
     ];
 
     public $defaultNumberPrefix = 'BI';
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(PosBillItem::class);
-    }
-
-    public function services()
-    {
-        return $this->hasMany(PosBillService::class);
-    }
-
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class);
-    }
-
-    // public function bill
 
     public function isAllowedToUpdate()
     {

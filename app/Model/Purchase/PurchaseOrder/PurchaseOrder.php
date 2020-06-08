@@ -88,6 +88,10 @@ class PurchaseOrder extends TransactionModel
         }
     }
 
+    public function updateIfDone() {
+        
+    }
+
     public static function create($data)
     {
         $purchaseOrder = new self;

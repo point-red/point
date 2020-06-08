@@ -40,6 +40,10 @@ class SettingJournalSeeder extends Seeder
                 $settingJournal->description = '';
                 $settingJournal->chart_of_account_id = $value;
                 $settingJournal->save();
+            } else {
+                $settingJournal = SettingJournal::where('feature', 'opening balance inventory')->where('name', $key)->first();
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
             }
         }
     }
@@ -58,6 +62,10 @@ class SettingJournalSeeder extends Seeder
                 $settingJournal->feature = 'purchase';
                 $settingJournal->name = $key;
                 $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            } else {
+                $settingJournal = SettingJournal::where('feature', 'purchase')->where('name', $key)->first();
                 $settingJournal->chart_of_account_id = $value;
                 $settingJournal->save();
             }
@@ -83,6 +91,10 @@ class SettingJournalSeeder extends Seeder
                 $settingJournal->description = '';
                 $settingJournal->chart_of_account_id = $value;
                 $settingJournal->save();
+            } else {
+                $settingJournal = SettingJournal::where('feature', 'sales')->where('name', $key)->first();
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
             }
         }
     }
@@ -103,6 +115,10 @@ class SettingJournalSeeder extends Seeder
                 $settingJournal->description = '';
                 $settingJournal->chart_of_account_id = $value;
                 $settingJournal->save();
+            } else {
+                $settingJournal = SettingJournal::where('feature', 'expedition')->where('name', $key)->first();
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
             }
         }
     }
@@ -119,6 +135,10 @@ class SettingJournalSeeder extends Seeder
                 $settingJournal->feature = 'manufacture';
                 $settingJournal->name = $key;
                 $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            } else {
+                $settingJournal = SettingJournal::where('feature', 'manufacture')->where('name', $key)->first();
                 $settingJournal->chart_of_account_id = $value;
                 $settingJournal->save();
             }
@@ -139,6 +159,10 @@ class SettingJournalSeeder extends Seeder
                 $settingJournal->description = '';
                 $settingJournal->chart_of_account_id = $value;
                 $settingJournal->save();
+            } else {
+                $settingJournal = SettingJournal::where('feature', 'transfer item')->where('name', $key)->first();
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
             }
         }
     }
@@ -156,6 +180,10 @@ class SettingJournalSeeder extends Seeder
                 $settingJournal->feature = 'stock correction';
                 $settingJournal->name = $key;
                 $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            } else {
+                $settingJournal = SettingJournal::where('feature', 'stock correction')->where('name', $key)->first();
                 $settingJournal->chart_of_account_id = $value;
                 $settingJournal->save();
             }

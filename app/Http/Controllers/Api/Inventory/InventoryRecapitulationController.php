@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Inventory;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
 use Illuminate\Http\Request;
@@ -56,6 +57,11 @@ class InventoryRecapitulationController extends Controller
             ->addSelect(DB::raw('COALESCE(subQueryInventoryStart.totalQty, 0) + COALESCE(subQueryInventoryIn.totalQty, 0) + COALESCE(subQueryInventoryOut.totalQty, 0) as ending_balance'));
 
         $items = pagination($items, $request->get('limit'));
+
+//        foreach ($items as $item) {
+//            $debit = Journal::where('journalable_type', Item::class)->where('journalable_id', $item->id)->sum('debit');
+//            $credit = Journal::where('journalable_type', Item::class)->where('journalable_id', $item->id)->sum('credit');
+//        }
 
         return new ApiCollection($items);
     }

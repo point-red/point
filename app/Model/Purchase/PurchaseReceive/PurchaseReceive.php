@@ -4,7 +4,9 @@ namespace App\Model\Purchase\PurchaseReceive;
 
 use App\Exceptions\IsReferencedException;
 use App\Helpers\Inventory\InventoryHelper;
+use App\Model\Accounting\Journal;
 use App\Model\Form;
+use App\Model\Master\Item;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
@@ -61,11 +63,8 @@ class PurchaseReceive extends TransactionModel
     {
         $purchaseReceive = new self;
         $purchaseReceive->fill($data);
-
-        if (! empty($data['purchase_order_id'])) {
-            $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
-            $purchaseReceive = self::fillDataFromPurchaseOrder($purchaseReceive, $purchaseOrder);
-        }
+        $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
+        $purchaseReceive = self::fillDataFromPurchaseOrder($purchaseReceive, $purchaseOrder);
 
         $items = self::mapItems($data['items'] ?? []);
 
@@ -73,13 +72,11 @@ class PurchaseReceive extends TransactionModel
         $purchaseReceive->items()->saveMany($items);
 
         $form = new Form;
+        $form->approval_status = 1;
+        $form->done = 1;
         $form->saveData($data, $purchaseReceive);
 
-        if (isset($purchaseOrder)) {
-            $purchaseOrder->updateIfDone();
-        }
-
-        self::insertInventory($form, $purchaseOrder ?? null, $purchaseReceive);
+        $purchaseOrder->updateIfDone();
 
         return $purchaseReceive;
     }
@@ -100,42 +97,27 @@ class PurchaseReceive extends TransactionModel
 
     private static function mapItems($items)
     {
+        $array = [];
+        foreach ($items as $item) {
+            $itemModel = Item::find($item['item_id']);
+            if ($itemModel->require_production_number || $itemModel->require_expiry_date) {
+                if ($item['dna']) {
+                    foreach ($item['dna'] as $dna) {
+                        $dnaItem = $item;
+                        $dnaItem['quantity'] = $dna['quantity'];
+                        $dnaItem['production_number'] = $dna['production_number'];
+                        $dnaItem['expiry_date'] = $dna['expiry_date'];
+                        array_push($array, $dnaItem);
+                    }
+                }
+            } else {
+                array_push($array, $item);
+            }
+        }
         return array_map(function ($item) {
             $purchaseReceiveItem = new PurchaseReceiveItem;
             $purchaseReceiveItem->fill($item);
-
             return $purchaseReceiveItem;
-        }, $items);
-    }
-
-    private static function insertInventory($form, $purchaseOrder, $purchaseReceive)
-    {
-        $additionalFee = 0;
-        $totalItemsAmount = 1; // prevent division by 0
-
-        if (! empty($purchaseOrder)) {
-            $additionalFee = $purchaseOrder->delivery_fee - $purchaseOrder->discount_value;
-            $totalItemsAmount = $purchaseOrder->amount - $additionalFee - $purchaseOrder->tax;
-        }
-
-        foreach ($purchaseReceive->items as $item) {
-            if ($item->quantity > 0) {
-                $totalPerItem = ($item->price - $item->discount_value) * $item->quantity * $item->converter;
-                $feePerItem = $totalPerItem / $totalItemsAmount * $additionalFee;
-                $price = ($totalPerItem + $feePerItem) / $item->quantity;
-                $options = [];
-                if ($item->expiry_date) {
-                    $options['expiry_date'] = $item->expiry_date;
-                }
-                if ($item->production_number) {
-                    $options['production_number'] = $item->production_number;
-                }
-
-                $options['quantity_reference'] = $item->quantity;
-                $options['unit_reference'] = $item->unit;
-                $options['converter_reference'] = $item->converter;
-                InventoryHelper::increase($form, $purchaseReceive->warehouse, $item->item, $item->quantity, $item->unit, $item->converter, $options);
-            }
-        }
+        }, $array);
     }
 }

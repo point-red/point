@@ -39,15 +39,6 @@ trait PurchaseReceiveRelation
 
     public function purchaseInvoices()
     {
-        return $this->belongsToMany(PurchaseInvoice::class, 'purchase_invoice_items')
-            ->join(Form::getTableName(), function ($q) {
-                $q->on(Form::getTableName('formable_id'), '=', PurchaseReceive::getTableName('id'))
-                    ->where(Form::getTableName('formable_type'), PurchaseReceive::$morphName);
-            })
-            ->whereNotNull(Form::getTableName('number'))
-            ->where(function ($q) {
-                $q->whereNull(Form::getTableName('cancellation_status'))
-                    ->orWhere(Form::getTableName('cancellation_status'), '!=', '1');
-            });
+        return $this->belongsToMany(PurchaseInvoice::class, 'purchase_invoice_items');
     }
 }

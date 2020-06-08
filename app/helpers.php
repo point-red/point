@@ -267,6 +267,7 @@ if (! function_exists('get_setting_journal')) {
      * @param $feature
      * @param $name
      * @return string
+     * @throws \App\Exceptions\PostingJournalAccountNotFound
      */
     function get_setting_journal($feature, $name)
     {

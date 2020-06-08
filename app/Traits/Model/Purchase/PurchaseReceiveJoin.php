@@ -5,7 +5,6 @@ namespace App\Traits\Model\Purchase;
 use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 
 trait PurchaseReceiveJoin
 {
@@ -19,7 +18,7 @@ trait PurchaseReceiveJoin
 
         if (in_array('supplier', $joins)) {
             $query = $query->join(Supplier::getTableName().' as '.Supplier::$alias, function ($q) {
-                $q->on(PurchaseRequest::$alias.'.supplier_id', '=', Supplier::$alias.'.id');
+                $q->on(PurchaseReceive::$alias.'.supplier_id', '=', Supplier::$alias.'.id');
             });
         }
 

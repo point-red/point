@@ -41,50 +41,6 @@ class PurchaseReceive extends TransactionModel
 
     public $defaultNumberPrefix = 'RECEIVE';
 
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(PurchaseReceiveItem::class);
-    }
-
-    public function services()
-    {
-        return $this->hasMany(PurchaseReceiveService::class);
-    }
-
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    public function purchaseOrder()
-    {
-        return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
-    }
-
-    public function purchaseInvoices()
-    {
-        return $this->belongsToMany(PurchaseInvoice::class, 'purchase_invoice_items')
-            ->join(Form::getTableName(), function ($q) {
-                $q->on(Form::getTableName('formable_id'), '=', PurchaseReceive::getTableName('id'))
-                    ->where(Form::getTableName('formable_type'), PurchaseReceive::$morphName);
-            })
-            ->whereNotNull(Form::getTableName('number'))
-            ->where(function ($q) {
-                $q->whereNull(Form::getTableName('cancellation_status'))
-                    ->orWhere(Form::getTableName('cancellation_status'), '!=', '1');
-            });
-    }
-
-    public function warehouse()
-    {
-        return $this->belongsTo(Warehouse::class);
-    }
-
     public function isAllowedToUpdate()
     {
         // Check if not referenced by purchase invoice
@@ -112,12 +68,9 @@ class PurchaseReceive extends TransactionModel
         }
 
         $items = self::mapItems($data['items'] ?? []);
-        $services = self::mapServices($data['services'] ?? []);
 
         $purchaseReceive->save();
-
         $purchaseReceive->items()->saveMany($items);
-        $purchaseReceive->services()->saveMany($services);
 
         $form = new Form;
         $form->saveData($data, $purchaseReceive);
@@ -153,16 +106,6 @@ class PurchaseReceive extends TransactionModel
 
             return $purchaseReceiveItem;
         }, $items);
-    }
-
-    private static function mapServices($services)
-    {
-        return array_map(function ($service) {
-            $purchaseReceiveServices = new PurchaseReceiveService;
-            $purchaseReceiveServices->fill($service);
-
-            return $purchaseReceiveServices;
-        }, $services);
     }
 
     private static function insertInventory($form, $purchaseOrder, $purchaseReceive)

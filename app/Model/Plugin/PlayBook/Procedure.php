@@ -28,7 +28,7 @@ class Procedure extends Model
 
     public function procedures()
     {
-        return $this->hasMany(self::class);
+        return $this->hasMany(self::class)->approved();
     }
 
     public function histories()

@@ -24,6 +24,12 @@ class StepController extends Controller
             ->with('contents.glossary')
             ->approved();
 
+        if ($request->is_dirty) {
+            $query->orWhere(function ($query) {
+                $query->approvalNotSent();
+            });
+        }
+
         $steps = pagination($query, $request->limit ?: 10);
 
         return new ApiCollection($steps);

@@ -35,6 +35,14 @@ class KpiTemplateController extends Controller
                 $query->select(DB::raw('sum(weight)'));
             }])
             ->paginate($request->input('limit') ?? 50);
+        
+        if ($request->get('is_archived')) {            
+            $templates = $templates->whereNotNull('archived_at');
+        } else {
+            $templates = $templates->whereNull('archived_at');
+        }
+
+        // $templates = pagination($templates, $request->get(1));
 
         return new ApiCollection($templates);
     }
@@ -113,6 +121,23 @@ class KpiTemplateController extends Controller
     }
 
     /**
+     * delete the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkDelete(DeleteRequest $request)
+    {
+        $templates = $request->get('employees');
+        foreach ($templates as $template) {
+            $template = KpiTemplate::findOrFail($template['id']);
+            $template->delete();
+        }
+
+        return response()->json([], 204);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
@@ -153,4 +178,71 @@ class KpiTemplateController extends Controller
 
         return new KpiTemplateResource($newKpiTemplate);
     }
+    
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param int $id
+     * @return ApiResource
+     */
+    public function archive($id)
+    {
+        $template = KpiTemplate::findOrFail($id);
+        $template->archive();
+
+        return new ApiResource($template);
+    }
+
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkArchive(Request $request)
+    {
+        $templates = $request->get('templates');
+        // var_dump($templates[0]);
+        foreach ($templates as $template) {
+            // var_dump($template['id']);
+            $template = KpiTemplate::findOrFail($template['id']);
+            $template->archive();
+            // var_dump($template);
+        }
+        
+        // return true;
+        return response()->json([], 200);
+        // return response()->json([], 200);
+    }
+
+    /**
+     * Activate the specified resource from storage.
+     *
+     * @param int $id
+     * @return ApiResource
+     */
+    public function activate($id)
+    {
+        $template = KpiTemplate::findOrFail($id);
+        $template->activate();
+
+        return new ApiResource($template);
+    }
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkActivate(Request $request)
+    {
+        $templates = $request->get('templates');
+        foreach ($templates as $template) {
+            $template = KpiTemplate::findOrFail($template['id']);
+            $template->activate();
+        }
+
+        return response()->json([], 200);
+    }
+
 }

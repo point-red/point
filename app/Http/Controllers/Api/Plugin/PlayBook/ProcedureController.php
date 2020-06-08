@@ -22,6 +22,7 @@ class ProcedureController extends Controller
             ->parent()
             ->approved()
             ->filter($request)->orderBy('code');
+
         $procedures = pagination($query, $request->limit ?: 10);
 
         return new ApiCollection($procedures);

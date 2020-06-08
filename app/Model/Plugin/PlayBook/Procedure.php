@@ -31,6 +31,11 @@ class Procedure extends Model
         return $this->hasMany(self::class)->approved();
     }
 
+    public function allProcedures()
+    {
+        return $this->hasMany(self::class);
+    }
+
     public function histories()
     {
         return $this->hasMany(ProcedureHistory::class);

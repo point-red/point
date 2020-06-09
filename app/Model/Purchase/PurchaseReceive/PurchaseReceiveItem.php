@@ -4,6 +4,7 @@ namespace App\Model\Purchase\PurchaseReceive;
 
 use App\Model\Master\Allocation;
 use App\Model\Master\Item;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
 use App\Model\TransactionModel;
 
 class PurchaseReceiveItem extends TransactionModel
@@ -63,5 +64,10 @@ class PurchaseReceiveItem extends TransactionModel
     public function purchaseReceive()
     {
         return $this->belongsTo(PurchaseReceive::class);
+    }
+
+    public function purchaseOrderItem()
+    {
+        return $this->belongsTo(PurchaseOrderItem::class);
     }
 }

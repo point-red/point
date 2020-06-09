@@ -47,6 +47,6 @@ trait PurchaseRequestRelation
             ->where(function ($q) {
                 $q->whereNull(Form::getTableName('cancellation_status'))
                     ->orWhere(Form::getTableName('cancellation_status'), '!=', '1');
-            });
+            })->select(PurchaseOrder::getTableName('*'));
     }
 }

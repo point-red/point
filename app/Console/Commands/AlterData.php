@@ -57,22 +57,42 @@ class AlterData extends Command
     {
         $projects = Project::where('is_generated', true)->get();
         foreach ($projects as $project) {
-            if (strtolower($project->code) == 'bimoker' || strtolower($project->code) == 'bipati' || strtolower($project->code) == 'bitegal') {
-                $project->plugins()->syncWithoutDetaching(3);
-            }
+            $this->line('Clone '.$project->code);
+            //Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
 
-            if (strtolower($project->group) == 'kopibara' || strtolower($project->code) == 'sagmb') {
-                $project->plugins()->syncWithoutDetaching(2);
-            }
+            $this->line('Alter '.$project->code);
+            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
 
-//            $this->line('Clone '.$project->code);
-//            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
-//
-//            $this->line('Alter '.$project->code);
-//            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
-//
-//            DB::connection('tenant')->reconnect();
-//            DB::connection('tenant')->beginTransaction();
+            DB::connection('tenant')->reconnect();
+            DB::connection('tenant')->beginTransaction();
+
+            $type = ChartOfAccountType::where('name', 'FIX ASSET')->first();
+            foreach ($type->accounts as $account) {
+                $account->type_id = ChartOfAccountType::where('name', 'FIXED ASSET')->first()->id;
+                $account->save();
+            }
+            $type->delete();
+
+            $type = ChartOfAccountType::where('name', 'FIX ASSET DEPRECIATION')->first();
+            foreach ($type->accounts as $account) {
+                $account->type_id = ChartOfAccountType::where('name', 'FIXED ASSET DEPRECIATION')->first()->id;
+                $account->save();
+            }
+            $type->delete();
+
+            $type = ChartOfAccountType::where('name', 'PURCHASE DOWNPAYMENT')->first();
+            foreach ($type->accounts as $account) {
+                $account->type_id = ChartOfAccountType::where('name', 'PURCHASE DOWN PAYMENT')->first()->id;
+                $account->save();
+            }
+            $type->delete();
+
+            $type = ChartOfAccountType::where('name', 'SALES DOWNPAYMENT')->first();
+            foreach ($type->accounts as $account) {
+                $account->type_id = ChartOfAccountType::where('name', 'SALES DOWN PAYMENT')->first()->id;
+                $account->save();
+            }
+            $type->delete();
 
 //            $this->setData();
 
@@ -118,7 +138,7 @@ class AlterData extends Command
 //                }
 //            }
 //
-//            DB::connection('tenant')->commit();
+            DB::connection('tenant')->commit();
         }
     }
 

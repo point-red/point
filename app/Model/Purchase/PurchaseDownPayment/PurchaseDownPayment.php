@@ -66,7 +66,7 @@ class PurchaseDownPayment extends TransactionModel
         $downPayment->fill($data);
         $downPayment->supplier_id = $reference->supplier_id;
         $downPayment->supplier_name = $reference->supplier_name;
-        $downPayment->remaining = $data['amount'];
+        $downPayment->remaining = 0;
         $downPayment->save();
 
         $form = new Form;

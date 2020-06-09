@@ -3,6 +3,7 @@
 namespace App\Model\Purchase\PurchaseInvoice;
 
 use App\Exceptions\IsReferencedException;
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Accounting\Journal;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Form;
@@ -132,7 +133,6 @@ class PurchaseInvoice extends TransactionModel
         $purchaseInvoice->fill($data);
 
         $items = self::mapItems($data['items'] ?? []);
-        $services = self::mapServices($data['services'] ?? []);
 
         $purchaseInvoice->amount = self::calculateAmount($purchaseInvoice, $items, $services);
         $purchaseInvoice->remaining = $purchaseInvoice->amount;
@@ -140,7 +140,6 @@ class PurchaseInvoice extends TransactionModel
         $purchaseInvoice->save();
 
         $purchaseInvoice->items()->saveMany($items);
-        $purchaseInvoice->services()->saveMany($services);
 
         $form = new Form;
         $form->saveData($data, $purchaseInvoice);
@@ -149,7 +148,7 @@ class PurchaseInvoice extends TransactionModel
         $purchaseInvoice->updateIfDone();
 
         self::setPurchaseReceiveDone($purchaseInvoice);
-        self::updateInventory($purchaseInvoice);
+        self::updateInventory($form, $purchaseInvoice);
         self::updateJournal($purchaseInvoice);
 
         return $purchaseInvoice;
@@ -165,25 +164,12 @@ class PurchaseInvoice extends TransactionModel
         }, $items);
     }
 
-    private static function mapServices($services)
-    {
-        return array_map(function ($service) {
-            $purchaseInvoiceService = new PurchaseInvoiceService;
-            $purchaseInvoiceService->fill($service);
-
-            return $purchaseInvoiceService;
-        }, $services);
-    }
-
     private static function calculateAmount($purchaseInvoice, $items, $services)
     {
         $amount = array_reduce($items, function ($carry, $item) {
             return $carry + $item->quantity * $item->converter * ($item->price - $item->discount_value);
         }, 0);
 
-        $amount += array_reduce($services, function ($carry, $service) {
-            return $carry + $service->quantity * ($service->price - $service->discount_value);
-        }, 0);
 
         $amount -= $purchaseInvoice->discount_value;
         $amount += $purchaseInvoice->delivery_fee;
@@ -203,25 +189,23 @@ class PurchaseInvoice extends TransactionModel
     /**
      * Update price, cogs in inventory.
      */
-    private static function updateInventory($purchaseInvoice)
+    private static function updateInventory($form, $purchaseInvoice)
     {
-        $purchaseInvoice->load('items.purchaseReceive.form');
-        $items = $purchaseInvoice->items;
+        foreach ($purchaseInvoice->items as $item) {
+            if ($item->quantity > 0) {
+                $options = [];
+                if ($item->expiry_date) {
+                    $options['expiry_date'] = $item->expiry_date;
+                }
+                if ($item->production_number) {
+                    $options['production_number'] = $item->production_number;
+                }
 
-        foreach ($items as $item) {
-            $formId = $item->purchaseReceive->form->id;
-            $itemId = $item->item_id;
-
-            $additionalFee = $purchaseInvoice->delivery_fee - $purchaseInvoice->discount_value;
-            $total = $purchaseInvoice->amount - $additionalFee - $purchaseInvoice->tax;
-            $price = self::calculatePrice($item, $total, $additionalFee);
-
-            $inventory = Inventory::where('form_id', $formId)->where('item_id', $itemId)->first();
-
-            $inventory->price = $price;
-            $inventory->total_value = $price * $inventory->quantity;
-            $inventory->cogs = $inventory->total_value / $inventory->total_quantity;
-            $inventory->save();
+                $options['quantity_reference'] = $item->quantity;
+                $options['unit_reference'] = $item->unit;
+                $options['converter_reference'] = $item->converter;
+                InventoryHelper::increase($form, $purchaseInvoice->warehouse, $item->item, $item->quantity, $item->unit, $item->converter, $options);
+            }
         }
     }
 

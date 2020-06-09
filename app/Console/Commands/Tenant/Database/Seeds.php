@@ -42,7 +42,7 @@ class Seeds extends Command
     {
         $increment = 0;
 
-        $projects = Project::all();
+        $projects = Project::where('is_generated', true)->get();
 
         $this->line('Total Project : '.$projects->count());
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 
+use App\Helpers\Inventory\InventoryHelper;
+use App\Helpers\Journal\JournalHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
@@ -21,6 +23,9 @@ class PurchaseInvoiceCancellationApprovalController extends Controller
         $purchaseInvoice->form->cancellation_approval_at = now();
         $purchaseInvoice->form->cancellation_status = 1;
         $purchaseInvoice->form->save();
+
+        JournalHelper::delete($purchaseInvoice->form->id);
+        InventoryHelper::delete($purchaseInvoice->form->id);
 
         return new ApiResource($purchaseInvoice);
     }

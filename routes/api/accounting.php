@@ -1,6 +1,8 @@
 <?php
 
 Route::prefix('accounting')->namespace('Accounting')->group(function () {
+    Route::get('setting-journals', 'SettingJournalController@index');
+    Route::get('setting-journals/{feature}/{name}', 'SettingJournalController@show');
     Route::apiResource('chart-of-account-groups', 'ChartOfAccountGroupController');
     Route::get('chart-of-account-types', 'ChartOfAccountTypeController@index');
     Route::post('chart-of-account-generators', 'ChartOfAccountGeneratorController@store');

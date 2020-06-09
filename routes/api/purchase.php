@@ -21,8 +21,6 @@ Route::prefix('purchase')->namespace('Purchase')->group(function () {
     Route::post('down-payments/{id}/cancellation-approve', 'PurchaseDownPayment\\PurchaseDownPaymentCancellationApprovalController@approve');
     Route::post('down-payments/{id}/cancellation-reject', 'PurchaseDownPayment\\PurchaseDownPaymentCancellationApprovalController@reject');
     Route::apiResource('down-payments', 'PurchaseDownPayment\\PurchaseDownPaymentController');
-    Route::post('receives/{id}/approve', 'PurchaseReceive\\PurchaseReceiveApprovalController@approve');
-    Route::post('receives/{id}/reject', 'PurchaseReceive\\PurchaseReceiveApprovalController@reject');
     Route::post('receives/{id}/cancellation-approve', 'PurchaseReceive\\PurchaseReceiveCancellationApprovalController@approve');
     Route::post('receives/{id}/cancellation-reject', 'PurchaseReceive\\PurchaseReceiveCancellationApprovalController@reject');
     Route::resource('receives', 'PurchaseReceive\\PurchaseReceiveController');

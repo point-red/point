@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Plugin\PlayBook\Approval;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Mail\Plugin\PlayBook\Approval\ApprovalRequestSent;
+use App\Mail\Plugin\PlayBook\Approval\ProcedureApprovalRequestSent;
 use App\Model\Master\User;
 use App\Model\Plugin\PlayBook\Procedure;
 use Illuminate\Http\Request;
@@ -48,17 +48,19 @@ class ProcedureController extends Controller
             'approval_request_to' => $request->approver_id,
         ]);
 
-        $procedures = Procedure::approvalNotSent()->whereIn('id', $request->ids)->get();
+        $procedures = Procedure::whereIn('id', $request->ids)->get();
 
         $approver = User::findOrFail($request->approver_id);
 
-        Mail::to([
-            $approver->email,
-        ])->queue(new ApprovalRequestSent(
-            Procedure::class,
-            $approver,
-            $_SERVER['HTTP_REFERER']
-        ));
+        foreach ($procedures as $procedure) {
+            Mail::to([
+                $approver->email,
+            ])->queue(new ProcedureApprovalRequestSent(
+                $procedure,
+                $approver,
+                $_SERVER['HTTP_REFERER']
+            ));
+        }
 
         return [
             'input' => $request->all(),

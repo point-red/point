@@ -11,6 +11,21 @@
 |
 */
 
+use App\Mail\Plugin\PlayBook\Approval\ProcedureApprovalRequestSent;
+use App\Model\Master\User;
+use App\Model\Plugin\PlayBook\Procedure;
+
+Route::get('tes', function () {
+    $approver = User::first();
+    $procedure = Procedure::notApprovedYet()->firstOrFail();
+
+    return new ProcedureApprovalRequestSent(
+        $procedure,
+        $approver,
+        'http://dev.localhost:8080'
+    );
+});
+
 Route::namespace('Web')->group(function () {
     Route::view('/', 'welcome');
 

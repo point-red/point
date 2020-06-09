@@ -8,11 +8,11 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class ApprovalRequestSent extends Mailable
+class ProcedureApprovalRequestSent extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $type;
+    public $procedure;
     public $approver;
     public $urlReferer;
 
@@ -21,14 +21,9 @@ class ApprovalRequestSent extends Mailable
      *
      * @return void
      */
-    public function __construct($type, $approver, $urlReferer)
+    public function __construct(Procedure $procedure, $approver, $urlReferer)
     {
-        if ($type === Procedure::class) {
-            $this->type = 'procedure';
-        } elseif ($type === Instruction::class) {
-            $this->type = 'instruction';
-        }
-
+        $this->procedure = $procedure;
         $this->approver = $approver;
         $this->urlReferer = $urlReferer;
     }
@@ -41,13 +36,14 @@ class ApprovalRequestSent extends Mailable
     public function build()
     {
         if (@$this->urlReferer) {
-            $parsedUrl = @parse_url($this->urlReferer);
-            $url = "{$parsedUrl['scheme']}://{$parsedUrl['host']}/plugin/play-book/approval/{$this->type}";
+            $parsedUrl = parse_url($this->urlReferer);
+            $port = @$parsedUrl['port'] ? ":{$parsedUrl['port']}" : '';
+            $url = "{$parsedUrl['scheme']}://{$parsedUrl['host']}{$port}/plugin/play-book/procedure/{$this->procedure->id}";
         }
 
-        return $this->subject("New {$this->type}")
-            ->view('emails.plugin.play-book.approval-sent', [
-                'type' => $this->type,
+        return $this->subject("New Procedure")
+            ->view('emails.plugin.play-book.procedure-approval-sent', [
+                'procedure' => $this->procedure,
                 'name' => $this->approver->name,
                 'url' => @$url,
             ]);

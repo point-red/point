@@ -9,6 +9,7 @@ use App\Model\Plugin\PlayBook\InstructionHistory;
 use App\Model\Plugin\PlayBook\InstructionStep;
 use App\Model\Plugin\PlayBook\InstructionStepContent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StepController extends Controller
 {
@@ -21,14 +22,25 @@ class StepController extends Controller
     {
         $query = $instruction
             ->steps()
+            ->select()
+            ->addSelect(
+                DB::raw(
+                    'case
+                        when instruction_step_pending_id is null then id
+                        else instruction_step_pending_id
+                    end as group_id'
+                )
+            )
             ->with('contents.glossary')
-            ->approved();
-
-        if ($request->is_dirty) {
-            $query->orWhere(function ($query) {
-                $query->approvalNotSent();
-            });
-        }
+            ->where(function ($query) use ($request) {
+                $query->approved();
+                if ($request->is_dirty) {
+                    $query->orWhere(function ($query) {
+                        $query->approvalNotSent();
+                    });
+                }
+            })
+            ->orderBy('group_id');
 
         $steps = pagination($query, $request->limit ?: 10);
 

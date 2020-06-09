@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\Purchase\PurchaseInvoice;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Traits\Model\Purchase\PurchaseInvoiceJoin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseInvoiceApprovalController extends Controller
 {
@@ -16,11 +18,18 @@ class PurchaseInvoiceApprovalController extends Controller
      */
     public function approve(Request $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $purchaseInvoice = PurchaseInvoice::findOrFail($id);
         $purchaseInvoice->form->approval_by = auth()->user()->id;
         $purchaseInvoice->form->approval_at = now();
         $purchaseInvoice->form->approval_status = 1;
         $purchaseInvoice->form->save();
+
+        PurchaseInvoice::updateInventory($purchaseInvoice->form, $purchaseInvoice);
+        PurchaseInvoice::updateJournal($purchaseInvoice);
+
+        DB::connection('tenant')->commit();
 
         return new ApiResource($purchaseInvoice);
     }

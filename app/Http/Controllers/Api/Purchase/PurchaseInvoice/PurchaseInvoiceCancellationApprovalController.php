@@ -27,6 +27,11 @@ class PurchaseInvoiceCancellationApprovalController extends Controller
         JournalHelper::delete($purchaseInvoice->form->id);
         InventoryHelper::delete($purchaseInvoice->form->id);
 
+        foreach ($purchaseInvoice->items as $purchaseInvoiceItem) {
+            $purchaseInvoiceItem->purchaseReceive->form->done = 0;
+            $purchaseInvoiceItem->purchaseReceive->form->save();
+        }
+
         return new ApiResource($purchaseInvoice);
     }
 

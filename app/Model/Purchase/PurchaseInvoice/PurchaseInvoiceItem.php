@@ -5,6 +5,7 @@ namespace App\Model\Purchase\PurchaseInvoice;
 use App\Model\Master\Allocation;
 use App\Model\Master\Item;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
 use App\Model\TransactionModel;
 
 class PurchaseInvoiceItem extends TransactionModel
@@ -52,5 +53,10 @@ class PurchaseInvoiceItem extends TransactionModel
     public function purchaseReceive()
     {
         return $this->belongsTo(PurchaseReceive::class);
+    }
+
+    public function purchaseReceiveItem()
+    {
+        return $this->belongsTo(PurchaseReceiveItem::class);
     }
 }

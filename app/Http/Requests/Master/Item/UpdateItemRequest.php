@@ -28,7 +28,7 @@ class UpdateItemRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
+            'name' => 'required|string|unique:tenant.items,name,'.$this->id,
             'chart_of_account_id' => 'required',
             'code' => 'bail|nullable|string|unique:tenant.items,code,'.$this->id,
             'barcode' => 'bail|nullable|string|unique:tenant.items,barcode',

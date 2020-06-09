@@ -29,7 +29,7 @@ class StoreItemRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
+            'name' => 'required|string|unique:tenant.items,name',
             'chart_of_account_id' => 'required',
             'code' => 'bail|nullable|string|unique:tenant.items,code',
             'barcode' => 'bail|nullable|string|unique:tenant.items,barcode',

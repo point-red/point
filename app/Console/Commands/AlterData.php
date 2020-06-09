@@ -55,7 +55,7 @@ class AlterData extends Command
      */
     public function handle()
     {
-        $projects = Project::where('is_generated', true)->get();
+        $projects = Project::where('id', '>', 94)->where('is_generated', true)->get();
         foreach ($projects as $project) {
             $this->line('Clone '.$project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
@@ -67,32 +67,40 @@ class AlterData extends Command
             DB::connection('tenant')->beginTransaction();
 
             $type = ChartOfAccountType::where('name', 'FIX ASSET')->first();
-            foreach ($type->accounts as $account) {
-                $account->type_id = ChartOfAccountType::where('name', 'FIXED ASSET')->first()->id;
-                $account->save();
+            if ($type) {
+                foreach ($type->accounts as $account) {
+                    $account->type_id = ChartOfAccountType::where('name', 'FIXED ASSET')->first()->id;
+                    $account->save();
+                }
+                $type->delete();
             }
-            $type->delete();
 
             $type = ChartOfAccountType::where('name', 'FIX ASSET DEPRECIATION')->first();
-            foreach ($type->accounts as $account) {
-                $account->type_id = ChartOfAccountType::where('name', 'FIXED ASSET DEPRECIATION')->first()->id;
-                $account->save();
+            if ($type) {
+                foreach ($type->accounts as $account) {
+                    $account->type_id = ChartOfAccountType::where('name', 'FIXED ASSET DEPRECIATION')->first()->id;
+                    $account->save();
+                }
+                $type->delete();
             }
-            $type->delete();
 
             $type = ChartOfAccountType::where('name', 'PURCHASE DOWNPAYMENT')->first();
-            foreach ($type->accounts as $account) {
-                $account->type_id = ChartOfAccountType::where('name', 'PURCHASE DOWN PAYMENT')->first()->id;
-                $account->save();
+            if ($type) {
+                foreach ($type->accounts as $account) {
+                    $account->type_id = ChartOfAccountType::where('name', 'PURCHASE DOWN PAYMENT')->first()->id;
+                    $account->save();
+                }
+                $type->delete();
             }
-            $type->delete();
 
             $type = ChartOfAccountType::where('name', 'SALES DOWNPAYMENT')->first();
-            foreach ($type->accounts as $account) {
-                $account->type_id = ChartOfAccountType::where('name', 'SALES DOWN PAYMENT')->first()->id;
-                $account->save();
+            if ($type) {
+                foreach ($type->accounts as $account) {
+                    $account->type_id = ChartOfAccountType::where('name', 'SALES DOWN PAYMENT')->first()->id;
+                    $account->save();
+                }
+                $type->delete();
             }
-            $type->delete();
 
 //            $this->setData();
 

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Plugin\PlayBook\Approval;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
-use App\Mail\Plugin\PlayBook\Approval\ApprovalRequestSent;
+use App\Mail\Plugin\PlayBook\Approval\InstructionApprovalRequestSent;
 use App\Model\Master\User;
 use App\Model\Plugin\PlayBook\Instruction;
 use App\Model\Plugin\PlayBook\InstructionHistory;
@@ -53,13 +53,13 @@ class InstructionController extends Controller
             'approver_id' => ['required', 'numeric'],
         ]);
 
-        $instructions = Instruction::approvalNotSent()->whereIn('id', $request->ids)->update([
+        Instruction::approvalNotSent()->whereIn('id', $request->ids)->update([
             'approval_request_by' => $request->user()->id,
             'approval_request_at' => now(),
             'approval_request_to' => $request->approver_id,
         ]);
 
-        $steps = InstructionStep::approvalNotSent()->whereIn('id', $request->step_ids)->update([
+        InstructionStep::approvalNotSent()->whereIn('id', $request->step_ids)->update([
             'approval_request_by' => $request->user()->id,
             'approval_request_at' => now(),
             'approval_request_to' => $request->approver_id,
@@ -67,15 +67,31 @@ class InstructionController extends Controller
 
         $approver = User::findOrFail($request->approver_id);
 
-        Mail::to([
-            $approver->email,
-        ])->queue(new ApprovalRequestSent(
-            Instruction::class,
-            $approver,
-            $_SERVER['HTTP_REFERER']
-        ));
+        // send email
+        $instructions = Instruction::with('approver', 'procedure')
+            ->approvalRequested()->orWhereHas('steps', function ($query) use ($request) {
+                $query
+                    ->approvalRequested()
+                    ->where('approval_request_to', $request->approver_id);
+            })->with(['steps' => function ($query) use ($request) {
+                $query->with('contents.glossary')
+                    ->approvalRequested()
+                    ->where('approval_request_to', $request->approver_id);;
+            }])->get();
 
-        return compact('instructions', 'steps');
+        foreach ($instructions as $key => $instruction) {
+            Mail::to([
+                $approver->email,
+            ])->queue(new InstructionApprovalRequestSent(
+                $instruction,
+                $approver,
+                $_SERVER['HTTP_REFERER']
+            ));
+        }
+
+        return [
+            'message' => 'good',
+        ];
     }
 
     /**

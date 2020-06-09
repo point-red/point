@@ -89,7 +89,26 @@ class PurchaseOrder extends TransactionModel
     }
 
     public function updateIfDone() {
-        
+        $done = true;
+        foreach ($this->items as $purchaseOrderItem) {
+            $quantity = 0;
+            foreach ($this->purchaseReceives as $purchaseReceive) {
+                foreach ($purchaseReceive->items as $purchaseReceiveItem) {
+                    if ($purchaseReceiveItem->purchase_order_item_id == $purchaseOrderItem->id) {
+                        $quantity += $purchaseReceiveItem->quantity;
+                    }
+                }
+            }
+            if ($quantity < $purchaseOrderItem->quantity) {
+                $done = false;
+                break;
+            }
+        }
+
+        if ($done == true) {
+            $this->form->done = true;
+            $this->form->save();
+        }
     }
 
     public static function create($data)

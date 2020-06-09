@@ -6,6 +6,7 @@ use App\Model\Form;
 use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
@@ -58,7 +59,7 @@ trait PurchaseOrderRelation
             ->where(function ($q) {
                 $q->whereNull(Form::getTableName('cancellation_status'))
                     ->orWhere(Form::getTableName('cancellation_status'), '!=', '1');
-            });
+            })->select(PurchaseReceive::getTableName('*'));
     }
 
     // Relation that not archived and not canceled
@@ -71,20 +72,6 @@ trait PurchaseOrderRelation
             ->where(function ($q) {
                 $q->whereNull(Form::getTableName('cancellation_status'))
                     ->orWhere(Form::getTableName('cancellation_status'), '!=', '1');
-            });
-    }
-
-    // Relation that not archived and not canceled
-    public function deliverOrders()
-    {
-        return $this->hasMany(DeliveryOrder::class)
-            ->join(Form::getTableName(), function ($q) {
-                $q->on(Form::getTableName('formable_id'), '=', DeliveryOrder::getTableName('id'))
-                    ->where(Form::getTableName('formable_type'), DeliveryOrder::$morphName);
-            })->whereNotNull(Form::getTableName('number'))
-            ->where(function ($q) {
-                $q->whereNull(Form::getTableName('cancellation_status'))
-                    ->orWhere(Form::getTableName('cancellation_status'), '!=', '1');
-            });
+            })->select(PurchaseDownPayment::getTableName('*'));
     }
 }

@@ -7,6 +7,7 @@ use App\Exceptions\PointException;
 use App\Model\Accounting\Journal;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Form;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use App\Model\TransactionModel;
 use App\Traits\Model\Finance\PaymentJoin;
 use App\Traits\Model\Finance\PaymentRelation;
@@ -53,13 +54,12 @@ class Payment extends TransactionModel
         $payment->paymentable_name = $data['paymentable_name'] ?? $payment->paymentable->name;
 
         $paymentDetails = self::mapPaymentDetails($data['details']);
-
         $payment->amount = self::calculateAmount($paymentDetails);
         $payment->save();
 
         // Reference Payment Order
-        if (isset($data['payment_order_id'])) {
-            $paymentOrder = PaymentOrder::find($data['payment_order_id']);
+        if (isset($data['reference_type']) && $data['reference_type'] == 'PaymentOrder') {
+            $paymentOrder = PaymentOrder::find($data['reference_id']);
             if ($paymentOrder->payment_id != null) {
                 throw new PointException();
             }
@@ -67,6 +67,19 @@ class Payment extends TransactionModel
             $paymentOrder->form->done = 1;
             $paymentOrder->form->save();
             $paymentOrder->save();
+        }
+
+        // Reference Down Payment
+        if (isset($data['reference_type']) && $data['reference_type'] == 'PurchaseDownPayment') {
+            $purchaseDownPayment = PurchaseDownPayment::find($data['reference_id']);
+            if ($purchaseDownPayment->paid_by != null) {
+                throw new PointException();
+            }
+            $purchaseDownPayment->remaining = $purchaseDownPayment->amount;
+            $purchaseDownPayment->paid_by = $payment->id;
+            $purchaseDownPayment->form->done = 1;
+            $purchaseDownPayment->form->save();
+            $purchaseDownPayment->save();
         }
 
         $payment->details()->saveMany($paymentDetails);

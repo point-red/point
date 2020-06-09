@@ -42,14 +42,11 @@ class PurchaseInvoiceController extends Controller
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseInvoice = PurchaseInvoice::create($request->all());
-
             $purchaseInvoice
                 ->load('form')
                 ->load('supplier')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($purchaseInvoice);
         });
@@ -117,7 +114,7 @@ class PurchaseInvoiceController extends Controller
         DB::connection('tenant')->beginTransaction();
 
         $purchaseInvoice = PurchaseInvoice::findOrFail($id);
-        $purchaseInvoice->isAllowedToDelete();
+//        $purchaseInvoice->isAllowedToDelete();
         $purchaseInvoice->requestCancel($request);
 
         DB::connection('tenant')->commit();

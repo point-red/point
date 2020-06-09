@@ -5,18 +5,18 @@ namespace App\Model\Purchase\PurchaseInvoice;
 use App\Exceptions\IsReferencedException;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Accounting\Journal;
-use App\Model\Finance\Payment\Payment;
 use App\Model\Form;
-use App\Model\Inventory\Inventory;
 use App\Model\Master\Item;
 use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Model\TransactionModel;
+use App\Traits\Model\Purchase\PurchaseInvoiceJoin;
+use App\Traits\Model\Purchase\PurchaseInvoiceRelation;
 use Carbon\Carbon;
 
 class PurchaseInvoice extends TransactionModel
 {
+    use PurchaseInvoiceJoin, PurchaseInvoiceRelation;
+
     public static $morphName = 'PurchaseInvoice';
 
     protected $connection = 'tenant';
@@ -61,43 +61,6 @@ class PurchaseInvoice extends TransactionModel
         $this->attributes['due_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
 
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(PurchaseInvoiceItem::class);
-    }
-
-    public function services()
-    {
-        return $this->hasMany(PurchaseInvoiceService::class);
-    }
-
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    public function purchaseReceives()
-    {
-        return $this->belongsToMany(PurchaseReceive::class, 'purchase_invoice_items')->distinct();
-    }
-
-    public function downPayments()
-    {
-        return $this->belongsToMany(PurchaseDownPayment::class, 'down_payment_invoice', 'down_payment_id', 'invoice_id');
-    }
-
-    public function payments()
-    {
-        return $this->morphToMany(Payment::class, 'referenceable', 'payment_details')->active();
-    }
-
-    // public function purchase
-
     public function updateIfDone()
     {
         $done = $this->remaining <= 0;
@@ -134,7 +97,7 @@ class PurchaseInvoice extends TransactionModel
 
         $items = self::mapItems($data['items'] ?? []);
 
-        $purchaseInvoice->amount = self::calculateAmount($purchaseInvoice, $items, $services);
+        $purchaseInvoice->amount = self::calculateAmount($purchaseInvoice, $items);
         $purchaseInvoice->remaining = $purchaseInvoice->amount;
 
         $purchaseInvoice->save();
@@ -148,8 +111,6 @@ class PurchaseInvoice extends TransactionModel
         $purchaseInvoice->updateIfDone();
 
         self::setPurchaseReceiveDone($purchaseInvoice);
-        self::updateInventory($form, $purchaseInvoice);
-        self::updateJournal($purchaseInvoice);
 
         return $purchaseInvoice;
     }
@@ -164,10 +125,10 @@ class PurchaseInvoice extends TransactionModel
         }, $items);
     }
 
-    private static function calculateAmount($purchaseInvoice, $items, $services)
+    private static function calculateAmount($purchaseInvoice, $items)
     {
         $amount = array_reduce($items, function ($carry, $item) {
-            return $carry + $item->quantity * $item->converter * ($item->price - $item->discount_value);
+            return $carry + $item->quantity * ($item->price - $item->discount_value);
         }, 0);
 
 
@@ -180,31 +141,34 @@ class PurchaseInvoice extends TransactionModel
 
     private static function setPurchaseReceiveDone($purchaseInvoice)
     {
-        $purchaseReceives = $purchaseInvoice->purchaseReceives;
-        foreach ($purchaseReceives as $receive) {
-            $receive->form()->update(['done' => true]);
+        foreach ($purchaseInvoice->items as $purchaseInvoiceItem) {
+            $purchaseInvoiceItem->purchaseReceive->form->done = true;
+            $purchaseInvoiceItem->purchaseReceive->form->save();
         }
     }
 
     /**
      * Update price, cogs in inventory.
+     *
+     * @param $form
+     * @param $purchaseInvoice
      */
-    private static function updateInventory($form, $purchaseInvoice)
+    public static function updateInventory($form, $purchaseInvoice)
     {
         foreach ($purchaseInvoice->items as $item) {
             if ($item->quantity > 0) {
                 $options = [];
-                if ($item->expiry_date) {
-                    $options['expiry_date'] = $item->expiry_date;
+                if ($item->item->require_expiry_date) {
+                    $options['expiry_date'] = $item->purchaseReceiveItem->expiry_date;
                 }
-                if ($item->production_number) {
-                    $options['production_number'] = $item->production_number;
+                if ($item->item->require_production_number) {
+                    $options['production_number'] = $item->purchaseReceiveItem->production_number;
                 }
 
                 $options['quantity_reference'] = $item->quantity;
                 $options['unit_reference'] = $item->unit;
                 $options['converter_reference'] = $item->converter;
-                InventoryHelper::increase($form, $purchaseInvoice->warehouse, $item->item, $item->quantity, $item->unit, $item->converter, $options);
+                InventoryHelper::increase($form, $item->purchaseReceive->warehouse, $item->item, $item->quantity, $item->unit, $item->converter, $options);
             }
         }
     }
@@ -217,7 +181,7 @@ class PurchaseInvoice extends TransactionModel
         return ($totalPerItem + $feePerItem) / $item->quantity;
     }
 
-    private static function updateJournal($purchaseInvoice)
+    public static function updateJournal($purchaseInvoice)
     {
         /**
          * Journal Table

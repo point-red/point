@@ -6,7 +6,11 @@
     <div class="body-text">
         Hello {{ $name }},
         <br>
+        @if ($procedure->approval_action === 'destroy')
+        There is a new deletion request just sent to you.
+        @else
         There is a new procedure approval request just sent to you.
+        @endif
         <br>
         <div>
             <table

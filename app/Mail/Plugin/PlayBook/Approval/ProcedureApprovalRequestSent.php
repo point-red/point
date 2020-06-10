@@ -41,7 +41,13 @@ class ProcedureApprovalRequestSent extends Mailable
             $url = "{$parsedUrl['scheme']}://{$parsedUrl['host']}{$port}/plugin/play-book/procedure/{$this->procedure->id}";
         }
 
-        return $this->subject("New Procedure")
+        if ($this->procedure->approval_action === 'destroy') {
+            $subject = "Procedure Deletion Request";
+        } else {
+            $subject = "New Procedure";
+        }
+
+        return $this->subject($subject)
             ->view('emails.plugin.play-book.procedure-approval-sent', [
                 'procedure' => $this->procedure,
                 'name' => $this->approver->name,

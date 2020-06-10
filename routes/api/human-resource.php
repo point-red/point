@@ -14,6 +14,7 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::patch('templates/bulk-delete', 'KpiTemplateController@bulkDelete');
 
         Route::apiResource('templates', 'KpiTemplateController');
+        Route::post('templates/copy-group', 'KpiTemplateController@copyGroup');
         Route::post('templates/duplicate', 'KpiTemplateController@duplicate');
         Route::apiResource('template-groups', 'KpiTemplateGroupController');
         Route::apiResource('template-indicators', 'KpiTemplateIndicatorController');

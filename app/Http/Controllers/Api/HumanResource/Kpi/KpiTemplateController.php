@@ -181,6 +181,44 @@ class KpiTemplateController extends Controller
 
         return new KpiTemplateResource($newKpiTemplate);
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return ApiResource
+     */
+    public function copyGroup(Request $request)
+    {
+        $template = KpiTemplate::findOrFail($request->get('template_id'));
+
+        $chosenGroup = KpiTemplateGroup::findOrFail($request->get('group_id'));
+
+        $kpiTemplateGroup = new KpiTemplateGroup();
+        $kpiTemplateGroup->kpi_template_id = $template->id;
+        $kpiTemplateGroup->name = $chosenGroup->name;
+        $kpiTemplateGroup->save();
+
+        foreach ($chosenGroup->indicators as $indicator) {
+            $kpiTemplateIndicator = new KpiTemplateIndicator;
+            $kpiTemplateIndicator->kpi_template_group_id = $kpiTemplateGroup->id;
+            $kpiTemplateIndicator->name = $indicator->name;
+            $kpiTemplateIndicator->weight = $indicator->weight;
+            $kpiTemplateIndicator->target = $indicator->target;
+            $kpiTemplateIndicator->automated_code = $indicator->automated_code;
+            $kpiTemplateIndicator->save();
+
+            foreach ($indicator->scores as $score) {
+                $kpiTemplateScore = new KpiTemplateScore();
+                $kpiTemplateScore->kpi_template_indicator_id = $kpiTemplateIndicator->id;
+                $kpiTemplateScore->description = $score->description;
+                $kpiTemplateScore->score = $score->score;
+                $kpiTemplateScore->save();
+            }
+        }
+
+        return new ApiResource($template);
+    }
     
     /**
      * Archive the specified resource from storage.

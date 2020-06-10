@@ -97,7 +97,7 @@ class EmployeeAssessmentController extends Controller
         $kpi->date = date('Y-m-d', strtotime($dateTo));
         $kpi->employee_id = $employeeId;
         $kpi->scorer_id = auth()->user()->id;
-        $kpi->comment = $template['comment'];
+        $kpi->comment = isset($template['comment']) ? $template['comment'] : '';
         $kpi->save();
 
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {

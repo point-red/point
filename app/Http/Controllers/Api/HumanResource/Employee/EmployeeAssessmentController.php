@@ -97,6 +97,7 @@ class EmployeeAssessmentController extends Controller
         $kpi->date = date('Y-m-d', strtotime($dateTo));
         $kpi->employee_id = $employeeId;
         $kpi->scorer_id = auth()->user()->id;
+        $kpi->comment = isset($template['comment']) ? $template['comment'] : '';
         $kpi->save();
 
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
@@ -167,7 +168,7 @@ class EmployeeAssessmentController extends Controller
             ->where('employee_id', $employeeId)
             ->where('kpis.id', $id)
             ->first();
-
+        
         $kpis->score = (float) $kpis->score;
         $kpis->target = (float) $kpis->target;
 
@@ -328,6 +329,7 @@ class EmployeeAssessmentController extends Controller
 
         $kpi = Kpi::findOrFail($id);
         $kpi->date = date('Y-m-d', strtotime($request->get('date')));
+        $kpi->comment = $request->get('comment');
         $kpi->save();
 
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {

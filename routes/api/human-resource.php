@@ -2,6 +2,17 @@
 
 Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
     Route::prefix('kpi')->namespace('Kpi')->group(function () {
+        Route::put('templates/{id}/archive', 'KpiTemplateController@archive');
+        Route::patch('templates/{id}/archive', 'KpiTemplateController@archive');
+        Route::put('templates/bulk-archive', 'KpiTemplateController@bulkArchive');
+        Route::patch('templates/bulk-archive', 'KpiTemplateController@bulkArchive');
+        Route::put('templates/{id}/activate', 'KpiTemplateController@activate');
+        Route::patch('templates/{id}/activate', 'KpiTemplateController@activate');
+        Route::put('templates/bulk-activate', 'KpiTemplateController@bulkActivate');
+        Route::patch('templates/bulk-activate', 'KpiTemplateController@bulkActivate');
+        Route::put('templates/bulk-delete', 'KpiTemplateController@bulkDelete');
+        Route::patch('templates/bulk-delete', 'KpiTemplateController@bulkDelete');
+
         Route::apiResource('templates', 'KpiTemplateController');
         Route::post('templates/duplicate', 'KpiTemplateController@duplicate');
         Route::apiResource('template-groups', 'KpiTemplateGroupController');

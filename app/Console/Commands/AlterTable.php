@@ -46,10 +46,10 @@ class AlterTable extends Command
             $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->statement('ALTER TABLE `sales_quotations` ADD COLUMN `discount_percent` decimal(65, 30)');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_quotations` ADD COLUMN `discount_value` decimal(65, 30)');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_quotation_items` ADD COLUMN `discount_percent` decimal(65, 30)');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_quotation_items` ADD COLUMN `discount_value` decimal(65, 30)');
+            DB::connection('tenant')->statement('ALTER TABLE `kpis` ADD COLUMN `comment` text default null');
+            DB::connection('tenant')->statement('ALTER TABLE `kpi_templates` ADD COLUMN `archived_at` timestamp null default null');
+            DB::connection('tenant')->statement('ALTER TABLE `kpi_templates` ADD COLUMN `archived_by` integer(10) unsigned default null');
+            DB::connection('tenant')->statement('ALTER TABLE `kpi_templates` ADD CONSTRAINT `kpis_templates_archived_by_foreign` FOREIGN KEY (`archived_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
         }
     }
 }

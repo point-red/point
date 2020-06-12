@@ -71,20 +71,32 @@ class AlterData extends Command
 
             $addresses = Address::all();
             foreach ($addresses as $address) {
-                $address->addressable->address = $address->address;
-                $address->addressable->save();
+                if (!$address->addressable) {
+                    $address->delete();
+                } else {
+                    $address->addressable->address = $address->address;
+                    $address->addressable->save();
+                }
             }
 
             $phones = Phone::all();
             foreach ($phones as $phone) {
-                $phone->phoneable->phone = $phone->number;
-                $phone->phoneable->save();
+                if (!$phone->phoneable) {
+                    $phone->delete();
+                } else {
+                    $phone->phoneable->phone = $phone->number;
+                    $phone->phoneable->save();
+                }
             }
 
             $emails = Email::all();
             foreach ($emails as $email) {
-                $email->emailable->email = $email->email;
-                $email->emailable->save();
+                if (!$email->emailable) {
+                    $email->delete();
+                } else {
+                    $email->emailable->email = $email->email;
+                    $email->emailable->save();
+                }
             }
 
 //            $this->setData();

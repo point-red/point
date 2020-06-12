@@ -18,8 +18,18 @@ class CreateCustomersTable extends Migration
             $table->string('code')->nullable()->unique();
             $table->string('tax_identification_number')->nullable();
             $table->string('name');
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('country')->nullable();
+            $table->string('zip_code')->nullable();
+            $table->double('latitude')->nullable();
+            $table->double('longitude')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('phone_cc')->nullable(); // country code
+            $table->string('email')->nullable();
             $table->text('notes')->nullable();
-            $table->decimal('credit_ceiling', 65, 30)->default(0);
+            $table->decimal('credit_limit', 65, 30)->default(0);
             $table->unsignedInteger('branch_id')->index()->nullable();
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();

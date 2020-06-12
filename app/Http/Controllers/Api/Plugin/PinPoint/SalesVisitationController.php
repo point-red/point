@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
-use App\Helper\Reward\TokenHelper;
+use App\Helpers\Reward\TokenHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
 use App\Http\Resources\ApiCollection;

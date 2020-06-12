@@ -17,14 +17,24 @@ class Customer extends MasterModel
 
     protected $appends = ['label'];
 
-    protected $casts = ['credit_ceiling' => 'double'];
+    protected $casts = ['credit_limit' => 'double'];
 
     protected $fillable = [
         'code',
         'name',
         'tax_identification_number',
+        'address',
+        'city',
+        'state',
+        'country',
+        'zip_code',
+        'latitude',
+        'longitude',
+        'phone',
+        'phone_cc',
+        'email',
         'notes',
-        'credit_ceiling',
+        'credit_limit',
         'pricing_group_id',
         'disabled',
     ];

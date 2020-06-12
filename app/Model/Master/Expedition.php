@@ -19,6 +19,17 @@ class Expedition extends MasterModel
     protected $fillable = [
         'code',
         'name',
+        'tax_identification_number',
+        'address',
+        'city',
+        'state',
+        'country',
+        'zip_code',
+        'latitude',
+        'longitude',
+        'phone',
+        'phone_cc',
+        'email',
         'notes',
     ];
 }

@@ -16,7 +16,19 @@ class CreateEmployeesTable extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->increments('id');
             $table->string('code')->nullable()->unique();
+            $table->string('tax_identification_number')->nullable();
             $table->string('name');
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('country')->nullable();
+            $table->string('zip_code')->nullable();
+            $table->double('latitude')->nullable();
+            $table->double('longitude')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('phone_cc')->nullable(); // country code
+            $table->string('email')->nullable();
+
             $table->string('personal_identity')->nullable();
             // Data related to personal info
             $table->string('last_education')->nullable();

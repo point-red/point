@@ -39,6 +39,15 @@ class StepController extends Controller
                         $query->approvalNotSent();
                     });
                 }
+
+                if ($request->review) {
+                    $query->orWhere(function ($query) use ($request) {
+                        $query
+                            ->notApprovedYet()
+                            ->WhereIn('id', $request->review);
+                    });
+
+                }
             })
             ->orderBy('group_id');
 

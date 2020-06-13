@@ -68,22 +68,30 @@ class InstructionController extends Controller
         $approver = User::findOrFail($request->approver_id);
 
         // send email
-        $instructions = Instruction::with('approver', 'procedure')
-            ->approvalRequested()->orWhereHas('steps', function ($query) use ($request) {
-                $query
-                    ->approvalRequested()
-                    ->where('approval_request_to', $request->approver_id);
-            })->with(['steps' => function ($query) use ($request) {
-                $query->with('contents.glossary')
-                    ->approvalRequested()
-                    ->where('approval_request_to', $request->approver_id);;
-            }])->get();
+        $instructions = Instruction::whereIn('id', $request->ids)->get();
+        $steps = InstructionStep::whereIn('id', $request->step_ids)->get();
 
-        foreach ($instructions as $key => $instruction) {
+        foreach ($steps as $step) {
+            $instruction = $instructions->firstWhere('id', $step->instruction_id);
+
+            if (!$instruction) {
+                $instruction = $step->instruction;
+                $instructions->push($instruction);
+            }
+
+            if (!$instruction->_steps) {
+                $instruction->_steps = collect([]);
+            }
+
+            $instruction->_steps->push($step);
+        }
+
+        foreach ($instructions as $instruction) {
             Mail::to([
                 $approver->email,
             ])->queue(new InstructionApprovalRequestSent(
                 $instruction,
+                $instruction->_steps,
                 $approver,
                 $_SERVER['HTTP_REFERER']
             ));

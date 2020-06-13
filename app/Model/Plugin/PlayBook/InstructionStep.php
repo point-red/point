@@ -34,7 +34,8 @@ class InstructionStep extends Model
 
     public function scopeNotApprovedYet($query)
     {
-        return $query->whereNull('approved_at');
+        return $query->whereNull('approved_at')
+            ->whereNull('declined_at');
     }
 
     public function scopeApprovalRequested($query)

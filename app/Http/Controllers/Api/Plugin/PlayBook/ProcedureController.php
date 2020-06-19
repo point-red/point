@@ -21,7 +21,7 @@ class ProcedureController extends Controller
         $query = Procedure::query()
             ->parent()
             ->approved()
-            ->filter($request)->orderBy('code');
+            ->filter($request)->orderBy(\DB::raw('code * 1'));
 
         $procedures = pagination($query, $request->limit ?: 10);
 

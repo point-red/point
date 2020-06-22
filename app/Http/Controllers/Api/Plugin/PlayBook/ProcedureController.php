@@ -133,6 +133,7 @@ class ProcedureController extends Controller
             $approval = new Procedure($request->only('code', 'name', 'purpose', 'content', 'note'));
             $approval->approval_action = 'update';
             $approval->procedure_pending_id = $procedure->id;
+            $approval->procedure_id = $procedure->procedure_id; // maintain sub-procedure.
             $approval->save();
         } else {
             $procedure->update($request->all());

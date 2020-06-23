@@ -60,6 +60,7 @@ class FirstSeed extends Command
             $pricingGroup->label = 'DEFAULT';
             $pricingGroup->save();
         }
+        
         // seed branch
         $branch = new Branch;
         $branch->name = 'CENTRAL';

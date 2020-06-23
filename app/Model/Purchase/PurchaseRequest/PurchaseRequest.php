@@ -2,24 +2,19 @@
 
 namespace App\Model\Purchase\PurchaseRequest;
 
+use App\Contracts\Model\Transaction;
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
 use App\Model\TransactionModel;
 use App\Traits\Model\Purchase\PurchaseRequestJoin;
+use App\Traits\Model\Purchase\PurchaseRequestMutators;
 use App\Traits\Model\Purchase\PurchaseRequestRelation;
-use Carbon\Carbon;
 
-class PurchaseRequest extends TransactionModel
+class PurchaseRequest extends TransactionModel implements Transaction
 {
-    use PurchaseRequestJoin, PurchaseRequestRelation;
-
-    public static $morphName = 'PurchaseRequest';
-
-    public $timestamps = false;
+    use PurchaseRequestJoin, PurchaseRequestRelation, PurchaseRequestMutators;
 
     protected $connection = 'tenant';
-
-    public static $alias = 'purchase_request';
 
     protected $fillable = [
         'required_date',
@@ -32,6 +27,12 @@ class PurchaseRequest extends TransactionModel
     protected $casts = [
         'amount' => 'double',
     ];
+
+    public static $morphName = 'PurchaseRequest';
+
+    public static $alias = 'purchase_request';
+
+    public $timestamps = false;
 
     public $defaultNumberPrefix = 'PR';
 
@@ -52,29 +53,6 @@ class PurchaseRequest extends TransactionModel
         return $purchaseRequest;
     }
 
-    public function getRequiredDateAttribute($value)
-    {
-        return Carbon::parse($value, config()->get('app.timezone'))->timezone(config()->get('project.timezone'))->toDateTimeString();
-    }
-
-    public function setRequiredDateAttribute($value)
-    {
-        $this->attributes['required_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
-    }
-
-    public function isAllowedToUpdate()
-    {
-        $this->updatedFormNotArchived();
-        $this->isNotReferenced();
-    }
-
-    public function isAllowedToDelete()
-    {
-        $this->updatedFormNotArchived();
-        $this->isNotReferenced();
-        $this->isNotCanceled();
-    }
-
     private static function mapItems($items)
     {
         return array_map(function ($item) {
@@ -87,32 +65,63 @@ class PurchaseRequest extends TransactionModel
 
     private static function calculateAmount($items)
     {
-        $amount = array_reduce($items, function ($carry, $item) {
+        return array_reduce($items, function ($carry, $item) {
             return $carry + $item->quantity * $item->converter * $item->price;
         });
+    }
 
-        return $amount;
+    public function isAllowedToUpdate()
+    {
+        $this->isActive();
+        $this->isNotReferenced();
+    }
+
+    public function isAllowedToDelete()
+    {
+        $this->isActive();
+        $this->isNotReferenced();
+        $this->isCancellationPending();
+    }
+
+    public function isComplete()
+    {
+        $complete = true;
+        foreach ($this->items as $item) {
+            foreach ($item->purchaseOrderItems as $orderItem) {
+                if ($orderItem->purchaseOrder->form->cancellation_status == null
+                    || $orderItem->purchaseOrder->form->cancellation_status !== 1
+                    || $orderItem->purchaseOrder->form->number !== null) {
+                        $quantityOrdered = $item->purchaseOrderItems->sum('quantity');
+                        if ($item->quantity > $quantityOrdered) {
+                            $complete = false;
+                            break;
+                        }
+                }
+            }
+        }
+        return $complete;
+    }
+
+    public function updateStatus()
+    {
+        if ($this->isComplete()) {
+            $this->form->done = true;
+            $this->form->save();
+        } else {
+            $this->form->done = false;
+            $this->form->save();
+        }
+    }
+
+    public function updateReference()
+    {
     }
 
     private function isNotReferenced()
     {
         // Check if not referenced by purchase order
         if ($this->purchaseOrders->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by purchase order', $this->purchaseOrders);
+            throw new IsReferencedException('Cannot edit form because referenced by purchase order', $this->purchaseOrders->load('form'));
         }
-    }
-
-    public function updateIfDone()
-    {
-        $done = true;
-        foreach ($this->items as $item) {
-            $quantityOrdered = $item->purchaseOrderItems->sum('quantity');
-            if ($item->quantity > $quantityOrdered) {
-                $done = false;
-                break;
-            }
-        }
-
-        $this->form()->update(['done' => $done]);
     }
 }

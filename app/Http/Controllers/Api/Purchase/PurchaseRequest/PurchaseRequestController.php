@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
+use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StoreRequest;
+use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\UpdateRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -55,13 +54,13 @@ class PurchaseRequestController extends Controller
      *      - description (String Optional)
      *      - allocation_id (Int Optional).
      *
-     * @param StorePurchaseRequestRequest $request
+     * @param StoreRequest $request
      * @return ApiResource
      * @throws \Throwable
      */
-    public function store(StorePurchaseRequestRequest $request)
+    public function store(StoreRequest $request)
     {
-        $result = DB::connection('tenant')->transaction(function () use ($request) {
+        return DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseRequest = PurchaseRequest::create($request->all());
             $purchaseRequest
                 ->load('form')
@@ -71,8 +70,6 @@ class PurchaseRequestController extends Controller
 
             return new ApiResource($purchaseRequest);
         });
-
-        return $result;
     }
 
     /**
@@ -109,18 +106,18 @@ class PurchaseRequestController extends Controller
      * @return ApiResource
      * @throws \Throwable
      */
-    public function update(Request $request, $id)
+    public function update(UpdateRequest $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName().' as '.PurchaseRequest::$alias)
-            ->joinForm()
-            ->where(PurchaseRequest::$alias.'.id', $id)
-            ->select(PurchaseRequest::$alias.'.*')
-            ->with('form')
-            ->first();
+        return DB::connection('tenant')->transaction(function () use ($request, $id) {
+            $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName().' as '.PurchaseRequest::$alias)
+                ->joinForm()
+                ->where(PurchaseRequest::$alias.'.id', $id)
+                ->select(PurchaseRequest::$alias.'.*')
+                ->with('form')
+                ->first();
 
-        $purchaseRequest->isAllowedToUpdate();
+            $purchaseRequest->isAllowedToUpdate();
 
-        $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseRequest) {
             $purchaseRequest->form->archive();
             $request['number'] = $purchaseRequest->form->edited_number;
             $request['old_increment'] = $purchaseRequest->form->increment;
@@ -137,8 +134,6 @@ class PurchaseRequestController extends Controller
 
             return new ApiResource($purchaseRequest);
         });
-
-        return $result;
     }
 
     /**

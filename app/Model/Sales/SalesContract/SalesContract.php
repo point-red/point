@@ -79,7 +79,7 @@ class SalesContract extends TransactionModel
         return $this->paidDownPayments()->where('remaining', '>', 0);
     }
 
-    public function updateIfDone()
+    public function updateStatus()
     {
         // Make form done when all items / group items quantity ordered
         $done = true;

@@ -21,11 +21,6 @@ trait PurchaseRequestRelation
         return $this->hasMany(PurchaseRequestItem::class);
     }
 
-    public function services()
-    {
-        return $this->hasMany(PurchaseRequestService::class);
-    }
-
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);

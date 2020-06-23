@@ -83,7 +83,7 @@ class SalesDownPayment extends TransactionModel
         }
     }
 
-    public function updateIfDone()
+    public function updateStatus()
     {
         $used = $this->invoices->sum(function ($invoice) {
             return $invoice->pivot->amount;

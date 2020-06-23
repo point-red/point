@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseOrder;
 
+use App\Contracts\Model\Transaction;
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
@@ -10,7 +11,7 @@ use App\Traits\Model\Purchase\PurchaseOrderJoin;
 use App\Traits\Model\Purchase\PurchaseOrderRelation;
 use Carbon\Carbon;
 
-class PurchaseOrder extends TransactionModel
+class PurchaseOrder extends TransactionModel implements Transaction
 {
     use PurchaseOrderJoin, PurchaseOrderRelation;
 
@@ -88,7 +89,7 @@ class PurchaseOrder extends TransactionModel
         }
     }
 
-    public function updateIfDone() {
+    public function updateStatus() {
         $done = true;
         foreach ($this->items as $purchaseOrderItem) {
             $quantity = 0;
@@ -127,21 +128,16 @@ class PurchaseOrder extends TransactionModel
         $form->saveData($data, $purchaseOrder);
 
         if (get_if_set($data['purchase_request_id'])) {
-            $done = true;
             $purchaseRequest = PurchaseRequest::findOrFail($data['purchase_request_id']);
-            foreach ($purchaseRequest->items as $purchaseRequestItem) {
-                $quantity = PurchaseOrderItem::where('purchase_request_item_id', $purchaseRequestItem->id)->sum('quantity');
-                if ($quantity < $purchaseRequestItem->quantity) {
-                    $done = false;
-                    break;
-                }
-            }
-            if ($done) {
-                $purchaseRequest->form()->update(['done' => $done]);
-            }
+            $purchaseRequest->updateStatus();
         }
 
         return $purchaseOrder;
+    }
+
+    public function updateReference()
+    {
+        $this->purchaseRequest->updateStatus();
     }
 
     private static function mapItems($items)

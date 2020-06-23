@@ -117,7 +117,7 @@ class DeliveryNote extends TransactionModel
         $form = new Form;
         $form->saveData($data, $deliveryNote);
 
-        $deliveryOrder->updateIfDone();
+        $deliveryOrder->updateStatus();
 
         foreach ($items as $item) {
             $options = [];

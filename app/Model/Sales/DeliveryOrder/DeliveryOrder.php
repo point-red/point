@@ -75,7 +75,7 @@ class DeliveryOrder extends TransactionModel
         return $this->deliveryNotes()->notDone();
     }
 
-    public function updateIfDone()
+    public function updateStatus()
     {
         $done = true;
         $items = $this->items()->with('deliveryNoteItems')->get();
@@ -123,7 +123,7 @@ class DeliveryOrder extends TransactionModel
         $form->saveData($data, $deliveryOrder);
 
         if ($salesOrder = $deliveryOrder->salesOrder) {
-            $salesOrder->updateIfDone();
+            $salesOrder->updateStatus();
         }
 
         return $deliveryOrder;

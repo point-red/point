@@ -72,7 +72,7 @@ class SalesOrder extends TransactionModel
         $this->attributes['eta'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
 
-    public function updateIfDone()
+    public function updateStatus()
     {
         // TODO check service too
 //        $done = true;
@@ -153,9 +153,9 @@ class SalesOrder extends TransactionModel
     private static function setReferenceDone($salesOrder)
     {
         if (! is_null($salesOrder->sales_contract_id)) {
-            $salesOrder->salesContract->updateIfDone();
+            $salesOrder->salesContract->updateStatus();
         } elseif (! is_null($salesOrder->sales_quotation_id)) {
-            $salesOrder->salesQuotation->updateIfDone();
+            $salesOrder->salesQuotation->updateStatus();
         }
     }
 

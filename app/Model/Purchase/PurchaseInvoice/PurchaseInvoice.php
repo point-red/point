@@ -61,7 +61,7 @@ class PurchaseInvoice extends TransactionModel
         $this->attributes['due_date'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
 
-    public function updateIfDone()
+    public function updateStatus()
     {
         $done = $this->remaining <= 0;
         $this->form()->update(['done' => $done]);
@@ -108,7 +108,7 @@ class PurchaseInvoice extends TransactionModel
         $form->saveData($data, $purchaseInvoice);
 
         // updated to done if the amount is 0 because of down payment
-        $purchaseInvoice->updateIfDone();
+        $purchaseInvoice->updateStatus();
 
         self::setPurchaseReceiveDone($purchaseInvoice);
 

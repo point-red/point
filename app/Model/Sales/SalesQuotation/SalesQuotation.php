@@ -92,7 +92,7 @@ class SalesQuotation extends TransactionModel
         return $amount;
     }
 
-    public function updateIfDone()
+    public function updateStatus()
     {
         $done = true;
         foreach ($this->items as $item) {

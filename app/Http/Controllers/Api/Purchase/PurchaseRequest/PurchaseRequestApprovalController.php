@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
+use App\Contracts\Controller\Approval;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Approval\ApproveRequest;
+use App\Http\Requests\Approval\RejectRequest;
 use App\Http\Resources\ApiResource;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
-use Illuminate\Http\Request;
 
-class PurchaseRequestApprovalController extends Controller
+class PurchaseRequestApprovalController extends Controller implements Approval
 {
     /**
-     * @param Request $request
+     * @param ApproveRequest $request
      * @param $id
      * @return ApiResource
      */
-    public function approve(Request $request, $id)
+    public function approve(ApproveRequest $request, $id)
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $purchaseRequest->form->approval_by = auth()->user()->id;
@@ -26,11 +28,11 @@ class PurchaseRequestApprovalController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param RejectRequest $request
      * @param $id
      * @return ApiResource
      */
-    public function reject(Request $request, $id)
+    public function reject(RejectRequest $request, $id)
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $purchaseRequest->form->approval_by = auth()->user()->id;

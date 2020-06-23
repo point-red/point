@@ -106,7 +106,7 @@ class SalesInvoice extends TransactionModel
             ->update(['done' => false]);
     }
 
-    public function updateIfDone()
+    public function updateStatus()
     {
         $done = $this->remaining <= 0;
         $this->form()->update(['done' => $done]);
@@ -153,7 +153,7 @@ class SalesInvoice extends TransactionModel
         $form->saveData($data, $salesInvoice);
 
         // updated to done if the amount is 0 because of down payment
-        $salesInvoice->updateIfDone();
+        $salesInvoice->updateStatus();
 
         self::setDeliveryNotesDone($salesInvoice);
         self::setSalesOrdersDone($salesInvoice);
@@ -277,7 +277,7 @@ class SalesInvoice extends TransactionModel
     {
         foreach ($downPayments as $downPayment) {
             $salesDownPayment = SalesDownPayment::findOrFail($downPayment['id']);
-            $salesDownPayment->updateIfDone();
+            $salesDownPayment->updateStatus();
         }
     }
 

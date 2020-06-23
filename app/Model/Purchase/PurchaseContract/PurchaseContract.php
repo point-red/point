@@ -72,7 +72,7 @@ class PurchaseContract extends TransactionModel
         }
     }
 
-    public function updateIfDone()
+    public function updateStatus()
     {
         // Make form done when all items / group items quantity ordered
         $done = true;

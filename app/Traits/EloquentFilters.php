@@ -135,7 +135,10 @@ trait EloquentFilters
 
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                $query->where($key, $value);
+                // do not search null value here, instead use filter_null
+                if ($value != null) {
+                    $query->where($key, $value);
+                }
             }
         });
     }

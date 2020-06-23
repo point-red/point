@@ -88,7 +88,7 @@ class PaymentController extends Controller
                     $reference = $paymentDetail->referenceable;
                     $reference->remaining += $paymentDetail->amount;
                     $reference->save();
-                    $reference->updateIfDone();
+                    $reference->updateStatus();
                 }
             }
 

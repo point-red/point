@@ -196,7 +196,7 @@ class Payment extends TransactionModel
                 $reference = $paymentDetail->referenceable;
                 $reference->remaining -= $paymentDetail->amount;
                 $reference->save();
-                $reference->updateIfDone();
+                $reference->updateStatus();
             }
         }
     }

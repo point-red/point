@@ -75,7 +75,7 @@ class PurchaseReceive extends TransactionModel
         $form->approval_status = 1;
         $form->saveData($data, $purchaseReceive);
 
-        $purchaseOrder->updateIfDone();
+        $purchaseOrder->updateStatus();
 
         return $purchaseReceive;
     }

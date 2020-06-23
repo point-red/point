@@ -2,19 +2,22 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
+use App\Contracts\Controller\CancellationApproval;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CancellationApproval\ApproveRequest;
+use App\Http\Requests\CancellationApproval\RejectRequest;
 use App\Http\Resources\ApiResource;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use Illuminate\Http\Request;
 
-class PurchaseRequestCancellationApprovalController extends Controller
+class PurchaseRequestCancellationApprovalController extends Controller implements CancellationApproval
 {
     /**
      * @param Request $request
      * @param $id
      * @return ApiResource
      */
-    public function approve(Request $request, $id)
+    public function approve(ApproveRequest $request, $id)
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $purchaseRequest->form->cancellation_approval_by = auth()->user()->id;
@@ -30,7 +33,7 @@ class PurchaseRequestCancellationApprovalController extends Controller
      * @param $id
      * @return ApiResource
      */
-    public function reject(Request $request, $id)
+    public function reject(RejectRequest $request, $id)
     {
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $purchaseRequest->form->cancellation_approval_by = auth()->user()->id;

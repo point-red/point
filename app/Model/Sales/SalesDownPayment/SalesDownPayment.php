@@ -2,6 +2,7 @@
 
 namespace App\Model\Sales\SalesDownPayment;
 
+use App\Exceptions\IsReferencedException;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Form;
 use App\Model\Master\Customer;

@@ -40,7 +40,7 @@ class Migrates extends Command
      */
     public function handle()
     {
-        $projects = Project::all();
+        $projects = Project::where('is_generated', true)->get();
 
         foreach ($projects as $project) {
             // Recreate new database for tenant project

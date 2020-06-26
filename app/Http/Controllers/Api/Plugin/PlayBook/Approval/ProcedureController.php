@@ -52,15 +52,17 @@ class ProcedureController extends Controller
 
         $approver = User::findOrFail($request->approver_id);
 
-        foreach ($procedures as $procedure) {
-            Mail::to([
-                $approver->email,
-            ])->queue(new ProcedureApprovalRequestSent(
-                $procedure,
-                $approver,
-                $_SERVER['HTTP_REFERER']
-            ));
-        }
+        // TODO: please fix it, email should not sent as individual
+        //       it consider as spamming
+        // foreach ($procedures as $procedure) {
+        //     Mail::to([
+        //         $approver->email,
+        //     ])->queue(new ProcedureApprovalRequestSent(
+        //         $procedure,
+        //         $approver,
+        //         $_SERVER['HTTP_REFERER']
+        //     ));
+        // }
 
         return [
             'input' => $request->all(),

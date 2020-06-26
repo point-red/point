@@ -86,16 +86,18 @@ class InstructionController extends Controller
             $instruction->_steps->push($step);
         }
 
-        foreach ($instructions as $instruction) {
-            Mail::to([
-                $approver->email,
-            ])->queue(new InstructionApprovalRequestSent(
-                $instruction,
-                $instruction->_steps,
-                $approver,
-                $_SERVER['HTTP_REFERER']
-            ));
-        }
+        // TODO: please fix it, email should not sent as individual
+        //       it consider as spamming
+        // foreach ($instructions as $instruction) {
+        //     Mail::to([
+        //         $approver->email,
+        //     ])->queue(new InstructionApprovalRequestSent(
+        //         $instruction,
+        //         $instruction->_steps,
+        //         $approver,
+        //         $_SERVER['HTTP_REFERER']
+        //     ));
+        // }
 
         return [
             'message' => 'good',

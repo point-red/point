@@ -92,8 +92,6 @@ class PurchaseInvoiceController extends Controller
                 'supplier',
                 'items.item',
                 'items.allocation',
-                'services.service',
-                'services.allocation',
             ]);
 
             return new ApiResource($purchaseInvoice);

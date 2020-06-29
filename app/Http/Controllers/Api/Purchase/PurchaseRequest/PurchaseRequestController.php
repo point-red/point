@@ -128,9 +128,7 @@ class PurchaseRequestController extends Controller
                 ->load('employee')
                 ->load('supplier')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($purchaseRequest);
         });

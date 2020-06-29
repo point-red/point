@@ -46,8 +46,7 @@ class BillController extends Controller
             $bill
                 ->load('form')
                 ->load('customer')
-                ->load('items.item')
-                ->load('services.service');
+                ->load('items.item');
 
             return new ApiResource($bill);
         });
@@ -92,7 +91,6 @@ class BillController extends Controller
                 'form',
                 'customer',
                 'items.item',
-                'services.service',
             ]);
 
             return new ApiResource($bill);

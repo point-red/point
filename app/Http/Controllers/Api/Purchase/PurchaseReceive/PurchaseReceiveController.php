@@ -7,7 +7,6 @@ use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseRece
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Inventory\Inventory;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

@@ -23,6 +23,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\Cors::class,
         \App\Http\Middleware\TenantMiddleware::class,
         \App\Http\Middleware\LogRequest::class,
+        \MasterRO\LaravelXSSFilter\FilterXSS::class
     ];
 
     /**

@@ -54,15 +54,17 @@ class ProcedureController extends Controller
 
         // TODO: please fix it, email should not sent as individual
         //       it consider as spamming
-        // foreach ($procedures as $procedure) {
-        //     Mail::to([
-        //         $approver->email,
-        //     ])->queue(new ProcedureApprovalRequestSent(
-        //         $procedure,
-        //         $approver,
-        //         $_SERVER['HTTP_REFERER']
-        //     ));
-        // }
+        foreach ($procedures as $procedure) {
+            Mail::to([
+                $approver->email,
+            ])->queue(new ProcedureApprovalRequestSent(
+                $procedure,
+                $approver,
+                $_SERVER['HTTP_REFERER']
+            ));
+
+            break;
+        }
 
         return [
             'input' => $request->all(),

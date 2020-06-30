@@ -43,7 +43,6 @@ class PaymentController extends Controller
     {
         return DB::connection('tenant')->transaction(function () use ($request) {
             $payment = Payment::create($request->all());
-
             $payment
                 ->load('form')
                 ->load('paymentable')

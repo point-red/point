@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Sales\SalesDownPayment;
 
 use App\Exceptions\IsReferencedException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment\StoreSalesDownPaymentRequest;
-use App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment\UpdateSalesDownPaymentRequest;
+use App\Http\Requests\Sales\SalesDownPayment\StoreSalesDownPaymentRequest;
+use App\Http\Requests\Sales\SalesDownPayment\UpdateSalesDownPaymentRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;

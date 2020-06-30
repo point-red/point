@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment;
+namespace App\Http\Requests\Sales\SalesDownPayment;
 
 use App\Http\Requests\ValidationRule;
-use App\Model\Accounting\ChartOfAccount;
+// use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Allocation;
 use App\Model\Sales\SalesContract\SalesContract;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreSalesDownPaymentRequest extends FormRequest
+class UpdateSalesDownPaymentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

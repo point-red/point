@@ -4,12 +4,6 @@ namespace App\Model\Sales\SalesOrder;
 
 use App\Model\Form;
 use App\Model\Master\Allocation;
-use App\Model\Master\Customer;
-use App\Model\Master\Warehouse;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use App\Model\Sales\SalesContract\SalesContract;
-use App\Model\Sales\SalesDownPayment\SalesDownPayment;
-use App\Model\Sales\SalesQuotation\SalesQuotation;
 use App\Model\TransactionModel;
 use App\Traits\Model\Sales\SalesOrderJoin;
 use App\Traits\Model\Sales\SalesOrderRelation;
@@ -72,20 +66,39 @@ class SalesOrder extends TransactionModel
         $this->attributes['eta'] = Carbon::parse($value, config()->get('project.timezone'))->timezone(config()->get('app.timezone'))->toDateTimeString();
     }
 
+    public function isComplete()
+    {
+        if ($this->items->count() === 0) {
+            return false;
+        }
+
+        $complete = true;
+        foreach ($this->items as $item) {
+            foreach ($item->deliveryOrderItems as $orderItem) {                
+                if ($orderItem->deliveryOrder->form->cancellation_status == null
+                    || $orderItem->deliveryOrder->form->cancellation_status !== 1
+                    || $orderItem->deliveryOrder->form->number !== null) {
+                        $quantityOrdered = $item->deliveryOrderItems->sum('quantity');
+                        if ($item->quantity > $quantityOrdered) {
+                            $complete = false;
+                            break;
+                        }
+                }
+            }
+        }
+
+        return $complete;
+    }
+
     public function updateStatus()
     {
-        // TODO check service too
-//        $done = true;
-//        $items = $this->items()->with('deliveryOrderItems')->get();
-//        foreach ($items as $item) {
-//            $quantitySent = $item->deliveryOrderItems->sum('quantity');
-//            if ($item->quantity > $quantitySent) {
-//                $done = false;
-//                break;
-//            }
-//        }
-//
-//        $this->form()->update(['done' => $done]);
+        if ($this->isComplete()) {
+            $this->form->done = true;
+            $this->form->save();
+        } else {
+            $this->form->done = false;
+            $this->form->save();
+        }
     }
 
     public function isAllowedToUpdate()

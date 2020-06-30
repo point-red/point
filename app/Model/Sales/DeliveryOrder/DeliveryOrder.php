@@ -39,8 +39,6 @@ class DeliveryOrder extends TransactionModel
 
     public $defaultNumberPrefix = 'DO';
 
-    
-
     public function updateStatus()
     {
         $done = true;
@@ -79,16 +77,16 @@ class DeliveryOrder extends TransactionModel
     {
         $deliveryOrder = new self;
         $deliveryOrder->fill($data);
-
         $deliveryOrder->save();
 
         $items = self::mapItems($data['items']);
         $deliveryOrder->items()->saveMany($items);
-
+        
         $form = new Form;
         $form->saveData($data, $deliveryOrder);
-
-        if ($salesOrder = $deliveryOrder->salesOrder) {
+        
+        $salesOrder = $deliveryOrder->salesOrder;
+        if ($salesOrder) {
             $salesOrder->updateStatus();
         }
 

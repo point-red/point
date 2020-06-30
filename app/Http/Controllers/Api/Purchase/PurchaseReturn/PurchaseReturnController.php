@@ -87,8 +87,6 @@ class PurchaseReturnController extends Controller
                 'supplier',
                 'items.item',
                 'items.allocation',
-                'services.service',
-                'services.allocation',
             ]);
 
             return new ApiResource($purchaseReturn);

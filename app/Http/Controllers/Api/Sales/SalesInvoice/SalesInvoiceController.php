@@ -65,9 +65,7 @@ class SalesInvoiceController extends Controller
                 ->load('form')
                 ->load('customer')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($salesInvoice);
         });
@@ -115,9 +113,7 @@ class SalesInvoiceController extends Controller
                 ->load('form')
                 ->load('customer')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($salesInvoice);
         });

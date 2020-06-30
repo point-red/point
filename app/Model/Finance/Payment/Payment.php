@@ -53,13 +53,14 @@ class Payment extends TransactionModel
         $payment->payment_type = strtoupper($payment->paymentAccount->type->name);
         $payment->paymentable_name = $data['paymentable_name'] ?? $payment->paymentable->name;
 
-        $paymentDetails = self::mapPaymentDetails($data['details']);
+        $paymentDetails = self::mapPaymentDetails($data);
         $payment->amount = self::calculateAmount($paymentDetails);
         $payment->save();
 
+        
         // Reference Payment Order
-        if (isset($data['reference_type']) && $data['reference_type'] == 'PaymentOrder') {
-            $paymentOrder = PaymentOrder::find($data['reference_id']);
+        if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'PaymentOrder') {
+            $paymentOrder = PaymentOrder::find($data['referenceable_id']);
             if ($paymentOrder->payment_id != null) {
                 throw new PointException();
             }
@@ -70,8 +71,8 @@ class Payment extends TransactionModel
         }
 
         // Reference Down Payment
-        if (isset($data['reference_type']) && $data['reference_type'] == 'PurchaseDownPayment') {
-            $purchaseDownPayment = PurchaseDownPayment::find($data['reference_id']);
+        if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'PurchaseDownPayment') {
+            $purchaseDownPayment = PurchaseDownPayment::find($data['referenceable_id']);
             if ($purchaseDownPayment->paid_by != null) {
                 throw new PointException();
             }
@@ -118,14 +119,16 @@ class Payment extends TransactionModel
         return $payment;
     }
 
-    private static function mapPaymentDetails($details)
+    private static function mapPaymentDetails($data)
     {
-        return array_map(function ($detail) {
+        return array_map(function ($detail) use ($data) {
             $paymentDetail = new PaymentDetail;
             $paymentDetail->fill($detail);
+            $paymentDetail->referenceable_type = $data['referenceable_type'];
+            $paymentDetail->referenceable_id = $data['referenceable_id'];
 
             return $paymentDetail;
-        }, $details);
+        }, $data['details']);
     }
 
     private static function calculateAmount($paymentDetails)

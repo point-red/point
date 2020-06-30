@@ -2,6 +2,7 @@
 
 namespace App\Model\Purchase\PurchaseDownPayment;
 
+use App\Contracts\Model\Transaction;
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
 use App\Model\Purchase\PurchaseContract\PurchaseContract;
@@ -10,7 +11,7 @@ use App\Model\TransactionModel;
 use App\Traits\Model\Purchase\PurchaseDownPaymentJoin;
 use App\Traits\Model\Purchase\PurchaseDownPaymentRelation;
 
-class PurchaseDownPayment extends TransactionModel
+class PurchaseDownPayment extends TransactionModel implements Transaction
 {
     use PurchaseDownPaymentRelation, PurchaseDownPaymentJoin;
 
@@ -32,10 +33,23 @@ class PurchaseDownPayment extends TransactionModel
 
     public $defaultNumberPrefix = 'PDP';
 
+    public function isAllowedToUpdate() {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
+    }
+
     public function isAllowedToDelete()
     {
         $this->updatedFormNotArchived();
         $this->isNotReferenced();
+    }
+
+    public function updateReference() {
+
+    }
+
+    public function updateStatus() {
+
     }
 
     private function isNotReferenced()
@@ -43,6 +57,10 @@ class PurchaseDownPayment extends TransactionModel
         // Check if not referenced by purchase order
         if ($this->invoices->count()) {
             throw new IsReferencedException('Cannot edit form because referenced by purchase invoice(s)', $this->invoices);
+        }
+        info($this->payments->count());
+        if ($this->payments->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by payment(s)', $this->payments());
         }
     }
 

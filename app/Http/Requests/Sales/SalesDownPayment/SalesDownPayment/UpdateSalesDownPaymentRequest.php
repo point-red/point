@@ -38,7 +38,7 @@ class UpdateSalesDownPaymentRequest extends FormRequest
 
         $rulesPayment = [
             'allocation_id' => ValidationRule::foreignKeyNullable(Allocation::getTableName()),
-            'payment_account_id' => ValidationRule::foreignKey(ChartOfAccount::getTableName()),
+            // 'payment_account_id' => ValidationRule::foreignKey(ChartOfAccount::getTableName()),
             'payment_number' => 'nullable|string',
         ];
 

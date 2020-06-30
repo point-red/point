@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseDownPayment;
 
+use App\Exceptions\IsReferencedException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Purchase\PurchaseDownPayment\PurchaseDownPayment\StorePurchaseDownPaymentRequest;
 use App\Http\Requests\Purchase\PurchaseDownPayment\PurchaseDownPayment\UpdatePurchaseDownPaymentRequest;
@@ -94,7 +95,7 @@ class PurchaseDownPaymentController extends Controller
             $request['old_increment'] = $downPayment->form->increment;
 
             $downPayment = PurchaseDownPayment::create($request->all());
-            $downPayment->load(['form', 'customer', 'downpaymentable']);
+            $downPayment->load(['form', 'supplier', 'downpaymentable']);
 
             return new ApiResource($downPayment);
         });

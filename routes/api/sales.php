@@ -12,6 +12,10 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::post('orders/{id}/cancellation-approve', 'SalesOrder\\SalesOrderCancellationApprovalController@approve');
     Route::post('orders/{id}/cancellation-reject', 'SalesOrder\\SalesOrderCancellationApprovalController@reject');
     Route::apiResource('orders', 'SalesOrder\\SalesOrderController');
+    Route::post('down-payments/{id}/approve', 'SalesDownPayment\\SalesDownPaymentApprovalController@approve');
+    Route::post('down-payments/{id}/reject', 'SalesDownPayment\\SalesDownPaymentApprovalController@reject');
+    Route::post('down-payments/{id}/cancellation-approve', 'SalesDownPayment\\SalesDownPaymentCancellationApprovalController@approve');
+    Route::post('down-payments/{id}/cancellation-reject', 'SalesDownPayment\\SalesDownPaymentCancellationApprovalController@reject');
     Route::apiResource('down-payments', 'SalesDownPayment\\SalesDownPaymentController');
     Route::apiResource('delivery-orders', 'DeliveryOrder\\DeliveryOrderController');
     Route::apiResource('delivery-notes', 'DeliveryNote\\DeliveryNoteController');

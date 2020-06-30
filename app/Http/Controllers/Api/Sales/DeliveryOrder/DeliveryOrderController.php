@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder\UpdateDeliveryOrderRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
-use App\Model\Master\Customer;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -24,28 +22,13 @@ class DeliveryOrderController extends Controller
      */
     public function index(Request $request)
     {
-        $deliverOrders = DeliveryOrder::eloquentFilter($request);
+        $deliveryOrders = DeliveryOrder::from(DeliveryOrder::getTableName().' as '.DeliveryOrder::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
+        $deliveryOrders = DeliveryOrder::joins($deliveryOrders, $request->get('join'));
 
-            if (in_array('customer', $fields)) {
-                $deliverOrders->join(Customer::getTableName(), function ($q) {
-                    $q->on(Customer::getTableName('id'), '=', DeliveryOrder::getTableName('customer_id'));
-                });
-            }
+        $deliveryOrders = pagination($deliveryOrders, $request->get('limit'));
 
-            if (in_array('form', $fields)) {
-                $deliverOrders->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', DeliveryOrder::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), DeliveryOrder::$morphName);
-                });
-            }
-        }
-
-        $deliverOrders = pagination($deliverOrders, $request->get('limit'));
-
-        return new ApiCollection($deliverOrders);
+        return new ApiCollection($deliveryOrders);
     }
 
     /**

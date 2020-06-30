@@ -4,14 +4,14 @@ namespace App\Model\Sales\DeliveryOrder;
 
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
-use App\Model\Master\Customer;
-use App\Model\Master\Warehouse;
-use App\Model\Sales\DeliveryNote\DeliveryNote;
-use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\TransactionModel;
+use App\Traits\Model\Sales\DeliveryOrderJoin;
+use App\Traits\Model\Sales\DeliveryOrderRelation;
 
 class DeliveryOrder extends TransactionModel
 {
+    use DeliveryOrderJoin, DeliveryOrderRelation;
+
     public static $morphName = 'SalesDeliveryOrder';
 
     protected $connection = 'tenant';
@@ -38,42 +38,6 @@ class DeliveryOrder extends TransactionModel
     ];
 
     public $defaultNumberPrefix = 'DO';
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(DeliveryOrderItem::class);
-    }
-
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class);
-    }
-
-    public function salesOrder()
-    {
-        return $this->belongsTo(SalesOrder::class, 'sales_order_id');
-    }
-
-    public function warehouse()
-    {
-        return $this->belongsTo(Warehouse::class);
-    }
-
-    public function deliveryNotes()
-    {
-        return $this->hasMany(DeliveryNote::class)->active();
-    }
-
-    /* Invoice needs DeliveryOrders that is done and has pendingDeliveryNotes*/
-    public function pendingDeliveryNotes()
-    {
-        return $this->deliveryNotes()->notDone();
-    }
 
     public function updateStatus()
     {
@@ -113,16 +77,16 @@ class DeliveryOrder extends TransactionModel
     {
         $deliveryOrder = new self;
         $deliveryOrder->fill($data);
-
         $deliveryOrder->save();
 
         $items = self::mapItems($data['items']);
         $deliveryOrder->items()->saveMany($items);
-
+        
         $form = new Form;
         $form->saveData($data, $deliveryOrder);
-
-        if ($salesOrder = $deliveryOrder->salesOrder) {
+        
+        $salesOrder = $deliveryOrder->salesOrder;
+        if ($salesOrder) {
             $salesOrder->updateStatus();
         }
 

@@ -2,9 +2,11 @@
 
 namespace App\Model\Sales\SalesOrder;
 
+use App\Model\Form;
 use App\Model\Master\Allocation;
 use App\Model\Master\Item;
 use App\Model\PointModel;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
 
 class SalesOrderItem extends PointModel
@@ -59,7 +61,14 @@ class SalesOrderItem extends PointModel
     {
         return $this->hasMany(DeliveryOrderItem::class)
             ->whereHas('deliveryOrder', function ($query) {
-                $query->active();
+                $query->join(Form::getTableName(), function ($q) {
+                    $q->on(Form::getTableName('formable_id'), '=', DeliveryOrder::getTableName('id'))
+                        ->where(Form::getTableName('formable_type'), DeliveryOrder::$morphName);
+                })->whereNotNull(Form::getTableName('number'))
+                    ->where(function ($q) {
+                        $q->whereNull(Form::getTableName('cancellation_status'))
+                            ->orWhere(Form::getTableName('cancellation_status'), '!=', '1');
+                    });
             });
     }
 }

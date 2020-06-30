@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment;
+namespace App\Http\Requests\Sales\SalesDownPayment;
 
 use App\Http\Requests\ValidationRule;
-use App\Model\Accounting\ChartOfAccount;
+// use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Allocation;
 use App\Model\Sales\SalesContract\SalesContract;
 use App\Model\Sales\SalesOrder\SalesOrder;
@@ -38,7 +38,7 @@ class UpdateSalesDownPaymentRequest extends FormRequest
 
         $rulesPayment = [
             'allocation_id' => ValidationRule::foreignKeyNullable(Allocation::getTableName()),
-            'payment_account_id' => ValidationRule::foreignKey(ChartOfAccount::getTableName()),
+            // 'payment_account_id' => ValidationRule::foreignKey(ChartOfAccount::getTableName()),
             'payment_number' => 'nullable|string',
         ];
 

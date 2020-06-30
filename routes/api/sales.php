@@ -17,6 +17,10 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::post('down-payments/{id}/cancellation-approve', 'SalesDownPayment\\SalesDownPaymentCancellationApprovalController@approve');
     Route::post('down-payments/{id}/cancellation-reject', 'SalesDownPayment\\SalesDownPaymentCancellationApprovalController@reject');
     Route::apiResource('down-payments', 'SalesDownPayment\\SalesDownPaymentController');
+    Route::post('delivery-orders/{id}/approve', 'DeliveryOrder\\DeliveryOrderApprovalController@approve');
+    Route::post('delivery-orders/{id}/reject', 'DeliveryOrder\\DeliveryOrderApprovalController@reject');
+    Route::post('delivery-orders/{id}/cancellation-approve', 'DeliveryOrder\\DeliveryOrderCancellationApprovalController@approve');
+    Route::post('delivery-orders/{id}/cancellation-reject', 'DeliveryOrder\\DeliveryOrderCancellationApprovalController@reject');
     Route::apiResource('delivery-orders', 'DeliveryOrder\\DeliveryOrderController');
     Route::apiResource('delivery-notes', 'DeliveryNote\\DeliveryNoteController');
     Route::get('invoices/last-price/{itemId}', 'SalesInvoice\\SalesInvoicePricingController@lastPrice');

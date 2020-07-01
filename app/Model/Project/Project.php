@@ -2,12 +2,14 @@
 
 namespace App\Model\Project;
 
+use App\Imports\Template\ChartOfAccountImport;
 use App\Model\Plugin;
 use App\Model\ProjectPreference;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Project extends Model
 {
@@ -42,6 +44,14 @@ class Project extends Model
         $this->save();
 
         Artisan::call('tenant:seed:first', ['db_name' => $dbName]);
+
+        Excel::import(new ChartOfAccountImport, storage_path('template/chart_of_accounts_manufacture.xlsx'));
+
+        Artisan::call('db:seed', [
+            '--database' => 'tenant',
+            '--class' => 'SettingJournalSeeder',
+            '--force' => true,
+        ]);
 
         DB::connection('tenant')->commit();
     }

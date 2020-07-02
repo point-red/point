@@ -61,14 +61,14 @@ class AlterData extends Command
     {
         $projects = Project::where('id', '=', 122)->where('is_generated', true)->get();
         foreach ($projects as $project) {
-            // $this->line('Clone '.$project->code);
-            // Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+            $this->line('Clone '.$project->code);
+            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
 
             // $this->line('Alter '.$project->code);
-            // config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
+            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
 
-            // DB::connection('tenant')->reconnect();
-            // DB::connection('tenant')->beginTransaction();
+            DB::connection('tenant')->reconnect();
+            DB::connection('tenant')->beginTransaction();
 
             // $addresses = Address::all();
             // foreach ($addresses as $address) {

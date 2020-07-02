@@ -25,6 +25,7 @@ class AuthUserController extends ApiController
                 'name' => $user->name,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
+                'full_name' => $user->first_name . ' ' . $user->last_name,
                 'address' => $user->address,
                 'phone' => $user->phone,
             ],

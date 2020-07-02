@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Imports\Template\ChartOfAccountImport;
+use App\Imports\Template\ItemImport;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\CutOff;
@@ -58,46 +59,49 @@ class AlterData extends Command
      */
     public function handle()
     {
-        $projects = Project::where('is_generated', true)->get();
+        $projects = Project::where('id', '=', 122)->where('is_generated', true)->get();
         foreach ($projects as $project) {
-            $this->line('Clone '.$project->code);
-            Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
+            // $this->line('Clone '.$project->code);
+            // Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
 
-            $this->line('Alter '.$project->code);
-            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
+            // $this->line('Alter '.$project->code);
+            // config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
 
-            DB::connection('tenant')->reconnect();
-            DB::connection('tenant')->beginTransaction();
+            // DB::connection('tenant')->reconnect();
+            // DB::connection('tenant')->beginTransaction();
 
-            $addresses = Address::all();
-            foreach ($addresses as $address) {
-                if (!$address->addressable) {
-                    $address->delete();
-                } else {
-                    $address->addressable->address = $address->address;
-                    $address->addressable->save();
-                }
-            }
+            // $addresses = Address::all();
+            // foreach ($addresses as $address) {
+            //     if (!$address->addressable) {
+            //         $address->delete();
+            //     } else {
+            //         $address->addressable->address = $address->address;
+            //         $address->addressable->save();
+            //     }
+            // }
 
-            $phones = Phone::all();
-            foreach ($phones as $phone) {
-                if (!$phone->phoneable) {
-                    $phone->delete();
-                } else {
-                    $phone->phoneable->phone = $phone->number;
-                    $phone->phoneable->save();
-                }
-            }
+            // $phones = Phone::all();
+            // foreach ($phones as $phone) {
+            //     if (!$phone->phoneable) {
+            //         $phone->delete();
+            //     } else {
+            //         $phone->phoneable->phone = $phone->number;
+            //         $phone->phoneable->save();
+            //     }
+            // }
 
-            $emails = Email::all();
-            foreach ($emails as $email) {
-                if (!$email->emailable) {
-                    $email->delete();
-                } else {
-                    $email->emailable->email = $email->email;
-                    $email->emailable->save();
-                }
-            }
+            // $emails = Email::all();
+            // foreach ($emails as $email) {
+            //     if (!$email->emailable) {
+            //         $email->delete();
+            //     } else {
+            //         $email->emailable->email = $email->email;
+            //         $email->emailable->save();
+            //     }
+            // }
+
+            // Excel::import(new ChartOfAccountImport(), storage_path('template/chart_of_accounts_manufacture.xlsx'));
+            Excel::import(new ItemImport(), storage_path('template/items.xls'));
 
 //            $this->setData();
 

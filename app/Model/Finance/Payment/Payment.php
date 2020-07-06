@@ -124,8 +124,8 @@ class Payment extends TransactionModel
         return array_map(function ($detail) use ($data) {
             $paymentDetail = new PaymentDetail;
             $paymentDetail->fill($detail);
-            $paymentDetail->referenceable_type = $data['referenceable_type'];
-            $paymentDetail->referenceable_id = $data['referenceable_id'];
+            $paymentDetail->referenceable_type = $data['referenceable_type'] ?? null;
+            $paymentDetail->referenceable_id = $data['referenceable_id'] ?? null;
 
             return $paymentDetail;
         }, $data['details']);

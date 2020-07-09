@@ -48,20 +48,22 @@ class RemoveExpiredFile extends Command
         }
 
         foreach ($cloudStorages as $cloudStorage) {
-            $this->line('Remove '.$cloudStorage->file_name);
+            if ($cloudStorage->feature != null) {
+                $this->line('Remove '.$cloudStorage->file_name);
 
-            $result = Storage::disk($cloudStorage->disk)->delete($cloudStorage->path);
+                $result = Storage::disk($cloudStorage->disk)->delete($cloudStorage->path);
 
-            if (! $result) {
-                // try to search file on local storage
-                $result = Storage::disk('local')->delete($cloudStorage->path);
+                if (! $result) {
+                    // try to search file on local storage
+                    $result = Storage::disk('local')->delete($cloudStorage->path);
+                }
+
+                if (! $result) {
+                    $this->line('Failed to remove '.$cloudStorage->file_name);
+                }
+
+                $cloudStorage->delete();
             }
-
-            if (! $result) {
-                $this->line('Failed to remove '.$cloudStorage->file_name);
-            }
-
-            $cloudStorage->delete();
         }
 
         $this->line('Done');

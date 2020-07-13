@@ -3,8 +3,10 @@
 namespace App\Traits\Model\Purchase;
 
 use App\Model\Form;
+use App\Model\Master\Item;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
 
 trait PurchaseReceiveJoin
 {
@@ -27,6 +29,15 @@ trait PurchaseReceiveJoin
                 $q->on(Form::$alias.'.formable_id', '=', PurchaseReceive::$alias.'.id')
                     ->where(Form::$alias.'.formable_type', PurchaseReceive::$morphName);
             });
+        }
+
+        if (in_array('items', $joins)) {
+            $query = $query->leftjoin(PurchaseReceiveItem::getTableName().' as '.PurchaseReceiveItem::$alias,
+                PurchaseReceiveItem::$alias.'.purchase_receive_id', '=', PurchaseReceive::$alias.'.id');
+            if (in_array('item', $joins)) {
+                $query = $query->leftjoin(Item::getTableName().' as '.Item::$alias,
+                    Item::$alias.'.id', '=', PurchaseReceiveItem::$alias.'.item_id');
+            }
         }
 
         return $query;

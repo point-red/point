@@ -3,8 +3,10 @@
 namespace App\Traits\Model\Purchase;
 
 use App\Model\Form;
+use App\Model\Master\Item;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoiceItem;
 
 trait PurchaseInvoiceJoin
 {
@@ -27,6 +29,15 @@ trait PurchaseInvoiceJoin
                 $q->on(Form::$alias.'.formable_id', '=', PurchaseInvoice::$alias.'.id')
                     ->where(Form::$alias.'.formable_type', PurchaseInvoice::$morphName);
             });
+        }
+
+        if (in_array('items', $joins)) {
+            $query = $query->leftjoin(PurchaseInvoiceItem::getTableName().' as '.PurchaseInvoiceItem::$alias,
+                PurchaseInvoiceItem::$alias.'.purchase_invoice_id', '=', PurchaseInvoice::$alias.'.id');
+            if (in_array('item', $joins)) {
+                $query = $query->leftjoin(Item::getTableName().' as '.Item::$alias,
+                    Item::$alias.'.id', '=', PurchaseInvoiceItem::$alias.'.item_id');
+            }
         }
 
         return $query;

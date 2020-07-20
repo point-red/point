@@ -11,6 +11,7 @@ use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
 use App\Model\Master\Address;
 use App\Model\Master\Branch;
+use App\Model\Master\Customer;
 use App\Model\Master\Email;
 use App\Model\Master\Item;
 use App\Model\Master\ItemUnit;
@@ -59,16 +60,23 @@ class AlterData extends Command
      */
     public function handle()
     {
-        $projects = Project::where('id', '=', 122)->where('is_generated', true)->get();
+        $projects = Project::where('is_generated', true)->get();
         foreach ($projects as $project) {
             $this->line('Clone '.$project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
 
-            // $this->line('Alter '.$project->code);
+            $this->line('Alter '.$project->code);
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
 
             DB::connection('tenant')->reconnect();
             DB::connection('tenant')->beginTransaction();
+
+            $customers = Customer::whereNull('branch_id')->get();
+
+            foreach ($customers as $customer) {
+                $customer->branch_id = 1;
+                $customer->save();
+            }
 
             // $addresses = Address::all();
             // foreach ($addresses as $address) {
@@ -101,7 +109,7 @@ class AlterData extends Command
             // }
 
             // Excel::import(new ChartOfAccountImport(), storage_path('template/chart_of_accounts_manufacture.xlsx'));
-            Excel::import(new ItemImport(), storage_path('template/items.xls'));
+            // Excel::import(new ItemImport(), storage_path('template/items.xls'));
 
 //            $this->setData();
 

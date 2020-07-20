@@ -68,8 +68,18 @@ class CustomerController extends Controller
     {
         DB::connection('tenant')->beginTransaction();
 
+        $user = tenant(auth()->user()->id);
+        $defaultBranch = null;
+        foreach($user->branches as $branch) {
+            if ($branch->pivot->is_default == true) {
+                $defaultBranch = $branch->id;
+                break;
+            }
+        }
+        
         $customer = new Customer;
         $customer->fill($request->all());
+        $customer->branch_id = $defaultBranch;
         $customer->save();
 
         if ($request->has('groups')) {

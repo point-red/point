@@ -212,8 +212,6 @@ class EmployeeSalary extends TransactionModel
         $active_days_percentage_week_4 = $percentageCallWeek4 * $this->active_days_week4;
         $active_days_percentage_week_5 = $percentageCallWeek5 * $this->active_days_week5;
 
-        $active_days_percentage_total = $active_days_percentage_week_1 + $active_days_percentage_week_2 + $active_days_percentage_week_3 + $active_days_percentage_week_4 + $active_days_percentage_week_5;
-
         $base_salary_week_1 = $baseSalaryPerWeek * $active_days_percentage_week_1;
         $base_salary_week_2 = $baseSalaryPerWeek * $active_days_percentage_week_2;
         $base_salary_week_3 = $baseSalaryPerWeek * $active_days_percentage_week_3;
@@ -361,18 +359,6 @@ class EmployeeSalary extends TransactionModel
             'base_salary_week_3' => $base_salary_week_3,
             'base_salary_week_4' => $base_salary_week_4,
             'base_salary_week_5' => $base_salary_week_5,
-            'real_transport_allowance_week_1' => $real_transport_allowance_week_1,
-            'real_transport_allowance_week_2' => $real_transport_allowance_week_2,
-            'real_transport_allowance_week_3' => $real_transport_allowance_week_3,
-            'real_transport_allowance_week_4' => $real_transport_allowance_week_4,
-            'real_transport_allowance_week_5' => $real_transport_allowance_week_5,
-            'real_transport_allowance_total' => $real_transport_allowance_total,
-            'active_days_percentage_week_1' => $active_days_percentage_week_1,
-            'active_days_percentage_week_2' => $active_days_percentage_week_2,
-            'active_days_percentage_week_3' => $active_days_percentage_week_3,
-            'active_days_percentage_week_4' => $active_days_percentage_week_4,
-            'active_days_percentage_week_5' => $active_days_percentage_week_5,
-            'active_days_percentage_total' => $active_days_percentage_total,
             'real_transport_allowance_week_1' => $real_transport_allowance_week_1,
             'real_transport_allowance_week_2' => $real_transport_allowance_week_2,
             'real_transport_allowance_week_3' => $real_transport_allowance_week_3,

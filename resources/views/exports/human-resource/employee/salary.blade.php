@@ -341,15 +341,6 @@
 	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['total_weekly_sales'], 2) }}</b></td>
 	    </tr>
 	    <tr>
-	        <td colspan="2">Active Days / Week</td>
-	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['active_days_percentage_week_1'], 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['active_days_percentage_week_2'], 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['active_days_percentage_week_3'], 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['active_days_percentage_week_4'], 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($calculatedSalaryData['active_days_percentage_week_5'], 2) }}</td>
-	        <td style="text-align:center;"><b>{{ number_format($calculatedSalaryData['active_days_percentage_total'], 2) }}</b></td>
-	    </tr>
-	    <tr>
 	        <td colspan="2">WA Daily Report</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->wa_daily_report_week1, 2) }}%</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->wa_daily_report_week2, 2) }}%</td>

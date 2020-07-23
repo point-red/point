@@ -168,7 +168,7 @@ class EmployeeAssessmentController extends Controller
             ->where('employee_id', $employeeId)
             ->where('kpis.id', $id)
             ->first();
-        
+
         $kpis->score = (float) $kpis->score;
         $kpis->target = (float) $kpis->target;
 

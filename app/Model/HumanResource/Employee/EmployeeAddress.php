@@ -2,7 +2,6 @@
 
 namespace App\Model\HumanResource\Employee;
 
-use App\Model\HumanResource\Employee\Employee;
 use App\Model\MasterModel;
 
 class EmployeeAddress extends MasterModel

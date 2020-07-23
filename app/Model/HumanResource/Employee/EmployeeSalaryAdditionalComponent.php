@@ -12,20 +12,20 @@ class EmployeeSalaryAdditionalComponent extends MasterModel
 
     public static function isAboveMaximumWeight($weight, $previousId = null)
     {
-    	$total_weight = 0;
+        $total_weight = 0;
 
-    	foreach (static::all() as $additionalComponent) {
-    		if ($previousId === null || $previousId !== $additionalComponent->id) {
-	    		$total_weight += $additionalComponent->weight;
-	    	}
-    	}
+        foreach (static::all() as $additionalComponent) {
+            if ($previousId === null || $previousId !== $additionalComponent->id) {
+                $total_weight += $additionalComponent->weight;
+            }
+        }
 
-    	$total_weight += $weight;
+        $total_weight += $weight;
 
-    	if ($total_weight > 100) {
-    		return true;
-    	}
-
-    	return false;
+        if ($total_weight > 100) {
+            return true;
+        }
+        
+        return false;
     }
 }

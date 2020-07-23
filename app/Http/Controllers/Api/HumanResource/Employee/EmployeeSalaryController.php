@@ -11,10 +11,10 @@ use App\Http\Resources\HumanResource\Employee\EmployeeSalary\EmployeeSalaryResou
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\HumanResource\Employee\EmployeeSalary;
 use App\Model\HumanResource\Employee\EmployeeSalaryAchievement;
+use App\Model\HumanResource\Employee\EmployeeSalaryAdditionalComponent;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessment;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentScore;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentTarget;
-use App\Model\HumanResource\Employee\EmployeeSalaryAdditionalComponent;
 use App\Model\HumanResource\Kpi\Kpi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

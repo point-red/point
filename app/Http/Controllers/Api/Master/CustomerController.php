@@ -14,6 +14,7 @@ use App\Model\Master\Customer;
 use App\Model\Master\CustomerGroup;
 use App\Model\Master\Email;
 use App\Model\Master\Phone;
+use App\Model\Master\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -33,6 +34,8 @@ class CustomerController extends Controller
 
         $customers = Customer::joins($customers, $request->get('join'));
 
+        $user = tenant(auth()->user()->id);
+
         if ($request->get('group_id')) {
             $customers = $customers->leftJoin('groupables', function ($q) use ($request) {
                 $q->on('groupables.groupable_id', '=', 'customers.id')
@@ -46,6 +49,8 @@ class CustomerController extends Controller
         } else {
             $customers = $customers->whereNull('archived_at');
         }
+
+        $customers->whereIn('customer.branch_id', $user->branches->pluck('id'));
 
         $customers = pagination($customers, $request->get('limit'));
 
@@ -63,8 +68,18 @@ class CustomerController extends Controller
     {
         DB::connection('tenant')->beginTransaction();
 
+        $user = tenant(auth()->user()->id);
+        $defaultBranch = null;
+        foreach($user->branches as $branch) {
+            if ($branch->pivot->is_default == true) {
+                $defaultBranch = $branch->id;
+                break;
+            }
+        }
+        
         $customer = new Customer;
         $customer->fill($request->all());
+        $customer->branch_id = $defaultBranch;
         $customer->save();
 
         if ($request->has('groups')) {

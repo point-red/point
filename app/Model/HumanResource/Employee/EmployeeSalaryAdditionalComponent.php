@@ -25,7 +25,7 @@ class EmployeeSalaryAdditionalComponent extends MasterModel
         if ($total_weight > 100) {
             return true;
         }
-        
+
         return false;
     }
 }

@@ -22,6 +22,7 @@
         "league/flysystem-aws-s3-v3": "~1.0",
         "maatwebsite/excel": "^3.1",
         "masterro/laravel-xss-filter": "^1.2",
+        "milon/barcode": "^7.0",
         "point-red/laravel-database-management": "^1.0",
         "spatie/laravel-permission": "^3.9",
         "xendit/xendit-php": "^2.0"

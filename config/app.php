@@ -179,6 +179,7 @@ return [
         // Rollbar\Laravel\RollbarServiceProvider::class,
         Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
+        Milon\Barcode\BarcodeServiceProvider::class,
     ],
 
     /*

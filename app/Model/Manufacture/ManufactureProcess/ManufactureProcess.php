@@ -19,7 +19,7 @@ class ManufactureProcess extends PointModel
 
     public function manufactureFormulas()
     {
-        return $this->hasMany(ManufactureFormula::class)->active();
+        return $this->hasMany(ManufactureFormula::class);
     }
 
     public function isAllowedToDelete()

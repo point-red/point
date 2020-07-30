@@ -53,7 +53,7 @@ class AlterData extends Command
             DB::connection('tenant')->reconnect();
             DB::connection('tenant')->beginTransaction();
 
-            Excel::import(new ItemImport(), storage_path('template/items.xls'));
+            Excel::import(new ItemImport(), storage_path('template/items.xlsx'));
 
             DB::connection('tenant')->commit();
         }

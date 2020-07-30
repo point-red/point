@@ -24,6 +24,7 @@ class InventoryUsageItem extends TransactionModel
         'item_id',
         'chart_of_account_id',
         'quantity',
+        'converter',
         'expiry_date',
         'production_number',
         'unit',
@@ -44,6 +45,11 @@ class InventoryUsageItem extends TransactionModel
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    public function inventoryUsage()
+    {
+        return $this->belongsTo(InventoryUsage::class);
     }
 
     public function account()

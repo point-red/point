@@ -14,7 +14,6 @@ use App\Model\Master\Customer;
 use App\Model\Master\CustomerGroup;
 use App\Model\Master\Email;
 use App\Model\Master\Phone;
-use App\Model\Master\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;

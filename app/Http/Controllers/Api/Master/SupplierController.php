@@ -16,6 +16,7 @@ use App\Model\Master\Supplier;
 use App\Model\Master\SupplierGroup;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class SupplierController extends Controller
@@ -66,24 +67,20 @@ class SupplierController extends Controller
         $supplier->fill($request->all());
         $supplier->save();
 
-        if ($request->has('group')) {
-            $group = null;
-            if (! empty($request->get('group')['id'])) {
-                $group = SupplierGroup::findOrFail($request->get('group')['id']);
-            } elseif (! empty($request->get('group')['name'])) {
-                $group = SupplierGroup::where('name', $request->get('group')['name'])
-                    ->where('class_reference', Supplier::class)
-                    ->first();
-
-                if (! $group) {
-                    $group = new SupplierGroup;
-                    $group->name = $request->get('group')['name'];
-                    $group->class_reference = 'supplier';
-                    $group->save();
+        if ($request->has('groups')) {
+            foreach ($request->get('groups') as $arrGroups) {
+                if (! empty($arrGroups['name'])) {
+                    $group = SupplierGroup::where('name', $arrGroups['name'])->first();
+                    if (! $group) {
+                        $group = new SupplierGroup;
+                        $group->name = $arrGroups['name'];
+                        $group->save();
+                    }
                 }
             }
-
-            $group->suppliers()->attach($supplier);
+            $groups = Arr::pluck($request->get('groups'), 'id');
+            $groups = array_filter($groups, 'strlen');
+            $supplier->groups()->sync($groups);
         }
 
         Address::saveFromRelation($supplier, $request->get('addresses'));
@@ -138,24 +135,20 @@ class SupplierController extends Controller
         $supplier->fill($request->all());
         $supplier->save();
 
-        if ($request->has('group')) {
-            $group = null;
-            if (! empty($request->get('group')['id'])) {
-                $group = SupplierGroup::findOrFail($request->get('group')['id']);
-            } elseif (! empty($request->get('group')['name'])) {
-                $group = SupplierGroup::where('name', $request->get('group')['name'])
-                    ->where('class_reference', Supplier::class)
-                    ->first();
-
-                if (! $group) {
-                    $group = new SupplierGroup;
-                    $group->name = $request->get('group')['name'];
-                    $group->class_reference = 'supplier';
-                    $group->save();
+        if ($request->has('groups')) {
+            foreach ($request->get('groups') as $arrGroups) {
+                if (! empty($arrGroups['name'])) {
+                    $group = Supplier::where('name', $arrGroups['name'])->first();
+                    if (! $group) {
+                        $group = new Supplier;
+                        $group->name = $arrGroups['name'];
+                        $group->save();
+                    }
                 }
             }
-
-            $group->suppliers()->attach($supplier);
+            $groups = Arr::pluck($request->get('groups'), 'id');
+            $groups = array_filter($groups, 'strlen');
+            $supplier->groups()->sync($groups);
         }
 
         Address::saveFromRelation($supplier, $request->get('addresses'));

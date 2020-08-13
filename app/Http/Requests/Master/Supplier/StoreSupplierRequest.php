@@ -24,7 +24,8 @@ class StoreSupplierRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:tenant.suppliers',
+            'code' => 'unique:tenant.suppliers',
+            'name' => 'required',
         ];
     }
 }

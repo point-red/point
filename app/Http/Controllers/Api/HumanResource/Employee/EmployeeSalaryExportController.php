@@ -77,8 +77,8 @@ class EmployeeSalaryExportController extends Controller
     public function exportExcel(Request $request)
     {
         $request->validate([
-          'id' => 'required|integer',
-          'employeeId' => 'required|integer',
+            'id' => 'required|integer',
+            'employeeId' => 'required|integer',
         ]);
 
         $employeeSalary = EmployeeSalary::where('employee_salaries.employee_id', $request->get('employeeId'))
@@ -101,7 +101,7 @@ class EmployeeSalaryExportController extends Controller
         if (! $result) {
             return response()->json([
                 'message' => 'Failed to export',
-          ], 422);
+            ], 422);
         }
 
         $cloudStorage = new CloudStorage();

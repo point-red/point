@@ -30,7 +30,6 @@ class SalaryExport implements FromView, WithTitle, ShouldAutoSize
         return 'Invoice';
     }
 
-
     public function view(): view
     {
         return view('exports.human-resource.employee.salaryExcel', [

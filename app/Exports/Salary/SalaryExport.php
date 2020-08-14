@@ -4,10 +4,8 @@ namespace App\Exports\Salary;
 
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
-use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
 class SalaryExport implements FromView, WithTitle, ShouldAutoSize
 {
@@ -16,7 +14,7 @@ class SalaryExport implements FromView, WithTitle, ShouldAutoSize
      *
      * @param string $dateFrom
      * @param string $dateTo
-     */ 
+     */
     public function __construct($employeeSalary, $additionalSalaryData, $calculatedSalaryData)
     {
         $this->employeeSalary = $employeeSalary;
@@ -33,12 +31,12 @@ class SalaryExport implements FromView, WithTitle, ShouldAutoSize
     }
 
 
-    public function view():view
+    public function view(): view
     {
         return view('exports.human-resource.employee.salaryExcel', [
             'employeeSalary' => $this->employeeSalary,
             'additionalSalaryData' => $this->additionalSalaryData,
-            'calculatedSalaryData' => $this->calculatedSalaryData
+            'calculatedSalaryData' => $this->calculatedSalaryData,
         ]);
     }
 }

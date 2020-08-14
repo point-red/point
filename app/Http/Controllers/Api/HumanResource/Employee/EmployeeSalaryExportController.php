@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
+use App\Exports\Salary\SalaryExport;
 use App\Http\Controllers\Controller;
 use App\Model\CloudStorage;
 use App\Model\HumanResource\Employee\EmployeeSalary;
@@ -10,9 +11,7 @@ use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Model\HumanResource\Employee\EmployeeSalary;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\Salary\SalaryExport;
 
 class EmployeeSalaryExportController extends Controller
 {
@@ -101,7 +100,7 @@ class EmployeeSalaryExportController extends Controller
 
         if (! $result) {
             return response()->json([
-              'message' => 'Failed to export',
+                'message' => 'Failed to export',
           ], 422);
         }
 

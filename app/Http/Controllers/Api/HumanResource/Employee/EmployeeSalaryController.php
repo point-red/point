@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use Illuminate\Http\Request;
-use App\Model\Project\Project;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Model\HumanResource\Kpi\Kpi;
-use App\Model\HumanResource\Employee\Employee;
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\HumanResource\Employee\EmployeeSalary;
-use App\Model\Plugin\PinPoint\SalesVisitationDetail;
-use App\Model\HumanResource\Employee\EmployeeSalaryAssessment;
-use App\Model\HumanResource\Employee\EmployeeSalaryAchievement;
-use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentScore;
-use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentTarget;
-use App\Http\Resources\HumanResource\Employee\EmployeeSalary\EmployeeSalaryResource;
-use App\Http\Resources\HumanResource\Employee\EmployeeSalary\EmployeeSalaryCollection;
 use App\Http\Requests\HumanResource\Employee\EmployeeSalary\StoreEmployeeSalaryRequest;
 use App\Http\Requests\HumanResource\Employee\EmployeeSalary\UpdateEmployeeSalaryRequest;
+use App\Http\Resources\ApiResource;
+use App\Http\Resources\HumanResource\Employee\EmployeeSalary\EmployeeSalaryCollection;
+use App\Http\Resources\HumanResource\Employee\EmployeeSalary\EmployeeSalaryResource;
+use App\Model\HumanResource\Employee\Employee;
+use App\Model\HumanResource\Employee\EmployeeSalary;
+use App\Model\HumanResource\Employee\EmployeeSalaryAchievement;
+use App\Model\HumanResource\Employee\EmployeeSalaryAssessment;
+use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentScore;
+use App\Model\HumanResource\Employee\EmployeeSalaryAssessmentTarget;
+use App\Model\HumanResource\Kpi\Kpi;
+use App\Model\Plugin\PinPoint\SalesVisitation;
+use App\Model\Plugin\PinPoint\SalesVisitationDetail;
+use App\Model\Project\Project;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeSalaryController extends Controller
 {

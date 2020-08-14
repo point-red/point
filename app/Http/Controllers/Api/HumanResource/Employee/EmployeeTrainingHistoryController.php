@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class EmployeeTrainingHistoryController extends Controller
 {

@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateCloudStoragesTable extends Migration
 {
@@ -16,15 +16,19 @@ class CreateCloudStoragesTable extends Migration
         Schema::create('cloud_storages', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('owner_id')->nullable();
+            $table->boolean('is_user_protected')->default(true);
             $table->unsignedInteger('project_id')->nullable();
             $table->string('feature');
+            $table->unsignedInteger('feature_id')->nullable();
+            $table->string('mime_type')->nullable();
+            $table->text('notes')->nullable();
             $table->string('file_name');
             $table->string('file_ext');
             $table->string('key');
             $table->string('path');
             $table->string('disk');
             $table->string('download_url');
-            $table->datetime('expired_at');
+            $table->datetime('expired_at')->nullable();
             $table->timestamps();
 
             $table->foreign('owner_id')

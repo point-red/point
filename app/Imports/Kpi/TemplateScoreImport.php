@@ -2,9 +2,9 @@
 
 namespace App\Imports\Kpi;
 
+use App\Model\HumanResource\Kpi\KpiTemplateScore;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use App\Model\HumanResource\Kpi\KpiTemplateScore;
 
 class TemplateScoreImport implements ToCollection
 {

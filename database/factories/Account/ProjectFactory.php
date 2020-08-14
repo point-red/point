@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Str;
 use Faker\Generator as Faker;
+use Illuminate\Support\Str;
 
 $factory->define(\App\Model\Project\Project::class, function (Faker $faker) {
     return [

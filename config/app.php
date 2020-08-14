@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('API_URL', 'http://localhost'),
 
     /*
     |--------------------------------------------------------------------------
@@ -171,11 +171,15 @@ return [
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
+        App\Providers\HorizonServiceProvider::class,
+        App\Providers\TelescopeServiceProvider::class,
         App\Providers\PolymorphicTypeServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Rollbar\Laravel\RollbarServiceProvider::class,
+        // Remove Rollbar temporary because doesn't support laravel 6.0
+        // Rollbar\Laravel\RollbarServiceProvider::class,
         Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
+        Milon\Barcode\BarcodeServiceProvider::class,
     ],
 
     /*

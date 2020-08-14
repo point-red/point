@@ -9,6 +9,8 @@ class ProjectPreference extends Model
 {
     protected $connection = 'mysql';
 
+    public static $alias = 'project_preference';
+
     protected $hidden = ['mail_secret', 'mail_password'];
 
     public function project()

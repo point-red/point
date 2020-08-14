@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Master\Customer;
-use App\Model\Accounting\Journal;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\Accounting\Journal;
+use App\Model\Form;
+use App\Model\Master\Customer;
+use Illuminate\Http\Request;
 
 class AccountReceivableController extends Controller
 {

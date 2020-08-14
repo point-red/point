@@ -8,6 +8,8 @@ class MasterHistory extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'master_history';
+
     public $timestamps = false;
 
     /**

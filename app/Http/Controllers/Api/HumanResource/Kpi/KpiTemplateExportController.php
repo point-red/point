@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
-use Carbon\Carbon;
-use App\Model\CloudStorage;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Model\Project\Project;
-use App\Http\Controllers\Controller;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\Kpi\KpiTemplateExport;
+use App\Http\Controllers\Controller;
+use App\Model\CloudStorage;
 use App\Model\HumanResource\Kpi\KpiTemplate;
+use App\Model\Project\Project;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class KpiTemplateExportController extends Controller
 {
     public function export(Request $request)
     {
         $request->validate([
-        'id' => 'required|integer',
-      ]);
+            'id' => 'required|integer',
+        ]);
         $kpiTemplate = KpiTemplate::where('id', $request->id)->first();
 
         $tenant = strtolower($request->header('Tenant'));
@@ -31,8 +31,8 @@ class KpiTemplateExportController extends Controller
 
         if (! $result) {
             return response()->json([
-              'message' => 'Failed to export',
-          ], 422);
+                'message' => 'Failed to export',
+            ], 422);
         }
 
         $cloudStorage = new CloudStorage();
@@ -49,9 +49,9 @@ class KpiTemplateExportController extends Controller
         $cloudStorage->save();
 
         return response()->json([
-          'data' => [
-              'url' => $cloudStorage->download_url,
-          ],
-      ], 200);
+            'data' => [
+                'url' => $cloudStorage->download_url,
+            ],
+        ], 200);
     }
 }

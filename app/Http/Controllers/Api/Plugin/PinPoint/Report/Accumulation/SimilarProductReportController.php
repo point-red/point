@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint\Report\Accumulation;
 
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SimilarProductReportController extends Controller
 {

@@ -2,6 +2,9 @@
 
 namespace App\Model;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+
 class MasterModel extends PointModel
 {
     protected $user_logs = true;
@@ -18,6 +21,20 @@ class MasterModel extends PointModel
         }
 
         return parent::save();
+    }
+
+    public function archive()
+    {
+        $this->archived_at = Carbon::now();
+        $this->archived_by = optional(auth()->user())->id;
+        $this->save();
+    }
+
+    public function activate()
+    {
+        $this->archived_at = null;
+        $this->archived_by = null;
+        $this->save();
     }
 
     public function logUpdatedColumn()

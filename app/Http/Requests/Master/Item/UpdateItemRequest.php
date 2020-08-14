@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Master\Item;
 
-use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateItemRequest extends FormRequest
@@ -14,6 +13,10 @@ class UpdateItemRequest extends FormRequest
      */
     public function authorize()
     {
+        if (! tenant(auth()->user()->id)->hasPermissionTo('update item')) {
+            return false;
+        }
+
         return true;
     }
 
@@ -25,9 +28,9 @@ class UpdateItemRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
-            'chart_of_account_id' => ValidationRule::foreignKeyOptional('chart_of_accounts'),
-            'code' => 'bail|nullable|string|unique:tenant.items,code',
+            'name' => 'required|string|unique:tenant.items,name,'.$this->id,
+            'chart_of_account_id' => 'required',
+            'code' => 'bail|nullable|string|unique:tenant.items,code,'.$this->id,
             'barcode' => 'bail|nullable|string|unique:tenant.items,barcode',
             'stock_reminder' => 'numeric|min:0',
             'taxable' => 'boolean',

@@ -2,13 +2,16 @@
 
 namespace App\Model\Purchase\PurchaseReceive;
 
-use App\Model\Master\Item;
-use App\Model\TransactionModel;
 use App\Model\Master\Allocation;
+use App\Model\Master\Item;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
+use App\Model\TransactionModel;
 
 class PurchaseReceiveItem extends TransactionModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'purchase_receive_item';
 
     public $timestamps = false;
 
@@ -20,6 +23,8 @@ class PurchaseReceiveItem extends TransactionModel
         'tare_weight',
         'net_weight',
         'quantity',
+        'expiry_date',
+        'production_number',
         'unit',
         'converter',
         'notes',
@@ -36,6 +41,16 @@ class PurchaseReceiveItem extends TransactionModel
         'converter' => 'double',
     ];
 
+    public function setExpiryDateAttribute($value)
+    {
+        $this->attributes['expiry_date'] = convert_to_server_timezone($value);
+    }
+
+    public function getExpiryDateAttribute($value)
+    {
+        return convert_to_local_timezone($value);
+    }
+
     public function item()
     {
         return $this->belongsTo(Item::class);
@@ -49,5 +64,10 @@ class PurchaseReceiveItem extends TransactionModel
     public function purchaseReceive()
     {
         return $this->belongsTo(PurchaseReceive::class);
+    }
+
+    public function purchaseOrderItem()
+    {
+        return $this->belongsTo(PurchaseOrderItem::class);
     }
 }

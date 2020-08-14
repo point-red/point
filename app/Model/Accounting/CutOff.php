@@ -2,6 +2,7 @@
 
 namespace App\Model\Accounting;
 
+use App\Model\Form;
 use App\Model\TransactionModel;
 
 class CutOff extends TransactionModel
@@ -10,13 +11,16 @@ class CutOff extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'cut_off';
+
     protected $table = 'cut_offs';
 
-    /**
-     * Get the details for the cut off.
-     */
-    public function details()
+    public $timestamps = false;
+
+    public $defaultNumberPrefix = 'CUT';
+
+    public function form()
     {
-        return $this->hasMany(CutOffDetail::class, 'cut_off_id');
+        return $this->morphOne(Form::class, 'formable');
     }
 }

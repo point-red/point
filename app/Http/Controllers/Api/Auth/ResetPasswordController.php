@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
-use App\User;
-use App\Model\Auth\PasswordReset;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\ResetPasswordRequestMail;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\UpdatePasswordRequest;
+use App\Mail\ResetPasswordRequestMail;
+use App\Model\Auth\PasswordReset;
+use App\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class ResetPasswordController extends Controller
 {
@@ -48,7 +48,7 @@ class ResetPasswordController extends Controller
         DB::connection('mysql')->commit();
 
         return response()->json([
-           'message' => 'Update password success',
+            'message' => 'Update password success',
         ]);
     }
 }

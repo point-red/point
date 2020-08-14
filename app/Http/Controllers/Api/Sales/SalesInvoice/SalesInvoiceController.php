@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesInvoice;
 
-use Throwable;
-use App\Model\Form;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use App\Model\Master\Customer;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\StoreSalesInvoiceRequest;
 use App\Http\Requests\Sales\SalesInvoice\SalesInvoice\UpdateSalesInvoiceRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Form;
+use App\Model\Master\Customer;
+use App\Model\Sales\SalesInvoice\SalesInvoice;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class SalesInvoiceController extends Controller
 {
@@ -65,9 +65,7 @@ class SalesInvoiceController extends Controller
                 ->load('form')
                 ->load('customer')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($salesInvoice);
         });
@@ -115,9 +113,7 @@ class SalesInvoiceController extends Controller
                 ->load('form')
                 ->load('customer')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($salesInvoice);
         });

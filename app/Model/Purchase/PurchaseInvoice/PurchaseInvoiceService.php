@@ -2,13 +2,15 @@
 
 namespace App\Model\Purchase\PurchaseInvoice;
 
-use App\Model\Master\Service;
 use App\Model\Master\Allocation;
+use App\Model\Master\Service;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseInvoiceService extends Model
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'purchase_invoice_service';
 
     public $timestamps = false;
 

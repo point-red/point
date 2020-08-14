@@ -2,13 +2,15 @@
 
 namespace App\Model\Sales\DeliveryNote;
 
+use App\Model\Master\Allocation;
 use App\Model\Master\Item;
 use App\Model\TransactionModel;
-use App\Model\Master\Allocation;
 
 class DeliveryNoteItem extends TransactionModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'sales_delivery_note_item';
 
     public $timestamps = false;
 
@@ -18,6 +20,8 @@ class DeliveryNoteItem extends TransactionModel
         'tare_weight',
         'net_weight',
         'quantity',
+        'expiry_date',
+        'production_number',
         'unit',
         'converter',
         'notes',
@@ -33,6 +37,16 @@ class DeliveryNoteItem extends TransactionModel
         'tare_weight' => 'double',
         'net_weight' => 'double',
     ];
+
+    public function setExpiryDateAttribute($value)
+    {
+        $this->attributes['expiry_date'] = convert_to_server_timezone($value);
+    }
+
+    public function getExpiryDateAttribute($value)
+    {
+        return convert_to_local_timezone($value);
+    }
 
     public function item()
     {

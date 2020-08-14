@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use App\User;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Master\UserInvitation\UserInvitationCollection;
+use App\Http\Resources\Master\UserInvitation\UserInvitationResource;
 use App\Model\Auth\Role;
-use Illuminate\Http\Request;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
+use App\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Master\UserInvitation\UserInvitationResource;
-use App\Http\Resources\Master\UserInvitation\UserInvitationCollection;
 
 class RequestJoinController extends Controller
 {

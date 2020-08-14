@@ -4,8 +4,8 @@ namespace App\Console\Commands\Tenant\Database;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 class Rollbacks extends Command
 {
@@ -14,7 +14,7 @@ class Rollbacks extends Command
      *
      * @var string
      */
-    protected $signature = 'tenant:rollbacks';
+    protected $signature = 'tenant:migrate:rollbacks';
 
     /**
      * The console command description.

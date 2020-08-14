@@ -2,15 +2,20 @@
 
 namespace App\Model;
 
-use App\Model\Master\User;
-use App\Model\Master\Customer;
-use App\Model\Master\Supplier;
+use App\Exceptions\BranchNullException;
+use App\Exceptions\FormActiveException;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
+use App\Model\Master\Branch;
+use App\Model\Master\Customer;
+use App\Model\Master\Supplier;
+use App\Model\Master\User;
 
 class Form extends PointModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'form';
 
     protected $user_logs = true;
 
@@ -54,19 +59,6 @@ class Form extends PointModel
     }
 
     /**
-     * The approvals that belong to the form.
-     */
-    public function approvals()
-    {
-        return $this->hasMany(FormApproval::class);
-    }
-
-    public function cancellations()
-    {
-        return $this->hasMany(FormCancellation::class);
-    }
-
-    /**
      * Get all of the owning formable models.
      */
     public function formable()
@@ -79,13 +71,57 @@ class Form extends PointModel
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function saveData($data, $transaction)
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    public function requestApprovalTo()
+    {
+        return $this->belongsTo(User::class, 'request_approval_to');
+    }
+
+    public function requestCancellationTo()
+    {
+        return $this->belongsTo(User::class, 'request_cancellation_to');
+    }
+
+    public function requestCancellationBy()
+    {
+        return $this->belongsTo(User::class, 'request_cancellation_by');
+    }
+
+    public function cancellationBy()
+    {
+        return $this->belongsTo(User::class, 'cancellation_by');
+    }
+
+    public function approvalBy()
+    {
+        return $this->belongsTo(User::class, 'approval_by');
+    }
+
+    public function saveData($data, $transaction, $options = [])
     {
         $defaultNumberPostfix = '{y}{m}{increment=4}';
 
         $this->fill($data);
         $this->formable_id = $transaction->id;
         $this->formable_type = $transaction::$morphName;
+        // set branch
+        $branches = tenant(auth()->user()->id)->branches;
+        $this->branch_id = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $this->branch_id = $branch->id;
+                break;
+            }
+        }
+
+        if ($this->branch_id == null) {
+            throw new BranchNullException();
+        }
+
         $this->generateFormNumber(
             $data['number'] ?? $transaction->defaultNumberPrefix.$defaultNumberPostfix,
             $transaction->customer_id,
@@ -96,26 +132,11 @@ class Form extends PointModel
             $this->increment = $data['old_increment'];
         }
 
-        $this->setApproval($data['approver_id'] ?? null);
-    }
-
-    private function setApproval($approverId)
-    {
-        if ($approverId) {
-            $this->save();
-
-            $formApproval = new FormApproval;
-            $formApproval->requested_to = $approverId;
-            $formApproval->requested_at = now();
-            $formApproval->requested_by = auth()->user()->id;
-            $formApproval->expired_at = date('Y-m-d H:i:s', strtotime('+7 days'));
-            $formApproval->token = substr(md5(now()), 0, 24);
-
-            $this->approvals()->save($formApproval);
-        } else {
-            $this->approved = true;
-            $this->save();
+        if (array_key_exists('request_approval_to', $data)) {
+            $this->request_approval_to = $data['request_approval_to'];
         }
+
+        $this->save();
     }
 
     public function archive($editedNotes = '')
@@ -134,7 +155,7 @@ class Form extends PointModel
     public function cancel()
     {
         // Cancel form
-        $this->canceled = true;
+        $this->cancellation_status = 1;
         $this->save();
 
         // Remove relationship with journal and inventory

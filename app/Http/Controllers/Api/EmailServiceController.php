@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Model\Project\Project;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\SendEmailRequest;
+use App\Model\Project\Project;
+use Illuminate\Support\Facades\Mail;
 
 class EmailServiceController extends Controller
 {

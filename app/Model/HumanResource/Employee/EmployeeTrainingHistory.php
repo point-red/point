@@ -8,6 +8,8 @@ class EmployeeTrainingHistory extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_training_history';
+
     /**
      * Get the employee that owns the training history.
      */

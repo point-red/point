@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Finance\Payment\Payment;
 
-use App\Model\Master\Allocation;
 use App\Http\Requests\ValidationRule;
 use App\Model\Accounting\ChartOfAccount;
-use Illuminate\Foundation\Http\FormRequest;
 use App\Model\Finance\Payment\PaymentDetail;
+use App\Model\Master\Allocation;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StorePaymentRequest extends FormRequest
 {
@@ -32,10 +32,8 @@ class StorePaymentRequest extends FormRequest
         $rulesPayment = [
             'payment_account_id' => ValidationRule::foreignKey(ChartOfAccount::getTableName()),
             'disbursed' => 'required|boolean',
-            // TODO validate paymentable_id is exist
             'paymentable_id' => 'required|integer|min:0',
             'paymentable_type' => 'required|string',
-
             'details' => 'required|array',
         ];
 
@@ -44,7 +42,6 @@ class StorePaymentRequest extends FormRequest
             'details.*.amount' => ValidationRule::price(),
             'details.*.allocation_id' => ValidationRule::foreignKeyNullable(Allocation::getTableName()),
             'details.*.referenceable_type' => [
-                'required',
                 function ($attribute, $value, $fail) {
                     if (! PaymentDetail::referenceableIsValid($value)) {
                         $fail($attribute.' is invalid');

@@ -2,14 +2,14 @@
 
 namespace App\Console\Commands;
 
-use Carbon\Carbon;
 use App\Model\CloudStorage;
-use Illuminate\Support\Str;
 use App\Model\Project\Project;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class BackupDatabases extends Command
 {
@@ -18,7 +18,7 @@ class BackupDatabases extends Command
      *
      * @var string
      */
-    protected $signature = 'db:backup-all';
+    protected $signature = 'db:backup-all {days_expired}';
 
     /**
      * The console command description.
@@ -88,7 +88,7 @@ class BackupDatabases extends Command
         $cloudStorage->disk = env('STORAGE_DISK');
         $cloudStorage->project_id = null;
         $cloudStorage->owner_id = null;
-        $cloudStorage->expired_at = Carbon::now()->addDay(1);
+        $cloudStorage->expired_at = Carbon::now()->addDay($this->argument('days_expired'));
         $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
         $cloudStorage->save();
     }
@@ -133,7 +133,7 @@ class BackupDatabases extends Command
             $cloudStorage->disk = env('STORAGE_DISK');
             $cloudStorage->project_id = $project->id;
             $cloudStorage->owner_id = null;
-            $cloudStorage->expired_at = Carbon::now()->addDay(1);
+            $cloudStorage->expired_at = Carbon::now()->addDay($this->argument('days_expired'));
             $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
             $cloudStorage->save();
         }
@@ -149,7 +149,7 @@ class BackupDatabases extends Command
 
         $mySqlDump = 'mysqldump -u '.env('DB_USERNAME').' -p'.env('DB_PASSWORD');
 
-        $process = new Process($mySqlDump.' '.$dbName.' --quick | gzip > "'.$path.'/'.$file.'"');
+        $process = Process::fromShellCommandline($mySqlDump.' '.$dbName.' --quick | gzip > "'.$path.'/'.$file.'"');
 
         $process->setPTY(true);
         $process->run();

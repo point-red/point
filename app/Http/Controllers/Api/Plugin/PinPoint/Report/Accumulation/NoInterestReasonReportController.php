@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint\Report\Accumulation;
 
+use App\Http\Controllers\Controller;
+use App\Model\Plugin\PinPoint\SalesVisitation;
+use App\Model\Plugin\PinPoint\SalesVisitationNoInterestReason;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationNotInterestReason;
 
 class NoInterestReasonReportController extends Controller
 {
@@ -34,21 +34,21 @@ class NoInterestReasonReportController extends Controller
             $carbonDate->addDay(1);
         }
 
-        $result = SalesVisitationNotInterestReason::join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNotInterestReason::getTableName().'.sales_visitation_id')
+        $result = SalesVisitationNoInterestReason::join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNoInterestReason::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
-            ->select(SalesVisitationNotInterestReason::getTableName().'.name as name');
+            ->select(SalesVisitationNoInterestReason::getTableName().'.name as name');
 
         foreach ($queries as $key => $query) {
             $weekNum = $key + 1;
             $result = $result->leftJoinSub($query, 'week'.$weekNum, function ($join) use ($weekNum) {
-                $join->on(SalesVisitationNotInterestReason::getTableName().'.name', '=', 'week'.$weekNum.'.name');
+                $join->on(SalesVisitationNoInterestReason::getTableName().'.name', '=', 'week'.$weekNum.'.name');
             })->addSelect(DB::raw('coalesce(week'.$weekNum.'.count, 0) as week'.$weekNum));
         }
 
         $result = $result->addSelect(DB::raw('count(*) as monthly'))
             ->whereBetween('forms.date', [date_from($request->get('date'), true), date_to($request->get('date'), true)])
             ->orderBy('monthly', 'desc')
-            ->groupBy(SalesVisitationNotInterestReason::getTableName().'.name')
+            ->groupBy(SalesVisitationNoInterestReason::getTableName().'.name')
             ->get();
 
         return response()->json([
@@ -64,9 +64,9 @@ class NoInterestReasonReportController extends Controller
         $dateFrom = date('Y-m-'.$j.' 00:00:00', strtotime($date));
         $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($date));
 
-        $reasons = SalesVisitationNotInterestReason::join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNotInterestReason::getTableName().'.sales_visitation_id')
+        $reasons = SalesVisitationNoInterestReason::join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNoInterestReason::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
-            ->select(SalesVisitationNotInterestReason::getTableName().'.name as name')
+            ->select(SalesVisitationNoInterestReason::getTableName().'.name as name')
             ->addSelect(DB::raw('count(*) as count'))
             ->whereBetween('forms.date', [$dateFrom, $dateTo])
             ->groupBy('name')
@@ -80,7 +80,7 @@ class NoInterestReasonReportController extends Controller
         $dateFrom = date('Y-m-'.$j.' 00:00:00', strtotime($date));
         $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($date));
 
-        $totalCount = SalesVisitationNotInterestReason::join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNotInterestReason::getTableName().'.sales_visitation_id')
+        $totalCount = SalesVisitationNoInterestReason::join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNoInterestReason::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->select(DB::raw('count(*) as count'))
             ->whereBetween('forms.date', [$dateFrom, $dateTo])

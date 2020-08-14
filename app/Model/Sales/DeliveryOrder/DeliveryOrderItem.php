@@ -2,14 +2,16 @@
 
 namespace App\Model\Sales\DeliveryOrder;
 
-use App\Model\Master\Item;
-use App\Model\TransactionModel;
 use App\Model\Master\Allocation;
+use App\Model\Master\Item;
 use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
+use App\Model\TransactionModel;
 
 class DeliveryOrderItem extends TransactionModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'sales_delivery_order_item';
 
     public $timestamps = false;
 

@@ -24,8 +24,11 @@ class UpdateUserRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255|unique:tenant.users,'.$this->id,
-            'email' => 'required|email|max:255|unique:tenant.users,'.$this->id,
+            'first_name' => 'required|max:255',
+            'last_name' => 'required|max:255',
+            'address' => 'required|max:255',
+            'phone' => 'required|max:255|unique:tenant.users,phone,'.$this->id,
+            'email' => 'required|email|max:255|unique:tenant.users,email,'.$this->id,
         ];
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Project;
 
-use Illuminate\Http\Request;
-use App\Model\ProjectPreference;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiResource;
+use App\Model\ProjectPreference;
+use Illuminate\Http\Request;
 
 class ProjectPreferenceController extends Controller
 {

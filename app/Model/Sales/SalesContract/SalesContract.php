@@ -4,15 +4,17 @@ namespace App\Model\Sales\SalesContract;
 
 use App\Model\Form;
 use App\Model\Master\Customer;
-use App\Model\TransactionModel;
-use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
+use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\TransactionModel;
 
 class SalesContract extends TransactionModel
 {
     public static $morphName = 'SalesContract';
 
     protected $connection = 'tenant';
+
+    public static $alias = 'sales_contract';
 
     public $timestamps = false;
 
@@ -77,7 +79,7 @@ class SalesContract extends TransactionModel
         return $this->paidDownPayments()->where('remaining', '>', 0);
     }
 
-    public function updateIfDone()
+    public function updateStatus()
     {
         // Make form done when all items / group items quantity ordered
         $done = true;

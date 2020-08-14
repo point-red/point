@@ -2,97 +2,48 @@
 
 namespace App\Model\Master;
 
-use App\Model\MasterModel;
-use App\Model\Accounting\Journal;
-use App\Model\Finance\Payment\Payment;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use App\Model\Accounting\Journal;
+use App\Model\MasterModel;
+use App\Traits\Model\Master\SupplierJoin;
+use App\Traits\Model\Master\SupplierRelation;
 
 class Supplier extends MasterModel
 {
-    public static $morphName = 'Supplier';
+    use SupplierRelation, SupplierJoin;
 
     protected $connection = 'tenant';
+
+    protected $appends = ['label'];
 
     protected $fillable = [
         'code',
         'name',
         'tax_identification_number',
+        'address',
+        'city',
+        'state',
+        'country',
+        'zip_code',
+        'latitude',
+        'longitude',
+        'phone',
+        'phone_cc',
+        'email',
         'notes',
         'disabled',
     ];
 
-    /**
-     * Get all of the groups for the supplier.
-     */
-    public function groups()
-    {
-        return $this->morphToMany(Group::class, 'groupable');
-    }
+    public static $alias = 'supplier';
 
-    /**
-     * Get all of the supplier's contact persons.
-     */
-    public function contactPersons()
-    {
-        return $this->morphMany(ContactPerson::class, 'contactable');
-    }
+    public static $morphName = 'Supplier';
 
-    /**
-     * Get all of the supplier's address.
-     */
-    public function addresses()
+    public function getLabelAttribute()
     {
-        return $this->morphMany(Address::class, 'addressable');
-    }
+        $label = $this->code ? '['.$this->code.'] ' : '';
 
-    /**
-     * Get all of the supplier's phones.
-     */
-    public function phones()
-    {
-        return $this->morphMany(Phone::class, 'phoneable');
-    }
-
-    /**
-     * Get all of the supplier's emails.
-     */
-    public function emails()
-    {
-        return $this->morphMany(Email::class, 'emailable');
-    }
-
-    /**
-     * Get all of the supplier's banks.
-     */
-    public function banks()
-    {
-        return $this->morphMany(Bank::class, 'bankable');
-    }
-
-    /**
-     * Get all of the supplier's journals.
-     */
-    public function journals()
-    {
-        return $this->morphMany(Journal::class, 'journalable');
-    }
-
-    /**
-     * Get the supplier's payment.
-     */
-    public function payments()
-    {
-        return $this->morphMany(Payment::class, 'paymentable');
-    }
-
-    /**
-     * Get the supplier's purchase receives.
-     */
-    public function purchaseReceives()
-    {
-        return $this->hasMany(PurchaseReceive::class);
+        return $label.$this->name;
     }
 
     /**

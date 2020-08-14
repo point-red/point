@@ -2,13 +2,15 @@
 
 namespace App\Model\Sales\SalesOrder;
 
-use App\Model\Master\Service;
 use App\Model\Master\Allocation;
+use App\Model\Master\Service;
 use Illuminate\Database\Eloquent\Model;
 
 class SalesOrderService extends Model
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'sales_order_service';
 
     public $timestamps = false;
 

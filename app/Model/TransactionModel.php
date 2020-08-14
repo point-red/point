@@ -2,11 +2,11 @@
 
 namespace App\Model;
 
-use App\Traits\FormScopes;
-use Illuminate\Http\Request;
-use App\Traits\DashboardChartPeriod;
 use App\Exceptions\FormArchivedException;
 use App\Exceptions\UpdatePeriodNotAllowedException;
+use App\Traits\DashboardChartPeriod;
+use App\Traits\FormScopes;
+use Illuminate\Http\Request;
 
 class TransactionModel extends PointModel
 {
@@ -14,24 +14,21 @@ class TransactionModel extends PointModel
 
     public function requestCancel(Request $request)
     {
-        if ($request->has('approver_id')) {
-            // send request cancel
-            $formCancellation = new FormCancellation;
-            $formCancellation->requested_to = $request->approver_id;
-            $formCancellation->requested_at = now();
-            $formCancellation->requested_by = auth()->user()->id;
-            $formCancellation->expired_at = date('Y-m-d H:i:s', strtotime('+7 days'));
-            $formCancellation->token = substr(md5(now()), 0, 24);
+        $canceled = false;
 
-            $this->form->cancellations()->save($formCancellation);
-
-            return true;
-        } else {
-            // not request a cancellation form instead direct cancel
-            $this->form->cancel();
-
-            return false;
+        if (tenant(auth()->user()->id)->id === $this->form->created_by) {
+            // If auth user cancel his own form, then no need to approval
+            // Should do any action on form canceled
+            
+            // $canceled = true;
         }
+
+        $this->form->request_cancellation_to = $this->form->request_approval_to;
+        $this->form->request_cancellation_by = tenant(auth()->user()->id)->id;
+        $this->form->request_cancellation_at = now();
+        $this->form->request_cancellation_reason = $request->get('reason');
+        $this->form->cancellation_status = $canceled;
+        $this->form->save();
     }
 
     /**
@@ -44,6 +41,28 @@ class TransactionModel extends PointModel
         if (is_null($this->form->number)) {
             throw new FormArchivedException();
         }
+    }
+
+    /**
+     * Cannot delete form that already deleted.
+     *
+     * @throws FormArchivedException
+     */
+    public function isNotCanceled()
+    {
+        if ($this->form->cancellation_status == 1) {
+            throw new FormArchivedException();
+        }
+    }
+
+    public function isActive()
+    {
+        return $this->form->number != null && $this->form->cancelation_status != 1;
+    }
+
+    public function isCancellationPending()
+    {
+        return $this->form->number != null && $this->cancelation_status == 0;
     }
 
     /**

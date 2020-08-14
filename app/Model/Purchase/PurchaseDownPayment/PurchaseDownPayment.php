@@ -2,19 +2,24 @@
 
 namespace App\Model\Purchase\PurchaseDownPayment;
 
-use App\Model\Form;
-use App\Model\Master\Supplier;
-use App\Model\TransactionModel;
+use App\Contracts\Model\Transaction;
 use App\Exceptions\IsReferencedException;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Form;
 use App\Model\Purchase\PurchaseContract\PurchaseContract;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\TransactionModel;
+use App\Traits\Model\Purchase\PurchaseDownPaymentJoin;
+use App\Traits\Model\Purchase\PurchaseDownPaymentRelation;
 
-class PurchaseDownPayment extends TransactionModel
+class PurchaseDownPayment extends TransactionModel implements Transaction
 {
+    use PurchaseDownPaymentRelation, PurchaseDownPaymentJoin;
+
     public static $morphName = 'PurchaseDownPayment';
 
     protected $connection = 'tenant';
+
+    public static $alias = 'purchase_down_payment';
 
     public $timestamps = false;
 
@@ -28,35 +33,9 @@ class PurchaseDownPayment extends TransactionModel
 
     public $defaultNumberPrefix = 'PDP';
 
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    /**
-     * Get all of the owning downpaymentable models.
-     */
-    public function downpaymentable()
-    {
-        return $this->morphTo();
-    }
-
-    /**
-     * Get the invoice's payment.
-     */
-    public function payments()
-    {
-        return $this->morphToMany(Payment::class, 'referenceable', 'payment_details')->active();
-    }
-
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    public function invoices()
-    {
-        return $this->belongsToMany(PurchaseInvoice::class, 'purchase_down_payment_invoice', 'invoice_id', 'down_payment_id')->active();
+    public function isAllowedToUpdate() {
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
     }
 
     public function isAllowedToDelete()
@@ -65,11 +44,23 @@ class PurchaseDownPayment extends TransactionModel
         $this->isNotReferenced();
     }
 
+    public function updateReference() {
+
+    }
+
+    public function updateStatus() {
+
+    }
+
     private function isNotReferenced()
     {
         // Check if not referenced by purchase order
         if ($this->invoices->count()) {
             throw new IsReferencedException('Cannot edit form because referenced by purchase invoice(s)', $this->invoices);
+        }
+        info($this->payments->count());
+        if ($this->payments->count()) {
+            throw new IsReferencedException('Cannot edit form because referenced by payment(s)', $this->payments());
         }
     }
 
@@ -87,13 +78,13 @@ class PurchaseDownPayment extends TransactionModel
             $downPayment->downpaymentable_id = $data['purchase_contract_id'];
             $downPayment->downpaymentable_type = PurchaseContract::$morphName;
 
-            $reference = findOrFail($data['purchase_contract_id']);
+            $reference = PurchaseContract::findOrFail($data['purchase_contract_id']);
         }
 
         $downPayment->fill($data);
         $downPayment->supplier_id = $reference->supplier_id;
         $downPayment->supplier_name = $reference->supplier_name;
-        $downPayment->remaining = $data['amount'];
+        $downPayment->remaining = 0;
         $downPayment->save();
 
         $form = new Form;

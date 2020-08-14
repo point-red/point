@@ -2,32 +2,39 @@
 
 namespace App\Model\Plugin\ScaleWeight;
 
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\PointModel;
 
-class ScaleWeightTruck extends Model
+class ScaleWeightTruck extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'scale_weight_truck';
+
     protected $table = 'scale_weight_trucks';
 
-//    public function setTimeInAttribute($value)
-//    {
-//        $this->attributes['time_in'] = Carbon::parse($value, request()->header('Timezone'))->timezone('UTC')->toDateTimeString();
-//    }
-//
-//    public function getTimeInAttribute($value)
-//    {
-//        return Carbon::parse($value, 'UTC')->timezone(request()->header('Timezone'))->toDateTimeString();
-//    }
-//
-//    public function setTimeOutAttribute($value)
-//    {
-//        $this->attributes['time_out'] = Carbon::parse($value, request()->header('Timezone'))->timezone('UTC')->toDateTimeString();
-//    }
-//
-//    public function getTimeOutAttribute($value)
-//    {
-//        return Carbon::parse($value, 'UTC')->timezone(request()->header('Timezone'))->toDateTimeString();
-//    }
+    protected $casts = [
+        'gross_weight' => 'double',
+        'tare_weight' => 'double',
+        'net_weight' => 'double',
+    ];
+
+    public function setTimeInAttribute($value)
+    {
+        $this->attributes['time_in'] = convert_to_server_timezone($value);
+    }
+
+    public function getTimeInAttribute($value)
+    {
+        return convert_to_local_timezone($value);
+    }
+
+    public function setTimeOutAttribute($value)
+    {
+        $this->attributes['time_out'] = convert_to_server_timezone($value);
+    }
+
+    public function getTimeOutAttribute($value)
+    {
+        return convert_to_local_timezone($value);
+    }
 }

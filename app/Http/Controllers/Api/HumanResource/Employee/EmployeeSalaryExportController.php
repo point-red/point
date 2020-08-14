@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use Carbon\Carbon;
+use App\Http\Controllers\Controller;
 use App\Model\CloudStorage;
-use Illuminate\Http\Request;
+use App\Model\HumanResource\Employee\EmployeeSalary;
 use App\Model\Project\Project;
 use Barryvdh\DomPDF\Facade as PDF;
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Model\HumanResource\Employee\EmployeeSalary;
 use Maatwebsite\Excel\Facades\Excel;
@@ -18,8 +19,8 @@ class EmployeeSalaryExportController extends Controller
     public function exportPDF(Request $request)
     {
         $request->validate([
-          'id' => 'required|integer',
-          'employeeId' => 'required|integer',
+            'id' => 'required|integer',
+            'employeeId' => 'required|integer',
         ]);
 
         $employeeSalary = EmployeeSalary::where('employee_salaries.employee_id', $request->get('employeeId'))
@@ -46,7 +47,7 @@ class EmployeeSalaryExportController extends Controller
         $pdf = PDF::loadView('exports.human-resource.employee.salaryPdf', $data);
         $pdf = $pdf->setPaper('a4', 'portrait')->setWarnings(false);
         $pdf = $pdf->download()->getOriginalContent();
-        Storage::put($path, $pdf);
+        Storage::disk(env('STORAGE_DISK'))->put($path, $pdf);
 
         if (! $pdf) {
             return response()->json([

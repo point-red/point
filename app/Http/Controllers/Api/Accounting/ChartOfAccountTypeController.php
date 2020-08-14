@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
+use Illuminate\Http\Request;
 
 class ChartOfAccountTypeController extends Controller
 {
@@ -17,55 +18,21 @@ class ChartOfAccountTypeController extends Controller
      */
     public function index(Request $request)
     {
-        $types = ChartOfAccountType::eloquentFilter($request);
+        $types = ChartOfAccountType::from('chart_of_account_types as '.ChartOfAccountType::$alias)->eloquentFilter($request);
+
+        $types = ChartOfAccountType::joins($types, $request->get('join'));
 
         $types = pagination($types, $request->get('limit'));
 
+        foreach ($types as $type) {
+            $coa = ChartOfAccount::where('type_id', $type->id)->orderBy('number', 'desc')->first();
+            $next_number = '';
+            if ($coa && $coa->number) {
+                $next_number = preg_replace('/[^0-9]/', '', $coa->number);
+            }
+            $type->next_number = (int) $next_number + 1;
+        }
+
         return new ApiCollection($types);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

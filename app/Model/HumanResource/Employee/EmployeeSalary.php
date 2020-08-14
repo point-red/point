@@ -8,6 +8,8 @@ class EmployeeSalary extends TransactionModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_salary';
+
     /**
      * Get the assessments for the salary.
      */

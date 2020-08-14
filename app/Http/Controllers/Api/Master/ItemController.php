@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Model\Master\Item;
-use Illuminate\Http\Request;
-use App\Model\Master\ItemUnit;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
 use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\Item;
+use App\Model\Master\ItemGroup;
+use App\Model\Master\ItemUnit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {
@@ -22,7 +23,9 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $items = Item::eloquentFilter($request);
+        $items = Item::from(Item::getTableName().' as '.Item::$alias)->eloquentFilter($request);
+
+        $items = Item::joins($items, $request->get('join'));
 
         if ($request->has('group_id')) {
             $items = $items->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
@@ -30,13 +33,38 @@ class ItemController extends Controller
                 ->where('groupables.group_id', '=', $request->get('group_id'));
         }
 
-        if ($request->get('below_stock_reminder') == true) {
-            $items = $items->whereRaw('items.stock < items.stock_reminder');
+        if ($request->has('with_stock')) {
+            $items = $items->leftJoin('inventories', 'inventories.item_id', '=', 'items.id')
+                ->selectRaw('SUM(IFNULL(inventories.quantity, 0)) as stock')
+                ->groupBy('items.id');
+
+            if ($request->has('stock_below_stock_reminder')) {
+                $items = $items->havingRaw('SUM(IFNULL(inventories.quantity, 0)) < stock_reminder');
+            }
+
+            if ($request->has('stock_above_zero')) {
+                $items = $items->havingRaw('SUM(IFNULL(inventories.quantity, 0)) > 0');
+            }
+        }
+
+        if ($request->get('is_archived')) {
+            $items = $items->whereNotNull('archived_at');
+        } else {
+            $items = $items->whereNull('archived_at');
         }
 
         $items = pagination($items, $request->get('limit'));
 
-        return new ApiCollection($items);
+        $id = DB::table('INFORMATION_SCHEMA.TABLES')
+            ->select('AUTO_INCREMENT as id')
+            ->where('TABLE_SCHEMA', env('DB_DATABASE', 'point').'_'.$request->header('Tenant'))
+            ->where('TABLE_NAME', 'items')
+            ->first();
+
+        return (new ApiCollection($items))
+            ->additional([
+                'next_id' => $id->id,
+            ]);
     }
 
     /**
@@ -93,7 +121,11 @@ class ItemController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $item = Item::eloquentFilter($request)->findOrFail($id);
+        $item = Item::from(Item::getTableName().' as '.Item::$alias)->eloquentFilter($request);
+
+        $item = Item::joins($item, $request->get('join'));
+
+        $item = $item->where(Item::$alias.'.id', $id)->first();
 
         return new ApiResource($item);
     }
@@ -127,9 +159,17 @@ class ItemController extends Controller
         }
         $item->units()->saveMany($unitsToBeInserted);
 
-        $groups = $request->get('groups');
-        if (isset($groups)) {
-            $item->groups()->sync($groups);
+        if ($request->has('groups')) {
+            $groups = $request->get('groups');
+            foreach ($groups as $group) {
+                if (! $group['id'] && $group['name']) {
+                    $newGroup = new ItemGroup();
+                    $newGroup->name = $group['name'];
+                    $newGroup->save();
+                    $group['id'] = $newGroup->id;
+                }
+            }
+            $item->groups()->sync(array_column($groups, 'id'));
         }
 
         DB::connection('tenant')->commit();

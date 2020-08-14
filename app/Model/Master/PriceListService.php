@@ -2,10 +2,14 @@
 
 namespace App\Model\Master;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\MasterModel;
+use App\Traits\Model\Master\PriceListServiceJoin;
+use App\Traits\Model\Master\PriceListServiceRelation;
 
-class PriceListService extends Model
+class PriceListService extends MasterModel
 {
+    use PriceListServiceRelation, PriceListServiceJoin;
+
     protected $connection = 'tenant';
 
     protected $fillable = [
@@ -24,8 +28,5 @@ class PriceListService extends Model
         'discount_value'   => 'double',
     ];
 
-    public function service()
-    {
-        return $this->belongsTo(Service::class);
-    }
+    public static $alias = 'price_list_service';
 }

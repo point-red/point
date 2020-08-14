@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint\Report;
 
-use App\Model\Master\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Plugin\PinPoint\Report\Performance\PerformanceCollection;
 use App\Model\HumanResource\Kpi\Automated;
+use App\Model\Master\User;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationTarget;
-use App\Http\Resources\Plugin\PinPoint\Report\Performance\PerformanceCollection;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PerformanceReportController extends Controller
 {
     public function index(Request $request)
     {
-        $dateFrom = date('Y-m-d H:i:s', strtotime($request->get('date_from')));
-        $dateTo = date('Y-m-d H:i:s', strtotime($request->get('date_to')));
+        $dateFrom = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('date_from'))));
+        $dateTo = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('date_to'))));
         $numberOfDays = Automated::getDays($request->get('date_from'), $request->get('date_to'));
 
         $queryTarget = $this->queryTarget($dateFrom, $dateTo);

@@ -44,11 +44,11 @@ class SalesVisitationNotificationMail extends Mailable
         return $this->subject('['.title_case($this->project_name).'] Sales Visitation '.title_case($this->sales_name).' / '.$this->day_time)
             ->view(['html' => 'emails.plugin.pinpoint.sales-visitation-notification'])
             ->with(['project_name' => $this->project_name,
-                    'day_time' => $this->day_time,
-                    'sales_name' => $this->sales_name,
-                    'call' => $this->call,
-                    'effective_call' => $this->effective_call,
-                    'items' => $this->items,
-                    'value' => $this->value, ]);
+                'day_time' => $this->day_time,
+                'sales_name' => $this->sales_name,
+                'call' => $this->call,
+                'effective_call' => $this->effective_call,
+                'items' => $this->items,
+                'value' => $this->value, ]);
     }
 }

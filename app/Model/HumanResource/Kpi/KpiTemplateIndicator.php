@@ -8,6 +8,8 @@ class KpiTemplateIndicator extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'kpi_template_indicator';
+
     /**
      * Get the template group that owns the template indicator.
      */

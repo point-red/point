@@ -4,8 +4,8 @@ namespace App\Console\Commands\Tenant\Database;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 class Seeds extends Command
 {
@@ -42,7 +42,7 @@ class Seeds extends Command
     {
         $increment = 0;
 
-        $projects = Project::all();
+        $projects = Project::where('is_generated', true)->get();
 
         $this->line('Total Project : '.$projects->count());
 

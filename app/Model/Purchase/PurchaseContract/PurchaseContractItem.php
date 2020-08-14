@@ -2,12 +2,14 @@
 
 namespace App\Model\Purchase\PurchaseContract;
 
-use App\Model\TransactionModel;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
+use App\Model\TransactionModel;
 
 class PurchaseContractItem extends TransactionModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'purchase_contract_item';
 
     public $timestamps = false;
 

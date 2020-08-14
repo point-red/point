@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\Accounting\RatioReport;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Helpers\Ratio\GrossProfitRatio;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class GrossProfitRatioController extends Controller
 {

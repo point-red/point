@@ -3,12 +3,16 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Traits\Model\Master\ServiceJoin;
+use App\Traits\Model\Master\ServiceRelation;
 
 class Service extends MasterModel
 {
-    public static $morphName = 'Service';
+    use ServiceJoin, ServiceRelation;
 
     protected $connection = 'tenant';
+
+    protected $appends = ['label'];
 
     protected $fillable = [
         'name',
@@ -17,11 +21,24 @@ class Service extends MasterModel
         'disabled',
     ];
 
-    /**
-     * Get all of the groups for the items.
-     */
-    public function groups()
+    public static $alias = 'service';
+
+    public static $morphName = 'Service';
+
+    public function getLabelAttribute()
     {
-        return $this->morphToMany(Group::class, 'groupable');
+        $label = $this->code ? '['.$this->code.'] ' : '';
+
+        return $label.$this->name;
+    }
+
+    /**
+     * Get the price for this service.
+     */
+    public function prices()
+    {
+        return $this
+            ->belongsToMany(PricingGroup::class, PriceListService::getTableName(), 'service_id', 'pricing_group_id')
+            ->withPivot(['price', 'discount_value', 'discount_percent', 'date', 'pricing_group_id']);
     }
 }

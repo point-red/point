@@ -2,21 +2,21 @@
 
 namespace App\Exports\PinPoint;
 
+use App\Model\Plugin\PinPoint\SalesVisitation;
+use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithCharts;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Chart\Chart;
-use PhpOffice\PhpSpreadsheet\Chart\Title;
-use Maatwebsite\Excel\Concerns\WithCharts;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
 use PhpOffice\PhpSpreadsheet\Chart\Layout;
 use PhpOffice\PhpSpreadsheet\Chart\Legend;
 use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
-use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
-use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
+use PhpOffice\PhpSpreadsheet\Chart\Title;
 
 class ChartInterestReasonExport implements FromView, WithCharts, WithTitle, ShouldAutoSize
 {
@@ -31,7 +31,7 @@ class ChartInterestReasonExport implements FromView, WithCharts, WithTitle, Shou
         return 'InterestReason';
     }
 
-    public function view():view
+    public function view(): view
     {
         $weeklyInterest = [];
 
@@ -45,8 +45,8 @@ class ChartInterestReasonExport implements FromView, WithCharts, WithTitle, Shou
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
 
                 $weeklyInterest[] = (object) [
-                  'week' => $j.' - '.$i,
-                  'reasons' => $this->query($dateFrom, $dateTo),
+                    'week' => $j.' - '.$i,
+                    'reasons' => $this->query($dateFrom, $dateTo),
                 ];
 
                 $j = $i + 1;
@@ -57,8 +57,8 @@ class ChartInterestReasonExport implements FromView, WithCharts, WithTitle, Shou
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
 
                 $weeklyInterest[] = (object) [
-                  'week' => $j.' - '.$i,
-                  'reasons' => $this->query($dateFrom, $dateTo),
+                    'week' => $j.' - '.$i,
+                    'reasons' => $this->query($dateFrom, $dateTo),
                 ];
 
                 $j = $i + 1;
@@ -105,8 +105,14 @@ class ChartInterestReasonExport implements FromView, WithCharts, WithTitle, Shou
         $categories = [new DataSeriesValues('String', $this->title().'!$B$'.($firstData - 1).':$'.$lastColumn.'$'.($firstData - 1), null, 5)]; //reasons
         $values = [new DataSeriesValues('Number', $this->title().'!$B$'.$cellRow.':$'.$lastColumn.'$'.$cellRow, null, 5)]; //value
 
-        $series = new DataSeries(DataSeries::TYPE_PIECHART, DataSeries::GROUPING_STANDARD,
-        range(0, \count($values) - 1), $label, $categories, $values);
+        $series = new DataSeries(
+            DataSeries::TYPE_PIECHART,
+            DataSeries::GROUPING_STANDARD,
+            range(0, \count($values) - 1),
+            $label,
+            $categories,
+            $values
+        );
 
             $layout = new Layout();
             $layout->setShowVal(true);

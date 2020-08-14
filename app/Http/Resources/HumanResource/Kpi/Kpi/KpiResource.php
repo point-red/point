@@ -3,8 +3,8 @@
 namespace App\Http\Resources\HumanResource\Kpi\KpiCategory;
 
 use App\Http\Resources\ApiResource;
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\HumanResource\Kpi\KpiGroup\KpiGroupResource;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class KpiResource extends JsonResource
 {
@@ -19,6 +19,7 @@ class KpiResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'comment' => $this->comment,
             'date' => $this->date,
             'employee' => new ApiResource($this->employee),
             'weight' => $this->weight,

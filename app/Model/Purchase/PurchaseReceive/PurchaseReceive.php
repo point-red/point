@@ -2,20 +2,28 @@
 
 namespace App\Model\Purchase\PurchaseReceive;
 
-use App\Model\Form;
-use App\Model\Master\Supplier;
-use App\Model\Master\Warehouse;
-use App\Model\TransactionModel;
 use App\Exceptions\IsReferencedException;
 use App\Helpers\Inventory\InventoryHelper;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\Accounting\Journal;
+use App\Model\Form;
+use App\Model\Master\Item;
+use App\Model\Master\Supplier;
+use App\Model\Master\Warehouse;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\TransactionModel;
+use App\Traits\Model\Purchase\PurchaseReceiveJoin;
+use App\Traits\Model\Purchase\PurchaseReceiveRelation;
 
 class PurchaseReceive extends TransactionModel
 {
+    use PurchaseReceiveJoin, PurchaseReceiveRelation;
+
     public static $morphName = 'PurchaseReceive';
 
     protected $connection = 'tenant';
+
+    public static $alias = 'purchase_receive';
 
     protected $table = 'purchase_receives';
 
@@ -24,6 +32,8 @@ class PurchaseReceive extends TransactionModel
     protected $fillable = [
         'supplier_id',
         'supplier_name',
+        'supplier_address',
+        'supplier_phone',
         'warehouse_id',
         'warehouse_name',
         'purchase_order_id',
@@ -32,41 +42,6 @@ class PurchaseReceive extends TransactionModel
     ];
 
     public $defaultNumberPrefix = 'RECEIVE';
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(PurchaseReceiveItem::class);
-    }
-
-    public function services()
-    {
-        return $this->hasMany(PurchaseReceiveService::class);
-    }
-
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
-
-    public function purchaseOrder()
-    {
-        return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id');
-    }
-
-    public function purchaseInvoices()
-    {
-        return $this->belongsToMany(PurchaseInvoice::class, 'purchase_invoice_items')->active();
-    }
-
-    public function warehouse()
-    {
-        return $this->belongsTo(Warehouse::class);
-    }
 
     public function isAllowedToUpdate()
     {
@@ -88,28 +63,19 @@ class PurchaseReceive extends TransactionModel
     {
         $purchaseReceive = new self;
         $purchaseReceive->fill($data);
-
-        if (! empty($data['purchase_order_id'])) {
-            $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
-            $purchaseReceive = self::fillDataFromPurchaseOrder($purchaseReceive, $purchaseOrder);
-        }
+        $purchaseOrder = PurchaseOrder::findOrFail($data['purchase_order_id']);
+        $purchaseReceive = self::fillDataFromPurchaseOrder($purchaseReceive, $purchaseOrder);
 
         $items = self::mapItems($data['items'] ?? []);
-        $services = self::mapServices($data['services'] ?? []);
 
         $purchaseReceive->save();
-
         $purchaseReceive->items()->saveMany($items);
-        $purchaseReceive->services()->saveMany($services);
 
         $form = new Form;
+        $form->approval_status = 1;
         $form->saveData($data, $purchaseReceive);
 
-        if (isset($purchaseOrder)) {
-            $purchaseOrder->updateIfDone();
-        }
-
-        self::insertInventory($form, $purchaseOrder ?? null, $purchaseReceive);
+        $purchaseOrder->updateStatus();
 
         return $purchaseReceive;
     }
@@ -130,42 +96,27 @@ class PurchaseReceive extends TransactionModel
 
     private static function mapItems($items)
     {
+        $array = [];
+        foreach ($items as $item) {
+            $itemModel = Item::find($item['item_id']);
+            if ($itemModel->require_production_number || $itemModel->require_expiry_date) {
+                if ($item['dna']) {
+                    foreach ($item['dna'] as $dna) {
+                        $dnaItem = $item;
+                        $dnaItem['quantity'] = $dna['quantity'];
+                        $dnaItem['production_number'] = $dna['production_number'];
+                        $dnaItem['expiry_date'] = $dna['expiry_date'];
+                        array_push($array, $dnaItem);
+                    }
+                }
+            } else {
+                array_push($array, $item);
+            }
+        }
         return array_map(function ($item) {
             $purchaseReceiveItem = new PurchaseReceiveItem;
             $purchaseReceiveItem->fill($item);
-
             return $purchaseReceiveItem;
-        }, $items);
-    }
-
-    private static function mapServices($services)
-    {
-        return array_map(function ($service) {
-            $purchaseReceiveServices = new PurchaseReceiveService;
-            $purchaseReceiveServices->fill($service);
-
-            return $purchaseReceiveServices;
-        }, $services);
-    }
-
-    private static function insertInventory($form, $purchaseOrder, $purchaseReceive)
-    {
-        $additionalFee = 0;
-        $totalItemsAmount = 1; // prevent division by 0
-
-        if (! empty($purchaseOrder)) {
-            $additionalFee = $purchaseOrder->delivery_fee - $purchaseOrder->discount_value;
-            $totalItemsAmount = $purchaseOrder->amount - $additionalFee - $purchaseOrder->tax;
-        }
-
-        foreach ($purchaseReceive->items as $item) {
-            if ($item->quantity > 0) {
-                $totalPerItem = ($item->price - $item->discount_value) * $item->quantity * $item->converter;
-                $feePerItem = $totalPerItem / $totalItemsAmount * $additionalFee;
-                $price = ($totalPerItem + $feePerItem) / $item->quantity;
-
-                InventoryHelper::increase($form->id, $purchaseReceive->warehouse_id, $item->item_id, $item->quantity, $price);
-            }
-        }
+        }, $array);
     }
 }

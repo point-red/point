@@ -4,31 +4,37 @@
     "keywords": ["framework", "point", "erp"],
     "type": "project",
     "require": {
-        "php": ">=7.1.3",
-        "barryvdh/laravel-dompdf": "^0.8.4",
-        "bugsnag/bugsnag-laravel": "^2.0",
-        "doctrine/dbal": "^2.8",
-        "fideloper/proxy": "~4.0",
-        "google/cloud-firestore": "^1.6",
-        "grpc/grpc": "^v1.1.0",
-        "laravel/framework": "5.8.*",
-        "laravel/horizon": "^1.4",
-        "laravel/passport": "^7.0",
-        "laravel/tinker": "~1.0",
+        "php": "^7.2.5",
+        "ext-pdo": "*",
+        "barryvdh/laravel-dompdf": "^0.8.5",
+        "bugsnag/bugsnag-laravel": "^2.18",
+        "doctrine/dbal": "^2.10",
+        "fideloper/proxy": "^4.0",
+        "google/cloud-firestore": "^1.8",
+        "grpc/grpc": "^1.27",
+        "laravel/framework": "^7.0",
+        "laravel/helpers": "^1.1",
+        "laravel/horizon": "^4.0",
+        "laravel/passport": "^8.4",
+        "laravel/socialite": "^4.3",
+        "laravel/telescope": "^3.1",
+        "laravel/tinker": "^2.0",
         "league/flysystem-aws-s3-v3": "~1.0",
         "maatwebsite/excel": "^3.1",
+        "masterro/laravel-xss-filter": "^1.2",
+        "milon/barcode": "^7.0",
         "point-red/laravel-database-management": "^1.0",
-        "rollbar/rollbar-laravel": "^4.0",
-        "spatie/laravel-permission": "^2.12"
+        "spatie/laravel-permission": "^3.9",
+        "xendit/xendit-php": "^2.0"
     },
     "require-dev": {
-        "beyondcode/laravel-dump-server": "^1.0",
+        "facade/ignition": "^2.0",
         "filp/whoops": "^2.0",
-        "fzaninotto/faker": "~1.4",
-        "mockery/mockery": "~1.0",
-        "nunomaduro/collision": "^2.0",
-        "php-coveralls/php-coveralls": "dev-master",
-        "phpunit/phpunit": "~7.0",
+        "fzaninotto/faker": "^1.4",
+        "laravel/ui": "^2.0",
+        "mockery/mockery": "^1.0",
+        "nunomaduro/collision": "^4.1",
+        "phpunit/phpunit": "^8.5",
         "symfony/thanks": "^1.0"
     },
     "autoload": {
@@ -40,7 +46,8 @@
             "App\\": "app/"
         },
         "files": [
-            "app/helpers.php"
+            "app/helpers.php",
+            "app/helpers-eloquent.php"
         ]
     },
     "autoload-dev": {
@@ -59,11 +66,11 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "@php artisan key:generate"
+            "@php artisan key:generate --ansi"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover"
+            "@php artisan package:discover --ansi"
         ]
     },
     "config": {

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Master\Supplier;
-use App\Model\Accounting\Journal;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\Accounting\Journal;
+use App\Model\Form;
+use App\Model\Master\Supplier;
+use Illuminate\Http\Request;
 
 class AccountPayableController extends Controller
 {
@@ -19,7 +19,7 @@ class AccountPayableController extends Controller
      */
     public function index(Request $request)
     {
-        $accounts = optional(\App\Helpers\Accounting\Account::currentLiabilities())->pluck('id') ?? [];
+        $accounts = optional(\App\Helpers\Accounting\Account::accountPayables())->pluck('id') ?? [];
 
         $journalPayments = $this->getJournalPayments($accounts);
 

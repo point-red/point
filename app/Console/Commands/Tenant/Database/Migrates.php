@@ -4,8 +4,8 @@ namespace App\Console\Commands\Tenant\Database;
 
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 class Migrates extends Command
 {
@@ -40,7 +40,7 @@ class Migrates extends Command
      */
     public function handle()
     {
-        $projects = Project::all();
+        $projects = Project::where('is_generated', true)->get();
 
         foreach ($projects as $project) {
             // Recreate new database for tenant project

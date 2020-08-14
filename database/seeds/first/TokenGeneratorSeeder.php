@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\Model\Reward\TokenGenerator;
+use Illuminate\Database\Seeder;
 
 class TokenGeneratorSeeder extends Seeder
 {

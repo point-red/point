@@ -2,10 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\User;
 use App\Model\Project\Project;
-use Illuminate\Console\Command;
 use App\Model\Project\ProjectUser;
+use App\User;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
 class NewCommand extends Command
@@ -41,17 +42,23 @@ class NewCommand extends Command
      */
     public function handle()
     {
+        if (env('APP_ENV') == 'production') {
+            return;
+        }
+
         $dbName = $this->argument('database_name') ?? env('DB_DATABASE');
 
         $this->line('create '.$dbName.' database');
-        Artisan::call('tenant:database:delete', ['db_name' => $dbName]);
-        Artisan::call('tenant:database:create', ['db_name' => $dbName]);
+        Artisan::call('hub:database:delete', ['db_name' => $dbName]);
+        Artisan::call('hub:database:create', ['db_name' => $dbName]);
         Artisan::call('migrate');
         Artisan::call('passport:install');
         Artisan::call('passport:client', [
             '--client' => 'client',
-            '--name' => 'Website'
+            '--name' => 'Website',
         ]);
+        Artisan::call('db:seed --class=PackageSeeder');
+        Artisan::call('db:seed --class=PluginSeeder');
 
         $this->line('setup new user "admin" and password "admin"');
         $user = new User;
@@ -64,9 +71,13 @@ class NewCommand extends Command
 
         $this->line('setup new project "dev"');
         $project = new Project;
+        $project->package_id = 1;
         $project->owner_id = $user->id;
         $project->code = 'dev';
         $project->name = 'development';
+        $project->expired_date = Carbon::now()->addYears(10);
+        $project->is_generated = true;
+        $project->total_user = 1;
         $project->invitation_code = get_invitation_code();
         $project->save();
 

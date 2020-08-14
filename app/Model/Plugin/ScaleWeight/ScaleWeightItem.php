@@ -2,22 +2,23 @@
 
 namespace App\Model\Plugin\ScaleWeight;
 
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
+use App\Model\PointModel;
 
-class ScaleWeightItem extends Model
+class ScaleWeightItem extends PointModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'scale_weight_item';
+
     protected $table = 'scale_weight_items';
 
-//    public function setTimeAttribute($value)
-//    {
-//        $this->attributes['time'] = Carbon::parse($value, request()->header('Timezone'))->timezone('UTC')->toDateTimeString();
-//    }
-//
-//    public function getTimeAttribute($value)
-//    {
-//        return Carbon::parse($value, 'UTC')->timezone(request()->header('Timezone'))->toDateTimeString();
-//    }
+    public function setTimeAttribute($value)
+    {
+        $this->attributes['time'] = convert_to_server_timezone($value);
+    }
+
+    public function getTimeAttribute($value)
+    {
+        return convert_to_local_timezone($value);
+    }
 }

@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers\Api\Finance\Payment;
 
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Master\Customer;
-use App\Model\Master\Supplier;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\Finance\Payment\Payment;
-use App\Model\HumanResource\Employee\Employee;
 use App\Http\Requests\Finance\Payment\Payment\StorePaymentRequest;
 use App\Http\Requests\Finance\Payment\Payment\UpdatePaymentRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Finance\Payment\Payment;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class PaymentController extends Controller
 {
@@ -25,45 +23,9 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $payment = Payment::eloquentFilter($request);
+        $payment = Payment::from(Payment::getTableName().' as '.Payment::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('paymentable', $fields)) {
-                $payment = $payment->leftJoin(Customer::getTableName(), function ($q) {
-                    $q->on(Customer::getTableName('id'), '=', Payment::getTableName('paymentable_id'))
-                        ->where(Payment::getTableName('paymentable_type'), Customer::$morphName);
-                });
-
-                $payment = $payment->leftJoin(Supplier::getTableName(), function ($q) {
-                    $q->on(Supplier::getTableName('id'), '=', Payment::getTableName('paymentable_id'))
-                        ->where(Payment::getTableName('paymentable_type'), Supplier::$morphName);
-                });
-
-                $payment = $payment->leftJoin(Employee::getTableName(), function ($q) {
-                    $q->on(Employee::getTableName('id'), '=', Payment::getTableName('paymentable_id'))
-                        ->where(Payment::getTableName('paymentable_type'), Employee::$morphName);
-                });
-            }
-
-            if (in_array('form', $fields)) {
-                $payment = $payment->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', Payment::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), Payment::$morphName);
-                });
-            }
-        }
-
-        if ($request->has('type')) {
-            $paymentType = strtoupper($request->get('type'));
-            $payment->where('payment_type', $paymentType);
-        }
-
-        if ($request->has('disbursed')) {
-            $disbursed = $request->get('disbursed');
-            $payment->where('disbursed', $disbursed);
-        }
+        $payment = Payment::joins($payment, $request->get('join'));
 
         $payment = pagination($payment, $request->get('limit'));
 
@@ -73,15 +35,14 @@ class PaymentController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     * @throws \Throwable
+     * @param StorePaymentRequest $request
+     * @return Response
+     * @throws Throwable
      */
     public function store(StorePaymentRequest $request)
     {
-        $result = DB::connection('tenant')->transaction(function () use ($request) {
+        return DB::connection('tenant')->transaction(function () use ($request) {
             $payment = Payment::create($request->all());
-
             $payment
                 ->load('form')
                 ->load('paymentable')
@@ -90,8 +51,6 @@ class PaymentController extends Controller
 
             return new ApiResource($payment);
         });
-
-        return $result;
     }
 
     /**
@@ -113,8 +72,8 @@ class PaymentController extends Controller
      *
      * @param  \Illuminate\Http\Request $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
-     * @throws \Throwable
+     * @return Response
+     * @throws Throwable
      */
     public function update(UpdatePaymentRequest $request, $id)
     {
@@ -128,7 +87,7 @@ class PaymentController extends Controller
                     $reference = $paymentDetail->referenceable;
                     $reference->remaining += $paymentDetail->amount;
                     $reference->save();
-                    $reference->updateIfDone();
+                    $reference->updateStatus();
                 }
             }
 
@@ -151,7 +110,7 @@ class PaymentController extends Controller
      *
      * @param Request $request
      * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Request $request, $id)
     {

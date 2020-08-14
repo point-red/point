@@ -1,1 +1,68 @@
-- Empty Menu
+- Prologue
+  - [Release Notes](/id/prologue/release-notes.md)
+  - [Contribution Guide](/id/prologue/contribution-guide.md)
+  - [API Documentation](https://docs.point.red)
+  - [Github](https://github.com/point-red/point)
+- Getting Started
+  - [Introduction](id/getting-started/introduction.md)
+  - [Installation](/id/getting-started/installation.md)
+- Develop
+  - [Directory Structure](/id/develop/directory-structure.md)
+  - [Scaffolding](/id/develop/scaffolding.md)
+  - [Dummy Data](/id/develop/dummy-data.md)
+  - [Commands](/id/develop/commands.md)
+- Modules
+  - Master
+      - [User & Role](/id/modules/master/user-and-role.md)
+      - [Person](/id/modules/master/person.md)
+      - [Gudang](/id/modules/master/gudang.md)
+      - [Pelanggan](id/modules/master/pelanggan.md)
+      - [Pemasok](id/modules/master/pemasok.md)
+  - Aset Tetap
+      - [Metode Penyusutan](/id/modules/aset-tetap/metode-penyusutan.md)
+      - [Tipe Aset tetap](id/modules/aset-tetap/tipe-aset-tetap.md)
+      - Pembelian Aset Tetap
+        - [Permintaan Pembelian](/id/modules/aset-tetap/pembelian-aset-tetap/permintaan-pembelian.md)
+        - [Pesanan Pembelian](id/modules/aset-tetap/pembelian-aset-tetap/pesanan-pembelian.md)
+        - [Penerimaan Barang](id/modules/aset-tetap/pembelian-aset-tetap/penerimaan-aset-tetap.md)
+        - [Faktur Pembelian](id/modules/aset-tetap/pembelian-aset-tetap/faktur-pembelian.md)
+        - [Perintah Bayar](id/modules/aset-tetap/pembelian-aset-tetap/perintah-bayar.md)
+        - [Uang Muka Pembelian](id/modules/aset-tetap/pembelian-aset-tetap/uang-muka-pembelian.md)
+        - [Retur Pembelian](id/modules/aset-tetap/pembelian-aset-tetap/retur-pembelian.md)
+      - Penjualan Aset Tetap
+        - [Penentuan Penjualan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/penentuan-penjualan-aset-tetap.md)
+        - [Pesanan Penjualan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/pesanan-penjualan-aset-tetap.md)
+        - [Pengiriman Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/pengiriman-aset-tetap.md)
+        - [Faktur Penjualan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/faktur-penjualan-aset-tetap.md)
+        - [Perintah Penagihan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/perintah-penagihan-aset-tetap.md)
+        - [Uang Muka Penjualan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/uang-muka-penjualan-aset-tetap.md)
+        - [Retur Penjualan Aset Tetap](id/modules/aset-tetap/penjualan-aset-tetap/retur-penjualan-aset-tetap.md)
+  - Pembelian
+      - [Permintaan Pembelian](/id/modules/pembelian/permintaan-pembelian.md)
+      - [Pesanan Pembelian](id/modules/pembelian/pesanan-pembelian.md)
+      - [Penerimaan Barang](id/modules/pembelian/penerimaan-barang.md)
+      - [Faktur Pembelian](id/modules/pembelian/faktur-pembelian.md)
+      - [Perintah Bayar](id/modules/pembelian/perintah-bayar.md)
+      - [Uang Muka Pembelian](id/modules/pembelian/uang-muka-pembelian.md)
+      - [Retur Pembelian](id/modules/pembelian/retur-pembelian.md)
+  - Penjualan
+      - [Penetapan Penjualan](id/modules/penjualan/penetapan-penjualan.md)
+      - [Pesanan Penjualan](id/modules/penjualan/pesanan-penjualan.md)
+      - [Pengiriman Barang](id/modules/penjualan/pengiriman-barang.md)
+      - [Faktur Penjualan](id/modules/penjualan/faktur-penjualan.md)
+      - [Perintah Penagihan](id/modules/penjualan/perintah-penagihan.md)
+      - [Uang Muka Penjualan](id/modules/penjualan/uang-muka-penjualan.md)
+      - [Retur Penjualan](id/modules/penjualan/retur-penjualan.md)
+  - Persediaan
+      - [Pemakaian Persediaan](id/modules/persediaan/pemakaian-persediaan.md)
+      - [Pindah Barang](id/modules/persediaan/pindah-barang.md)
+      - [Koreksi Stock](id/modules/persediaan/koreksi-stock.md)
+  - Akuntansi
+      - [Daftar Akun](id/modules/akuntansi/daftar-akun.md)
+      - [Laporan Neraca](id/modules/akuntansi/laporan-neraca.md)
+      - [Laporan Laba Rugi](id/modules/akuntansi/laporan-laba-rugi.md)
+      - [Laporan Arus Kas](id/modules/akuntansi/laporan-arus-kas.md)
+      - [Cut Off](id/modules/akuntansi/cut-off.md)
+- Testing
+  - [Intro](/id/testing/intro.md)
+  - [Test Master](/id/testing/testing-master.md)

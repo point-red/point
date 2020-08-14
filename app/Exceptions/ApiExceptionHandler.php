@@ -3,22 +3,23 @@
 namespace App\Exceptions;
 
 use Exception;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use League\OAuth2\Server\Exception\OAuthServerException;
+use Illuminate\Validation\ValidationException;
+use Laravel\Passport\Exceptions\OAuthServerException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 trait ApiExceptionHandler
 {
-    public function apiExceptions($request, Exception $exception)
+    public function apiExceptions($request, Throwable $exception)
     {
         /* Resource not found */
         if ($exception instanceof NotFoundHttpException) {
             return response()->json([
                 'code' => 404,
-                'message' => 'Http not found',
+                'message' => 'Http not found.',
             ], 404);
         }
 
@@ -26,7 +27,7 @@ trait ApiExceptionHandler
         if ($exception instanceof ModelNotFoundException) {
             return response()->json([
                 'code' => 404,
-                'message' => 'Model not found',
+                'message' => 'Model not found.',
             ], 404);
         }
 

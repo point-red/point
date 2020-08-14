@@ -8,6 +8,8 @@ class EmployeeJobLocation extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_job_location';
+
     /**
      * Get the employees for the job location.
      */

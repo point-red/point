@@ -2,19 +2,21 @@
 
 namespace App\Model\Sales\DeliveryNote;
 
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
-use App\Model\TransactionModel;
-use App\Helpers\Inventory\InventoryHelper;
-use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\SalesInvoice\SalesInvoice;
+use App\Model\TransactionModel;
 
 class DeliveryNote extends TransactionModel
 {
     public static $morphName = 'SalesDeliveryNote';
 
     protected $connection = 'tenant';
+
+    public static $alias = 'sales_delivery_note';
 
     protected $table = 'delivery_notes';
 
@@ -27,6 +29,8 @@ class DeliveryNote extends TransactionModel
         'license_plate',
         'customer_id',
         'customer_name',
+        'customer_address',
+        'customer_phone',
         'billing_address',
         'billing_phone',
         'billing_email',
@@ -113,10 +117,21 @@ class DeliveryNote extends TransactionModel
         $form = new Form;
         $form->saveData($data, $deliveryNote);
 
-        $deliveryOrder->updateIfDone();
+        $deliveryOrder->updateStatus();
 
         foreach ($items as $item) {
-            InventoryHelper::decrease($form->id, $deliveryNote->warehouse_id, $item->item_id, $item->quantity);
+            $options = [];
+            if ($item->expiry_date) {
+                $options['expiry_date'] = $item->expiry_date;
+            }
+            if ($item->production_number) {
+                $options['production_number'] = $item->production_number;
+            }
+
+            $options['quantity_reference'] = $item->quantity;
+            $options['unit_reference'] = $item->unit;
+            $options['converter_reference'] = $item->converter;
+            InventoryHelper::decrease($form, $deliveryNote->warehouse, $item, $item->quantity, $item->unit, $item->converter, $options);
         }
 
         return $deliveryNote;

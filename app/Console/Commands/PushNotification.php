@@ -11,7 +11,7 @@ class PushNotification extends Command
      *
      * @var string
      */
-    protected $signature = 'push-notification {title} {body} {token*}';
+    protected $signature = 'push-notification {title} {body} {click_action} {token*}';
 
     /**
      * The console command description.
@@ -37,19 +37,21 @@ class PushNotification extends Command
      */
     public function handle()
     {
-        $tokens = [];
+        $tokens = $this->argument('token');
         $title = $this->argument('title');
         $body = $this->argument('body');
-        array_push($tokens, $this->argument('token'));
-        self::send($tokens, $title, $body);
+        $clickAction = $this->argument('click_action');
+
+        self::send($tokens, $title, $body, $clickAction);
     }
 
-    private static function send($tokens, $title, $body)
+    private static function send($tokens, $title, $body, $clickAction)
     {
         $msg = [
             'title'     => $title,
             'body'      => $body,
             'sound'     => 'default',
+            'click_action' => $clickAction,
         ];
 
         $fields = [
@@ -63,16 +65,14 @@ class PushNotification extends Command
             'Content-Type: application/json',
         ];
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        info($result);
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($fields));
+        curl_exec($curl);
+        curl_close($curl);
     }
 }

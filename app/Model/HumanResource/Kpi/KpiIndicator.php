@@ -8,6 +8,8 @@ class KpiIndicator extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'kpi_indicator';
+
     /**
      * Get the group that owns the kpi.
      */

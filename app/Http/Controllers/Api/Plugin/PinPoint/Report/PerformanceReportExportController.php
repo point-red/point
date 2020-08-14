@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint\Report;
 
-use Carbon\Carbon;
-use App\Model\CloudStorage;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Model\Project\Project;
-use App\Http\Controllers\Controller;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PinPoint\Performance\PerformanceExport;
+use App\Http\Controllers\Controller;
+use App\Model\CloudStorage;
+use App\Model\Project\Project;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PerformanceReportExportController extends Controller
 {
@@ -35,8 +35,8 @@ class PerformanceReportExportController extends Controller
 
             if (! $result) {
                 return response()->json([
-                  'message' => 'Failed to export',
-              ], 422);
+                    'message' => 'Failed to export',
+                ], 422);
             }
 
             $cloudStorage = new CloudStorage;
@@ -53,9 +53,9 @@ class PerformanceReportExportController extends Controller
             $cloudStorage->save();
 
             $files[] = [
-            'url' => $cloudStorage->download_url,
-            'name' => $fileName,
-          ];
+                'url' => $cloudStorage->download_url,
+                'name' => $fileName,
+            ];
 
             $time = strtotime('+1 month', $time);
         } while ($month != $last);

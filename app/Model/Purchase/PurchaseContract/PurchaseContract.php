@@ -2,10 +2,10 @@
 
 namespace App\Model\Purchase\PurchaseContract;
 
-use App\Model\Master\Supplier;
-use App\Model\TransactionModel;
 use App\Exceptions\IsReferencedException;
+use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\TransactionModel;
 
 class PurchaseContract extends TransactionModel
 {
@@ -13,11 +13,15 @@ class PurchaseContract extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'purchase_contract';
+
     public $timestamps = false;
 
     protected $fillable = [
         'supplier_id',
         'supplier_name',
+        'supplier_address',
+        'supplier_phone',
         'amount',
     ];
 
@@ -68,7 +72,7 @@ class PurchaseContract extends TransactionModel
         }
     }
 
-    public function updateIfDone()
+    public function updateStatus()
     {
         // Make form done when all items / group items quantity ordered
         $done = true;

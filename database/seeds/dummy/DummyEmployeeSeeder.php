@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use App\Model\HumanResource\Employee\Employee;
+use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeEmail;
 use App\Model\HumanResource\Employee\EmployeeGroup;
-use App\Model\HumanResource\Employee\EmployeeContract;
-use App\Model\HumanResource\Employee\EmployeeSocialMedia;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
+use App\Model\HumanResource\Employee\EmployeeSocialMedia;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DummyEmployeeSeeder extends Seeder
 {

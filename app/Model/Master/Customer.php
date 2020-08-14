@@ -2,100 +2,52 @@
 
 namespace App\Model\Master;
 
-use App\Model\MasterModel;
-use App\Model\Accounting\Journal;
-use App\Model\Finance\Payment\Payment;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
+use App\Model\Accounting\Journal;
+use App\Model\MasterModel;
+use App\Traits\Model\Master\CustomerJoin;
+use App\Traits\Model\Master\CustomerRelation;
 
 class Customer extends MasterModel
 {
-    public static $morphName = 'Customer';
+    use CustomerJoin, CustomerRelation;
 
     protected $connection = 'tenant';
 
-    protected $casts = ['credit_ceiling' => 'double'];
+    protected $appends = ['label'];
+
+    protected $casts = ['credit_limit' => 'double'];
 
     protected $fillable = [
         'code',
         'name',
         'tax_identification_number',
+        'address',
+        'city',
+        'state',
+        'country',
+        'zip_code',
+        'latitude',
+        'longitude',
+        'phone',
+        'phone_cc',
+        'email',
         'notes',
-        'credit_ceiling',
+        'credit_limit',
         'pricing_group_id',
         'disabled',
     ];
 
-    /**
-     * Get all of the groups for the customer.
-     */
-    public function groups()
-    {
-        return $this->morphToMany(Group::class, 'groupable');
-    }
+    public static $morphName = 'Customer';
 
-    /**
-     * Get all of the customer's contact persons.
-     */
-    public function contactPersons()
-    {
-        return $this->morphMany(ContactPerson::class, 'contactable');
-    }
+    public static $alias = 'customer';
 
-    /**
-     * Get all of the customer's address.
-     */
-    public function addresses()
+    public function getLabelAttribute()
     {
-        return $this->morphMany(Address::class, 'addressable');
-    }
+        $label = $this->code ? '['.$this->code.'] ' : '';
 
-    /**
-     * Get all of the customer's phones.
-     */
-    public function phones()
-    {
-        return $this->morphMany(Phone::class, 'phoneable');
-    }
-
-    /**
-     * Get all of the customer's emails.
-     */
-    public function emails()
-    {
-        return $this->morphMany(Email::class, 'emailable');
-    }
-
-    /**
-     * Get all of the customer's banks.
-     */
-    public function banks()
-    {
-        return $this->morphMany(Bank::class, 'bankable');
-    }
-
-    /**
-     * Get all of the customer's journals.
-     */
-    public function journals()
-    {
-        return $this->morphMany(Journal::class, 'journalable');
-    }
-
-    /**
-     * Get the customer's pricing group.
-     */
-    public function pricingGroup()
-    {
-        return $this->belongsTo(PricingGroup::class);
-    }
-
-    /**
-     * Get the customer's payment.
-     */
-    public function payments()
-    {
-        return $this->morphMany(Payment::class, 'paymentable');
+        return $label.$this->name;
     }
 
     /**

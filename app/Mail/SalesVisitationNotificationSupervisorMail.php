@@ -36,7 +36,7 @@ class SalesVisitationNotificationSupervisorMail extends Mailable
         return $this->subject('['.title_case($this->project_name).'] Sales Visitation '.' / '.$this->day_time)
             ->view(['html' => 'emails.plugin.pinpoint.sales-visitation-notification-supervisor'])
             ->with(['project_name' => $this->project_name,
-                    'day_time' => $this->day_time,
-                    'user_data' => $this->user_data, ]);
+                'day_time' => $this->day_time,
+                'user_data' => $this->user_data, ]);
     }
 }

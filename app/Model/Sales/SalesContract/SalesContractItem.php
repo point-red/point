@@ -3,12 +3,14 @@
 namespace App\Model\Sales\SalesContract;
 
 use App\Model\Master\Item;
-use App\Model\TransactionModel;
 use App\Model\Sales\SalesOrder\SalesOrderItem;
+use App\Model\TransactionModel;
 
 class SalesContractItem extends TransactionModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'sales_contract_item';
 
     public $timestamps = false;
 

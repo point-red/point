@@ -2,13 +2,15 @@
 
 namespace App\Model;
 
-use App\User;
 use App\Model\Project\Project;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class FirebaseToken extends Model
 {
     protected $connection = 'mysql';
+
+    public static $alias = 'firebase_token';
 
     /**
      * Get the user that invited to the project.

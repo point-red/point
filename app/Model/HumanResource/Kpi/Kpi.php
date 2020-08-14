@@ -2,13 +2,15 @@
 
 namespace App\Model\HumanResource\Kpi;
 
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\User;
 use App\Model\TransactionModel;
-use App\Model\HumanResource\Employee\Employee;
 
 class Kpi extends TransactionModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'kpi';
 
     /**
      * Get the kpi groups for the kpi.

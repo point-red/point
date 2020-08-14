@@ -1,0 +1,6 @@
+{
+  "workbench.colorTheme": "Monokai",
+  "html.format.endWithNewline": true,
+  "emmet.showSuggestionsAsSnippets": true,
+  "emmet.triggerExpansionOnTab": true
+}

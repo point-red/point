@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Model\CloudStorage;
 use Illuminate\Console\Command;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class RestoreDatabase extends Command
 {
@@ -48,7 +48,7 @@ class RestoreDatabase extends Command
 
         $this->line($mySqlDump);
 
-        $process = new Process($mySqlDump.' '.$dbName);
+        $process = Process::fromShellCommandline($mySqlDump.' '.$dbName);
 
         $process->setPTY(true);
         $process->run();

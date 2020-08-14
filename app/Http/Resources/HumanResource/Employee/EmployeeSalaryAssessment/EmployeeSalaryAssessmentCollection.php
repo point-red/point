@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\HumanResource\Employee\EmployeeSalaryAssessment;
 
-use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Model\HumanResource\Employee\EmployeeSalaryAssessment;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class EmployeeSalaryAssessmentCollection extends ResourceCollection
 {

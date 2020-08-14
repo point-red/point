@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Kpi;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\HumanResource\Kpi\KpiTemplate;
-use App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateResource;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplate\StoreKpiTemplateRequest;
 use App\Http\Requests\HumanResource\Kpi\KpiTemplate\UpdateKpiTemplateRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateResource;
+use App\Model\HumanResource\Kpi\KpiTemplate;
+use App\Model\HumanResource\Kpi\KpiTemplateGroup;
+use App\Model\HumanResource\Kpi\KpiTemplateIndicator;
+use App\Model\HumanResource\Kpi\KpiTemplateScore;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class KpiTemplateController extends Controller
 {
@@ -30,8 +33,19 @@ class KpiTemplateController extends Controller
             }])
             ->withCount(['indicators as weight' => function ($query) {
                 $query->select(DB::raw('sum(weight)'));
-            }])
-            ->paginate($request->input('limit') ?? 50);
+            }]);
+
+        if ($request->get('is_archived')) {
+            $templates = $templates->where(function ($q) {
+                $q->whereNotNull('archived_at')->where('archived_at', '!=', '0000-00-00 00:00:00');
+            });
+        } else {
+            $templates = $templates->where(function ($q) {
+                $q->whereNull('archived_at')->orWhere('archived_at', '0000-00-00 00:00:00');
+            });
+        }
+
+        $templates = pagination($templates, $request->get('limit'));
 
         return new ApiCollection($templates);
     }
@@ -39,9 +53,8 @@ class KpiTemplateController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\HumanResource\Kpi\KpiTemplate\StoreKpiTemplateRequest $request
-     *
-     * @return \App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateResource
+     * @param StoreKpiTemplateRequest $request
+     * @return KpiTemplateResource
      */
     public function store(StoreKpiTemplateRequest $request)
     {
@@ -72,7 +85,9 @@ class KpiTemplateController extends Controller
             }])
             ->first();
 
-        $template->target = (float) $template->target;
+        if ($template) {
+            $template->target = (float) $template->target;
+        }
 
         return new ApiResource($template);
     }
@@ -82,8 +97,7 @@ class KpiTemplateController extends Controller
      *
      * @param \App\Http\Requests\HumanResource\Kpi\KpiTemplate\UpdateKpiTemplateRequest $request
      * @param  int                                                                      $id
-     *
-     * @return \App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateResource
+     * @return KpiTemplateResource
      */
     public function update(UpdateKpiTemplateRequest $request, $id)
     {
@@ -98,8 +112,7 @@ class KpiTemplateController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     *
-     * @return \App\Http\Resources\HumanResource\Kpi\KpiTemplate\KpiTemplateResource
+     * @return KpiTemplateResource
      */
     public function destroy($id)
     {
@@ -109,4 +122,163 @@ class KpiTemplateController extends Controller
 
         return new KpiTemplateResource($kpiTemplate);
     }
+
+    /**
+     * delete the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkDelete(DeleteRequest $request)
+    {
+        $templates = $request->get('employees');
+        foreach ($templates as $template) {
+            $template = KpiTemplate::findOrFail($template['id']);
+            $template->delete();
+        }
+
+        return response()->json([], 204);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return KpiTemplateResource
+     */
+    public function duplicate(Request $request)
+    {
+        $kpiTemplate = KpiTemplate::find($request->input('kpi_template_id'));
+
+        $newKpiTemplate = new KpiTemplate;
+        $newKpiTemplate->name = $kpiTemplate->name.' (duplicate)';
+        $newKpiTemplate->save();
+
+        foreach ($kpiTemplate->groups as $group) {
+            $kpiTemplateGroup = new KpiTemplateGroup();
+            $kpiTemplateGroup->kpi_template_id = $newKpiTemplate->id;
+            $kpiTemplateGroup->name = $group->name;
+            $kpiTemplateGroup->save();
+
+            foreach ($group->indicators as $indicator) {
+                $kpiTemplateIndicator = new KpiTemplateIndicator;
+                $kpiTemplateIndicator->kpi_template_group_id = $kpiTemplateGroup->id;
+                $kpiTemplateIndicator->name = $indicator->name;
+                $kpiTemplateIndicator->weight = $indicator->weight;
+                $kpiTemplateIndicator->target = $indicator->target;
+                $kpiTemplateIndicator->automated_code = $indicator->automated_code;
+                $kpiTemplateIndicator->save();
+
+                foreach ($indicator->scores as $score) {
+                    $kpiTemplateScore = new KpiTemplateScore();
+                    $kpiTemplateScore->kpi_template_indicator_id = $kpiTemplateIndicator->id;
+                    $kpiTemplateScore->description = $score->description;
+                    $kpiTemplateScore->score = $score->score;
+                    $kpiTemplateScore->save();
+                }
+            }
+        }
+
+        return new KpiTemplateResource($newKpiTemplate);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return ApiResource
+     */
+    public function copyGroup(Request $request)
+    {
+        $template = KpiTemplate::findOrFail($request->get('template_id'));
+
+        $chosenGroup = KpiTemplateGroup::findOrFail($request->get('group_id'));
+
+        $kpiTemplateGroup = new KpiTemplateGroup();
+        $kpiTemplateGroup->kpi_template_id = $template->id;
+        $kpiTemplateGroup->name = $chosenGroup->name;
+        $kpiTemplateGroup->save();
+
+        foreach ($chosenGroup->indicators as $indicator) {
+            $kpiTemplateIndicator = new KpiTemplateIndicator;
+            $kpiTemplateIndicator->kpi_template_group_id = $kpiTemplateGroup->id;
+            $kpiTemplateIndicator->name = $indicator->name;
+            $kpiTemplateIndicator->weight = $indicator->weight;
+            $kpiTemplateIndicator->target = $indicator->target;
+            $kpiTemplateIndicator->automated_code = $indicator->automated_code;
+            $kpiTemplateIndicator->save();
+
+            foreach ($indicator->scores as $score) {
+                $kpiTemplateScore = new KpiTemplateScore();
+                $kpiTemplateScore->kpi_template_indicator_id = $kpiTemplateIndicator->id;
+                $kpiTemplateScore->description = $score->description;
+                $kpiTemplateScore->score = $score->score;
+                $kpiTemplateScore->save();
+            }
+        }
+
+        return new ApiResource($template);
+    }
+    
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param int $id
+     * @return ApiResource
+     */
+    public function archive($id)
+    {
+        $template = KpiTemplate::findOrFail($id);
+        $template->archive();
+
+        return new ApiResource($template);
+    }
+
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkArchive(Request $request)
+    {
+        $templates = $request->get('templates');
+        foreach ($templates as $template) {
+            $template = KpiTemplate::findOrFail($template['id']);
+            $template->archive();
+        }
+        
+        return response()->json([], 200);
+    }
+
+    /**
+     * Activate the specified resource from storage.
+     *
+     * @param int $id
+     * @return ApiResource
+     */
+    public function activate($id)
+    {
+        $template = KpiTemplate::findOrFail($id);
+        $template->activate();
+
+        return new ApiResource($template);
+    }
+    /**
+     * Archive the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkActivate(Request $request)
+    {
+        $templates = $request->get('templates');
+        foreach ($templates as $template) {
+            $template = KpiTemplate::findOrFail($template['id']);
+            $template->activate();
+        }
+
+        return response()->json([], 200);
+    }
+
 }

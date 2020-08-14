@@ -15,49 +15,31 @@ trait EloquentFilters
             ->includes($request->get('includes'))
             ->fieldGroupBy($request->get('group_by'))
             ->filterEqual($request->get('filter_equal'))
+            ->filterEqualOr($request->get('filter_equal_or'))
+            ->orFilterEqual($request->get('or_filter_equal'))
             ->filterNotEqual($request->get('filter_not_equal'))
             ->filterLike($request->get('filter_like'))
             ->filterMin($request->get('filter_min'))
             ->filterMax($request->get('filter_max'))
+            ->filterDateMin($request->get('filter_date_min'))
+            ->filterDateMax($request->get('filter_date_max'))
             ->filterNull($request->get('filter_null'))
             ->filterNotNull($request->get('filter_not_null'))
             ->filterHas($request->get('filter_has'))
             ->filterDoesntHave($request->get('filter_doesnt_have'))
             ->filterWhereHas($request->get('filter_where_has'))
+            ->filterWhereHasLike($request->get('filter_where_has_like'))
             ->filterForm($request->get('filter_form'))
-            ->orFilterEqual($request->get('or_filter_equal'))
             ->orFilterNotEqual($request->get('or_filter_not_equal'))
             ->orFilterLike($request->get('or_filter_like'))
             ->orFilterMin($request->get('or_filter_min'))
             ->orFilterMax($request->get('or_filter_max'))
+            ->orFilterDateMin($request->get('or_filter_date_min'))
+            ->orFilterDateMax($request->get('or_filter_date_max'))
             ->orFilterNull($request->get('or_filter_null'))
             ->orFilterNotNull($request->get('or_filter_not_null'))
             ->orFilterWhereHas($request->get('or_filter_where_has'))
             ->orFilterWhereHasLike($request->get('or_filter_where_has_like'));
-    }
-
-    /**
-     * @param $query
-     * @param $values
-     *
-     * Examples :
-     * ?sort_by=name sort name ascending
-     * ?sort_by=-name sort name descending
-     */
-    public function scopeSortBy($query, $values)
-    {
-        if ($values) {
-            $fields = explode(',', $values);
-            foreach ($fields as $value) {
-                $sort = substr($value, 0, 1) == '-' ? 'desc' : 'asc';
-                if ($sort == 'desc') {
-                    $field = substr($value, 1, strlen($value));
-                } else {
-                    $field = substr($value, 0, strlen($value));
-                }
-                $query->orderBy($field, $sort);
-            }
-        }
     }
 
     /**
@@ -71,8 +53,29 @@ trait EloquentFilters
     public function scopeFields($query, $values)
     {
         if ($values) {
-            foreach (explode(',', $values) as $value) {
+            foreach (explode(';', $values) as $value) {
                 $query->addSelect($value);
+            }
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $values
+     *
+     * Examples :
+     * ?sort_by=name sort name ascending
+     * ?sort_by=-name sort name descending
+     */
+    public function scopeSortBy($query, $values)
+    {
+        if ($values) {
+            foreach (array_filter(explode(';', $values)) as $field) {
+                $sort = substr($field, 0, 1) == '-' ? 'desc' : 'asc';
+                if ($sort == 'desc') {
+                    $field = substr($field, 1, strlen($field));
+                }
+                $query->orderBy($field, $sort);
             }
         }
     }
@@ -86,26 +89,34 @@ trait EloquentFilters
      * For this reason, Eloquent allows you to specify which columns
      * of the relationship you would like to retrieve:
      * https://laravel.com/docs/5.7/eloquent-relationships#eager-loading
+     *
      * Examples :
      * ?includes=supplier,purchaseOrderItems.allocation
+     *
+     * Note : value is relation method in model
      */
     public function scopeIncludes($query, $values)
     {
         if ($values) {
-            foreach (explode(';', $values) as $value) {
+            foreach (array_filter(explode(';', $values)) as $value) {
                 $query->with($value);
             }
         }
     }
 
     /**
-     * ?group_by=customer.id,customer.name.
+     * Single group by
+     * ?group_by=id
+     * Multiple group by
+     * ?group_by=id;name.
+     *
+     * @param $query
+     * @param $values
      */
     public function scopeFieldGroupBy($query, $values)
     {
         if ($values) {
-            $columns = explode(',', $values);
-            foreach ($columns as $column) {
+            foreach (array_filter(explode(';', $values)) as $column) {
                 $query->groupBy($column);
             }
         }
@@ -124,15 +135,8 @@ trait EloquentFilters
 
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                $relation = explode('.', $key);
-                $column = array_pop($relation);
-                $relation = implode('.', $relation);
-
-                if (! empty($relation)) {
-                    $query->whereHas($relation, function ($query) use ($column, $value) {
-                        $query->where($column, $value);
-                    });
-                } else {
+                // do not search null value here, instead use filter_null
+                if ($value != null) {
                     $query->where($key, $value);
                 }
             }
@@ -143,25 +147,33 @@ trait EloquentFilters
      * @param $query
      * @param $values
      *
+     * Example to show only closed form
+     * ?filter_equal[form.status]=1
+     */
+    public function scopeFilterEqualOr($query, $values)
+    {
+        $values = $this->convertJavascriptObjectToArray($values);
+
+        $query->where(function ($query) use ($values) {
+            foreach ($values as $key => $value) {
+                $query->where($key, $value);
+            }
+        });
+    }
+
+    /**
+     * @param $query
+     * @param $values
+     *
      * Example to show only active form
-     * ?filter_not_equal[form.canceled]=1
+     * ?filter_not_equal[form.cancellation_status]=1
      */
     public function scopeFilterNotEqual($query, $values)
     {
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $relation = explode('.', $key);
-            $column = array_pop($relation);
-            $relation = implode('.', $relation);
-
-            if (! empty($relation)) {
-                $query->whereHas($relation, function ($query) use ($column, $value) {
-                    $query->where($column, '!=', $value);
-                });
-            } else {
-                $query->where($key, '!=', $value);
-            }
+            $query->where($key, '!=', $value);
         }
     }
 
@@ -169,8 +181,8 @@ trait EloquentFilters
      * @param $query
      * @param $values
      *
-     * Example to search for name
-     * ?filter_like[customers.name]=doe
+     * Example
+     * ?filter_like[alias.column]=value
      */
     public function scopeFilterLike($query, $values)
     {
@@ -179,24 +191,12 @@ trait EloquentFilters
         // search each word that separate by space
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                $relation = explode('.', $key);
-                $column = array_pop($relation);
-                $relation = implode('.', $relation);
-                if (! empty($relation)) {
-                    $query->orWhereHas($relation, function ($query) use ($value, $column) {
-                        $words = explode(' ', $value);
-                        foreach ($words as $word) {
-                            $query->where($column, 'like', '%'.$word.'%');
-                        }
-                    });
-                } else {
-                    $query->orWhere(function ($query) use ($value, $key) {
-                        $words = explode(' ', $value);
-                        foreach ($words as $word) {
-                            $query->where($key, 'like', '%'.$word.'%');
-                        }
-                    });
-                }
+                $query->orWhere(function ($query) use ($value, $key) {
+                    $words = explode(' ', $value);
+                    foreach ($words as $word) {
+                        $query->where($key, 'like', '%'.$word.'%');
+                    }
+                });
             }
         });
     }
@@ -213,17 +213,7 @@ trait EloquentFilters
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $relation = explode('.', $key);
-            $column = array_pop($relation);
-            $relation = implode('.', $relation);
-
-            if (! empty($relation)) {
-                $query->whereHas($relation, function ($query) use ($column, $value) {
-                    $query->where($column, '>=', $value);
-                });
-            } else {
-                $query->where($key, '>=', $value);
-            }
+            $query->where($key, '>=', $value);
         }
     }
 
@@ -239,17 +229,39 @@ trait EloquentFilters
         $values = $this->convertJavascriptObjectToArray($values);
 
         foreach ($values as $key => $value) {
-            $relation = explode('.', $key);
-            $column = array_pop($relation);
-            $relation = implode('.', $relation);
+            $query->where($key, '<=', $value);
+        }
+    }
 
-            if (! empty($relation)) {
-                $query->whereHas($relation, function ($query) use ($column, $value) {
-                    $query->where($column, '<=', $value);
-                });
-            } else {
-                $query->where($key, '<=', $value);
-            }
+    /**
+     * @param $query
+     * @param $values
+     *
+     * Example to get item that has stock at least 1
+     * ?filter_min[form.date]=2019-12-30
+     */
+    public function scopeFilterDateMin($query, $values)
+    {
+        $values = $this->convertJavascriptObjectToArray($values);
+
+        foreach ($values as $key => $value) {
+            $query->where($key, '>=', convert_to_server_timezone($value));
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $values
+     *
+     * Example to get item that has stock below 30
+     * ?filter_max[stock]=30
+     */
+    public function scopeFilterDateMax($query, $values)
+    {
+        $values = $this->convertJavascriptObjectToArray($values);
+
+        foreach ($values as $key => $value) {
+            $query->where($key, '<=', convert_to_server_timezone($value));
         }
     }
 
@@ -266,17 +278,7 @@ trait EloquentFilters
             $columns = explode(',', $values);
 
             foreach ($columns as $column) {
-                $relation = explode('.', $column);
-                $columnName = array_pop($relation);
-                $relation = implode('.', $relation);
-
-                if (! empty($relation)) {
-                    $query->whereHas($relation, function ($query) use ($columnName) {
-                        $query->whereNull($columnName);
-                    });
-                } else {
-                    $query->whereNull($columnName);
-                }
+                $query->whereNull($column);
             }
         }
     }
@@ -294,17 +296,7 @@ trait EloquentFilters
             $columns = explode(',', $values);
 
             foreach ($columns as $column) {
-                $relation = explode('.', $column);
-                $columnName = array_pop($relation);
-                $relation = implode('.', $relation);
-
-                if (! empty($relation)) {
-                    $query->whereHas($relation, function ($query) use ($columnName) {
-                        $query->whereNotNull($columnName);
-                    });
-                } else {
-                    $query->whereNotNull($columnName);
-                }
+                $query->whereNotNull($column);
             }
         }
     }
@@ -322,13 +314,7 @@ trait EloquentFilters
 
         $query->orWhere(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $valueArray) {
-                        $query->orWhere($key, $valueArray);
-                    }
-                } else {
-                    $query->where($key, $value);
-                }
+                $query->where($key, $value);
             }
         });
     }
@@ -395,6 +381,32 @@ trait EloquentFilters
 
         foreach ($values as $key => $value) {
             $query->orWhere($key, '>=', $value);
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $values
+     */
+    public function scopeOrFilterDateMin($query, $values)
+    {
+        $values = $this->convertJavascriptObjectToArray($values);
+
+        foreach ($values as $key => $value) {
+            $query->orWhere($key, '<=', convert_to_server_timezone($value));
+        }
+    }
+
+    /**
+     * @param $query
+     * @param $values
+     */
+    public function scopeOrFilterDateMax($query, $values)
+    {
+        $values = $this->convertJavascriptObjectToArray($values);
+
+        foreach ($values as $key => $value) {
+            $query->orWhere($key, '>=', convert_to_server_timezone($value));
         }
     }
 
@@ -494,6 +506,26 @@ trait EloquentFilters
         }
     }
 
+    public function scopeFilterWhereHasLike($query, $values)
+    {
+        if (! is_null($values)) {
+            $values = $this->convertJavascriptObjectToArray($values);
+            foreach ($values as $relation => $filters) {
+                $filters = $this->convertJavascriptObjectToArray($filters);
+                foreach ($filters as $attribute => $value) {
+                    $query->whereHas($relation, function ($query) use ($attribute, $value) {
+                        $query->where(function ($query) use ($value, $attribute) {
+                            $words = explode(' ', $value);
+                            foreach ($words as $word) {
+                                $query->orWhere($attribute, 'like', '%'.$word.'%');
+                            }
+                        });
+                    });
+                }
+            }
+        }
+    }
+
     public function scopeOrFilterWhereHasLike($query, $values)
     {
         if (! is_null($values)) {
@@ -541,42 +573,44 @@ trait EloquentFilters
         }
     }
 
-    public function scopeFilterForm($query, $value)
+    public function scopeFilterForm($query, $values)
     {
-        if (is_null($value)) {
-            return;
-        }
+        if ($values) {
+            foreach (explode(';', $values) as $value) {
+                if (is_null($value) || $value == '') {
+                    return;
+                }
 
-        if ($value === 'done') {
-            $query->done();
-        } elseif ($value === 'notDone') {
-            $query->notDone();
-        } elseif ($value === 'approved') {
-            $query->approved();
-        } elseif ($value === 'rejected') {
-            $query->approvalRejected();
-        } elseif ($value === 'approvalPending') {
-            $query->approvalPending();
-        } elseif ($value === 'approvalNotRejected') {
-            $query->notRejected();
-        } elseif ($value === 'cancellationApproved') {
-            $query->cancellationApproved();
-        } elseif ($value === 'cancellationRejected') {
-            $query->cancellationRejected();
-        } elseif ($value === 'cancellationPending') {
-            $query->cancellationPending();
-        } elseif ($value === 'notCancelled') {
-            $query->notCanceled();
-        } elseif ($value === 'notArchived') {
-            $query->notArchived();
-        } elseif ($value === 'archived') {
-            $query->archived();
-        } elseif ($value === 'active') {
-            $query->active();
-        } elseif ($value === 'activePending') {
-            $query->activePending();
-        } elseif ($value === 'activeDone') {
-            $query->activeDone();
+                if ($value === 'done') {
+                    $query->done();
+                } elseif ($value === 'pending') {
+                    $query->pending();
+                } elseif ($value === 'approvalRejected') {
+                    $query->approvalRejected();
+                } elseif ($value === 'approvalPending') {
+                    $query->approvalPending();
+                } elseif ($value === 'approvalApproved') {
+                    $query->approvalApproved();
+                } elseif ($value === 'cancellationApproved') {
+                    $query->cancellationApproved();
+                } elseif ($value === 'cancellationRejected') {
+                    $query->cancellationRejected();
+                } elseif ($value === 'cancellationPending') {
+                    $query->cancellationPending();
+                } elseif ($value === 'notCanceled') {
+                    $query->notCanceled();
+                } elseif ($value === 'notArchived') {
+                    $query->notArchived();
+                } elseif ($value === 'archived') {
+                    $query->archived();
+                } elseif ($value === 'active') {
+                    $query->active();
+                } elseif ($value === 'activePending') {
+                    $query->activePending();
+                } elseif ($value === 'activeDone') {
+                    $query->activeDone();
+                }
+            }
         }
     }
 

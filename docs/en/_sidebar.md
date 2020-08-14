@@ -1,7 +1,7 @@
 - Prologue
   - [Release Notes](/en/prologue/release-notes.md)
   - [Contribution Guide](/en/prologue/contribution-guide.md)
-  - [API Documentation](https://documenter.getpostman.com/view/421224/RWgrxczT)
+  - [API Documentation](https://docs.point.red)
   - [Github](https://github.com/point-red/point)
 - Getting Started
   - [Introduction](/en/getting-started/introduction.md)
@@ -22,6 +22,6 @@
   - [Service](/en/modules)
   - [Accounting](/en/modules)
 - Testing
-    - [Intro](/en/testing/intro.md)
-    - [Test Master](/en/testing/testing-master.md)
+  - [Intro](/en/testing/intro.md)
+  - [Test Master](/en/testing/testing-master.md)
 

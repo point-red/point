@@ -2,16 +2,18 @@
 
 namespace App\Model\Inventory\InventoryAudit;
 
+use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
-use App\Helpers\Inventory\InventoryHelper;
 
 class InventoryAudit extends TransactionModel
 {
     public static $morphName = 'InventoryAudit';
 
     protected $connection = 'tenant';
+
+    public static $alias = 'inventory_audit';
 
     public $timestamps = false;
 
@@ -60,11 +62,18 @@ class InventoryAudit extends TransactionModel
     private static function updateStock($inventoryAudit)
     {
         foreach ($inventoryAudit->items as $inventoryAuditItem) {
-            InventoryHelper::audit($inventoryAudit->form->id,
-                $inventoryAudit->warehouse_id,
-                $inventoryAuditItem->item_id,
+            InventoryHelper::audit(
+                $inventoryAudit->form,
+                $inventoryAudit->warehouse,
+                $inventoryAuditItem->item,
                 $inventoryAuditItem->quantity,
-                $inventoryAuditItem->price);
+                $inventoryAuditItem->unit,
+                $inventoryAuditItem->converter,
+                [
+                    'expiry_date' => $inventoryAuditItem->expiry_date,
+                    'production_number' => $inventoryAuditItem->production_number,
+                ]
+            );
         }
     }
 }

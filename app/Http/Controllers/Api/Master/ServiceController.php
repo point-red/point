@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use Illuminate\Http\Request;
-use App\Model\Master\Service;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
 use App\Http\Requests\Master\Service\StoreServiceRequest;
 use App\Http\Requests\Master\Service\UpdateServiceRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\Service;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ServiceController extends Controller
 {
@@ -21,9 +21,17 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $services = Service::eloquentFilter($request)
-            ->with('groups')
-            ->paginate($request->get('paginate') ?? 20);
+        $services = Service::from(Service::getTableName().' as '.Service::$alias)->eloquentFilter($request);
+
+        $services = Service::joins($services, $request->get('join'));
+
+        if ($request->get('is_archived')) {
+            $services = $services->whereNotNull('archived_at');
+        } else {
+            $services = $services->whereNull('archived_at');
+        }
+
+        $services = $services->paginate($request->get('paginate') ?? 20);
 
         return new ApiCollection($services);
     }
@@ -56,9 +64,11 @@ class ServiceController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $service = Service::eloquentFilter($request)
-            ->with('groups')
-            ->findOrFail($id);
+        $service = Service::from(Service::getTableName().' as '.Service::$alias)->eloquentFilter($request);
+
+        $service = Service::joins($service, $request->get('join'));
+
+        $service = $service->where(Service::$alias.'.id', $id)->first();
 
         return new ApiResource($service);
     }

@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseReceive;
 
-use Throwable;
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Master\Supplier;
-use App\Model\Inventory\Inventory;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseReceiveRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Inventory\Inventory;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class PurchaseReceiveController extends Controller
 {
@@ -24,24 +22,9 @@ class PurchaseReceiveController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseReceives = PurchaseReceive::eloquentFilter($request);
+        $purchaseReceives = PurchaseReceive::from(PurchaseReceive::getTableName().' as '.PurchaseReceive::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('supplier', $fields)) {
-                $purchaseReceives = $purchaseReceives->join(Supplier::getTableName(), function ($q) {
-                    $q->on(Supplier::getTableName('id'), '=', PurchaseReceive::getTableName('supplier_id'));
-                });
-            }
-
-            if (in_array('form', $fields)) {
-                $purchaseReceives = $purchaseReceives->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', PurchaseReceive::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseReceive::$morphName);
-                });
-            }
-        }
+        $purchaseReceives = PurchaseReceive::joins($purchaseReceives, $request->get('join'));
 
         $purchaseReceives = pagination($purchaseReceives, $request->get('limit'));
 
@@ -99,9 +82,7 @@ class PurchaseReceiveController extends Controller
                 ->load('form')
                 ->load('supplier')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($purchaseReceive);
         });
@@ -184,9 +165,7 @@ class PurchaseReceiveController extends Controller
                 ->load('form')
                 ->load('supplier')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($purchaseReceive);
         });
@@ -203,15 +182,13 @@ class PurchaseReceiveController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $purchaseReceive = PurchaseReceive::findOrFail($id);
         $purchaseReceive->isAllowedToDelete();
+        $purchaseReceive->requestCancel($request);
 
-        $response = $purchaseReceive->requestCancel($request);
-
-        if (! $response) {
-            $purchaseReceive->purchaseOrder->form->done = false;
-            $purchaseReceive->purchaseOrder->form->save();
-        }
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Sales\SalesContract\SalesContract;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class UpdateSalesContractRequest extends FormRequest
 {
@@ -53,7 +53,7 @@ class UpdateSalesContractRequest extends FormRequest
         } else {
             $rulesSalesContractItemGroup = [
                 'groups' => 'required|array',
-                'groups.*.group_id' => ValidationRule::foreignKey('groups'),
+                'groups.*.item_group_id' => ValidationRule::foreignKey('item_groups'),
                 'groups.*.price' => ValidationRule::price(),
                 'groups.*.quantity' => ValidationRule::quantity(),
                 'groups.*.allocation_id' => ValidationRule::foreignKeyNullable('allocations'),

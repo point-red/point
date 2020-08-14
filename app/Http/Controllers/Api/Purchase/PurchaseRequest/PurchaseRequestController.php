@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseRequest;
 
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Master\Supplier;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StoreRequest;
+use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\UpdateRequest;
 use App\Http\Resources\ApiCollection;
-use App\Model\HumanResource\Employee\Employee;
+use App\Http\Resources\ApiResource;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
-use App\Http\Requests\Purchase\PurchaseRequest\PurchaseRequest\StorePurchaseRequestRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseRequestController extends Controller
 {
@@ -23,30 +21,9 @@ class PurchaseRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $purchaseRequests = PurchaseRequest::eloquentFilter($request);
+        $purchaseRequests = PurchaseRequest::from(PurchaseRequest::getTableName().' as '.PurchaseRequest::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('supplier', $fields)) {
-                $purchaseRequests = $purchaseRequests->join(Supplier::getTableName(), function ($q) {
-                    $q->on(Supplier::getTableName('id'), '=', PurchaseRequest::getTableName('supplier_id'));
-                });
-            }
-
-            if (in_array('employee', $fields)) {
-                $purchaseRequests = $purchaseRequests->join(Employee::getTableName(), function ($q) {
-                    $q->on(Employee::getTableName('id'), '=', PurchaseRequest::getTableName('employee_id'));
-                });
-            }
-
-            if (in_array('form', $fields)) {
-                $purchaseRequests = $purchaseRequests->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', PurchaseRequest::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), PurchaseRequest::$morphName);
-                });
-            }
-        }
+        $purchaseRequests = PurchaseRequest::joins($purchaseRequests, $request->get('join'));
 
         $purchaseRequests = pagination($purchaseRequests, $request->get('limit'));
 
@@ -77,27 +54,22 @@ class PurchaseRequestController extends Controller
      *      - description (String Optional)
      *      - allocation_id (Int Optional).
      *
-     * @param StorePurchaseRequestRequest $request
+     * @param StoreRequest $request
      * @return ApiResource
      * @throws \Throwable
      */
-    public function store(StorePurchaseRequestRequest $request)
+    public function store(StoreRequest $request)
     {
-        $result = DB::connection('tenant')->transaction(function () use ($request) {
+        return DB::connection('tenant')->transaction(function () use ($request) {
             $purchaseRequest = PurchaseRequest::create($request->all());
             $purchaseRequest
                 ->load('form')
                 ->load('employee')
-                ->load('supplier')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($purchaseRequest);
         });
-
-        return $result;
     }
 
     /**
@@ -109,7 +81,11 @@ class PurchaseRequestController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::eloquentFilter($request)->with('form')->findOrFail($id);
+        $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName().' as '.PurchaseRequest::$alias)->eloquentFilter($request);
+
+        $purchaseRequest = PurchaseRequest::joins($purchaseRequest, $request->get('join'));
+
+        $purchaseRequest = $purchaseRequest->with('form.createdBy')->where(PurchaseRequest::$alias.'.id', $id)->first();
 
         if ($request->has('with_archives')) {
             $purchaseRequest->archives = $purchaseRequest->archives();
@@ -130,13 +106,18 @@ class PurchaseRequestController extends Controller
      * @return ApiResource
      * @throws \Throwable
      */
-    public function update(Request $request, $id)
+    public function update(UpdateRequest $request, $id)
     {
-        $purchaseRequest = PurchaseRequest::with('form')->findOrFail($id);
+        return DB::connection('tenant')->transaction(function () use ($request, $id) {
+            $purchaseRequest = PurchaseRequest::from(PurchaseRequest::getTableName().' as '.PurchaseRequest::$alias)
+                ->joinForm()
+                ->where(PurchaseRequest::$alias.'.id', $id)
+                ->select(PurchaseRequest::$alias.'.*')
+                ->with('form')
+                ->first();
 
-        $purchaseRequest->isAllowedToUpdate();
+            $purchaseRequest->isAllowedToUpdate();
 
-        $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseRequest) {
             $purchaseRequest->form->archive();
             $request['number'] = $purchaseRequest->form->edited_number;
             $request['old_increment'] = $purchaseRequest->form->increment;
@@ -147,14 +128,10 @@ class PurchaseRequestController extends Controller
                 ->load('employee')
                 ->load('supplier')
                 ->load('items.item')
-                ->load('items.allocation')
-                ->load('services.service')
-                ->load('services.allocation');
+                ->load('items.allocation');
 
             return new ApiResource($purchaseRequest);
         });
-
-        return $result;
     }
 
     /**
@@ -166,10 +143,13 @@ class PurchaseRequestController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        DB::connection('tenant')->beginTransaction();
+
         $purchaseRequest = PurchaseRequest::findOrFail($id);
         $purchaseRequest->isAllowedToDelete();
-
         $purchaseRequest->requestCancel($request);
+
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

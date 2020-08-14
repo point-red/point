@@ -3,10 +3,13 @@
 namespace App\Console\Commands\Tenant\Database;
 
 use App\Model\Auth\Role;
+use App\Model\Master\Branch;
+use App\Model\Master\PricingGroup;
 use App\Model\Master\User;
+use App\Model\Master\Warehouse;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 class FirstSeed extends Command
 {
@@ -52,6 +55,23 @@ class FirstSeed extends Command
             '--force' => true,
         ]);
 
+        if (PricingGroup::all()->count() == 0) {
+            $pricingGroup = new PricingGroup;
+            $pricingGroup->label = 'DEFAULT';
+            $pricingGroup->save();
+        }
+        
+        // seed branch
+        $branch = new Branch;
+        $branch->name = 'CENTRAL';
+        $branch->save();
+
+        // seed warehouse
+        $warehouse = new Warehouse;
+        $warehouse->branch_id = $branch->id;
+        $warehouse->name = 'CENTRAL WAREHOUSE';
+        $warehouse->save();
+
         $this->line('assign default role for owner');
         $this->assignDefaultRoleForOwner();
     }
@@ -63,6 +83,14 @@ class FirstSeed extends Command
 
         // Default user (owner of this project)
         $this->user = User::first();
+        $this->user->branches()->attach([
+            'is_default' => true,
+        ]);
+
+        $this->user->warehouses()->attach([
+            'is_default' => true,
+        ]);
+
         $this->user->assignRole($role);
     }
 }

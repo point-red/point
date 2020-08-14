@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers\Api\Sales\SalesDownPayment;
 
-use App\Model\Form;
-use Illuminate\Http\Request;
-use App\Model\Master\Customer;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
 use App\Exceptions\IsReferencedException;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Sales\SalesDownPayment\StoreSalesDownPaymentRequest;
+use App\Http\Requests\Sales\SalesDownPayment\UpdateSalesDownPaymentRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
-use App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment\StoreSalesDownPaymentRequest;
-use App\Http\Requests\Sales\SalesDownPayment\SalesDownPayment\UpdateSalesDownPaymentRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SalesDownPaymentController extends Controller
 {
@@ -24,39 +22,25 @@ class SalesDownPaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $downPayment = SalesDownPayment::eloquentFilter($request);
+        $downPayments = SalesDownPayment::from(SalesDownPayment::getTableName().' as '.SalesDownPayment::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
+        $downPayments = SalesDownPayment::joins($downPayments, $request->get('join'));
 
-            if (in_array('customer', $fields)) {
-                $downPayment->join(Customer::getTableName(), function ($q) {
-                    $q->on(Customer::getTableName('id'), '=', SalesDownPayment::getTableName('customer_id'));
-                });
-            }
+        $downPayments = pagination($downPayments, $request->get('limit'));
 
-            if (in_array('form', $fields)) {
-                $downPayment->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', SalesDownPayment::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), SalesDownPayment::$morphName);
-                });
-            }
-        }
-
-        $downPayment = pagination($downPayment, $request->get('limit'));
-
-        return new ApiCollection($downPayment);
+        return new ApiCollection($downPayments);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param StoreSalesDownPaymentRequest $request
      * @return \Illuminate\Http\Response
+     * @throws \Throwable
      */
     public function store(StoreSalesDownPaymentRequest $request)
     {
-        $result = \DB::connection('tenant')->transaction(function () use ($request) {
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
             $downPayment = SalesDownPayment::create($request->all());
             $downPayment->load('form', 'customer');
 
@@ -85,35 +69,35 @@ class SalesDownPaymentController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param UpdateSalesDownPaymentRequest $request
+     * @param  int $id
+     * @return void
      */
     public function update(UpdateSalesDownPaymentRequest $request, $id)
     {
-        $salesDownPayment = SalesDownPayment::with('form')->findOrFail($id);
-        $salesDownPayment->isAllowedToUpdate();
+        $downPayment = SalesDownPayment::with('form')->findOrFail($id);
+        $downPayment->isAllowedToUpdate();
 
-        $hasPayment = $salesDownPayment->payments()->exists();
+        $hasPayment = $downPayment->payments()->exists();
         if ($hasPayment && ! $request->get('force')) {
             // Throw error referenced by payment, need parameter force (and maybe need extra permission role)
-            throw new IsReferencedException('Cannot delete because referenced by payment.', $salesDownPayment->payments->first());
+            throw new IsReferencedException('Cannot delete because referenced by payment.', $downPayment->payments->first());
 
             return;
         }
-        $result = DB::connection('tenant')->transaction(function () use ($request, $salesDownPayment) {
-            $payment = $salesDownPayment->payments->first();
+        $result = DB::connection('tenant')->transaction(function () use ($request, $downPayment) {
+            $payment = $downPayment->payments->first();
             $payment->isAllowedToUpdate();
             $payment->form->archive();
 
-            $salesDownPayment->form->archive();
-            $request['number'] = $salesDownPayment->form->edited_number;
-            $request['old_increment'] = $salesDownPayment->form->increment;
+            $downPayment->form->archive();
+            $request['number'] = $downPayment->form->edited_number;
+            $request['old_increment'] = $downPayment->form->increment;
 
-            $salesDownPayment = SalesDownPayment::create($request->all());
-            $salesDownPayment->load(['form', 'customer', 'downpaymentable']);
+            $downPayment = SalesDownPayment::create($request->all());
+            $downPayment->load(['form', 'customer', 'downpaymentable']);
 
-            return new ApiResource($salesDownPayment);
+            return new ApiResource($downPayment);
         });
 
         return $result;
@@ -128,23 +112,13 @@ class SalesDownPaymentController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $salesDownPayment = SalesDownPayment::findOrFail($id);
-        $salesDownPayment->isAllowedToDelete();
+        DB::connection('tenant')->beginTransaction();
 
-        $hasPayment = $salesDownPayment->payments()->exists();
+        $downPayment = SalesDownPayment::findOrFail($id);
+        $downPayment->isAllowedToDelete();
+        $downPayment->requestCancel($request);
 
-        if ($hasPayment && ! $request->get('force')) {
-            // Throw error referenced by payment, need parameter force (and maybe need extra permission role)
-            throw new IsReferencedException('Cannot delete because referenced by payment.', $salesDownPayment->payments->first());
-
-            return;
-        }
-
-        $payment = $salesDownPayment->payments->first();
-        $payment->isAllowedToDelete();
-        $payment->requestCancel($request);
-
-        $salesDownPayment->requestCancel($request);
+        DB::connection('tenant')->commit();
 
         return response()->json([], 204);
     }

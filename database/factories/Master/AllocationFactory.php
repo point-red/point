@@ -1,9 +1,12 @@
 <?php
 
+use App\Model\Master\Allocation;
 use Faker\Generator as Faker;
 
-$factory->define(Model::class, function (Faker $faker) {
+/* @var Illuminate\Database\Eloquent\Factory $factory */
+
+$factory->define(Allocation::class, function (Faker $faker) {
     return [
-        //
+        'name' => $faker->name,
     ];
 });

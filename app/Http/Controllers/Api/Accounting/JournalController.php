@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Accounting;
 
-use Illuminate\Http\Request;
-use App\Model\Accounting\Journal;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Model\Accounting\Journal;
+use Illuminate\Http\Request;
 
 class JournalController extends Controller
 {
@@ -17,7 +17,9 @@ class JournalController extends Controller
      */
     public function index(Request $request)
     {
-        $journals = Journal::where('chart_of_account_id', $request->get('chart_of_account_id'));
+        $journals = Journal::from(Journal::getTableName().' as '.Journal::$alias)->eloquentFilter($request);
+
+        $journals = Journal::joins($journals, $request->get('join'));
 
         $journals = pagination($journals, $request->get('limit'));
 

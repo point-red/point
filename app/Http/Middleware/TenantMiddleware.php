@@ -2,9 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
+use Closure;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class TenantMiddleware
@@ -25,8 +26,8 @@ class TenantMiddleware
             }
 
             // Permission denied, the project is not owned by that user
-            if (auth()->user()) {
-                $authUser = auth()->user();
+            if (Auth::guard('api')->check()) {
+                $authUser = Auth::guard('api')->user();
                 $request->merge(compact('authUser'));
 
                 $project = Project::leftJoin('project_preferences', 'project_preferences.project_id', '=', 'projects.id')
@@ -71,7 +72,9 @@ class TenantMiddleware
                     }
                 }
 
-                $projectUser = ProjectUser::where('project_id', $project->id)->where('user_id', auth()->user()->id);
+                $request->project = $project;
+
+                $projectUser = ProjectUser::where('project_id', $project->id)->where('user_id', Auth::guard('api')->user()->id);
                 if (! $projectUser) {
                     return $next($request);
                 }

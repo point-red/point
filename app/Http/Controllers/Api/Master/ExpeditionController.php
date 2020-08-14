@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Master\Expedition\StoreExpeditionRequest;
+use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\Address;
 use App\Model\Master\Bank;
+use App\Model\Master\ContactPerson;
 use App\Model\Master\Email;
+use App\Model\Master\Expedition;
 use App\Model\Master\Phone;
 use Illuminate\Http\Request;
-use App\Model\Master\Address;
-use App\Model\Master\Expedition;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\ContactPerson;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiCollection;
-use App\Http\Requests\Master\Expedition\StoreExpeditionRequest;
 
 class ExpeditionController extends Controller
 {
@@ -23,7 +23,10 @@ class ExpeditionController extends Controller
      */
     public function index(Request $request)
     {
-        $expeditions = Expedition::eloquentFilter($request);
+        $expeditions = Expedition::from(Expedition::getTableName().' as '.Expedition::$alias)->eloquentFilter($request);
+
+        $expeditions = Expedition::joins($expeditions, $request->get('join'));
+
         $expeditions = pagination($expeditions, $request->get('limit'));
 
         return new ApiCollection($expeditions);
@@ -63,7 +66,11 @@ class ExpeditionController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $expedition = Expedition::eloquentFilter($request)->findOrFail($id);
+        $expedition = Expedition::from(Expedition::getTableName().' as '.Expedition::$alias)->eloquentFilter($request);
+
+        $expedition = Expedition::joins($expedition, $request->get('join'));
+
+        $expedition = $expedition->where(Expedition::$alias.'.id', $id)->first();
 
         return new ApiResource($expedition);
     }

@@ -2,14 +2,17 @@
 
 namespace App\Model\Purchase\PurchaseInvoice;
 
-use App\Model\Master\Item;
-use App\Model\TransactionModel;
 use App\Model\Master\Allocation;
+use App\Model\Master\Item;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceiveItem;
+use App\Model\TransactionModel;
 
 class PurchaseInvoiceItem extends TransactionModel
 {
     protected $connection = 'tenant';
+
+    public static $alias = 'purchase_invoice_item';
 
     public $timestamps = false;
 
@@ -50,5 +53,10 @@ class PurchaseInvoiceItem extends TransactionModel
     public function purchaseReceive()
     {
         return $this->belongsTo(PurchaseReceive::class);
+    }
+
+    public function purchaseReceiveItem()
+    {
+        return $this->belongsTo(PurchaseReceiveItem::class);
     }
 }

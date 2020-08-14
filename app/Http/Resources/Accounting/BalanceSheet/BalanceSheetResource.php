@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\Accounting\BalanceSheet;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Accounting\ChartOfAccount\ChartOfAccountGroupResource;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class BalanceSheetResource extends JsonResource
 {
@@ -20,6 +20,8 @@ class BalanceSheetResource extends JsonResource
         if ($request->get('date')) {
             $date = date('Y-m-d 23:59:59', strtotime($request->get('date')));
         }
+
+        $date = convert_to_server_timezone($date);
 
         return [
             'id' => $this->id,

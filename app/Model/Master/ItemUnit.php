@@ -3,9 +3,13 @@
 namespace App\Model\Master;
 
 use App\Model\MasterModel;
+use App\Traits\Model\Master\ItemUnitJoin;
+use App\Traits\Model\Master\ItemUnitRelation;
 
 class ItemUnit extends MasterModel
 {
+    use ItemUnitRelation, ItemUnitJoin;
+
     protected $connection = 'tenant';
 
     protected $fillable = [
@@ -19,21 +23,5 @@ class ItemUnit extends MasterModel
         'converter' => 'double',
     ];
 
-    /**
-     * Get the item for this unit.
-     */
-    public function item()
-    {
-        return $this->belongsTo(Item::class);
-    }
-
-    /**
-     * Get the price for this unit.
-     */
-    public function prices()
-    {
-        return $this
-            ->belongsToMany(PricingGroup::class, PriceListItem::getTableName(), 'item_unit_id', 'pricing_group_id')
-            ->withPivot(['price', 'discount_value', 'discount_percent', 'date']);
-    }
+    public static $alias = 'item_unit';
 }

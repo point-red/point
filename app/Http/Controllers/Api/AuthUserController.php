@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use App\Model\Project\Project;
+use Illuminate\Http\Request;
 
 class AuthUserController extends ApiController
 {
@@ -25,10 +25,22 @@ class AuthUserController extends ApiController
                 'name' => $user->name,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
+                'full_name' => $user->first_name . ' ' . $user->last_name,
                 'address' => $user->address,
                 'phone' => $user->phone,
             ],
         ];
+
+        if ($request->has('plugin_id')) {
+            $userData['data'] = array_add($userData['data'], 'projects', Project::from('projects as project')
+                ->join('project_user as project_user', 'project.id', '=', 'project_user.project_id')
+                ->join('plugin_project as plugin_project', 'project.id', '=', 'plugin_project.project_id')
+                ->where('project_user.user_id', $user->id)
+                ->where('plugin_project.plugin_id', $request->get('plugin_id'))
+                ->select('project.*')
+                ->get()
+                ->toArray());
+        }
 
         if ($request->get('tenant_code')) {
             $project = Project::where('code', $request->get('tenant_code'))->first();

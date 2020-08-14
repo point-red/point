@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use Illuminate\Http\Request;
-use App\Model\Master\PricingGroup;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Master\PricingGroup\StorePricingGroupRequest;
+use App\Http\Requests\Master\PricingGroup\UpdatePricingGroupRequest;
 use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
+use App\Model\Master\PricingGroup;
+use Illuminate\Http\Request;
 
 class PricingGroupController extends Controller
 {
@@ -19,7 +20,9 @@ class PricingGroupController extends Controller
      */
     public function index(Request $request)
     {
-        $pricingGroup = PricingGroup::eloquentFilter($request);
+        $pricingGroup = PricingGroup::from(PricingGroup::getTableName().' as '.PricingGroup::$alias)->eloquentFilter($request);
+
+        $pricingGroup = PricingGroup::joins($pricingGroup, $request->get('join'));
 
         $pricingGroup = pagination($pricingGroup, $request->get('limit'));
 
@@ -32,7 +35,7 @@ class PricingGroupController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @return ApiResource
      */
-    public function store(Request $request)
+    public function store(StorePricingGroupRequest $request)
     {
         $pricingGroup = new PricingGroup;
         $pricingGroup->fill($request->all());
@@ -50,7 +53,11 @@ class PricingGroupController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $pricingGroup = PricingGroup::eloquentFilter($request)->findOrFail($id);
+        $pricingGroup = PricingGroup::from(PricingGroup::getTableName().' as '.PricingGroup::$alias)->eloquentFilter($request);
+
+        $pricingGroup = PricingGroup::joins($pricingGroup, $request->get('join'));
+
+        $pricingGroup = $pricingGroup->where(PricingGroup::$alias.'.id', $id)->first();
 
         return new ApiResource($pricingGroup);
     }
@@ -63,14 +70,11 @@ class PricingGroupController extends Controller
      * @return ApiResource
      * @throws \Throwable
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePricingGroupRequest $request, $id)
     {
         $pricingGroup = PricingGroup::findOrFail($id);
         $pricingGroup->fill($request->all());
-
-        DB::connection('tenant')->transaction(function () use ($pricingGroup) {
-            $pricingGroup->save();
-        });
+        $pricingGroup->save();
 
         return new ApiResource($pricingGroup);
     }

@@ -2,14 +2,14 @@
 
 namespace App\Console\Commands;
 
-use Carbon\Carbon;
 use App\Model\CloudStorage;
-use Illuminate\Support\Str;
 use App\Model\Project\Project;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class BackupDatabase extends Command
 {
@@ -102,7 +102,7 @@ class BackupDatabase extends Command
 
         $mySqlDump = 'mysqldump -u '.env('DB_USERNAME').' -p'.env('DB_PASSWORD');
 
-        $process = new Process($mySqlDump.' '.$dbName.' --quick | gzip > "'.$path.'/'.$file.'"');
+        $process = Process::fromShellCommandline($mySqlDump.' '.$dbName.' --quick | gzip > "'.$path.'/'.$file.'"');
 
         $process->setPTY(true);
         $process->run();

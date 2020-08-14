@@ -2,20 +2,20 @@
 
 namespace App\Model\Sales\SalesInvoice;
 
-use Carbon\Carbon;
-use App\Model\Form;
-use App\Model\Master\Item;
-use App\Model\Master\Customer;
-use App\Model\AllocationReport;
-use App\Model\TransactionModel;
-use App\Model\Master\Allocation;
-use App\Model\Accounting\Journal;
-use App\Model\Inventory\Inventory;
-use App\Model\Finance\Payment\Payment;
 use App\Exceptions\IsReferencedException;
-use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\Accounting\Journal;
+use App\Model\AllocationReport;
+use App\Model\Finance\Payment\Payment;
+use App\Model\Form;
+use App\Model\Inventory\Inventory;
+use App\Model\Master\Allocation;
+use App\Model\Master\Customer;
+use App\Model\Master\Item;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
+use App\Model\Sales\SalesOrder\SalesOrder;
+use App\Model\TransactionModel;
+use Carbon\Carbon;
 
 class SalesInvoice extends TransactionModel
 {
@@ -23,11 +23,15 @@ class SalesInvoice extends TransactionModel
 
     protected $connection = 'tenant';
 
+    public static $alias = 'sales_invoice';
+
     public $timestamps = false;
 
     protected $fillable = [
         'customer_id',
         'customer_name',
+        'customer_address',
+        'customer_phone',
         'due_date',
         'delivery_fee',
         'discount_percent',
@@ -102,7 +106,7 @@ class SalesInvoice extends TransactionModel
             ->update(['done' => false]);
     }
 
-    public function updateIfDone()
+    public function updateStatus()
     {
         $done = $this->remaining <= 0;
         $this->form()->update(['done' => $done]);
@@ -149,7 +153,7 @@ class SalesInvoice extends TransactionModel
         $form->saveData($data, $salesInvoice);
 
         // updated to done if the amount is 0 because of down payment
-        $salesInvoice->updateIfDone();
+        $salesInvoice->updateStatus();
 
         self::setDeliveryNotesDone($salesInvoice);
         self::setSalesOrdersDone($salesInvoice);
@@ -195,8 +199,8 @@ class SalesInvoice extends TransactionModel
 
             if (isset($item['allocation_name'])) {
                 $salesInvoiceItem['allocation_id'] = Allocation::firstOrCreate([
-                   'code' => $item['allocation_code'],
-                   'name' => $item['allocation_name'],
+                    'code' => $item['allocation_code'],
+                    'name' => $item['allocation_name'],
                 ])->id;
             }
 
@@ -273,7 +277,7 @@ class SalesInvoice extends TransactionModel
     {
         foreach ($downPayments as $downPayment) {
             $salesDownPayment = SalesDownPayment::findOrFail($downPayment['id']);
-            $salesDownPayment->updateIfDone();
+            $salesDownPayment->updateStatus();
         }
     }
 

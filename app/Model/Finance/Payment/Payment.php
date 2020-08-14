@@ -2,16 +2,25 @@
 
 namespace App\Model\Finance\Payment;
 
-use App\Model\Form;
-use App\Model\TransactionModel;
+use App\Exceptions\BranchNullException;
+use App\Exceptions\PointException;
 use App\Model\Accounting\Journal;
-use App\Model\Accounting\ChartOfAccount;
+use App\Model\Finance\PaymentOrder\PaymentOrder;
+use App\Model\Form;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
+use App\Model\TransactionModel;
+use App\Traits\Model\Finance\PaymentJoin;
+use App\Traits\Model\Finance\PaymentRelation;
 
 class Payment extends TransactionModel
 {
+    use PaymentJoin, PaymentRelation;
+
     public static $morphName = 'Payment';
 
     protected $connection = 'tenant';
+
+    public static $alias = 'payment';
 
     public $timestamps = false;
 
@@ -26,29 +35,6 @@ class Payment extends TransactionModel
     protected $casts = [
         'amount' => 'double',
     ];
-
-    public function paymentAccount()
-    {
-        return $this->belongsTo(ChartOfAccount::class, 'payment_account_id');
-    }
-
-    public function details()
-    {
-        return $this->hasMany(PaymentDetail::class, 'payment_id');
-    }
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    /**
-     * Get all of the owning paymentable models.
-     */
-    public function paymentable()
-    {
-        return $this->morphTo();
-    }
 
     public function isAllowedToUpdate()
     {
@@ -67,17 +53,55 @@ class Payment extends TransactionModel
         $payment->payment_type = strtoupper($payment->paymentAccount->type->name);
         $payment->paymentable_name = $data['paymentable_name'] ?? $payment->paymentable->name;
 
-        $paymentDetails = self::mapPaymentDetails($data['details']);
-
+        $paymentDetails = self::mapPaymentDetails($data);
         $payment->amount = self::calculateAmount($paymentDetails);
         $payment->save();
+
+        
+        // Reference Payment Order
+        if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'PaymentOrder') {
+            $paymentOrder = PaymentOrder::find($data['referenceable_id']);
+            if ($paymentOrder->payment_id != null) {
+                throw new PointException();
+            }
+            $paymentOrder->payment_id = $payment->id;
+            $paymentOrder->form->done = 1;
+            $paymentOrder->form->save();
+            $paymentOrder->save();
+        }
+
+        // Reference Down Payment
+        if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'PurchaseDownPayment') {
+            $purchaseDownPayment = PurchaseDownPayment::find($data['referenceable_id']);
+            if ($purchaseDownPayment->paid_by != null) {
+                throw new PointException();
+            }
+            $purchaseDownPayment->remaining = $purchaseDownPayment->amount;
+            $purchaseDownPayment->paid_by = $payment->id;
+            $purchaseDownPayment->form->done = 1;
+            $purchaseDownPayment->form->save();
+            $purchaseDownPayment->save();
+        }
 
         $payment->details()->saveMany($paymentDetails);
 
         $form = new Form;
         $form->fill($data);
         $form->done = true;
-        $form->approved = true;
+        $form->approval_status = 1;
+
+        $branches = tenant(auth()->user()->id)->branches;
+        $form->branch_id = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $form->branch_id = $branch->id;
+                break;
+            }
+        }
+
+        if ($form->branch_id == null) {
+            throw new BranchNullException();
+        }
 
         $form->formable_id = $payment->id;
         $form->formable_type = self::$morphName;
@@ -95,14 +119,16 @@ class Payment extends TransactionModel
         return $payment;
     }
 
-    private static function mapPaymentDetails($details)
+    private static function mapPaymentDetails($data)
     {
-        return array_map(function ($detail) {
+        return array_map(function ($detail) use ($data) {
             $paymentDetail = new PaymentDetail;
             $paymentDetail->fill($detail);
+            $paymentDetail->referenceable_type = $data['referenceable_type'] ?? null;
+            $paymentDetail->referenceable_id = $data['referenceable_id'] ?? null;
 
             return $paymentDetail;
-        }, $details);
+        }, $data['details']);
     }
 
     private static function calculateAmount($paymentDetails)
@@ -114,7 +140,7 @@ class Payment extends TransactionModel
 
     private static function generateFormNumber($payment, $number, $increment)
     {
-        $defaultFormat = '{payment_type}-{disbursed}{y}{m}{increment=4}';
+        $defaultFormat = '{payment_type}/{disbursed}/{y}{m}{increment=4}';
         $formNumber = $number ?? $defaultFormat;
 
         preg_match_all('/{increment=(\d)}/', $formNumber, $regexResult);
@@ -140,19 +166,23 @@ class Payment extends TransactionModel
      * Different method to get increment
      * because payment number is
      * considering payment_type and disbursed.
+     *
+     * @param $payment
+     * @param $incrementGroup
+     * @return int
      */
     private static function getLastPaymentIncrement($payment, $incrementGroup)
     {
-        $lastPayment = self::whereHas('form', function ($query) use ($incrementGroup) {
-            $query->where('increment_group', $incrementGroup);
-        })
-        ->notArchived()
-        ->where('payment_type', $payment->payment_type)
-        ->where('disbursed', $payment->disbursed)
-        ->with('form')
-        ->get()
-        ->sortByDesc('form.increment')
-        ->first();
+        $lastPayment = self::from(self::getTableName().' as '.self::$alias)
+            ->joinForm()
+            ->where('form.increment_group', $incrementGroup)
+            ->whereNotNull('form.number')
+            ->where(self::$alias.'.payment_type', $payment->payment_type)
+            ->where(self::$alias.'.disbursed', $payment->disbursed)
+            ->with('form')
+            ->orderBy('form.increment', 'desc')
+            ->select(self::$alias.'.*')
+            ->first();
 
         $increment = 1;
         if (! empty($lastPayment)) {
@@ -165,11 +195,11 @@ class Payment extends TransactionModel
     private static function updateReferenceDone($paymentDetails)
     {
         foreach ($paymentDetails as $paymentDetail) {
-            if (! $paymentDetail->isDownPayment()) {
+            if ($paymentDetail->isDownPayment()) {
                 $reference = $paymentDetail->referenceable;
                 $reference->remaining -= $paymentDetail->amount;
                 $reference->save();
-                $reference->updateIfDone();
+                $reference->updateStatus();
             }
         }
     }
@@ -194,6 +224,7 @@ class Payment extends TransactionModel
             $journal->form_id_reference = optional(optional($paymentDetail->referenceable)->form)->id;
             $journal->journalable_type = $payment->paymentable_type;
             $journal->journalable_id = $payment->paymentable_id;
+            $journal->notes = $paymentDetail->notes;
             $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
             if (! $payment->disbursed) {
                 $journal->credit = $paymentDetail->amount;

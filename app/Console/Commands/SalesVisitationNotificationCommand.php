@@ -2,14 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\SalesVisitationNotificationMail;
 use App\Model\Master\User;
+use App\Model\Plugin\PinPoint\SalesVisitation;
+use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Project\Project;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\SalesVisitationNotificationMail;
-use App\Model\Plugin\PinPoint\SalesVisitation;
-use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 
 class SalesVisitationNotificationCommand extends Command
 {
@@ -126,7 +126,8 @@ class SalesVisitationNotificationCommand extends Command
                         $call,
                         $effective_call,
                         $items,
-                        $value));
+                        $value
+                    ));
                 }
             }
         }

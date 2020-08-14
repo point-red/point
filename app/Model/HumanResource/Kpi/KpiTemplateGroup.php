@@ -8,6 +8,8 @@ class KpiTemplateGroup extends MasterModel
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'kpi_template_group';
+
     protected $appends = ['target', 'weight'];
 
     public function getTargetAttribute()

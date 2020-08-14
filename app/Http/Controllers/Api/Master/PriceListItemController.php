@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Model\Master\Item;
-use Illuminate\Http\Request;
-use App\Model\Master\PricingGroup;
-use App\Http\Resources\ApiResource;
-use App\Model\Master\PriceListItem;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiResource;
 use App\Http\Resources\Master\PriceListCollection;
+use App\Model\Master\Item;
+use App\Model\Master\PriceListItem;
+use App\Model\Master\PricingGroup;
+use Illuminate\Http\Request;
 
 class PriceListItemController extends Controller
 {
@@ -27,8 +27,21 @@ class PriceListItemController extends Controller
         $items = Item::eloquentFilter($request)->with('units.prices');
         $items = pagination($items, $request->get('limit'));
 
-        $items->getCollection()->transform(function ($item) use ($date, $availablePricingGroups) {
-            $units = $item->units->map(function ($unit) use ($date, $availablePricingGroups) {
+        $pricingGroupId = null;
+
+        if ($request->get('pricing_group_id')) {
+            $pricingGroupId = $request->get('pricing_group_id');
+            if ($pricingGroupId == -1) {
+                if (count($availablePricingGroups) > 0) {
+                    $pricingGroupId = $availablePricingGroups[0]['id'];
+                } else {
+                    $pricingGroupId = null;
+                }
+            }
+        }
+
+        $items->getCollection()->transform(function ($item) use ($date, $availablePricingGroups, $pricingGroupId) {
+            $units = $item->units->map(function ($unit) use ($date, $availablePricingGroups, $pricingGroupId) {
                 $priceGroups = $unit->prices
                     ->filter(function ($priceGroup) use ($date) {
                         /* Filter out price with date greater than $date */
@@ -53,11 +66,23 @@ class PriceListItemController extends Controller
                     $price = 0;
                     $discount_value = 0;
                     $discount_percent = null;
+                    $pricing_group_id = null;
                     foreach ($priceGroups as $priceGroup) {
-                        if ($priceGroup['id'] == $availablePricingGroup['id']) {
+                        $shouldSetPrice = false;
+                        if (! $pricingGroupId) {
+                            if ($priceGroup['id'] == $availablePricingGroup['id']) {
+                                $shouldSetPrice = true;
+                            }
+                        } else {
+                            if ($priceGroup['id'] == $pricingGroupId && $availablePricingGroup['id'] == $pricingGroupId) {
+                                $shouldSetPrice = true;
+                            }
+                        }
+                        if ($shouldSetPrice) {
                             $price = floatval($priceGroup['pivot']['price']);
                             $discount_value = floatval($priceGroup['pivot']['discount_value']);
                             $discount_percent = $priceGroup['pivot']['discount_percent'];
+                            $pricing_group_id = $priceGroup['pivot']['pricing_group_id'];
                             if (! is_null($discount_percent)) {
                                 $discount_percent = floatval($discount_percent);
                             }
@@ -68,6 +93,7 @@ class PriceListItemController extends Controller
                         'price' => $price,
                         'discount_value' => $discount_value,
                         'discount_percent' => $discount_percent,
+                        'pricing_group_id' => $pricing_group_id,
                     ];
                 }
                 $unit = $unit->toArray();
@@ -102,12 +128,17 @@ class PriceListItemController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Request $request
+     * @param int $id
      * @return ApiResource
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $priceListItem = PriceListItem::findOrFail($id);
+        $priceListItem = PriceListItem::from(PriceListItem::getTableName().' as '.PriceListItem::$alias)->eloquentFilter($request);
+
+        $priceListItem = PriceListItem::joins($priceListItem, $request->get('join'));
+
+        $priceListItem = $priceListItem->where(PriceListItem::$alias.'.id', $id)->first();
 
         return new ApiResource($priceListItem);
     }

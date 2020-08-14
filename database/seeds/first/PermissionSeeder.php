@@ -1,7 +1,7 @@
 <?php
 
-use App\Model\Auth\Role;
 use App\Model\Auth\Permission;
+use App\Model\Auth\Role;
 use Illuminate\Database\Seeder;
 
 class PermissionSeeder extends Seeder
@@ -13,16 +13,22 @@ class PermissionSeeder extends Seeder
      */
     public function run()
     {
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
         $role = Role::createIfNotExists('super admin');
 
         $this->setMasterPermission();
         $this->setPurchasePermission();
         $this->setSalesPermission();
+        $this->setManufacturePermission();
+        $this->setPosPermission();
         $this->setInventoryPermission();
         $this->setAccountingPermission();
         $this->setFinancePermission();
         $this->setHumanResourcePermission();
         $this->setPluginPermission();
+
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
         $permissions = Permission::all();
         $role->syncPermissions($permissions);
@@ -36,7 +42,7 @@ class PermissionSeeder extends Seeder
             'user', 'role',
             'customer', 'supplier', 'expedition',
             'item', 'service',
-            'allocation', 'warehouse',
+            'allocation', 'warehouse', 'branch',
         ];
 
         foreach ($allPermission as $permission) {
@@ -66,6 +72,7 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('read '.$permission);
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
         }
     }
 
@@ -89,15 +96,52 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('read '.$permission);
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
+        }
+    }
+
+    private function setManufacturePermission()
+    {
+        Permission::createIfNotExists('menu manufacture');
+
+        $allPermission = [
+            'manufacture processing',
+            'manufacture machine',
+            'manufacture process',
+            'manufacture formula',
+        ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
+        }
+    }
+
+    private function setPosPermission()
+    {
+        Permission::createIfNotExists('menu pos');
+
+        $allPermission = [
+            'pos',
+        ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
         }
     }
 
     private function setInventoryPermission()
     {
         Permission::createIfNotExists('menu inventory');
+        Permission::createIfNotExists('read inventory report');
 
         $allPermission = [
-            'inventory report',
             'inventory audit',
             'stock correction',
             'transfer item',
@@ -109,6 +153,7 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('read '.$permission);
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
         }
     }
 
@@ -134,6 +179,7 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('read '.$permission);
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
         }
     }
 
@@ -156,6 +202,7 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('read '.$permission);
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
         }
     }
 
@@ -185,6 +232,7 @@ class PermissionSeeder extends Seeder
 
         $this->setScaleWeightPermission();
         $this->setPinPointPermission();
+        $this->setPlayBookPermission();
     }
 
     private function setScaleWeightPermission()
@@ -217,6 +265,26 @@ class PermissionSeeder extends Seeder
         Permission::createIfNotExists('read pin point attendance report');
         Permission::createIfNotExists('notification pin point sales');
         Permission::createIfNotExists('notification pin point supervisor');
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
+    private function setPlayBookPermission()
+    {
+        Permission::createIfNotExists('menu play book');
+        Permission::createIfNotExists('approve play book procedure');
+        Permission::createIfNotExists('approve play book instruction');
+
+        $allPermission = [
+            'play book glossary',
+            'play book procedure',
+            'play book instruction',
+        ];
 
         foreach ($allPermission as $permission) {
             Permission::createIfNotExists('create '.$permission);

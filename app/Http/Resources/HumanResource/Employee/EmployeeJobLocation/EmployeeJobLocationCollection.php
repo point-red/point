@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\HumanResource\Employee\EmployeeJobLocation;
 
-use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Model\HumanResource\Employee\EmployeeJobLocation;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class EmployeeJobLocationCollection extends ResourceCollection
 {

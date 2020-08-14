@@ -8,6 +8,8 @@ class EmployeeSalaryAssessmentTarget extends Model
 {
     protected $connection = 'tenant';
 
+    public static $alias = 'employee_assessment_target';
+
     /**
      * Get the salary assessment that owns the target.
      */

@@ -8,6 +8,9 @@ use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\CutOff;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
+use App\Model\HumanResource\Employee\Employee\EmployeeAddress;
+use App\Model\HumanResource\Employee\Employee\EmployeePhone;
+use App\Model\HumanResource\Employee\EmployeeEmail;
 use App\Model\Manufacture\ManufactureFormula\ManufactureFormula;
 use App\Model\Master\Address;
 use App\Model\Master\Branch;
@@ -71,11 +74,49 @@ class AlterData extends Command
             DB::connection('tenant')->reconnect();
             DB::connection('tenant')->beginTransaction();
 
-            $customers = Customer::whereNull('branch_id')->get();
+            $eAddressess = EmployeeAddress::all();
+            foreach ($eAddressess as $eAddress) {
+                $address = Address::where('addressable_type', 'Employeee')
+                ->where('addressable_id', $eAddress->employee_id)
+                ->first();
 
-            foreach ($customers as $customer) {
-                $customer->branch_id = 1;
-                $customer->save();
+                if (!$address) {
+                    $address = new Address;
+                    $address->address = $eAddress->address;
+                    $address->addressable_type = 'Employee';
+                    $address->addressable_id = $eAddress->employee_id;
+                    $address->save();
+                }
+            }
+
+            $ePhones = EmployeePhone::all();
+            foreach ($ePhones as $ePhone) {
+                $phone = Phone::where('phoneable_type', 'Employeee')
+                ->where('phoneable_id', $ePhone->employee_id)
+                ->first();
+                
+                if (!$phone) {
+                    $phone = new Phone;
+                    $phone->number = $ePhone->phone;
+                    $phone->phoneable_type = 'Employee';
+                    $phone->phoneable_id = $ePhone->employee_id;
+                    $phone->save();
+                }
+            }
+
+            $eEmails = EmployeeEmail::all();
+            foreach ($eEmails as $eEmail) {
+                $email = Email::where('emailable_type', 'Employeee')
+                ->where('emailable_id', $eEmail->employee_id)
+                ->first();
+                
+                if (!$email) {
+                    $email = new Email;
+                    $email->email = $eEmail->email;
+                    $email->emailable_type = 'Employee';
+                    $email->emailable_id = $eEmail->employee_id;
+                    $email->save();
+                }
             }
 
             // $addresses = Address::all();

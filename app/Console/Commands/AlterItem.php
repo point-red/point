@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
-class AlterData extends Command
+class AlterItem extends Command
 {
     /**
      * The name and signature of the console command.

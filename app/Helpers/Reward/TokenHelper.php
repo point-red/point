@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helper\Reward;
+namespace App\Helpers\Reward;
 
 use App\Model\Reward\Token;
 use App\Model\Reward\TokenGenerator;

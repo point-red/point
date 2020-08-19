@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\HumanResource\Kpi\KpiGroup;
 
-use App\Http\Resources\HumanResource\Kpi\Kpi\KpiIndicatorResource;
+use App\Http\Resources\HumanResource\Kpi\KpiIndicator\KpiIndicatorResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class KpiGroupResource extends JsonResource

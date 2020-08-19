@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\HumanResource\Kpi\KpiScore;
+namespace App\Http\Requests\HumanResource\Kpi\KpiTemplateScore;
 
 use Illuminate\Foundation\Http\FormRequest;
 

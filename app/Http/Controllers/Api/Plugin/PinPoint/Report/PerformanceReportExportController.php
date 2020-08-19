@@ -19,6 +19,8 @@ class PerformanceReportExportController extends Controller
         $dateFrom = $request->get('date_from');
         $dateTo = $request->get('date_to');
 
+        $branchId = $request->get('branch_id');
+
         $time = strtotime($dateTo);
         $last = date('M Y', strtotime($dateTo));
         $files = [];
@@ -31,7 +33,7 @@ class PerformanceReportExportController extends Controller
             $fileName = strtoupper($tenant).' - Performance Report - '.$month;
             $fileExt = 'xlsx';
             $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
-            $result = Excel::store(new PerformanceExport(date('Y-m-01', $time), date('Y-m-'.$days, $time)), $path, env('STORAGE_DISK'));
+            $result = Excel::store(new PerformanceExport(date('Y-m-01', $time), date('Y-m-'.$days, $time), $branchId), $path, env('STORAGE_DISK'));
 
             if (! $result) {
                 return response()->json([

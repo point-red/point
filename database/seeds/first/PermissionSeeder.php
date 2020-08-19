@@ -212,7 +212,7 @@ class PermissionSeeder extends Seeder
         Permission::createIfNotExists('manage employee contract');
 
         $allPermission = [
-            'employee', 'employee kpi', 'employee assessment', 'employee salary',
+            'employee', 'employee kpi', 'employee assessment', 'employee salary', 'employee salary additional component',
         ];
 
         foreach ($allPermission as $permission) {

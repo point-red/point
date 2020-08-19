@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Master;
+namespace Tests\Feature\Http\Master;
 
 use App\Model\Master\Allocation;
 use Tests\TestCase;

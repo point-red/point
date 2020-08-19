@@ -99,8 +99,7 @@
     @if(count($users))
     <tfoot>
         <tr>
-            <td></td> <!-- # -->
-            <td></td> <!-- NAME -->
+            <td colspan="2">Total</td>
             <td>{{ $targetCall }}</td>
             <td>{{ $targetEffectiveCall }}</td>
             <td>{{ $targetValue }}</td>

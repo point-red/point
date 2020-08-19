@@ -12,11 +12,13 @@ class PerformanceExport implements WithMultipleSheets
      *
      * @param string $dateFrom
      * @param string $dateTo
+     * @param string $branchId
      */
-    public function __construct(string $dateFrom, string $dateTo)
+    public function __construct(string $dateFrom, string $dateTo, string $branchId)
     {
         $this->dateFrom = date('Y-m-d H:i:s', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d H:i:s', strtotime($dateTo));
+        $this->branchId = $branchId;
     }
 
     /**
@@ -31,7 +33,7 @@ class PerformanceExport implements WithMultipleSheets
         for ($i = 1; $i <= $days; $i++) {
             $dateFrom = date('Y-m-'.$i.' 00:00:00', strtotime($this->dateFrom));
             $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
-            $sheets[] = new DailySheet($i, $dateFrom, $dateTo);
+            $sheets[] = new DailySheet($i, $dateFrom, $dateTo, $this->branchId);
         }
 
         $date = Carbon::parse(date('Y-m-01 00:00:00', strtotime($this->dateFrom)));
@@ -41,14 +43,14 @@ class PerformanceExport implements WithMultipleSheets
             if ($date->englishDayOfWeek == 'Sunday') {
                 $dateFrom = date('Y-m-'.$j.' 00:00:00', strtotime($this->dateFrom));
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
-                $sheets[] = new WeeklySheet($j.' - '.$i, $dateFrom, $dateTo, $i - $j);
+                $sheets[] = new WeeklySheet($j.' - '.$i, $dateFrom, $dateTo, $i - $j, $this->branchId);
                 $j = $i + 1;
             }
 
             if ($i == $months && $date->englishDayOfWeek != 'Sunday') {
                 $dateFrom = date('Y-m-'.$j.' 00:00:00', strtotime($this->dateFrom));
                 $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
-                $sheets[] = new WeeklySheet($j.' - '.$i, $dateFrom, $dateTo, $i - $j);
+                $sheets[] = new WeeklySheet($j.' - '.$i, $dateFrom, $dateTo, $i - $j, $this->branchId);
                 $j = $i + 1;
             }
 

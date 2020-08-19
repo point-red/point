@@ -57,11 +57,11 @@ class EmployeeJobLocationController extends Controller
      */
     public function show($id)
     {
-        $templates = EmployeeJobLocation::select('employee_job_locations.*')
+        $employeeJobLocation = EmployeeJobLocation::select('employee_job_locations.*')
             ->where('employee_job_locations.id', $id)
             ->first();
 
-        return new ApiResource($templates);
+        return new ApiResource($employeeJobLocation);
     }
 
     /**
@@ -96,6 +96,6 @@ class EmployeeJobLocationController extends Controller
 
         $employeeJobLocation->delete();
 
-        return new EmployeeJobLocationResource($employeeJobLocation);
+        return response(null, 204);
     }
 }

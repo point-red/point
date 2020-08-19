@@ -3,6 +3,7 @@
 namespace App\Model\Project;
 
 use App\Imports\Template\ChartOfAccountImport;
+use App\Model\Package;
 use App\Model\Plugin;
 use App\Model\ProjectPreference;
 use App\User;
@@ -83,5 +84,10 @@ class Project extends Model
     public function plugins()
     {
         return $this->belongsToMany(Plugin::class);
+    }
+
+    public function package()
+    {
+        return $this->belongsTo(Package::class);
     }
 }

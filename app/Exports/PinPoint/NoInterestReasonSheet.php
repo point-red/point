@@ -36,8 +36,7 @@ class NoInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wit
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNoInterestReason::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-            ->select(SalesVisitationNoInterestReason::getTableName().'.*')
-            ->addSelect(SalesVisitation::getTableName().'.name as customerName');
+            ->select(SalesVisitationNoInterestReason::getTableName().'.*');
     }
 
     /**
@@ -49,7 +48,8 @@ class NoInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wit
             'Date',
             'Time',
             'Sales',
-            'Customer',
+            'Customer Code',
+            'Customer Name',
             'No Interest Reason',
         ];
     }
@@ -64,7 +64,8 @@ class NoInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wit
             date('Y-m-d', strtotime($row->salesVisitation->form->date)),
             date('H:i', strtotime($row->salesVisitation->form->date)),
             $row->salesVisitation->form->createdBy->first_name.' '.$row->salesVisitation->form->createdBy->last_name,
-            $row->customerName,
+            $row->salesVisitation->customer->code,
+            $row->salesVisitation->customer->name,
             $row->name,
         ];
     }

@@ -36,8 +36,7 @@ class InterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithT
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationInterestReason::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-            ->select(SalesVisitationInterestReason::getTableName().'.*')
-            ->addSelect(SalesVisitation::getTableName().'.name as customerName');
+            ->select(SalesVisitationInterestReason::getTableName().'.*');
     }
 
     /**
@@ -49,7 +48,8 @@ class InterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithT
             'Date',
             'Time',
             'Sales',
-            'Customer',
+            'Customer Code',
+            'Customer Name',
             'Interest Reason',
         ];
     }
@@ -64,7 +64,8 @@ class InterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithT
             date('Y-m-d', strtotime($row->salesVisitation->form->date)),
             date('H:i', strtotime($row->salesVisitation->form->date)),
             $row->salesVisitation->form->createdBy->first_name.' '.$row->salesVisitation->form->createdBy->last_name,
-            $row->customerName,
+            $row->salesVisitation->customer->code,
+            $row->salesVisitation->customer->name,
             $row->name,
         ];
     }

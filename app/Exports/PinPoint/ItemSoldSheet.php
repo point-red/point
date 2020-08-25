@@ -37,7 +37,6 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
             ->select(SalesVisitationDetail::getTableName().'.*')
-            ->addSelect(SalesVisitation::getTableName().'.name as customerName')
             ->addSelect(SalesVisitation::getTableName().'.address as customerAddress')
             ->addSelect(SalesVisitation::getTableName().'.phone as customerPhone')
             ->addSelect(SalesVisitation::getTableName().'.payment_method as paymentMethod')
@@ -53,10 +52,12 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             'Date',
             'Time',
             'Sales',
-            'Customer',
+            'Customer Code',
+            'Customer Name',
             'Address',
             'Phone',
-            'Item',
+            'Item Code',
+            'Item Name',
             'Quantity',
             'Price',
             'Total',
@@ -76,9 +77,11 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             date('Y-m-d', strtotime($row->salesVisitation->form->date)),
             date('H:i', strtotime($row->salesVisitation->form->date)),
             $row->salesVisitation->form->createdBy->first_name.' '.$row->salesVisitation->form->createdBy->last_name,
-            $row->customerName,
+            $row->salesVisitation->customer->code,
+            $row->salesVisitation->customer->name,
             $row->customerAddress,
             $row->customerPhone,
+            $row->item->code,
             $row->item->name,
             $row->quantity,
             $row->price,

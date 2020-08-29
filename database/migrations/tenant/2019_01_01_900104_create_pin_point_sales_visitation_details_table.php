@@ -18,7 +18,11 @@ class CreatePinPointSalesVisitationDetailsTable extends Migration
             $table->unsignedInteger('sales_visitation_id')->index();
             $table->unsignedInteger('item_id')->index();
             $table->decimal('quantity', 65, 30);
+            $table->string('unit');
+            $table->decimal('converter', 65, 30);
             $table->unsignedDecimal('price', 65, 30);
+            $table->datetime('expiry_date')->nullable();
+            $table->string('production_number')->nullable();
             $table->foreign('sales_visitation_id')->references('id')->on('pin_point_sales_visitations')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');
         });

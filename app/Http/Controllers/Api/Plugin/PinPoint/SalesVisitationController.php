@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Plugin\PinPoint;
 
+use App\Helpers\Inventory\InventoryHelper;
 use App\Helpers\Reward\TokenHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Plugin\PinPoint\SalesVisitation\StoreSalesVisitationRequest;
@@ -127,10 +128,14 @@ class SalesVisitationController extends Controller
         $form = new Form;
         $form->date = date('Y-m-d H:i:s', strtotime($request->get('date')));
         $form->save();
+        $form->number = 'SV-' . $form->id;
+        $form->save();
 
         $salesVisitation = new SalesVisitation;
         $salesVisitation->form_id = $form->id;
         $salesVisitation->customer_id = $customer->id;
+        $salesVisitation->branch_id = $request->get('branch_id') ?? null;
+        $salesVisitation->warehouse_id = $request->get('warehouse_id') ?? null;
         $salesVisitation->name = $request->get('customer_name');
         $salesVisitation->phone = $request->get('phone');
         $salesVisitation->address = $request->get('address');
@@ -197,12 +202,65 @@ class SalesVisitationController extends Controller
         if ($items) {
             for ($i = 0; $i < count($items); $i++) {
                 if ($items[$i]['item_id'] && $items[$i]['quantity'] && $items[$i]['price']) {
-                    $detail = new SalesVisitationDetail;
-                    $detail->sales_visitation_id = $salesVisitation->id;
-                    $detail->item_id = $items[$i]['item_id'];
-                    $detail->price = $items[$i]['price'];
-                    $detail->quantity = $items[$i]['quantity'];
-                    $detail->save();
+                    if (get_if_set($items[$i]['dna']) && $items[$i]['dna']) {
+                        foreach ($items[$i]['dna'] as $dna) {
+                            if ($dna['quantity'] > 0) {
+
+                                $detail = new SalesVisitationDetail;
+                                $detail->sales_visitation_id = $salesVisitation->id;
+                                $detail->unit = $items[$i]['unit'];
+                                $detail->converter = $items[$i]['converter'];
+                                $detail->quantity = $dna['quantity'];
+                                $detail->production_number = $dna['production_number'];
+                                $detail->expiry_date = $dna['expiry_date'];
+                                $detail->item_id = $items[$i]['item_id'];
+                                $detail->price = $items[$i]['price'];
+                                $detail->save();
+
+                                $options = [];
+                                if ($detail->item->require_expiry_date) {
+                                    $options['expiry_date'] = $detail->expiry_date;
+                                }
+                                if ($detail->item->require_production_number) {
+                                    $options['production_number'] = $detail->production_number;
+                                }
+                
+                                $options['quantity_reference'] = $detail->quantity;
+                                $options['unit_reference'] = $detail->unit;
+                                $options['converter_reference'] = $detail->converter;
+                                if ($request->header('Tenant') === 'kopibara' || $request->header('Tenant') === 'dev') {
+                                    InventoryHelper::decrease($form, $detail->salesVisitation->warehouse, $detail->item, $detail->quantity, $detail->unit, $detail->converter, $options);
+                                }
+                            }
+                            
+                        }
+                    } else {
+                        if ($items[$i]['quantity']) {
+                            $detail = new SalesVisitationDetail;
+                            $detail->sales_visitation_id = $salesVisitation->id;
+                            $detail->unit = $items[$i]['unit'];
+                            $detail->converter = $items[$i]['converter'];
+                            $detail->quantity = $items[$i]['quantity'];
+                            $detail->item_id = $items[$i]['item_id'];
+                            $detail->price = $items[$i]['price'];
+                            $detail->save();
+                        
+                            $options = [];
+                            if ($detail->item->require_expiry_date) {
+                                $options['expiry_date'] = $detail->expiry_date;
+                            }
+                            if ($detail->item->require_production_number) {
+                                $options['production_number'] = $detail->production_number;
+                            }
+            
+                            $options['quantity_reference'] = $detail->quantity;
+                            $options['unit_reference'] = $detail->unit;
+                            $options['converter_reference'] = $detail->converter;
+                            if ($request->header('Tenant') === 'kopibara' || $request->header('Tenant') === 'dev') {
+                                InventoryHelper::decrease($form, $detail->salesVisitation->warehouse, $detail->item, $detail->quantity, $detail->unit, $detail->converter, $options);
+                            }
+                        }
+                    }
 
                     if ($i == 0 && $totalVisitation > 0) {
                         $salesVisitation->is_repeat_order = true;
@@ -211,6 +269,7 @@ class SalesVisitationController extends Controller
                 }
             }
         }
+ 
 
         if ($request->get('image')) {
             \App\Helpers\StorageHelper::uploadFromBase64($request->get('image'), 'sales visitation form', $salesVisitation->id);

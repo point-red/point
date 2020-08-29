@@ -17,6 +17,8 @@ class CreatePinPointSalesVisitationsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('form_id');
             $table->unsignedInteger('customer_id');
+            $table->unsignedInteger('branch_id')->nullable();
+            $table->unsignedInteger('warehouse_id')->nullable();
             $table->string('name');
             $table->string('group');
             $table->string('address');
@@ -34,6 +36,7 @@ class CreatePinPointSalesVisitationsTable extends Migration
 
             $table->foreign('form_id')->references('id')->on('forms')->onDelete('cascade');
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('restrict');
+            $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('restrict');
         });
     }
 

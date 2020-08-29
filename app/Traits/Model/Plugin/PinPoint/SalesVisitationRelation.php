@@ -4,6 +4,7 @@ namespace App\Traits\Model\Plugin\PinPoint;
 
 use App\Model\Form;
 use App\Model\Master\Customer;
+use App\Model\Master\Warehouse;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
 use App\Model\Plugin\PinPoint\SalesVisitationNoInterestReason;
@@ -39,5 +40,10 @@ trait SalesVisitationRelation
     public function details()
     {
         return $this->hasMany(SalesVisitationDetail::class);
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Model\Plugin\PinPoint;
 
+use App\Model\Master\Warehouse;
 use App\Model\PointModel;
 use App\Traits\Model\Plugin\PinPoint\SalesVisitationJoin;
 use App\Traits\Model\Plugin\PinPoint\SalesVisitationRelation;

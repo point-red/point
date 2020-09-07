@@ -47,7 +47,7 @@ class SalesVisitationController extends Controller
         } else {
             $salesVisitationForm = SalesVisitation::from(SalesVisitation::getTableName().' as '.SalesVisitation::$alias)
             ->join(Form::getTableName().' as '.Form::$alias, 'form.id', '=', 'sales_visitation.form_id')
-            ->where(Form::getTableName('created_by') == auth()->user()->id)
+            ->where('form.created_by', '=', auth()->user()->id)
             ->with('form.createdBy')
             ->with('interestReasons')
             ->with('noInterestReasons')

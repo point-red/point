@@ -31,11 +31,20 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
      */
     public function query()
     {
-        return SalesVisitation::query()
-            ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
-            ->with('form')
-            ->select(SalesVisitation::getTableName('*'))
-            ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo]);
+        if(tenant(auth()->user()->id)->roles[0]->name == 'super admin') {
+            return SalesVisitation::query()
+                ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
+                ->with('form')
+                ->select(SalesVisitation::getTableName('*'))
+                ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo]);
+        } else {
+            return SalesVisitation::query()
+                ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
+                ->where('forms.created_by', '=', auth()->user()->id)
+                ->with('form')
+                ->select(SalesVisitation::getTableName('*'))
+                ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo]);
+        }
     }
 
     /**

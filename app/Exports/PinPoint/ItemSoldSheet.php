@@ -32,7 +32,19 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
      */
     public function query()
     {
-        return SalesVisitationDetail::query()
+        if(tenant(auth()->user()->id)->roles[0]->name != 'super admin') {
+            return SalesVisitationDetail::query()
+            ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationDetail::getTableName().'.sales_visitation_id')
+            ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
+            ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
+            ->where('forms.created_by', '=', auth()->user()->id)
+            ->select(SalesVisitationDetail::getTableName().'.*')
+            ->addSelect(SalesVisitation::getTableName().'.address as customerAddress')
+            ->addSelect(SalesVisitation::getTableName().'.phone as customerPhone')
+            ->addSelect(SalesVisitation::getTableName().'.payment_method as paymentMethod')
+            ->addSelect(SalesVisitation::getTableName().'.due_date as dueDate');
+        } else {
+            return SalesVisitationDetail::query()
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationDetail::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
@@ -41,6 +53,8 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             ->addSelect(SalesVisitation::getTableName().'.phone as customerPhone')
             ->addSelect(SalesVisitation::getTableName().'.payment_method as paymentMethod')
             ->addSelect(SalesVisitation::getTableName().'.due_date as dueDate');
+        }
+        
     }
 
     /**

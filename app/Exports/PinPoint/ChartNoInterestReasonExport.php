@@ -143,8 +143,14 @@ class ChartNoInterestReasonExport implements FromView, WithCharts, WithTitle, Sh
     {
         $query = SalesVisitationNoInterestReason::query()
           ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNoInterestReason::getTableName().'.sales_visitation_id')
-          ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
-          ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
+          ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id');
+
+        if(tenant(auth()->user()->id)->roles[0]->name != 'super admin') {
+            $query = $query->where('forms.created_by', '=', auth()->user()->id);            
+        }
+
+
+        $query = $query->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
           ->where(SalesVisitationNoInterestReason::getTableName().'.name', '!=', '')
           ->selectRaw(SalesVisitationNoInterestReason::getTableName().'.name, count('.SalesVisitationNoInterestReason::getTableName().'.name) as total')
           ->groupBy(SalesVisitationNoInterestReason::getTableName().'.name');

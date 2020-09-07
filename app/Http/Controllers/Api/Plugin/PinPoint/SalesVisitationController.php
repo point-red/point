@@ -35,7 +35,8 @@ class SalesVisitationController extends Controller
      */
     public function index(Request $request)
     {
-        $salesVisitationForm = SalesVisitation::from(SalesVisitation::getTableName().' as '.SalesVisitation::$alias)
+        if(tenant(auth()->user()->id)->roles[0]->name == 'super admin') {
+            $salesVisitationForm = SalesVisitation::from(SalesVisitation::getTableName().' as '.SalesVisitation::$alias)
             ->join(Form::getTableName().' as '.Form::$alias, 'form.id', '=', 'sales_visitation.form_id')
             ->with('form.createdBy')
             ->with('interestReasons')
@@ -43,7 +44,18 @@ class SalesVisitationController extends Controller
             ->with('similarProducts')
             ->with('details.item')
             ->eloquentFilter($request);
-
+        } else {
+            $salesVisitationForm = SalesVisitation::from(SalesVisitation::getTableName().' as '.SalesVisitation::$alias)
+            ->join(Form::getTableName().' as '.Form::$alias, 'form.id', '=', 'sales_visitation.form_id')
+            ->where(Form::getTableName('created_by') == auth()->user()->id)
+            ->with('form.createdBy')
+            ->with('interestReasons')
+            ->with('noInterestReasons')
+            ->with('similarProducts')
+            ->with('details.item')
+            ->eloquentFilter($request);
+        }
+        
         $salesVisitationForm = SalesVisitation::joins($salesVisitationForm, $request->get('join'));
 
         if ($request->get('customer_id')) {

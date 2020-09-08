@@ -143,8 +143,13 @@ class ChartInterestReasonExport implements FromView, WithCharts, WithTitle, Shou
         $query = SalesVisitationInterestReason::query()
               ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationInterestReason::getTableName().'.sales_visitation_id')
               ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
-              ->whereBetween('forms.date', [$dateFrom, $dateTo])
-              ->selectRaw(SalesVisitationInterestReason::getTableName().'.name, count('.SalesVisitationInterestReason::getTableName().'.name) as total')
+              ->whereBetween('forms.date', [$dateFrom, $dateTo]);
+
+        if(tenant(auth()->user()->id)->roles[0]->name != 'super admin') {
+            $query = $query->where('forms.created_by', '=', auth()->user()->id);            
+        }
+
+        $query = $query->selectRaw(SalesVisitationInterestReason::getTableName().'.name, count('.SalesVisitationInterestReason::getTableName().'.name) as total')
               ->groupBy(SalesVisitationInterestReason::getTableName().'.name');
 
         return $this->interestReasons()->leftJoinSub($query, 'query', function ($join) {

@@ -32,12 +32,23 @@ class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithT
      */
     public function query()
     {
-        return SalesVisitationSimilarProduct::query()
+        if(tenant(auth()->user()->id)->roles[0]->name != 'super admin') {
+            return SalesVisitationSimilarProduct::query()
+            ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationSimilarProduct::getTableName().'.sales_visitation_id')
+            ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
+            ->where('forms.created_by', '=', auth()->user()->id)
+            ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
+            ->select(SalesVisitationSimilarProduct::getTableName().'.*')
+            ->addSelect(SalesVisitation::getTableName().'.name as customerName');
+        } else {
+            return SalesVisitationSimilarProduct::query()
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationSimilarProduct::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
             ->select(SalesVisitationSimilarProduct::getTableName().'.*')
             ->addSelect(SalesVisitation::getTableName().'.name as customerName');
+        }
+        
     }
 
     /**

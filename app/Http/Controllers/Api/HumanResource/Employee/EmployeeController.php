@@ -10,6 +10,7 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\CloudStorage;
 use App\Model\HumanResource\Employee\Employee;
+use App\Model\HumanResource\Employee\EmployeeCompanyEmail;
 use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeGroup;
 use App\Model\HumanResource\Employee\EmployeeSalaryHistory;
@@ -240,10 +241,10 @@ class EmployeeController extends Controller
 
         for ($i = 0; $i < count($request->get('company_emails') ?? []); $i++) {
             if ($request->get('company_emails')[$i]['email']) {
-                $employeeEmails = Employee\EmployeeCompanyEmail::first();
+                $employeeEmails = EmployeeCompanyEmail::first();
                 if (! $employeeEmails) {
                     info('here');
-                    $employeeEmails = new Employee\EmployeeCompanyEmail;
+                    $employeeEmails = new EmployeeCompanyEmail;
                 }
                 $employeeEmails->employee_id = $employee->id;
                 $employeeEmails->email = $request->get('company_emails')[$i]['email'];

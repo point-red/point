@@ -110,7 +110,7 @@ class EmployeeController extends Controller
 
         for ($i = 0; $i < count($request->get('company_emails') ?? []); $i++) {
             if ($request->get('company_emails')[$i]['email']) {
-                $employeeEmails = new Employee\EmployeeCompanyEmail;
+                $employeeEmails = new EmployeeCompanyEmail();
                 $employeeEmails->employee_id = $employee->id;
                 $employeeEmails->email = $request->get('company_emails')[$i]['email'];
                 $employeeEmails->save();
@@ -225,6 +225,7 @@ class EmployeeController extends Controller
         $employee->employee_marital_status_id = $request->get('employee_marital_status_id');
         $employee->married_with = $request->get('married_with');
         $employee->employee_religion_id = $request->get('employee_religion_id');
+        $employee->employee_group_id = $request->get('employee_group_id');
         $employee->join_date = $request->get('join_date') ? date('Y-m-d', strtotime($request->get('join_date'))) : null;
         $employee->job_title = $request->get('job_title');
         $employee->employee_status_id = $request->get('employee_status_id');

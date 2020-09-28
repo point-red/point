@@ -14,6 +14,6 @@ class Group extends Model
 
     public function factors()
     {
-        return $this->hasMany(GroupFactor::class, 'groupId');
+        return $this->hasMany(GroupFactor::class, 'group_id');
     }
 }

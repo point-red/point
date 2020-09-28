@@ -2,8 +2,8 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\Plugin\SalaryNonSales\FactorCriteria;
-use App\Models\Plugin\SalaryNonSales\GroupFactor;
+use App\Model\Plugin\SalaryNonSales\FactorCriteria;
+use App\Model\Plugin\SalaryNonSales\GroupFactor;
 use Faker\Generator as Faker;
 
 $factory->define(Model::class, function (Faker $faker) {

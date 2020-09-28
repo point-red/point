@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Plugin\SalaryNonSales;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Plugin\SalaryNonSales\JobValueGroupRequest;
-use App\Models\Plugin\SalaryNonSales\Group;
+use App\Model\Plugin\SalaryNonSales\Group;
 use Illuminate\Http\Request;
 use App\Http\Resources\ApiCollection;
 

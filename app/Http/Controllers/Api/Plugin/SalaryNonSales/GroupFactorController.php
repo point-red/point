@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Plugin\SalaryNonSales;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Plugin\SalaryNonSales\JobValueGroupFactorRequest;
-use App\Models\Plugin\SalaryNonSales\GroupFactor;
+use App\Model\Plugin\SalaryNonSales\GroupFactor;
 use App\Http\Resources\ApiCollection;
 
 class GroupFactorController extends Controller

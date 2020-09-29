@@ -15,13 +15,13 @@ class CreateSettingJournalsTable extends Migration
     {
         Schema::create('setting_journals', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('feature');
-            $table->string('name');
+            $table->string('feature')->unique();
+            $table->string('name')->unique();
             $table->text('description');
             $table->unsignedInteger('chart_of_account_id')->nullable();
             $table->timestamps();
 
-            $table->unique(['feature', 'name']);
+            // $table->unique(['feature', 'name']);
             $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('set null');
         });
     }

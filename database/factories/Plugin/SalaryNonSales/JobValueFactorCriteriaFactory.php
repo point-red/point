@@ -6,11 +6,11 @@ use App\Model\Plugin\SalaryNonSales\FactorCriteria;
 use App\Model\Plugin\SalaryNonSales\GroupFactor;
 use Faker\Generator as Faker;
 
-$factory->define(Model::class, function (Faker $faker) {
+$factory->define(FactorCriteria::class, function (Faker $faker) {
     return [
         'level' => $faker->name,
         'description' => $faker->word,
         'score' => $faker->numberBetween(10, 99),
-        'factorId' => GroupFactor::inRandomOrder()->first()->id,
+        'factor_id' => GroupFactor::inRandomOrder()->first()->id,
     ];
 });

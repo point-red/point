@@ -13,7 +13,7 @@ class JobValueFactorCriteriaRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -27,7 +27,7 @@ class JobValueFactorCriteriaRequest extends FormRequest
             'level' => 'required',
             'description' => 'required',
             'score' => 'required',
-            'factor_id' => 'required|exists:tenant.group_factors,id'
+            'factor_id' => 'required|exists:tenant.jobvalue_group_factors,id'
         ];
     }
 }

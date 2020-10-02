@@ -7,5 +7,6 @@ Route::prefix('plugin')->namespace('Plugin')->group(function () {
         Route::apiResource('groups', 'GroupController');
         Route::apiResource('group-factors', 'GroupFactorController');
         Route::apiResource('factor-criterias', 'FactorCriteriaController');
+        Route::patch('job-locations/{id}', 'JobLocationController@update');
     });
 });

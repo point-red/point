@@ -17,6 +17,6 @@ class GroupFactor extends Model
 
     public function criterias()
     {
-        return $this->hasMany(FactorCriteria::class, 'factor_id');
+        return $this->hasMany(FactorCriteria::class, 'factor_id')->orderBy('level');
     }
 }

@@ -17,7 +17,7 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $groups =  Group::with('factors.criterias')->get();
+        $groups =  Group::with('factors.criterias')->orderBy('id')->get();
 
         return new ApiCollection($groups);
     }

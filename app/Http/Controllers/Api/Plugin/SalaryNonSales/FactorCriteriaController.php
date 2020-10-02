@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Model\Plugin\SalaryNonSales\FactorCriteria;
 use App\Http\Requests\Plugin\SalaryNonSales\JobValueFactorCriteriaRequest;
 
+
 class FactorCriteriaController extends Controller
 {
     /**

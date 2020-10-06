@@ -8,5 +8,8 @@ Route::prefix('plugin')->namespace('Plugin')->group(function () {
         Route::apiResource('group-factors', 'GroupFactorController');
         Route::apiResource('factor-criterias', 'FactorCriteriaController');
         Route::patch('job-locations/{id}', 'JobLocationController@update');
+
+        Route::post('employee-fee', 'EmployeeFeeController@save');
+        Route::get('employee-fee', 'EmployeeFeeController@index');
     });
 });

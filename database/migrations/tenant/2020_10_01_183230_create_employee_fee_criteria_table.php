@@ -15,7 +15,9 @@ class CreateEmployeeFeeCriteriaTable extends Migration
     {
         Schema::create('employee_fee_criteria', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('employee_fee_id');
             $table->unsignedInteger('criteria_id');
+            $table->unsignedInteger('factor_id');
             $table->unsignedDecimal('score', 65, 30);
             $table->timestamps();
         });

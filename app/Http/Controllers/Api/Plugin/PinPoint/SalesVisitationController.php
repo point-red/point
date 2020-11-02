@@ -268,8 +268,10 @@ class SalesVisitationController extends Controller
                             $options['quantity_reference'] = $detail->quantity;
                             $options['unit_reference'] = $detail->unit;
                             $options['converter_reference'] = $detail->converter;
-                            if ($request->header('Tenant') === 'kopibara' || $request->header('Tenant') === 'dev') {
-                                InventoryHelper::decrease($form, $detail->salesVisitation->warehouse, $detail->item, $detail->quantity, $detail->unit, $detail->converter, $options);
+                            if ($request->header('Tenant') === 'kopibara' || $request->header('Tenant') === 'dev' || $request->header('Tenant') === 'demo1234') {
+                                if ($salesVisitation->payment_method == 'cash' || $salesVisitation->payment_method == 'credit') {
+                                    InventoryHelper::decrease($form, $detail->salesVisitation->warehouse, $detail->item, $detail->quantity, $detail->unit, $detail->converter, $options);
+                                }
                             }
                         }
                     }

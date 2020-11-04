@@ -582,7 +582,8 @@ class EmployeeSalaryController extends Controller
         foreach ($kpis as $key => $kpi) {
             foreach ($kpi->groups as $key => $group) {
                 foreach ($group->indicators as $key => $indicator) {
-                    if (! array_key_exists($indicator->name, $employee_assessment['indicators'])) {
+                    $indicatorName = strtolower($indicator->name);
+                    if (! array_key_exists($indicatorName, $employee_assessment['indicators'])) {
                         $indicator_data = [];
                         $indicator_data['id'] = ++$indicatorIndex;
                         $indicator_data['name'] = $indicator->name;
@@ -594,19 +595,19 @@ class EmployeeSalaryController extends Controller
                             $indicator_data['automated_code'] = $indicator->automated_code;
                         }
 
-                        $employee_assessment['indicators'][$indicator->name] = $indicator_data;
+                        $employee_assessment['indicators'][$indicatorName] = $indicator_data;
                     }
 
-                    if (array_key_exists($kpi->week_of_month, $employee_assessment['indicators'][$indicator->name]['target'])) {
-                        $employee_assessment['indicators'][$indicator->name]['target'][$kpi->week_of_month] += $indicator->target;
+                    if (array_key_exists($kpi->week_of_month, $employee_assessment['indicators'][$indicatorName]['target'])) {
+                        $employee_assessment['indicators'][$indicatorName]['target'][$kpi->week_of_month] += $indicator->target;
                     } else {
-                        $employee_assessment['indicators'][$indicator->name]['target'][$kpi->week_of_month] = $indicator->target;
+                        $employee_assessment['indicators'][$indicatorName]['target'][$kpi->week_of_month] = $indicator->target;
                     }
 
-                    if (array_key_exists($kpi->week_of_month, $employee_assessment['indicators'][$indicator->name]['score'])) {
-                        $employee_assessment['indicators'][$indicator->name]['score'][$kpi->week_of_month] += $indicator->score;
+                    if (array_key_exists($kpi->week_of_month, $employee_assessment['indicators'][$indicatorName]['score'])) {
+                        $employee_assessment['indicators'][$indicatorName]['score'][$kpi->week_of_month] += $indicator->score;
                     } else {
-                        $employee_assessment['indicators'][$indicator->name]['score'][$kpi->week_of_month] = $indicator->score;
+                        $employee_assessment['indicators'][$indicatorName]['score'][$kpi->week_of_month] = $indicator->score;
                     }
                 }
             }
@@ -619,7 +620,7 @@ class EmployeeSalaryController extends Controller
 
                 $score_percentage = $target > 0 ? $score / $target * 100 : 0;
 
-                if ($score_percentage > 100 && stripos($key, 'value') === false) {
+                if ($score_percentage > 100 && stripos($key, 'pelunasan piutang') === false) {
                     $score_percentage = 100;
                 }
 
@@ -645,22 +646,61 @@ class EmployeeSalaryController extends Controller
      */
     public function achievement(Request $request, $employeeId)
     {
+        $dateFrom = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('startDate'))));
+        $dateTo = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('endDate'))));
+
+        $kpis = Kpi::addSelect(DB::raw('CONCAT("week", (FLOOR((DAYOFMONTH(kpis.date) - 1) / 7) + 1)) AS week_of_month')) 
+                    ->whereBetween('kpis.date', [$dateFrom, $dateTo])
+                    ->where('employee_id', $employeeId)->orderBy('kpis.date', 'asc')->get();
+
+        $weeks = [];
+        foreach ($kpis as $kpi) {
+            array_push($weeks, $kpi->week_of_month);
+        }
+        $weeks = array_unique($weeks);
+        $weeks = array_filter($weeks);
+
         $currentEmployee = Employee::findOrFail($employeeId);
+        $currentEmployeeUser = $currentEmployee->user;
+        $currentEmployeeUserBranches = null;
+
+        if ($currentEmployeeUser) {
+            $currentEmployeeUserBranches = $currentEmployeeUser->branches;
+        }
 
         $employeeIdArea = [];
         $employeeIdNational = [];
 
-        $employees = Employee::all();
+        if ($currentEmployeeUserBranches && count($currentEmployeeUserBranches) > 0) {
+            $listBranches = [];
 
-        foreach ($employees as $emp) {
-            $branch = $emp->branch;
+            foreach ($currentEmployeeUserBranches as $branch) {
+                array_push($listBranches, $branch->id);
+            }
 
-            if ($branch) {
-                if ($branch->id === $currentEmployee->branch->id) {
-                    array_push($employeeIdArea, $emp->id);
-                    array_push($employeeIdNational, $emp->id);
-                } else {
-                    array_push($employeeIdNational, $emp->id);
+            $employees = Employee::all();
+
+            foreach ($employees as $emp) {
+                $empUser = $emp->user;
+
+                if ($empUser) {
+                    $empUserBranches = $empUser->branches;
+
+                    if ($empUserBranches && count($empUserBranches) > 0) {
+                        $listEmpBranches = [];
+
+                        foreach ($empUserBranches as $empBranch) {
+                            array_push($listEmpBranches, $empBranch->id);
+                        }
+
+                        if (array_intersect($listEmpBranches, $listBranches)) {
+                            array_push($employeeIdArea, $emp->id);
+                            array_push($employeeIdNational, $emp->id);
+                        }
+                        else {
+                            array_push($employeeIdNational, $emp->id);
+                        }
+                    }
                 }
             }
         }
@@ -692,11 +732,35 @@ class EmployeeSalaryController extends Controller
 
         foreach ($employee_achievements['automated'] as $key => &$achievement) {
             if ($key === 'balance') {
-                $achievement['week1'] = 100;
-                $achievement['week2'] = 100;
-                $achievement['week3'] = 100;
-                $achievement['week4'] = 100;
-                $achievement['week5'] = 100;
+                if (in_array('week1', $weeks)) {
+                    $achievement['week1'] = 100;
+                } else {
+                    $achievement['week1'] = 0;
+                }
+
+                if (in_array('week2', $weeks)) {
+                    $achievement['week2'] = 100;
+                } else {
+                    $achievement['week2'] = 0;
+                }
+
+                if (in_array('week3', $weeks)) {
+                    $achievement['week3'] = 100;
+                } else {
+                    $achievement['week3'] = 0;
+                }
+
+                if (in_array('week4', $weeks)) {
+                    $achievement['week4'] = 100;
+                } else {
+                    $achievement['week4'] = 0;
+                }
+
+                if (in_array('week5', $weeks)) {
+                    $achievement['week5'] = 100;
+                } else {
+                    $achievement['week5'] = 0;
+                }                
             } else {
                 $data = [
                     'score' => 0,
@@ -774,9 +838,7 @@ class EmployeeSalaryController extends Controller
                                 }
                             }
                         }
-                    }
-                } else {
-                    if (strtolower($assessment['name']) === strtolower('Persentase Value')) { // NOTE: Hard-Coded
+                    } elseif ($assessment['automated_code'] === 'V') {
                         if (in_array($employee->id, $employeeIdArea)) {
                             if (array_key_exists('achievement_area_value', $employee_achievements['automated'])) {
                                 foreach ($employee_achievements['automated']['achievement_area_value'] as $week => &$data) {
@@ -815,7 +877,7 @@ class EmployeeSalaryController extends Controller
                     if ($week !== 'weight' && $week !== 'name' && $week !== 'id') {
                         $achievement[$week] = $achievement[$week]['target'] ? $achievement[$week]['score'] / $achievement[$week]['target'] * 100 : 0;
 
-                        if ($achievement[$week] > 100 && stripos($key, 'value') === false) {
+                        if ($achievement[$week] > 100 && stripos($key, 'pelunasan piutang') === false) {
                             $achievement[$week] = 100;
                         }
                     }

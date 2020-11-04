@@ -98,7 +98,7 @@ class EmployeeSalary extends TransactionModel
                     if ($week_of_month === $score['week_of_month']) {
                         $score_percentages_assessments[$index][$week_of_month] = $target['target'] > 0 ? $score['score'] / $target['target'] * 100 : 0;
 
-                        if ($score_percentages_assessments[$index][$week_of_month] > 100 && stripos($indicator->name, 'value') === false) {
+                        if ($score_percentages_assessments[$index][$week_of_month] > 100 && stripos($indicator->name, 'pelunasan piutang') === false) {
                             $score_percentages_assessments[$index][$week_of_month] = 100;
                         }
 
@@ -158,7 +158,7 @@ class EmployeeSalary extends TransactionModel
                     if ($week_of_month === $score['week_of_month']) {
                         $score_percentages_assessments[$index][$week_of_month] = $target['target'] > 0 ? $score['score'] / $target['target'] * 100 : 0;
 
-                        if ($score_percentages_assessments[$index][$week_of_month] > 100 && stripos($indicator['name'], 'value') === false) {
+                        if ($score_percentages_assessments[$index][$week_of_month] > 100 && stripos($indicator['name'], 'pelunasan piutang') === false) {
                             $score_percentages_assessments[$index][$week_of_month] = 100;
                         }
 
@@ -191,6 +191,18 @@ class EmployeeSalary extends TransactionModel
      */
     public function getCalculationSalaryData($additionalSalaryData)
     {
+        $communication_allowance_week_1 = $this->communication_allowance;
+        $communication_allowance_week_2 = 0;
+        $communication_allowance_week_3 = 0;
+        $communication_allowance_week_4 = 0;
+        $communication_allowance_week_5 = 0;
+
+        $functional_allowance_week_1 = $this->functional_allowance;
+        $functional_allowance_week_2 = 0;
+        $functional_allowance_week_3 = 0;
+        $functional_allowance_week_4 = 0;
+        $functional_allowance_week_5 = 0;
+
         $salary_final_score_week_1 = ((float) $additionalSalaryData['total_assessments']['week1'] + (float) $additionalSalaryData['total_achievements']['week1']) / 2;
         $salary_final_score_week_2 = ((float) $additionalSalaryData['total_assessments']['week2'] + (float) $additionalSalaryData['total_achievements']['week2']) / 2;
         $salary_final_score_week_3 = ((float) $additionalSalaryData['total_assessments']['week3'] + (float) $additionalSalaryData['total_achievements']['week3']) / 2;
@@ -270,11 +282,7 @@ class EmployeeSalary extends TransactionModel
         $total_amount_received_week_4 = $total_amount_week_4;
         $total_amount_received_week_5 = $total_amount_week_5;
 
-        if (self::getWeekOfMonth($this->start_date) === 1) {
-            $total_amount_received_week_1 = $total_amount_received_week_1 + $this->communication_allowance + $this->functional_allowance;
-        }
-
-        $total_amount_received = $total_amount_received_week_1 + $total_amount_received_week_2 + $total_amount_received_week_3 + $total_amount_received_week_4 + $total_amount_received_week_5;
+        $total_amount_received = $total_amount_received_week_1 + $total_amount_received_week_2 + $total_amount_received_week_3 + $total_amount_received_week_4 + $total_amount_received_week_5 + $communication_allowance_week_1 + $communication_allowance_week_2 + $communication_allowance_week_3 + $communication_allowance_week_4 + $communication_allowance_week_5 + $functional_allowance_week_1 + $functional_allowance_week_2 + $functional_allowance_week_3 + $functional_allowance_week_4 + $functional_allowance_week_5;
 
         $receivable_week_1 = $this->payment_from_marketing_week1 + $this->payment_from_sales_week1 + $this->payment_from_spg_week1 + $this->cash_payment_week1;
         $receivable_week_2 = $this->payment_from_marketing_week2 + $this->payment_from_sales_week2 + $this->payment_from_spg_week2 + $this->cash_payment_week2;
@@ -288,17 +296,17 @@ class EmployeeSalary extends TransactionModel
         $company_profit_week_4 = 0.05 * $receivable_week_4;
         $company_profit_week_5 = 0.05 * $receivable_week_5;
 
-        $settlement_difference_minus_amount_week_1 = $receivable_week_1 - $total_amount_received_week_1;
-        $settlement_difference_minus_amount_week_2 = $receivable_week_2 - $total_amount_received_week_2;
-        $settlement_difference_minus_amount_week_3 = $receivable_week_3 - $total_amount_received_week_3;
-        $settlement_difference_minus_amount_week_4 = $receivable_week_4 - $total_amount_received_week_4;
-        $settlement_difference_minus_amount_week_5 = $receivable_week_5 - $total_amount_received_week_5;
+        $settlement_difference_minus_amount_week_1 = $receivable_week_1 - $total_amount_received_week_1 - $communication_allowance_week_1 - $functional_allowance_week_1;
+        $settlement_difference_minus_amount_week_2 = $receivable_week_2 - $total_amount_received_week_2 - $communication_allowance_week_2 - $functional_allowance_week_2;
+        $settlement_difference_minus_amount_week_3 = $receivable_week_3 - $total_amount_received_week_3 - $communication_allowance_week_3 - $functional_allowance_week_3;
+        $settlement_difference_minus_amount_week_4 = $receivable_week_4 - $total_amount_received_week_4 - $communication_allowance_week_4 - $functional_allowance_week_4;
+        $settlement_difference_minus_amount_week_5 = $receivable_week_5 - $total_amount_received_week_5 - $communication_allowance_week_5 - $functional_allowance_week_5;
 
-        $company_profit_difference_minus_amount_week_1 = $company_profit_week_1 - $total_amount_received_week_1;
-        $company_profit_difference_minus_amount_week_2 = $company_profit_week_2 - $total_amount_received_week_2;
-        $company_profit_difference_minus_amount_week_3 = $company_profit_week_3 - $total_amount_received_week_3;
-        $company_profit_difference_minus_amount_week_4 = $company_profit_week_4 - $total_amount_received_week_4;
-        $company_profit_difference_minus_amount_week_5 = $company_profit_week_5 - $total_amount_received_week_5;
+        $company_profit_difference_minus_amount_week_1 = $company_profit_week_1 - $total_amount_received_week_1 - $communication_allowance_week_1 - $functional_allowance_week_1;
+        $company_profit_difference_minus_amount_week_2 = $company_profit_week_2 - $total_amount_received_week_2 - $communication_allowance_week_2 - $functional_allowance_week_2;
+        $company_profit_difference_minus_amount_week_3 = $company_profit_week_3 - $total_amount_received_week_3 - $communication_allowance_week_3 - $functional_allowance_week_3;
+        $company_profit_difference_minus_amount_week_4 = $company_profit_week_4 - $total_amount_received_week_4 - $communication_allowance_week_4 - $functional_allowance_week_4;
+        $company_profit_difference_minus_amount_week_5 = $company_profit_week_5 - $total_amount_received_week_5 - $communication_allowance_week_5 - $functional_allowance_week_5;
 
         $day_average_divisor = 0;
         $total_minimum_component_score = 0;

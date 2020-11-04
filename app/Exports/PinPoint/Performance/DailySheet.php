@@ -2,6 +2,7 @@
 
 namespace App\Exports\PinPoint\Performance;
 
+use App\Model\HumanResource\Kpi\Automated;
 use App\Model\Master\Branch;
 use App\Model\Master\Item;
 use App\Model\Master\User;
@@ -26,13 +27,15 @@ class DailySheet implements FromView, WithTitle, ShouldAutoSize, WithEvents, Wit
      * @param string $date
      * @param string $dateFrom
      * @param string $dateTo
+     * @param int $totalDay
      * @param string $branchId
      */
-    public function __construct(string $date, string $dateFrom, string $dateTo, string $branchId)
+    public function __construct(string $date, string $dateFrom, string $dateTo, int $totalDay, string $branchId = null)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
         $this->date = $date;
+        $this->totalDay = Automated::getDays($this->dateFrom, $this->dateTo);        
         $this->branchId = $branchId;
     }
 
@@ -170,6 +173,14 @@ class DailySheet implements FromView, WithTitle, ShouldAutoSize, WithEvents, Wit
             }
 
             $user->items = $values;
+        }
+
+        foreach ($users as &$user) {
+            if ($this->totalDay == 0) {
+                $user->target_call = 0;
+                $user->target_effective_call = 0;
+                $user->target_value = 0;
+            }
         }
 
         return view('exports.plugin.pin-point.performance.daily', [

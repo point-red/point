@@ -106,28 +106,31 @@ class Automated extends TransactionModel
 
     public static function getDays($dateFrom, $dateTo)
     {
-        $dateTimeFrom = new DateTime($dateFrom);
-        $dateTimeFrom->modify('+1 day');
+        $dateFrom = convert_to_local_timezone(date('Y-m-d H:i:s', strtotime($dateFrom)));
+        $dateTo = convert_to_local_timezone(date('Y-m-d H:i:s', strtotime($dateTo)));
 
-        $dateTimeTo = new DateTime($dateTo);
-        $dateTimeTo->modify('+2 day');
+        $dateFrom = new DateTime($dateFrom);
+        $dateTo = new DateTime($dateTo);
 
-        $difference = $dateTimeFrom->diff($dateTimeTo);
-        $numberOfDays = $difference->days;
+        $interval = $dateTo->diff($dateFrom);
 
-        $period = new DatePeriod($dateTimeFrom, new DateInterval('P1D'), $dateTimeTo);
+        $numberOfDays = $interval->days;
+
+        $period = new DatePeriod($dateFrom, new DateInterval('P1D'), $dateTo);
 
         $holidays = [];
 
-        foreach ($period as $dt) {
-            $currentDay = $dt->format('D');
+        foreach($period as $dt) {
+            $curr = $dt->format('D');
 
-            if ($currentDay == 'Sun') {
+            if ($curr == 'Sun') {
                 $numberOfDays--;
             } elseif (in_array($dt->format('Y-m-d'), $holidays)) {
                 $numberOfDays--;
             }
         }
+
+        $numberOfDays = $numberOfDays + 1;
 
         return $numberOfDays;
     }

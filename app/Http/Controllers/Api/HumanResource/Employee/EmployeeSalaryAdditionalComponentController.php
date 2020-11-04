@@ -41,14 +41,6 @@ class EmployeeSalaryAdditionalComponentController extends Controller
     {
         $weight = $request->input('weight');
 
-        if (EmployeeSalaryAdditionalComponent::isAboveMaximumWeight($weight)) {
-            return response()->json([
-                'code' => 422,
-                'message' => 'Total Weight Cannot be Above 100%',
-                'errors' => [],
-            ], 422);
-        }
-
         $additionalComponent = new EmployeeSalaryAdditionalComponent();
         $additionalComponent->name = $request->input('name');
         $additionalComponent->weight = $weight;
@@ -88,14 +80,6 @@ class EmployeeSalaryAdditionalComponentController extends Controller
         $additionalComponent = EmployeeSalaryAdditionalComponent::findOrFail($id);
 
         $weight = $request->input('weight');
-
-        if (EmployeeSalaryAdditionalComponent::isAboveMaximumWeight($weight, $additionalComponent->id)) {
-            return response()->json([
-                'code' => 422,
-                'message' => 'Total Weight Cannot be Above 100%',
-                'errors' => [],
-            ], 422);
-        }
 
         $additionalComponent->name = $request->input('name');
         $additionalComponent->weight = $weight;

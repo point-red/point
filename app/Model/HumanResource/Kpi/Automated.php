@@ -120,7 +120,7 @@ class Automated extends TransactionModel
 
         $holidays = [];
 
-        foreach($period as $dt) {
+        foreach ($period as $dt) {
             $curr = $dt->format('D');
 
             if ($curr == 'Sun') {

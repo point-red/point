@@ -649,7 +649,7 @@ class EmployeeSalaryController extends Controller
         $dateFrom = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('startDate'))));
         $dateTo = convert_to_server_timezone(date('Y-m-d H:i:s', strtotime($request->get('endDate'))));
 
-        $kpis = Kpi::addSelect(DB::raw('CONCAT("week", (FLOOR((DAYOFMONTH(kpis.date) - 1) / 7) + 1)) AS week_of_month')) 
+        $kpis = Kpi::addSelect(DB::raw('CONCAT("week", (FLOOR((DAYOFMONTH(kpis.date) - 1) / 7) + 1)) AS week_of_month'))
                     ->whereBetween('kpis.date', [$dateFrom, $dateTo])
                     ->where('employee_id', $employeeId)->orderBy('kpis.date', 'asc')->get();
 
@@ -696,8 +696,7 @@ class EmployeeSalaryController extends Controller
                         if (array_intersect($listEmpBranches, $listBranches)) {
                             array_push($employeeIdArea, $emp->id);
                             array_push($employeeIdNational, $emp->id);
-                        }
-                        else {
+                        } else {
                             array_push($employeeIdNational, $emp->id);
                         }
                     }
@@ -760,7 +759,7 @@ class EmployeeSalaryController extends Controller
                     $achievement['week5'] = 100;
                 } else {
                     $achievement['week5'] = 0;
-                }                
+                }
             } else {
                 $data = [
                     'score' => 0,

@@ -39,6 +39,8 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
             ->where('forms.created_by', '=', auth()->user()->id)
             ->select(SalesVisitationDetail::getTableName().'.*')
+            ->addSelect(SalesVisitationDetail::getTableName().'.production_number as productionNumber')
+            ->addSelect(SalesVisitationDetail::getTableName().'.expiry_date as expiryDate')
             ->addSelect(SalesVisitation::getTableName().'.address as customerAddress')
             ->addSelect(SalesVisitation::getTableName().'.phone as customerPhone')
             ->addSelect(SalesVisitation::getTableName().'.payment_method as paymentMethod')
@@ -49,6 +51,8 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
             ->select(SalesVisitationDetail::getTableName().'.*')
+            ->addSelect(SalesVisitationDetail::getTableName().'.production_number as productionNumber')
+            ->addSelect(SalesVisitationDetail::getTableName().'.expiry_date as expiryDate')
             ->addSelect(SalesVisitation::getTableName().'.address as customerAddress')
             ->addSelect(SalesVisitation::getTableName().'.phone as customerPhone')
             ->addSelect(SalesVisitation::getTableName().'.payment_method as paymentMethod')
@@ -72,6 +76,8 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             'Phone',
             'Item Code',
             'Item Name',
+            'Production Number',
+            'Expiry Date',
             'Quantity',
             'Price',
             'Total',
@@ -97,6 +103,8 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             $row->customerPhone,
             $row->item->code,
             $row->item->name,
+            $row->productionNumber,
+            $row->expiryDate,
             $row->quantity,
             $row->price,
             $row->quantity * $row->price,

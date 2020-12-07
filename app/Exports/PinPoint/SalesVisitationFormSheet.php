@@ -20,10 +20,11 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
      * @param string $dateFrom
      * @param string $dateTo
      */
-    public function __construct(string $dateFrom, string $dateTo)
+    public function __construct(string $dateFrom, string $dateTo, $branchId)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
+        $this->branchId = $branchId;
     }
 
     /**
@@ -31,6 +32,14 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
      */
     public function query()
     {
+        if ($this->branchId) {
+            return SalesVisitation::query()
+                ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
+                ->where(SalesVisitation::getTableName('branch_id'), '=', $this->branchId)
+                ->with('form')
+                ->select(SalesVisitation::getTableName('*'))
+                ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo]);
+        }
         if(tenant(auth()->user()->id)->roles[0]->name == 'super admin') {
             return SalesVisitation::query()
                 ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')

@@ -8,6 +8,7 @@ use App\Exports\PinPoint\ChartSimilarProductExport;
 use App\Exports\PinPoint\SalesVisitationFormExport;
 use App\Http\Controllers\Controller;
 use App\Model\CloudStorage;
+use App\Model\Master\Branch;
 use App\Model\Project\Project;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -16,11 +17,12 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class SalesVisitationExportController extends Controller
 {
-    protected function exportFile($file, $dateFrom, $dateTo)
+    protected function exportFile($file, $dateFrom, $dateTo, $branchId)
     {
+        info($branchId.'$ss');
         switch ($file) {
             case 'SalesVisitationReport':
-                $export = new SalesVisitationFormExport($dateFrom, $dateTo);
+                $export = new SalesVisitationFormExport($dateFrom, $dateTo, $branchId);
                 break;
             case 'ChartInterestReason':
                 $export = new ChartInterestReasonExport($dateFrom, $dateTo);
@@ -32,7 +34,7 @@ class SalesVisitationExportController extends Controller
                 $export = new ChartSimilarProductExport($dateFrom, $dateTo);
                 break;
             default:
-                $export = new SalesVisitationFormExport($dateFrom, $dateTo);
+                $export = new SalesVisitationFormExport($dateFrom, $dateTo, $branchId);
                 break;
         }
 
@@ -53,7 +55,13 @@ class SalesVisitationExportController extends Controller
         $fileExt = 'xlsx';
         $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
 
-        $result = Excel::store($this->exportFile($fileExport, convert_to_server_timezone($request->get('date_from')), convert_to_server_timezone($request->get('date_to'))), $path, env('STORAGE_DISK'));
+        $branchId = $request->get('branch_id') ?? null;
+        $result = Excel::store($this->exportFile(
+            $fileExport,
+            convert_to_server_timezone($request->get('date_from')), 
+            convert_to_server_timezone($request->get('date_to')),
+            $branchId), 
+            $path, env('STORAGE_DISK'));
 
         if (! $result) {
             return response()->json([

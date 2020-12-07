@@ -21,10 +21,11 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
      * @param string $dateFrom
      * @param string $dateTo
      */
-    public function __construct(string $dateFrom, string $dateTo)
+    public function __construct(string $dateFrom, string $dateTo, $branchId)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
+        $this->branchId = $branchId;
     }
 
     /**
@@ -32,12 +33,25 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
      */
     public function query()
     {
+        if($this->branchId) {
+            return SalesVisitationDetail::query()
+            ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationDetail::getTableName().'.sales_visitation_id')
+            ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
+            ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
+            ->where(SalesVisitation::getTableName('branch_id'), '=', $this->branchId)
+            ->select(SalesVisitationDetail::getTableName().'.*')
+            ->addSelect(SalesVisitationDetail::getTableName().'.production_number as productionNumber')
+            ->addSelect(SalesVisitationDetail::getTableName().'.expiry_date as expiryDate')
+            ->addSelect(SalesVisitation::getTableName().'.address as customerAddress')
+            ->addSelect(SalesVisitation::getTableName().'.phone as customerPhone')
+            ->addSelect(SalesVisitation::getTableName().'.payment_method as paymentMethod')
+            ->addSelect(SalesVisitation::getTableName().'.due_date as dueDate');
+        }   
         if(tenant(auth()->user()->id)->roles[0]->name != 'super admin') {
             return SalesVisitationDetail::query()
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationDetail::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-            ->where('forms.created_by', '=', auth()->user()->id)
             ->select(SalesVisitationDetail::getTableName().'.*')
             ->addSelect(SalesVisitationDetail::getTableName().'.production_number as productionNumber')
             ->addSelect(SalesVisitationDetail::getTableName().'.expiry_date as expiryDate')
@@ -50,6 +64,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationDetail::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
+            ->where('forms.created_by', '=', auth()->user()->id)
             ->select(SalesVisitationDetail::getTableName().'.*')
             ->addSelect(SalesVisitationDetail::getTableName().'.production_number as productionNumber')
             ->addSelect(SalesVisitationDetail::getTableName().'.expiry_date as expiryDate')

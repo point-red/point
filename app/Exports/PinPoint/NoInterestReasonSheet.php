@@ -21,10 +21,11 @@ class NoInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wit
      * @param string $dateFrom
      * @param string $dateTo
      */
-    public function __construct(string $dateFrom, string $dateTo)
+    public function __construct(string $dateFrom, string $dateTo, $branchId)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
+        $this->branchId = $branchId;
     }
 
     /**
@@ -32,6 +33,16 @@ class NoInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wit
      */
     public function query()
     {
+        if ($this->branchId) {
+            return SalesVisitationNoInterestReason::query()
+            ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNoInterestReason::getTableName().'.sales_visitation_id')
+            ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
+            ->where(SalesVisitation::getTableName('branch_id'), '=', $this->branchId)
+            ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
+            ->select(SalesVisitationNoInterestReason::getTableName().'.*')
+            ->addSelect(SalesVisitation::getTableName().'.name as customerName');
+        }
+
         return SalesVisitationNoInterestReason::query()
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNoInterestReason::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')

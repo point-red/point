@@ -102,6 +102,9 @@ class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnForm
             ->groupBy('forms.created_by')
             ->selectRaw('sum(quantity * price) as value')
             ->whereBetween('forms.date', [$dateFrom, $dateTo])
+            ->where(function ($q) {
+                $q->where(SalesVisitation::getTableName('payment_method'), '=', 'cash')->orWhere(SalesVisitation::getTableName('payment_method'), '=', 'credit');
+            })
             ->addSelect('forms.created_by');
     }
 

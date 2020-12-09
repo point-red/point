@@ -165,6 +165,9 @@ class PerformanceReportController extends Controller
             ->join(SalesVisitationDetail::getTableName(), SalesVisitationDetail::getTableName().'.sales_visitation_id', '=', SalesVisitation::getTableName().'.id')
             ->groupBy('forms.created_by')
             ->selectRaw('sum(quantity * price) as value')
+            ->where(function ($q) {
+                $q->where(SalesVisitation::getTableName('payment_method'), '=', 'cash')->orWhere(SalesVisitation::getTableName('payment_method'), '=', 'credit');
+            })
             ->whereBetween('forms.date', [$dateFrom, $dateTo])
             ->addSelect('forms.created_by');
     }

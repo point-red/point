@@ -316,19 +316,19 @@
 	    <tr>
 	        <td colspan="2">Communication Allowance</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->communication_allowance, 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($employeeSalary->communication_allowance, 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($employeeSalary->communication_allowance, 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($employeeSalary->communication_allowance, 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($employeeSalary->communication_allowance, 2) }}</td>
+	        <td style="text-align:center;"></td>
+	        <td style="text-align:center;"></td>
+	        <td style="text-align:center;"></td>
+	        <td style="text-align:center;"></td>
 	        <td>&nbsp;</td>
 	    </tr>
 	    <tr>
 	        <td colspan="2">Functional Allowance</td>
 	        <td style="text-align:center;">{{ number_format($employeeSalary->functional_allowance, 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($employeeSalary->functional_allowance, 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($employeeSalary->functional_allowance, 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($employeeSalary->functional_allowance, 2) }}</td>
-	        <td style="text-align:center;">{{ number_format($employeeSalary->functional_allowance, 2) }}</td>
+	        <td style="text-align:center;"></td>
+	        <td style="text-align:center;"></td>
+	        <td style="text-align:center;"></td>
+	        <td style="text-align:center;"></td>
 	        <td>&nbsp;</td>
 	    </tr>
 	    <tr>

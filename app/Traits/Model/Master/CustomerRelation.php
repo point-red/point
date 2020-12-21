@@ -6,6 +6,7 @@ use App\Model\Accounting\Journal;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Master\Address;
 use App\Model\Master\Bank;
+use App\Model\Master\Branch;
 use App\Model\Master\ContactPerson;
 use App\Model\Master\CustomerGroup;
 use App\Model\Master\Email;
@@ -76,6 +77,14 @@ trait CustomerRelation
     public function pricingGroup()
     {
         return $this->belongsTo(PricingGroup::class);
+    }
+
+    /**
+     * Get the customer's branch.
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     /**

@@ -45,6 +45,13 @@ class KpiTemplateController extends Controller
             });
         }
 
+        //Search
+        if ($request->search) {
+            $search = $request->search;
+            $templates = $templates->where('name','like',"%".$search."%");
+        }
+        //End Search
+
         $templates = pagination($templates, $request->get('limit'));
 
         return new ApiCollection($templates);
@@ -219,7 +226,7 @@ class KpiTemplateController extends Controller
 
         return new ApiResource($template);
     }
-    
+
     /**
      * Archive the specified resource from storage.
      *
@@ -247,7 +254,7 @@ class KpiTemplateController extends Controller
             $template = KpiTemplate::findOrFail($template['id']);
             $template->archive();
         }
-        
+
         return response()->json([], 200);
     }
 
@@ -280,5 +287,4 @@ class KpiTemplateController extends Controller
 
         return response()->json([], 200);
     }
-
 }

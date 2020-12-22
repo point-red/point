@@ -4,11 +4,14 @@ namespace App\Model\Inventory\InventoryAudit;
 
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Form;
-use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
+use App\Traits\Model\Inventory\InventoryAuditJoin;
+use App\Traits\Model\Inventory\InventoryAuditRelation;
 
 class InventoryAudit extends TransactionModel
 {
+    use InventoryAuditJoin, InventoryAuditRelation;
+
     public static $morphName = 'InventoryAudit';
 
     protected $connection = 'tenant';
@@ -18,21 +21,6 @@ class InventoryAudit extends TransactionModel
     public $timestamps = false;
 
     public $defaultNumberPrefix = 'IA';
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function warehouse()
-    {
-        return $this->belongsTo(Warehouse::class);
-    }
-
-    public function items()
-    {
-        return $this->hasMany(InventoryAuditItem::class);
-    }
 
     public static function create($data)
     {
@@ -44,17 +32,63 @@ class InventoryAudit extends TransactionModel
         $form->saveData($data, $inventoryAudit);
 
         $items = $data['items'];
-        $inventoryAuditItems = [];
-        foreach ($items as $key => $item) {
-            $inventoryAuditItem = new InventoryAuditItem;
-            $inventoryAuditItem->fill($item);
+        if ($items) {
+            for ($i = 0; $i < count($items); $i++) {
+                if ($items[$i]['item_id'] && $items[$i]['quantity']) {
+                    if (get_if_set($items[$i]['dna']) && $items[$i]['dna']) {
+                        foreach ($items[$i]['dna'] as $dna) {
+                            if ($dna['quantity'] > 0) {
 
-            array_push($inventoryAuditItems, $inventoryAuditItem);
+                                $detail = new InventoryAuditItem;
+                                $detail->inventory_audit_id = $inventoryAudit->id;
+                                $detail->unit = $items[$i]['unit'];
+                                $detail->converter = $items[$i]['converter'];
+                                $detail->quantity = $dna['quantity'];
+                                $detail->production_number = $dna['production_number'];
+                                $detail->expiry_date = $dna['expiry_date'];
+                                $detail->item_id = $items[$i]['item_id'];
+                                $detail->save();
+
+                                $options = [];
+                                if ($detail->item->require_expiry_date) {
+                                    $options['expiry_date'] = $detail->expiry_date;
+                                }
+                                if ($detail->item->require_production_number) {
+                                    $options['production_number'] = $detail->production_number;
+                                }
+                
+                                $options['quantity_reference'] = $detail->quantity;
+                                $options['unit_reference'] = $detail->unit;
+                                $options['converter_reference'] = $detail->converter;
+                            }
+                            
+                        }
+                    } else {
+                        if ($items[$i]['quantity']) {
+                            $detail = new InventoryAuditItem;
+                            $detail->inventory_audit_id = $inventoryAudit->id;
+                            $detail->unit = $items[$i]['unit'];
+                            $detail->converter = $items[$i]['converter'];
+                            $detail->quantity = $items[$i]['quantity'];
+                            $detail->item_id = $items[$i]['item_id'];
+                            $detail->save();
+                        
+                            $options = [];
+                            if ($detail->item->require_expiry_date) {
+                                $options['expiry_date'] = $detail->expiry_date;
+                            }
+                            if ($detail->item->require_production_number) {
+                                $options['production_number'] = $detail->production_number;
+                            }
+            
+                            $options['quantity_reference'] = $detail->quantity;
+                            $options['unit_reference'] = $detail->unit;
+                            $options['converter_reference'] = $detail->converter;
+                        }
+                    }
+                }
+            }
         }
-
-        $inventoryAudit->items()->saveMany($inventoryAuditItems);
-
-        self::updateStock($inventoryAudit);
 
         return $inventoryAudit;
     }

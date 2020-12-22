@@ -5,11 +5,10 @@ namespace App\Console\Commands;
 use App\Model\Inventory\Inventory;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Project\Project;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
-use PhpParser\Node\Scalar\MagicConst\Line;
 
 class AlterData extends Command
 {
@@ -55,16 +54,16 @@ class AlterData extends Command
             DB::connection('tenant')->reconnect();
             DB::connection('tenant')->beginTransaction();
             
+            $invoices = SalesVisitation::all();
 
-            $salesVisitations = SalesVisitation::where('payment_method', 'sell-out')->orWhere('payment_method', 'taking-order')->get();
-
-            foreach ($salesVisitations as $salesVisitation) {
-                $inventory = Inventory::where('form_id', $salesVisitation->form->number)->first();
-                if ($inventory) {
-                    $this->line($salesVisitation->form->number);
+            foreach($invoices as $invoice) {
+                $aCount = count($invoice->details);
+                $bCount = Inventory::where('form_id', '=', $invoice->form->id)->count();
+                if ($invoice->form->cancellation_approval_at === null && $aCount < $bCount) {
+                    $this->line($invoice->form->number . ' : '. $aCount . ' = ' . $bCount . ' @' . $invoice->form->createdBy->name);
                 }
-            } 
-            
+            }
+
             DB::connection('tenant')->commit();
         }
     }

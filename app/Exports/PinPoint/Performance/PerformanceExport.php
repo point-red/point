@@ -14,7 +14,7 @@ class PerformanceExport implements WithMultipleSheets
      * @param string $dateTo
      * @param string $branchId
      */
-    public function __construct(string $dateFrom, string $dateTo, string $branchId)
+    public function __construct(string $dateFrom, string $dateTo, string $branchId = null)
     {
         $this->dateFrom = date('Y-m-d H:i:s', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d H:i:s', strtotime($dateTo));
@@ -33,7 +33,7 @@ class PerformanceExport implements WithMultipleSheets
         for ($i = 1; $i <= $days; $i++) {
             $dateFrom = date('Y-m-'.$i.' 00:00:00', strtotime($this->dateFrom));
             $dateTo = date('Y-m-'.$i.' 23:59:59', strtotime($this->dateTo));
-            $sheets[] = new DailySheet($i, $dateFrom, $dateTo, $this->branchId);
+            $sheets[] = new DailySheet($i, $dateFrom, $dateTo, 0, $this->branchId);
         }
 
         $date = Carbon::parse(date('Y-m-01 00:00:00', strtotime($this->dateFrom)));

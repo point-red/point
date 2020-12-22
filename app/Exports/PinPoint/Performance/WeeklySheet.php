@@ -30,7 +30,7 @@ class WeeklySheet implements FromView, WithTitle, ShouldAutoSize, WithColumnForm
      * @param int $totalDay
      * @param string $branchId
      */
-    public function __construct(string $date, string $dateFrom, string $dateTo, int $totalDay, string $branchId)
+    public function __construct(string $date, string $dateFrom, string $dateTo, int $totalDay, string $branchId = null)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));

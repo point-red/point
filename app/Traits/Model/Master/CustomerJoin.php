@@ -6,6 +6,7 @@ use App\Model\Accounting\Journal;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Master\Address;
 use App\Model\Master\Bank;
+use App\Model\Master\Branch;
 use App\Model\Master\ContactPerson;
 use App\Model\Master\Customer;
 use App\Model\Master\Email;
@@ -67,6 +68,12 @@ trait CustomerJoin
             $query = $query->leftjoin(Payment::getTableName(), function ($q) {
                 $q->on(Payment::getTableName('paymentable_id'), '=', Customer::getTableName('id'))
                     ->where(Payment::getTableName('paymentable_type'), Customer::$morphName);
+            });
+        }
+
+        if (in_array('branch', $joins)) {
+            $query = $query->leftjoin(Branch::getTableName(), function ($q) {
+                $q->on(Branch::getTableName('id'), '=', Customer::getTableName('branch_id'));
             });
         }
 

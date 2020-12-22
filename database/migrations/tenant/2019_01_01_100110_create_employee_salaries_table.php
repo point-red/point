@@ -27,11 +27,11 @@ class CreateEmployeeSalariesTable extends Migration
 
             $table->unsignedInteger('active_days_in_month')->index()->default(0);
 
-            $table->unsignedInteger('active_days_week1')->index()->default(0);
-            $table->unsignedInteger('active_days_week2')->index()->default(0);
-            $table->unsignedInteger('active_days_week3')->index()->default(0);
-            $table->unsignedInteger('active_days_week4')->index()->default(0);
-            $table->unsignedInteger('active_days_week5')->index()->default(0);
+            $table->double('active_days_week1')->default(0);
+            $table->double('active_days_week2')->default(0);
+            $table->double('active_days_week3')->default(0);
+            $table->double('active_days_week4')->default(0);
+            $table->double('active_days_week5')->default(0);
 
             $table->double('receivable_cut_60_days_week1')->default(0);
             $table->double('receivable_cut_60_days_week2')->default(0);

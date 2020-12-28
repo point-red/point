@@ -20,6 +20,7 @@ class PermissionSeeder extends Seeder
         $this->setMasterPermission();
         $this->setPurchasePermission();
         $this->setSalesPermission();
+        $this->setExpeditionPermission();
         $this->setManufacturePermission();
         $this->setPosPermission();
         $this->setInventoryPermission();
@@ -89,6 +90,25 @@ class PermissionSeeder extends Seeder
             'sales invoice',
             'sales down payment',
             'sales return',
+        ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+            Permission::createIfNotExists('approve '.$permission);
+        }
+    }
+
+    private function setExpeditionPermission()
+    {
+        Permission::createIfNotExists('menu expedition');
+
+        $allPermission = [
+            'expedition order',
+            'expedition invoice',
+            'expedition down payment',
         ];
 
         foreach ($allPermission as $permission) {

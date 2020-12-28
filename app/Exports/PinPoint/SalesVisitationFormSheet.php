@@ -49,7 +49,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
         } else {
             return SalesVisitation::query()
                 ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
-                ->where('forms.created_by', '=', auth()->user()->id)
+                ->whereIn('forms.created_by', tenant(auth()->user()->id)->branches->pluck('id'))
                 ->with('form')
                 ->select(SalesVisitation::getTableName('*'))
                 ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo]);

@@ -64,7 +64,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationDetail::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-            ->whereIn('forms.created_by', tenant(auth()->user()->id)->branches->pluck('id'))
+            ->whereIn(SalesVisitation::getTableName('branch_id'), tenant(auth()->user()->id)->branches->pluck('id'))
             ->select(SalesVisitationDetail::getTableName().'.*')
             ->addSelect(SalesVisitationDetail::getTableName().'.production_number as productionNumber')
             ->addSelect(SalesVisitationDetail::getTableName().'.expiry_date as expiryDate')

@@ -47,7 +47,7 @@ class NoInterestReasonSheet implements FromQuery, WithHeadings, WithMapping, Wit
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationNoInterestReason::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-            ->whereIn('forms.created_by', tenant(auth()->user()->id)->branches->pluck('id'))
+            ->whereIn(SalesVisitation::getTableName('branch_id'), tenant(auth()->user()->id)->branches->pluck('id'))
             ->select(SalesVisitationNoInterestReason::getTableName().'.*');
     }
 

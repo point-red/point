@@ -54,7 +54,7 @@ class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithT
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationSimilarProduct::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-            ->whereIn('forms.created_by', tenant(auth()->user()->id)->branches->pluck('id'))
+            ->whereIn(SalesVisitation::getTableName('branch_id'), tenant(auth()->user()->id)->branches->pluck('id'))
             ->select(SalesVisitationSimilarProduct::getTableName().'.*')
             ->addSelect(SalesVisitation::getTableName().'.name as customerName');
         }

@@ -11,7 +11,7 @@ class DeliveryNoteItem extends TransactionModel
     protected $connection = 'tenant';
 
     public static $alias = 'sales_delivery_note_item';
-
+    
     public $timestamps = false;
 
     protected $fillable = [

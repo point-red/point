@@ -24,24 +24,9 @@ class DeliveryNoteController extends Controller
      */
     public function index(Request $request)
     {
-        $deliveryNotes = DeliveryNote::eloquentFilter($request);
+        $deliveryNotes = DeliveryNote::from(DeliveryNote::getTableName().' as '.DeliveryNote::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('customer', $fields)) {
-                $deliveryNotes->join(Customer::getTableName(), function ($q) {
-                    $q->on(Customer::getTableName('id'), '=', DeliveryNote::getTableName('customer_id'));
-                });
-            }
-
-            if (in_array('form', $fields)) {
-                $deliveryNotes->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', DeliveryNote::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), DeliveryNote::$morphName);
-                });
-            }
-        }
+        $deliveryNotes = DeliveryNote::joins($deliveryNotes, $request->get('join'));
 
         $deliveryNotes = pagination($deliveryNotes, $request->get('limit'));
 

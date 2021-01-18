@@ -39,18 +39,39 @@ class DeliveryOrder extends TransactionModel
 
     public $defaultNumberPrefix = 'DO';
 
-    public function updateStatus()
+    public function isComplete()
     {
-        $done = true;
-        $items = $this->items()->with('deliveryNoteItems')->get();
-        foreach ($items as $item) {
-            $quantitySent = $item->deliveryNoteItems->sum('quantity');
-            if ($item->quantity > $quantitySent) {
-                $done = false;
-                break;
+        if ($this->items->count() === 0) {
+            return false;
+        }
+
+        $complete = true;
+        foreach ($this->items as $item) {
+            foreach ($item->deliveryNoteItems as $orderItem) {                
+                if ($orderItem->deliveryNote->form->cancellation_status == null
+                    || $orderItem->deliveryNote->form->cancellation_status !== 1
+                    || $orderItem->deliveryNote->form->number !== null) {
+                        $quantityNote = $item->deliveryNoteItems->sum('quantity');
+                        if ($item->quantity > $quantityNote) {
+                            $complete = false;
+                            break;
+                        }
+                }
             }
         }
-        $this->form()->update(['done' => $done]);
+
+        return $complete;
+    }
+
+    public function updateStatus()
+    {
+        if ($this->isComplete()) {
+            $this->form->done = true;
+            $this->form->save();
+        } else {
+            $this->form->done = false;
+            $this->form->save();
+        }
     }
 
     public function isAllowedToUpdate()

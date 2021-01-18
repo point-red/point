@@ -101,11 +101,13 @@ class InventoryUsage extends TransactionModel
             if ($itemModel->require_production_number || $itemModel->require_expiry_date) {
                 if ($item['dna']) {
                     foreach ($item['dna'] as $dna) {
-                        $dnaItem = $item;
-                        $dnaItem['quantity'] = $dna['quantity'];
-                        $dnaItem['production_number'] = $dna['production_number'];
-                        $dnaItem['expiry_date'] = $dna['expiry_date'];
-                        array_push($array, $dnaItem);
+                        if ($dna['quantity'] > 0) {
+                            $dnaItem = $item;
+                            $dnaItem['quantity'] = $dna['quantity'];
+                            $dnaItem['production_number'] = $dna['production_number'];
+                            $dnaItem['expiry_date'] = $dna['expiry_date'];
+                            array_push($array, $dnaItem);
+                        }
                     }
                 }
             } else {

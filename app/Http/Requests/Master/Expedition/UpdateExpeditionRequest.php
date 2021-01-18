@@ -13,7 +13,7 @@ class UpdateExpeditionRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,8 @@ class UpdateExpeditionRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'code' => 'unique:tenant.expeditions,code,'.$this->id,
+            'name' => 'required',
         ];
     }
 }

@@ -47,6 +47,7 @@ class InterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithT
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationInterestReason::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
+            ->whereIn(SalesVisitation::getTableName('branch_id'), tenant(auth()->user()->id)->branches->pluck('id'))
             ->select(SalesVisitationInterestReason::getTableName().'.*');
     }
 

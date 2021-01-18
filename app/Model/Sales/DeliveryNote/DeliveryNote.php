@@ -9,9 +9,13 @@ use App\Model\Master\Warehouse;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\TransactionModel;
+use App\Traits\Model\Sales\DeliveryNoteJoin;
+use App\Traits\Model\Sales\DeliveryNoteRelation;
 
 class DeliveryNote extends TransactionModel
 {
+    use DeliveryNoteJoin, DeliveryNoteRelation;
+
     public static $morphName = 'SalesDeliveryNote';
 
     protected $connection = 'tenant';
@@ -40,36 +44,6 @@ class DeliveryNote extends TransactionModel
     ];
 
     public $defaultNumberPrefix = 'DN';
-
-    public function form()
-    {
-        return $this->morphOne(Form::class, 'formable');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(DeliveryNoteItem::class);
-    }
-
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class);
-    }
-
-    public function deliveryOrder()
-    {
-        return $this->belongsTo(deliveryOrder::class, 'delivery_order_id');
-    }
-
-    public function warehouse()
-    {
-        return $this->belongsTo(Warehouse::class);
-    }
-
-    public function salesInvoices()
-    {
-        return $this->belongsToMany(SalesInvoice::class, 'sales_invoice_items')->active();
-    }
 
     public function isAllowedToUpdate()
     {
@@ -131,7 +105,7 @@ class DeliveryNote extends TransactionModel
             $options['quantity_reference'] = $item->quantity;
             $options['unit_reference'] = $item->unit;
             $options['converter_reference'] = $item->converter;
-            InventoryHelper::decrease($form, $deliveryNote->warehouse, $item, $item->quantity, $item->unit, $item->converter, $options);
+            InventoryHelper::decrease($form, $deliveryNote->warehouse, $item->item, $item->quantity, $item->unit, $item->converter, $options);
         }
 
         return $deliveryNote;

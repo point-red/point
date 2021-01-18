@@ -50,10 +50,7 @@ class DeliveryOrderItem extends TransactionModel
 
     public function deliveryNoteItems()
     {
-        return $this->hasMany(DeliveryNoteItem::class)
-            ->whereHas('deliveryNote', function ($query) {
-                $query->active();
-            });
+        return $this->hasMany(DeliveryNoteItem::class);
     }
 
     public function allocation()

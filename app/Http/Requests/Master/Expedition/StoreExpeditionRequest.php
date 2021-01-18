@@ -24,8 +24,8 @@ class StoreExpeditionRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'bail|required|string',
-            'code' => 'bail|alpha',
+            'code' => 'required|unique:tenant.expeditions',
+            'name' => 'required',
         ];
     }
 }

@@ -20,18 +20,9 @@ class InventoryAuditController extends Controller
      */
     public function index(Request $request)
     {
-        $inventoryAudits = InventoryAudit::eloquentFilter($request);
+        $inventoryAudits = InventoryAudit::from(InventoryAudit::getTableName().' as '.InventoryAudit::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('form', $fields)) {
-                $inventoryAudits->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', InventoryAudit::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), InventoryAudit::$morphName);
-                });
-            }
-        }
+        $inventoryAudits = InventoryAudit::joins($inventoryAudits, $request->get('join'));
 
         $inventoryAudits = pagination($inventoryAudits, $request->get('limit'));
 
@@ -65,11 +56,11 @@ class InventoryAuditController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $inventoryAudits = InventoryAudit::eloquentFilter($request)
-            ->with('form')
-            ->with('warehouse')
-            ->with('items.item')
-            ->findOrFail($id);
+        $inventoryAudits = InventoryAudit::from(InventoryAudit::getTableName().' as '.InventoryAudit::$alias)->eloquentFilter($request);
+
+        $inventoryAudits = InventoryAudit::joins($inventoryAudits, $request->get('join'));
+
+        $inventoryAudits = $inventoryAudits->where(InventoryAudit::$alias.'.id', $id)->first();
 
         return new ApiResource($inventoryAudits);
     }

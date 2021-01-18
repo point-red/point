@@ -19,7 +19,6 @@ class SalesVisitationExportController extends Controller
 {
     protected function exportFile($file, $dateFrom, $dateTo, $branchId)
     {
-        info($branchId.'$ss');
         switch ($file) {
             case 'SalesVisitationReport':
                 $export = new SalesVisitationFormExport($dateFrom, $dateTo, $branchId);

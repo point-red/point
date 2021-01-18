@@ -23,7 +23,7 @@ class ExpeditionController extends Controller
      */
     public function index(Request $request)
     {
-        $expeditions = Expedition::from(Expedition::getTableName().' as '.Expedition::$alias)->eloquentFilter($request);
+        $expeditions = Expedition::from(Expedition::getTableName() .' as '. Expedition::$alias)->eloquentFilter($request);
 
         $expeditions = Expedition::joins($expeditions, $request->get('join'));
 
@@ -84,7 +84,21 @@ class ExpeditionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        \DB::connection('tenant')->beginTransaction();
+
+        $expedition = Expedition::findOrFail($id);
+        $expedition->fill($request->all());
+        $expedition->save();
+
+        Address::saveFromRelation($expedition, $request->get('addresses'));
+        Phone::saveFromRelation($expedition, $request->get('phones'));
+        Email::saveFromRelation($expedition, $request->get('emails'));
+        ContactPerson::saveFromRelation($expedition, $request->get('contacts'));
+        Bank::saveFromRelation($expedition, $request->get('banks'));
+
+        \DB::connection('tenant')->commit();
+
+        return new ApiResource($expedition);
     }
 
     /**

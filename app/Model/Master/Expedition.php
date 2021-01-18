@@ -15,6 +15,8 @@ class Expedition extends MasterModel
     public static $alias = 'expedition';
 
     protected $connection = 'tenant';
+    
+    protected $appends = ['label'];
 
     protected $fillable = [
         'code',
@@ -32,4 +34,11 @@ class Expedition extends MasterModel
         'email',
         'notes',
     ];
+
+    public function getLabelAttribute()
+    {
+        $label = $this->code ? '['.$this->code.'] ' : '';
+
+        return $label.$this->name;
+    }
 }

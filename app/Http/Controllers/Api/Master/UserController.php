@@ -44,6 +44,13 @@ class UserController extends ApiController
                 });
         }
 
+        // Filter
+        if ($request->branchId) {
+            $branchId = $request->branchId;
+            $users = $users->where('branches','like',"%".$branchId."%");
+        }
+        // End Filter
+
         $users = pagination($users, $request->get('limit'));
 
         return new ApiCollection($users);

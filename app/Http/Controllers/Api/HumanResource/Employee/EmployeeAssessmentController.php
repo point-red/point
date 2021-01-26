@@ -60,6 +60,7 @@ class EmployeeAssessmentController extends Controller
         $dates = [];
         $scores = [];
 
+
         foreach ($kpis as $key => $kpi) {
             array_push($dates, date('dMY', strtotime($kpi->date)));
             array_push($scores, number_format($kpi->score_percentage, 2));
@@ -98,6 +99,8 @@ class EmployeeAssessmentController extends Controller
         $kpi->employee_id = $employeeId;
         $kpi->scorer_id = auth()->user()->id;
         $kpi->comment = isset($template['comment']) ? $template['comment'] : '';
+        $kpi->status = isset($template['status']) ? $template['status'] : 'COMPLETED';
+
         $kpi->save();
 
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {

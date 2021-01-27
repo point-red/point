@@ -26,7 +26,7 @@ class CreateKpiIndicatorsTable extends Migration
             $table->timestamps();
             // Comment and Upload File
             $table->string('comment');
-            $table->string('upload_files');
+            $table->string('uploadFiles');
 
             $table->foreign('kpi_group_id')
                 ->references('id')

@@ -101,7 +101,17 @@ class EmployeeAssessmentController extends Controller
         $kpi->employee_id = $employeeId;
         $kpi->scorer_id = auth()->user()->id;
         $kpi->comment = isset($template['comment']) ? $template['comment'] : '';
-        $kpi->status = isset($template['status']) ? $template['status'] : 'COMPLETED';
+
+        // status save
+        $kpi->status = 'COMPLETED';
+        for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
+            for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'])) {
+                } else {
+                    $kpi->status = 'DRAFT';
+                }
+            }
+        }
 
         $kpi->save();
 
@@ -131,14 +141,33 @@ class EmployeeAssessmentController extends Controller
                     $kpiIndicator->score_description = '';
                 } else {
                     $kpiIndicator->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
-                    $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
+                    if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'])) {
+                        $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
+                    } else {
+                        $kpiIndicator->score = 0;
+                    }
+
                     $kpiIndicator->score_percentage = $kpiIndicator->target > 0 ? $kpiIndicator->score / $kpiIndicator->target * $kpiIndicator->weight : 0;
-                    $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+
+                    if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'])) {
+                        $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+                    } else {
+                        $kpiIndicator->score_description = '';
+                    }
 
                     // comment
-                    $kpiIndicator->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                    if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
+                        $kpiIndicator->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                    } else {
+                        $kpiIndicator->comment = null;
+                    }
+
                     // upload file
-                    $kpiIndicator->upload_files = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'];
+                    if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'])) {
+                        $kpiIndicator->uploadFiles = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'];
+                    } else {
+                        $kpiIndicator->uploadFiles = null;
+                    }
                 }
 
                 $kpiIndicator->save();
@@ -151,9 +180,22 @@ class EmployeeAssessmentController extends Controller
                         $kpiScore->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['score'];
 
                         // comment
-                        $kpiScore->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                        if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
+                            $kpiScore->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                        } else {
+                            $kpiScore->comment = null;
+                        }
+
                         // upload file
-                        $kpiScore->upload_files = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'];
+                        if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'])) {
+                            $kpiScore->uploadFiles = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'];
+                        } else {
+                            $kpiScore->uploadFiles = null;
+                        }
+
+                        // status save
+                        $kpiScore->status = $kpi->status;
+
                         $kpiScore->save();
                     }
                 }
@@ -345,6 +387,18 @@ class EmployeeAssessmentController extends Controller
         $kpi = Kpi::findOrFail($id);
         $kpi->date = date('Y-m-d', strtotime($request->get('date')));
         $kpi->comment = $request->get('comment');
+
+         // status save
+         $kpi->status = 'COMPLETED';
+         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
+             for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
+                 if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'])) {
+                 } else {
+                     $kpi->status = 'DRAFT';
+                 }
+             }
+         }
+
         $kpi->save();
 
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
@@ -360,12 +414,50 @@ class EmployeeAssessmentController extends Controller
                     $kpiIndicator->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
 
                     if (array_key_exists('selected', $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex])) {
-                        $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
-                        $kpiIndicator->score_percentage = $kpiIndicator->weight * $kpiIndicator->score / $kpiIndicator->target;
-                        $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+                        //
+                        if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'])) {
+                            $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
+                            $kpiIndicator->score_percentage = $kpiIndicator->weight * $kpiIndicator->score / $kpiIndicator->target;
+                            $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+
+                            // comment
+                            $kpiIndicator->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+
+                            // upload file
+                            $kpiIndicator->uploadFiles = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'];
+                        } else {
+                            $kpiIndicator->score = 0;
+                            $kpiIndicator->score_percentage = 0;
+                            $kpiIndicator->score_description = '';
+                            $kpiIndicator->comment = null;
+                            $kpiIndicator->uploadFiles = null;
+                        }
                     }
 
                     $kpiIndicator->save();
+
+                    for ($scoreIndex = 0; $scoreIndex < count($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores']); $scoreIndex++) {
+                        $kpiScore = KpiScore::findOrFail($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['id']);
+
+                        // comment
+                        if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
+                            $kpiScore->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                        } else {
+                            $kpiScore->comment = null;
+                        }
+
+                        // upload file
+                        if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'])) {
+                            $kpiScore->uploadFiles = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'];
+                        } else {
+                            $kpiScore->uploadFiles = null;
+                        }
+
+                        // status save
+                        $kpiScore->status = $kpi->status;
+
+                        $kpiScore->save();
+                    }
                 }
             }
         }

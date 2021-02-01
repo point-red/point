@@ -16,6 +16,9 @@ use FontLib\Table\Type\name;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+// kpi reminder
+use App\Mail\KpiReminderEmail;
+use Illuminate\Support\Facades\Mail;
 
 class EmployeeAssessmentController extends Controller
 {
@@ -414,7 +417,6 @@ class EmployeeAssessmentController extends Controller
                     $kpiIndicator->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
 
                     if (array_key_exists('selected', $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex])) {
-                        //
                         if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'])) {
                             $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
                             $kpiIndicator->score_percentage = $kpiIndicator->weight * $kpiIndicator->score / $kpiIndicator->target;
@@ -490,9 +492,6 @@ class EmployeeAssessmentController extends Controller
     public function upload(Request $request){
         $uploadFile = $request->attachments;
         $fileName = $request->fileName;
-        // $extension = $uploadFile->extension();
-        // $file_name = date('dmyHis').'.'.$extension;
-        // $path = Storage::putFileAs('files', $uploadFile, $file_name);
         $path = Storage::putFileAs('files', $uploadFile, $fileName);
         $directory = Storage::url($path);
 
@@ -501,5 +500,11 @@ class EmployeeAssessmentController extends Controller
     public function file($file_name){
         $path = Storage::url('files/'.$file_name);
         return '<embed type="application/pdf" src="'.$path.'" width="600" height="400"></embed>';
+    }
+
+    // kpi reminder
+    public function kpiReminder(Request $request){
+        Mail::to($request->get('to'))->send(new KpiReminderEmail());
+		return response()->json(['message' => 'message sent to '.$request->get('to')], 200);
     }
 }

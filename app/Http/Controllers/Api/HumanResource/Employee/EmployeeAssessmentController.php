@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Storage;
 // kpi reminder
 use App\Mail\KpiReminderEmail;
 use Illuminate\Support\Facades\Mail;
+// contract reminder
+use App\Events\EveryoneEvent;
 
 class EmployeeAssessmentController extends Controller
 {
@@ -506,5 +508,13 @@ class EmployeeAssessmentController extends Controller
     public function kpiReminder(Request $request){
         Mail::to($request->get('to'))->send(new KpiReminderEmail());
 		return response()->json(['message' => 'message sent to '.$request->get('to')], 200);
+    }
+
+    // contract reminder
+    public function contractReminder(Request $request) {
+        $user = $request->get('user');
+        $message = $request->get('message');
+        broadcast(new EveryoneEvent($user, $message));
+        return response()->json(['user' => $user, 'message' => $message ], 200);
     }
 }

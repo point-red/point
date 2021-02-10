@@ -47,11 +47,8 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `expeditions` ADD COLUMN `branch_id` integer(11) unsigned default null');
-            DB::connection('tenant')->statement('ALTER TABLE `expeditions` ADD COLUMN `archived_by` integer(11) unsigned default null');
-            DB::connection('tenant')->statement('ALTER TABLE `expeditions` ADD COLUMN `archived_at` timestamp');
-            DB::connection('tenant')->statement('ALTER TABLE `expeditions` ADD CONSTRAINT `expeditions_branch_id_foreign` FOREIGN KEY (`branch_id`) REFERENCES branches (`id`) ON DELETE SET NULL');
-            DB::connection('tenant')->statement('ALTER TABLE `expeditions` ADD CONSTRAINT `expeditions_archived_by_foreign` FOREIGN KEY (`archived_by`) REFERENCES users (`id`) ON DELETE RESTRICT');
+            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `bpjs` varchar(255) default null');
+            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `resign_date` datetime default null');
         }
     }
 }

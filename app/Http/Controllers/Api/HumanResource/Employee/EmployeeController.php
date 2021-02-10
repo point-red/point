@@ -101,6 +101,9 @@ class EmployeeController extends Controller
         $employee->daily_transport_allowance = $request->get('daily_transport_allowance') ?? 0;
         $employee->functional_allowance = $request->get('functional_allowance') ?? 0;
         $employee->communication_allowance = $request->get('communication_allowance') ?? 0;
+        $employee->tax_identification_number = $request->get('tax_identification_number');
+        $employee->bpjs = $request->get('bpjs');
+        $employee->resign_date = $request->get('resign_date') ? date('Y-m-d', strtotime($request->get('resign_date'))) : null;
 
         $employee->save();
 
@@ -233,6 +236,9 @@ class EmployeeController extends Controller
         $employee->daily_transport_allowance = $request->get('daily_transport_allowance');
         $employee->functional_allowance = $request->get('functional_allowance');
         $employee->communication_allowance = $request->get('communication_allowance');
+        $employee->tax_identification_number = $request->get('tax_identification_number');
+        $employee->bpjs = $request->get('bpjs');
+        $employee->resign_date = $request->get('resign_date') ? date('Y-m-d', strtotime($request->get('resign_date'))) : null;
 
         $employee->save();
 

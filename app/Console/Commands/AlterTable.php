@@ -47,8 +47,8 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `bpjs` varchar(255) default null');
-            DB::connection('tenant')->statement('ALTER TABLE `employees` ADD COLUMN `resign_date` datetime default null');
+            DB::connection('tenant')->statement('ALTER TABLE `kpis` ADD COLUMN `status` varchar(255) default null');
+            DB::connection('tenant')->statement('ALTER TABLE `kpi_scores` ADD COLUMN `status` varchar(255) default null');
         }
     }
 }

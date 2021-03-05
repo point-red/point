@@ -20,6 +20,9 @@ class CreateKpiScoresTable extends Migration
             $table->unsignedInteger('score');
             $table->timestamps();
             $table->string('status')->nullable();
+            // Comment and Upload File
+            $table->string('comment');
+            $table->string('uploadFiles');
 
             $table->foreign('kpi_indicator_id')
                 ->references('id')

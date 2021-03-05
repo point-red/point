@@ -12,8 +12,10 @@ use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
 use App\Model\HumanResource\Kpi\KpiIndicator;
 use App\Model\HumanResource\Kpi\KpiScore;
+use FontLib\Table\Type\name;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeAssessmentController extends Controller
 {
@@ -150,16 +152,45 @@ class EmployeeAssessmentController extends Controller
                     } else {
                         $kpiIndicator->score_description = '';
                     }
+
+                    // comment
+                    if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
+                        $kpiIndicator->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                    } else {
+                        $kpiIndicator->comment = null;
+                    }
+
+                    // upload file
+                    if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'])) {
+                        $kpiIndicator->uploadFiles = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'];
+                    } else {
+                        $kpiIndicator->uploadFiles = null;
+                    }
                 }
 
                 $kpiIndicator->save();
 
-                if (! $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code']) {
+                if (!$template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code']) {
                     for ($scoreIndex = 0; $scoreIndex < count($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores']); $scoreIndex++) {
                         $kpiScore = new KpiScore();
                         $kpiScore->kpi_indicator_id = $kpiIndicator->id;
                         $kpiScore->description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['description'];
                         $kpiScore->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['score'];
+
+                        // comment
+                        if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
+                            $kpiScore->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                        } else {
+                            $kpiScore->comment = null;
+                        }
+
+                        // upload file
+                        if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'])) {
+                            $kpiScore->uploadFiles = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'];
+                        } else {
+                            $kpiScore->uploadFiles = null;
+                        }
+
                         $kpiScore->status = $kpi->status;
 
                         $kpiScore->save();
@@ -240,7 +271,7 @@ class EmployeeAssessmentController extends Controller
         $scorer = [];
         // splite based by template
         foreach ($kpis as $kpi) {
-            if (! in_array($kpi->name, $templates)) {
+            if (!in_array($kpi->name, $templates)) {
                 array_push($templates, $kpi->name);
             }
             $index = array_search($kpi->name, $templates);
@@ -372,7 +403,7 @@ class EmployeeAssessmentController extends Controller
             for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
                 $kpiIndicator = KpiIndicator::findOrFail($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['id']);
 
-                if (! $kpiIndicator->automated_code) {
+                if (!$kpiIndicator->automated_code) {
                     $kpiIndicator->kpi_group_id = $kpiGroup->id;
                     $kpiIndicator->name = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
                     $kpiIndicator->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
@@ -383,10 +414,18 @@ class EmployeeAssessmentController extends Controller
                             $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
                             $kpiIndicator->score_percentage = $kpiIndicator->weight * $kpiIndicator->score / $kpiIndicator->target;
                             $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+
+                            // comment
+                            $kpiIndicator->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+
+                            // upload file
+                            $kpiIndicator->uploadFiles = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'];
                         } else {
                             $kpiIndicator->score = 0;
                             $kpiIndicator->score_percentage = 0;
                             $kpiIndicator->score_description = '';
+                            $kpiIndicator->comment = null;
+                            $kpiIndicator->uploadFiles = null;
                         }
                     }
 
@@ -394,6 +433,21 @@ class EmployeeAssessmentController extends Controller
 
                     for ($scoreIndex = 0; $scoreIndex < count($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores']); $scoreIndex++) {
                         $kpiScore = KpiScore::findOrFail($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['id']);
+
+                        // comment
+                        if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
+                            $kpiScore->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                        } else {
+                            $kpiScore->comment = null;
+                        }
+
+                        // upload file
+                        if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'])) {
+                            $kpiScore->uploadFiles = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['uploadFiles'];
+                        } else {
+                            $kpiScore->uploadFiles = null;
+                        }
+
                         $kpiScore->status = $kpi->status;
                         $kpiScore->save();
                     }
@@ -423,5 +477,21 @@ class EmployeeAssessmentController extends Controller
         $kpi->delete();
 
         return new KpiResource($kpi);
+    }
+
+    // Upload File
+    public function upload(Request $request)
+    {
+        $uploadFile = $request->attachments;
+        $fileName = $request->fileName;
+        $path = Storage::putFileAs('files', $uploadFile, $fileName);
+        $directory = Storage::url($path);
+
+        return response()->json(['link' => $directory, 'fileName' => $fileName], 200);
+    }
+    public function file($file_name)
+    {
+        $path = Storage::url('files/' . $file_name);
+        return '<embed type="application/pdf" src="' . $path . '" width="600" height="400"></embed>';
     }
 }

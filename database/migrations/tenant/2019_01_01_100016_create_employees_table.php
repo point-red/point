@@ -28,7 +28,8 @@ class CreateEmployeesTable extends Migration
             $table->string('phone')->nullable();
             $table->string('phone_cc')->nullable(); // country code
             $table->string('email')->nullable();
-
+            $table->string('bpjs')->nullable();
+            $table->datetime('resign_date')->nullable();
             $table->string('personal_identity')->nullable();
             // Data related to personal info
             $table->string('last_education')->nullable();

@@ -19,6 +19,7 @@ class CreateKpiScoresTable extends Migration
             $table->string('description');
             $table->unsignedInteger('score');
             $table->timestamps();
+            $table->string('status')->nullable();
 
             $table->foreign('kpi_indicator_id')
                 ->references('id')

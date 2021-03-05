@@ -97,7 +97,18 @@ class EmployeeAssessmentController extends Controller
         $kpi->date = date('Y-m-d', strtotime($dateTo));
         $kpi->employee_id = $employeeId;
         $kpi->scorer_id = auth()->user()->id;
-        $kpi->comment = isset($template['comment']) ? $template['comment'] : '';
+        $kpi->comment = $request->get('comment');
+
+        $kpi->status = 'COMPLETED';
+        for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
+            for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'])) {
+                } else {
+                    $kpi->status = 'DRAFT';
+                }
+            }
+        }
+
         $kpi->save();
 
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
@@ -126,9 +137,19 @@ class EmployeeAssessmentController extends Controller
                     $kpiIndicator->score_description = '';
                 } else {
                     $kpiIndicator->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
-                    $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
+                    if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'])) {
+                        $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
+                    } else {
+                        $kpiIndicator->score = 0;
+                    }
+
                     $kpiIndicator->score_percentage = $kpiIndicator->target > 0 ? $kpiIndicator->score / $kpiIndicator->target * $kpiIndicator->weight : 0;
-                    $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+
+                    if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'])) {
+                        $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+                    } else {
+                        $kpiIndicator->score_description = '';
+                    }
                 }
 
                 $kpiIndicator->save();
@@ -139,6 +160,8 @@ class EmployeeAssessmentController extends Controller
                         $kpiScore->kpi_indicator_id = $kpiIndicator->id;
                         $kpiScore->description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['description'];
                         $kpiScore->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['score'];
+                        $kpiScore->status = $kpi->status;
+
                         $kpiScore->save();
                     }
                 }
@@ -330,6 +353,17 @@ class EmployeeAssessmentController extends Controller
         $kpi = Kpi::findOrFail($id);
         $kpi->date = date('Y-m-d', strtotime($request->get('date')));
         $kpi->comment = $request->get('comment');
+
+        $kpi->status = 'COMPLETED';
+        for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
+            for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'])) {
+                } else {
+                    $kpi->status = 'DRAFT';
+                }
+            }
+        }
+
         $kpi->save();
 
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
@@ -345,12 +379,24 @@ class EmployeeAssessmentController extends Controller
                     $kpiIndicator->target = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['target'];
 
                     if (array_key_exists('selected', $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex])) {
-                        $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
-                        $kpiIndicator->score_percentage = $kpiIndicator->weight * $kpiIndicator->score / $kpiIndicator->target;
-                        $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+                        if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'])) {
+                            $kpiIndicator->score = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['score'];
+                            $kpiIndicator->score_percentage = $kpiIndicator->weight * $kpiIndicator->score / $kpiIndicator->target;
+                            $kpiIndicator->score_description = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['description'];
+                        } else {
+                            $kpiIndicator->score = 0;
+                            $kpiIndicator->score_percentage = 0;
+                            $kpiIndicator->score_description = '';
+                        }
                     }
 
                     $kpiIndicator->save();
+
+                    for ($scoreIndex = 0; $scoreIndex < count($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores']); $scoreIndex++) {
+                        $kpiScore = KpiScore::findOrFail($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores'][$scoreIndex]['id']);
+                        $kpiScore->status = $kpi->status;
+                        $kpiScore->save();
+                    }
                 }
             }
         }

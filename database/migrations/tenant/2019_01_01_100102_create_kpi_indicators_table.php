@@ -24,9 +24,6 @@ class CreateKpiIndicatorsTable extends Migration
             $table->float('score_percentage');
             $table->text('score_description');
             $table->timestamps();
-            // Comment and Upload File
-            $table->string('comment');
-            $table->string('uploadFiles');
 
             $table->foreign('kpi_group_id')
                 ->references('id')

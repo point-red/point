@@ -20,7 +20,6 @@ class CreateKpisTable extends Migration
             $table->string('name');
             $table->datetime('date');
             $table->text('comment')->nullable();
-            $table->string('status')->nullable();
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
             $table->timestamps();

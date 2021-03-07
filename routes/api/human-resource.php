@@ -54,8 +54,6 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::apiResource('employees/{employee_id}/salary', 'EmployeeSalaryController');
         Route::get('employees/{employee_id}/salary-by/{group}', 'EmployeeSalaryController@showBy');
         Route::post('employees/{employee_id}/salary/export', 'EmployeeSalaryExportController@export');
-        Route::post('employees/upload', 'EmployeeAssessmentController@upload');
-        Route::get('employees/file/{file_name}', 'EmployeeAssessmentController@file');
         // send email
         Route::post('employees/kpi-reminder', 'EmployeeAssessmentController@kpiReminder');
     });

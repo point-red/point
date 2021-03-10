@@ -14,6 +14,9 @@ use App\Model\HumanResource\Kpi\KpiIndicator;
 use App\Model\HumanResource\Kpi\KpiScore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+// kpi reminder
+use App\Mail\KpiReminderEmail;
+use Illuminate\Support\Facades\Mail;
 
 class EmployeeAssessmentController extends Controller
 {
@@ -423,5 +426,10 @@ class EmployeeAssessmentController extends Controller
         $kpi->delete();
 
         return new KpiResource($kpi);
+    }
+    // kpi reminder
+    public function kpiReminder(Request $request){
+        Mail::to($request->get('to'))->send(new KpiReminderEmail());
+		return response()->json(['message' => 'message sent to '.$request->get('to')], 200);
     }
 }

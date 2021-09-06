@@ -19,15 +19,16 @@ class PurchaseInvoiceApprovalController extends Controller
     public function approve(Request $request, $id)
     {
         DB::connection('tenant')->beginTransaction();
-
         $purchaseInvoice = PurchaseInvoice::findOrFail($id);
-        $purchaseInvoice->form->approval_by = auth()->user()->id;
-        $purchaseInvoice->form->approval_at = now();
-        $purchaseInvoice->form->approval_status = 1;
-        $purchaseInvoice->form->save();
+        if ($purchaseInvoice->form->approval_status === 0) {
+            $purchaseInvoice->form->approval_by = auth()->user()->id;
+            $purchaseInvoice->form->approval_at = now();
+            $purchaseInvoice->form->approval_status = 1;
+            $purchaseInvoice->form->save();
 
-        PurchaseInvoice::updateInventory($purchaseInvoice->form, $purchaseInvoice);
-        PurchaseInvoice::updateJournal($purchaseInvoice);
+            PurchaseInvoice::updateInventory($purchaseInvoice->form, $purchaseInvoice);
+            PurchaseInvoice::updateJournal($purchaseInvoice);
+        }
 
         DB::connection('tenant')->commit();
 

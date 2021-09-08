@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Model\Form;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Warehouse;
 use App\Model\Project\Project;
@@ -69,7 +70,9 @@ class AlterData extends Command
                 foreach ($invoice->items as $invoiceItem) {
                     $cCount = PurchaseInvoiceItem::where("purchase_receive_id", "=", $invoiceItem->purchase_receive_id)->where("purchase_receive_item_id", "=", $invoiceItem->purchase_receive_item_id)->count();
                     if ($cCount > 1) {
-                        $this->line($invoice->form->number . ' : '. $invoiceItem->purchase_receive_id . ' = ' . $invoiceItem->purchase_receive_item_id . ' @' . $cCount);
+                        if (Form::where("formable_type", "PurchaseInvoice")->where("formable_id", $invoiceItem->purchase_invoice_id)->where("cancellation_status", null)->count() == 1) {
+                            $this->line($invoice->form->number . ' : '. $invoiceItem->purchase_receive_id . ' = ' . $invoiceItem->purchase_receive_item_id . ' @' . $cCount);
+                        }
                     }
                 }
 

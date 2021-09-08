@@ -69,7 +69,7 @@ class AlterData extends Command
                 foreach ($invoice->items as $invoiceItem) {
                     $cCount = PurchaseInvoiceItem::where("purchase_receive_id", "=", $invoiceItem->purchase_receive_id)->where("purchase_receive_item_id", "=", $invoiceItem->purchase_receive_item_id)->count();
                     if ($cCount > 1) {
-                        $this->line($invoice->form->number . ' : '. $aCount . ' = ' . $bCount . ' @' . $invoice->form->createdBy->name);
+                        $this->line($invoice->form->number . ' : '. $invoiceItem->purchase_receive_id . ' = ' . $invoiceItem->purchase_receive_item_id . ' @' . $cCount);
                     }
                 }
 

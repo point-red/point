@@ -6,6 +6,9 @@ use App\Model\Inventory\Inventory;
 use App\Model\Master\Warehouse;
 use App\Model\Project\Project;
 use App\Model\Purchase\PurchaseInvoice\PurchaseInvoice;
+use App\Model\Purchase\PurchaseInvoice\PurchaseInvoiceItem;
+use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -58,9 +61,18 @@ class AlterData extends Command
             foreach($invoices as $invoice) {
                 $aCount = count($invoice->items);
                 $bCount = Inventory::where('form_id', '=', $invoice->form->id)->count();
+                
                 if ($invoice->form->cancellation_approval_at === null && $aCount < $bCount) {
                     $this->line($invoice->form->number . ' : '. $aCount . ' = ' . $bCount . ' @' . $invoice->form->createdBy->name);
                 }
+
+                foreach ($invoice->items as $invoiceItem) {
+                    $cCount = PurchaseInvoiceItem::where("purchase_receive_id", "=", $invoiceItem->purchase_receive_id)->where("purchase_receive_item_id", "=", $invoiceItem->purchase_receive_item_id)->count();
+                    if ($cCount > 1) {
+                        $this->line($invoice->form->number . ' : '. $aCount . ' = ' . $bCount . ' @' . $invoice->form->createdBy->name);
+                    }
+                }
+
             }
 
             $warehouses = Warehouse::all();

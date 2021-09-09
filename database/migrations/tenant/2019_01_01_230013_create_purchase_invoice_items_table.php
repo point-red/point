@@ -19,6 +19,8 @@ class CreatePurchaseInvoiceItemsTable extends Migration
             $table->unsignedInteger('purchase_receive_id');
             $table->unsignedInteger('purchase_receive_item_id');
             $table->unsignedInteger('item_id');
+            $table->datetime('expiry_date')->nullable();
+            $table->string('production_number')->nullable();
             $table->string('item_name');
             $table->decimal('quantity', 65, 30);
             $table->unsignedDecimal('price', 65, 30);

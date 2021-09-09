@@ -45,7 +45,7 @@ class AlterItem extends Command
      */
     public function handle()
     {
-        $projects = Project::where('is_generated', true)->where('code', 'kopibara')->get();
+        $projects = Project::where('is_generated', true)->where('code', 'dev')->get();
         foreach ($projects as $project) {
             $this->line('Clone '.$project->code);
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
@@ -58,6 +58,13 @@ class AlterItem extends Command
 
             $invoiceItems = PurchaseInvoiceItem::all();
 
+            foreach ($invoiceItems as $invoiceItem) {
+                $invoiceItem->production_number = $invoiceItem->purchaseReceiveItem->production_number;
+                $invoiceItem->expiry_date = $invoiceItem->purchaseReceiveItem->expiry_date;
+                $invoiceItem->save();
+            }
+
+     
             foreach ($invoiceItems as $invoiceItem) {
                 $count = PurchaseInvoiceItem::where('production_number', $invoiceItem->production_number)
                 ->where("purchase_invoice_id", $invoiceItem->purchase_invoice_id)

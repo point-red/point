@@ -51,7 +51,7 @@ class AlterItem extends Command
             Artisan::call('tenant:database:backup-clone', ['project_code' => strtolower($project->code)]);
 
             $this->line('Alter '.$project->code);
-            config()->set('database.connections.tenant.database', env('DB_DATABASE').'point_'.strtolower($project->code));
+            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
 
             DB::connection('tenant')->reconnect();
             DB::connection('tenant')->beginTransaction();

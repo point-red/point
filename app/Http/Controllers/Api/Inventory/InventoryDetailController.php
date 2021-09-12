@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Inventory;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiCollection;
 use App\Http\Resources\Inventory\InventoryDetailCollection;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
@@ -31,10 +32,7 @@ class InventoryDetailController extends Controller
 
         $inventories = pagination($inventories, $request->get('limit'));
 
-        $inventoryCollection = new InventoryDetailCollection($inventories);
-
-        $inventoryCollection->limit($request->get('limit'));
-        $inventoryCollection->currentPage($request->get('page'));
+        $inventoryCollection = new ApiCollection($inventories);
 
         return $inventoryCollection;
     }

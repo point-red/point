@@ -127,6 +127,8 @@ class ItemController extends Controller
 
         $item = $item->where(Item::$alias.'.id', $id)->first();
 
+        $item->cogs = Item::cogs($item->id);
+
         return new ApiResource($item);
     }
 

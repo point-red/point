@@ -3,7 +3,9 @@
 namespace App\Model\Master;
 
 use App\Helpers\Inventory\InventoryHelper;
+use App\Model\Accounting\Journal;
 use App\Model\Form;
+use App\Model\Inventory\Inventory;
 use App\Model\Inventory\OpeningStock\OpeningStock;
 use App\Model\Inventory\OpeningStock\OpeningStockWarehouse;
 use App\Model\MasterModel;
@@ -137,5 +139,18 @@ class Item extends MasterModel
         }
 
         return $item;
+    }
+
+    public static function cogs($itemId)
+    {
+        $qty = Inventory::where("item_id", $itemId)->sum("quantity");
+        $valueDebit = Journal::where("journalable_id", $itemId)->where("journalable_type", "Item")->sum("debit");
+        $valueCredit = Journal::where("journalable_id", $itemId)->where("journalable_type", "Item")->sum("credit");
+
+        if ($qty < 0) {
+            return 0;
+        }
+
+        return ($valueDebit - $valueCredit) / $qty;
     }
 }

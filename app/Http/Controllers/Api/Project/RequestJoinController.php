@@ -102,15 +102,19 @@ class RequestJoinController extends Controller
         config()->set('database.connections.tenant.database', $dbName);
         DB::connection('tenant')->reconnect();
 
-        $tenantUser = new \App\Model\Master\User;
-        $tenantUser->id = $user->id;
-        $tenantUser->name = $user->name;
-        $tenantUser->first_name = $user->first_name;
-        $tenantUser->last_name = $user->last_name;
-        $tenantUser->email = $user->email;
-        $tenantUser->address = $user->address;
-        $tenantUser->phone = $user->phone;
-        $tenantUser->save();
+        $tenantUser = \App\Model\Master\User::find($user->id);
+
+        if (!$tenantUser) {
+            $tenantUser = new \App\Model\Master\User;
+            $tenantUser->id = $user->id;
+            $tenantUser->name = $user->name;
+            $tenantUser->first_name = $user->first_name;
+            $tenantUser->last_name = $user->last_name;
+            $tenantUser->email = $user->email;
+            $tenantUser->address = $user->address;
+            $tenantUser->phone = $user->phone;
+            $tenantUser->save();
+        }
 
         // Add role to new user
         // TODO: make this role dynamic

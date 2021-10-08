@@ -116,6 +116,8 @@ class CustomerController extends Controller
     public function importCustomer(Request $request)
     {
         $request->validate([
+            'code' => 'required',
+            'name' => 'required',
             'file' => 'required|mimes:xlsx,xls,csv|max:1024',
         ]);
 

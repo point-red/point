@@ -18,7 +18,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\Kpi\KpiTemplateImport;
+use App\Imports\Kpi\TemplateCheckImport;
+use App\Imports\Master\CustomerImport;
+use App\Model\CloudStorage;
+use App\Model\HumanResource\Kpi\KpiTemplate;
 class CustomerController extends Controller
 {
     /**
@@ -107,6 +112,20 @@ class CustomerController extends Controller
 
         return new ApiResource($customer);
     }
+
+    public function importCustomer(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:1024',
+        ]);
+
+        $result = Excel::import(new CustomerImport, request()->file('file'));
+
+        return response()->json([
+            'message' => 'success',
+        ], 200);
+    }
+
 
     /**
      * Display the specified resource.

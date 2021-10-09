@@ -18,10 +18,12 @@ class CustomerImport implements ToCollection
         }
         
         $customer = new Customer();
-        $customer->name = $row[1];
-        $customer->address = $row[2];
-        $customer->phone = $row[3];
-        $customer->branch_id = 1;
+        $customer->code = request()->get("code");
+        $customer->name = request()->get("name");
+        $customer->address = request()->get("address");
+        $customer->phone = request()->get("phone");
+        $customer->email = request()->get("email");
+        $customer->branch_id = auth()->user()->branch_id ?? 1;
         $customer->save();
       }
     }

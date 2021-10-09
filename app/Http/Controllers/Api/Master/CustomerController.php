@@ -118,6 +118,9 @@ class CustomerController extends Controller
         $request->validate([
             'code' => 'required',
             'name' => 'required',
+            'address' => 'required',
+            'phone' => 'required',
+            'email' => 'required',
             'file' => 'required|mimes:xlsx,xls,csv|max:1024',
         ]);
 

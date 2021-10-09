@@ -8,15 +8,16 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 
 class CustomerImport implements ToCollection
 {
-    public function collection(Collection $rows)
-    {
-      $index = 0;
-      foreach ($rows as $row) {
-        $index++;
-        if($index == 1)  {
-          continue;
-        }
-        
+  public function collection(Collection $rows)
+  {
+    $index = 0;
+    foreach ($rows as $row) {
+      $index++;
+      if($index == 1)  {
+        continue;
+      }
+      
+      if ($row[request()->get("name")] !== null) {
         $customer = new Customer();
         $customer->code = $row[request()->get("code")];
         $customer->name = $row[request()->get("name")];
@@ -27,4 +28,5 @@ class CustomerImport implements ToCollection
         $customer->save();
       }
     }
+  }
 }

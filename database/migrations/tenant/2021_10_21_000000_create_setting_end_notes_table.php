@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSettingLogoTable extends Migration
+class CreateSettingEndNoteTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateSettingLogoTable extends Migration
      */
     public function up()
     {
-        Schema::create('setting_logos', function (Blueprint $table) {
+        Schema::create('setting_end_notes', function (Blueprint $table) {
             $table->increments('id');
             $table->string('purchase_request')->nullable();
             $table->string('purchase_order')->nullable();
@@ -46,6 +46,6 @@ class CreateSettingLogoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('setting_logos');
+        Schema::dropIfExists('setting_end_notes');
     }
 }

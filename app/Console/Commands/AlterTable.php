@@ -47,8 +47,8 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_invoice_items` ADD COLUMN `production_number` varchar(255) default null');
-            DB::connection('tenant')->statement('ALTER TABLE `purchase_invoice_items` ADD COLUMN `expiry_date` datetime default null');
+            DB::connection('tenant')->statement('ALTER TABLE `sales_invoices` ADD COLUMN `referenceable_id` int(10)');
+            DB::connection('tenant')->statement('ALTER TABLE `sales_invoices` ADD COLUMN `referenceable_type` varchar(255)');
         }
     }
 }

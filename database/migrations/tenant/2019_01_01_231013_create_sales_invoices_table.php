@@ -25,6 +25,8 @@ class CreateSalesInvoicesTable extends Migration
             $table->string('shipping_address')->nullable();
             $table->string('shipping_phone')->nullable();
             $table->string('shipping_email')->nullable();
+            $table->unsignedInteger('referenceable_id');
+            $table->string('referenceable_type');
             $table->datetime('due_date');
             $table->decimal('delivery_fee', 65, 30)->default(0);
             $table->unsignedDecimal('discount_percent', 33, 30)->nullable();

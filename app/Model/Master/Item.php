@@ -147,7 +147,7 @@ class Item extends MasterModel
         $valueDebit = Journal::where("journalable_id", $itemId)->where("journalable_type", "Item")->sum("debit");
         $valueCredit = Journal::where("journalable_id", $itemId)->where("journalable_type", "Item")->sum("credit");
 
-        if ($qty < 0) {
+        if ($qty <= 0) {
             return 0;
         }
 

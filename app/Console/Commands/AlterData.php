@@ -59,8 +59,15 @@ class AlterData extends Command
             DB::connection('tenant')->reconnect();
             DB::connection('tenant')->beginTransaction();
 
-            Permission::insert('insert into permissions (name, guard_name) values (?, ?)', ['menu setting', 'api']);
-            Permission::insert('insert into permissions (name, guard_name) values (?, ?)', ['update setting', 'api']);
+            $permission = new Permission;
+            $permission->name = "menu setting";
+            $permission->guard_name = "api";
+            $permission->save();
+            
+            $permission = new Permission;
+            $permission->name = "update setting";
+            $permission->guard_name = "api";
+            $permission->save();
 
             DB::connection('tenant')->commit();
         }

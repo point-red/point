@@ -29,6 +29,10 @@ class PermissionSeeder extends Seeder
         $this->setHumanResourcePermission();
         $this->setPluginPermission();
 
+        // Setting
+        Permission::createIfNotExists('menu setting');
+        Permission::createIfNotExists('update setting');
+
         app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
         $permissions = Permission::all();

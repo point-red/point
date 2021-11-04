@@ -16,8 +16,10 @@ class CreateSalesInvoiceItemsTable extends Migration
         Schema::create('sales_invoice_items', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('sales_invoice_id');
-            $table->unsignedInteger('delivery_note_id');
-            $table->unsignedInteger('delivery_note_item_id');
+            $table->unsignedInteger('referenceable_id')->nullable();
+            $table->string('referenceable_type')->nullable();
+            $table->unsignedInteger('item_referenceable_id')->nullable();
+            $table->string('item_referenceable_type')->nullable();
             $table->unsignedInteger('item_id');
             $table->string('item_name');
             $table->decimal('quantity', 65, 30);
@@ -31,8 +33,6 @@ class CreateSalesInvoiceItemsTable extends Migration
             $table->unsignedInteger('allocation_id')->nullable();
 
             $table->foreign('sales_invoice_id')->references('id')->on('sales_invoices')->onDelete('cascade');
-            $table->foreign('delivery_note_id')->references('id')->on('delivery_notes')->onDelete('cascade');
-            $table->foreign('delivery_note_item_id')->references('id')->on('delivery_note_items')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');
             $table->foreign('allocation_id')->references('id')->on('allocations')->onDelete('restrict');
         });

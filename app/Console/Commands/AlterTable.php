@@ -47,14 +47,8 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE `sales_invoice_items` DROP FOREIGN KEY `sales_invoice_items_delivery_note_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_invoice_items` DROP COLUMN `delivery_note_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_invoice_items` DROP FOREIGN KEY `sales_invoice_items_delivery_note_item_id_foreign`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_invoice_items` DROP COLUMN `delivery_note_item_id`');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_invoice_items` ADD COLUMN `referenceable_id` int(10)');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_invoice_items` ADD COLUMN `referenceable_type` varchar(255)');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_invoice_items` ADD COLUMN `item_referenceable_id` int(10)');
-            DB::connection('tenant')->statement('ALTER TABLE `sales_invoice_items` ADD COLUMN `item_referenceable_type` varchar(255)');
+            DB::connection('tenant')->statement('ALTER TABLE `sales_invoice_items` ADD COLUMN `expiry_date` datetime default null');
+            DB::connection('tenant')->statement('ALTER TABLE `sales_invoice_items` ADD COLUMN `production_number` varchar(255) default null');
         }
     }
 }

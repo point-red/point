@@ -29,6 +29,8 @@ class CreateSalesInvoiceItemsTable extends Migration
             $table->boolean('taxable')->default(true);
             $table->string('unit');
             $table->decimal('converter', 65, 30);
+            $table->datetime('expiry_date')->nullable();
+            $table->string('production_number')->nullable();
             $table->text('notes')->nullable();
             $table->unsignedInteger('allocation_id')->nullable();
 

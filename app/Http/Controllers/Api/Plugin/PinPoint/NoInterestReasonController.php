@@ -33,10 +33,14 @@ class NoInterestReasonController extends Controller
      */
     public function store(Request $request)
     {
-        $noInterestReason = new NoInterestReason;
-        $noInterestReason->fill($request->all());
-        $noInterestReason->save();
+        try {
+            $noInterestReason = new NoInterestReason;
+            $noInterestReason->name = str_clean($request->get("name"));
+            $noInterestReason->save();
 
-        return new ApiResource($noInterestReason);
+            return new ApiResource($noInterestReason);
+        } catch (\Exception $err) {
+            return response()->json(['message' => "Data exists!"], 400);
+        }
     }
 }

@@ -33,10 +33,14 @@ class SimilarProductController extends Controller
      */
     public function store(Request $request)
     {
-        $similarProduct = new SimilarProduct;
-        $similarProduct->fill($request->all());
-        $similarProduct->save();
+        try {
+            $similarProduct = new SimilarProduct;
+            $similarProduct->name = str_clean($request->get("name"));
+            $similarProduct->save();
 
-        return new ApiResource($similarProduct);
+            return new ApiResource($similarProduct);
+        } catch (\Exception $err) {
+            return response()->json(['message' => "Data exists!"], 400);
+        }
     }
 }

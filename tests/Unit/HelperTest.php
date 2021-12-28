@@ -49,4 +49,13 @@ class HelperTest extends TestCase
 
         $this->assertStringContainsString('2019-01-10 00:00:00', $date);
     }
+
+    /** @test */
+    public function str_clean_test()
+    {
+        $str = "  with  two  spaces  ";
+        $expected = "with two spaces";
+
+        $this->assertEquals($expected, str_clean($str));
+    }
 }

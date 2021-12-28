@@ -33,10 +33,14 @@ class InterestReasonController extends Controller
      */
     public function store(Request $request)
     {
-        $interestReason = new InterestReason;
-        $interestReason->fill($request->all());
-        $interestReason->save();
+        try {
+            $interestReason = new InterestReason;
+            $interestReason->name = str_clean($request->get("name"));
+            $interestReason->save();
 
-        return new ApiResource($interestReason);
+            return new ApiResource($interestReason);
+        } catch (\Exception $err) {
+            return response()->json(['message' => "Data exists!"], 400);
+        }
     }
 }

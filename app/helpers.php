@@ -328,4 +328,18 @@ if (! function_exists('base64_to_jpeg')) {
 
         return $output_file;
     }
+
+
+    if (! function_exists('str_clean')) {
+        /**
+         * Log an object / array.
+         *
+         * @param $str
+         * @return string
+         */
+        function str_clean($str)
+        {   
+            return trim(preg_replace('/\s\s+/', ' ', str_replace("\n", " ", $str)));
+        }
+    }
 }

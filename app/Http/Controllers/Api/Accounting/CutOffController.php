@@ -24,12 +24,13 @@ class CutOffController extends Controller
     public function index(Request $request)
     {
         $cutOffs = CutOff::eloquentFilter($request);
+        
         if ($request->get('join')) {
             $fields = explode(',', $request->get('join'));
             if (in_array('form', $fields)) {
-                $cutOffs = $cutOffs->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', CutOff::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), CutOff::$morphName);
+                $cutOffs = $cutOffs->join(Form::getTableName() . ' as '.Form::$alias, function ($q) {
+                    $q->on(Form::$alias.'.formable_id', '=', CutOff::getTableName('id'))
+                        ->where(Form::$alias.'.formable_type', CutOff::$morphName);
                 });
             }
         }

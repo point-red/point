@@ -79,7 +79,7 @@ class FixedAssetController extends Controller
     public function update(UpdateFixedAssetRequest $request, $id)
     {
         $fixedAsset = FixedAsset::findOrFail($id);
-        $fixedAsset->fill($request->all());
+        $fixedAsset->fill($request->only(['name', 'fixed_asset_group_id']));
         $fixedAsset->save();
 
         return new ApiResource($fixedAsset);

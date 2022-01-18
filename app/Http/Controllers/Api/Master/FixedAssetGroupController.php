@@ -38,7 +38,7 @@ class FixedAssetGroupController extends Controller
     public function store(StoreFixedAssetGroupRequest $request)
     {
         $group = new FixedAssetGroup;
-        $group->fill($request->all());
+        $group->name = str_clean($request->get("name"));
         $group->save();
 
         return new ApiResource($group);
@@ -72,7 +72,7 @@ class FixedAssetGroupController extends Controller
     public function update(UpdateFixedAssetGroupRequest $request, $id)
     {
         $group = FixedAssetGroup::findOrFail($id);
-        $group->fill($request->all());
+        $group->name = str_clean($request->get("name"));
         $group->save();
 
         return new ApiResource($group);

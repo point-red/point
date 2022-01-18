@@ -46,6 +46,7 @@ class FixedAssetController extends Controller
     {
         $fixedAsset = new FixedAsset();
         $fixedAsset->fill($request->all());
+        $fixedAsset->name = str_clean($request->get("name"));
         $fixedAsset->save();
 
         return new ApiResource($fixedAsset);
@@ -80,6 +81,7 @@ class FixedAssetController extends Controller
     {
         $fixedAsset = FixedAsset::findOrFail($id);
         $fixedAsset->fill($request->only(['name', 'fixed_asset_group_id']));
+        $fixedAsset->name = str_clean($request->get("name"));
         $fixedAsset->save();
 
         return new ApiResource($fixedAsset);

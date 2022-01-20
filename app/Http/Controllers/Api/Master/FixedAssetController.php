@@ -21,7 +21,7 @@ class FixedAssetController extends Controller
      */
     public function index(Request $request)
     {
-        $fixedAssets = FixedAsset::from(FixedAsset::getTableName().' as '.FixedAsset::$alias)->eloquentFilter($request);
+        $fixedAssets = FixedAsset::from(FixedAsset::getTableName() . ' as ' . FixedAsset::$alias)->eloquentFilter($request);
 
         $fixedAssets = FixedAsset::joins($fixedAssets, $request->get('join'));
 
@@ -46,7 +46,7 @@ class FixedAssetController extends Controller
     {
         $fixedAsset = new FixedAsset();
         $fixedAsset->fill($request->all());
-        $fixedAsset->name = str_clean($request->get("name"));
+        $fixedAsset->name = str_clean($request->get('name'));
         $fixedAsset->save();
 
         return new ApiResource($fixedAsset);
@@ -55,17 +55,17 @@ class FixedAssetController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Request $request
-     * @param int $id
+     * @param  Request  $request
+     * @param  int  $id
      * @return ApiResource
      */
     public function show(Request $request, $id)
     {
-        $fixedAsset = FixedAsset::from(FixedAsset::getTableName().' as '.FixedAsset::$alias)->eloquentFilter($request);
+        $fixedAsset = FixedAsset::from(FixedAsset::getTableName() . ' as ' . FixedAsset::$alias)->eloquentFilter($request);
 
         $fixedAsset = FixedAsset::joins($fixedAsset, $request->get('join'));
 
-        $fixedAsset = $fixedAsset->where(FixedAsset::$alias.'.id', $id)->first();
+        $fixedAsset = $fixedAsset->where(FixedAsset::$alias . '.id', $id)->first();
 
         return new ApiResource($fixedAsset);
     }
@@ -73,7 +73,7 @@ class FixedAssetController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateFixedAssetRequest $request
+     * @param  UpdateFixedAssetRequest  $request
      * @param  int $id
      * @return ApiResource
      */
@@ -81,7 +81,7 @@ class FixedAssetController extends Controller
     {
         $fixedAsset = FixedAsset::findOrFail($id);
         $fixedAsset->fill($request->only(['name', 'fixed_asset_group_id']));
-        $fixedAsset->name = str_clean($request->get("name"));
+        $fixedAsset->name = str_clean($request->get('name'));
         $fixedAsset->save();
 
         return new ApiResource($fixedAsset);
@@ -110,6 +110,6 @@ class FixedAssetController extends Controller
     {
         $fixedAssetDepreciationMethods = FixedAsset::getAllDepreciationMethods();
 
-        return new ApiResource($fixedAssetDepreciationMethods );
+        return new ApiResource($fixedAssetDepreciationMethods);
     }
 }

@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class FixedAssetTest extends TestCase
 {
-    static $path = '/api/v1/master/fixed-assets';
+    public static $path = '/api/v1/master/fixed-assets';
 
 
     public function setUp(): void
@@ -21,10 +21,10 @@ class FixedAssetTest extends TestCase
     {
         $this->createSampleChartAccountType();
         $data = [
-            'code' => "".$this->faker->randomNumber(null, false),
+            'code' => '' . $this->faker->randomNumber(null, false),
             'name' => $this->faker->name,
             'depreciation_method' => FixedAsset::$DEPRECIATION_METHOD_NO_DEPRECIATION,
-            'chart_of_account_id' => $this->account->id
+            'chart_of_account_id' => $this->account->id,
         ];
         $response = $this->json('POST', FixedAssetTest::$path, $data, [$this->headers]);
 
@@ -38,7 +38,7 @@ class FixedAssetTest extends TestCase
     {
         $fixedAsset = factory(FixedAsset::class)->create();
 
-        $response = $this->json('GET', FixedAssetTest::$path.'/'.$fixedAsset->id, [], [$this->headers]);
+        $response = $this->json('GET', FixedAssetTest::$path . '/' . $fixedAsset->id, [], [$this->headers]);
 
         $response->assertJson([
             'data' => [
@@ -65,8 +65,8 @@ class FixedAssetTest extends TestCase
         }
 
         $response->assertStatus(200);
-    }    
-    
+    }
+
     /** @test */
     public function readAllArchiveData()
     {
@@ -92,10 +92,10 @@ class FixedAssetTest extends TestCase
 
         $data = [
             'id' => $fixedAsset->id,
-            'name' => $this->faker->name
+            'name' => $this->faker->name,
         ];
 
-        $response = $this->json('PUT', FixedAssetTest::$path.'/'.$fixedAsset->id, $data, [$this->headers]);
+        $response = $this->json('PUT', FixedAssetTest::$path . '/' . $fixedAsset->id, $data, [$this->headers]);
 
         $response->assertStatus(200);
 
@@ -109,7 +109,7 @@ class FixedAssetTest extends TestCase
     {
         $fixedAsset = factory(FixedAsset::class)->create();
 
-        $response = $this->json('DELETE', FixedAssetTest::$path.'/'.$fixedAsset->id, [], [$this->headers]);
+        $response = $this->json('DELETE', FixedAssetTest::$path . '/' . $fixedAsset->id, [], [$this->headers]);
 
         $response->assertStatus(204);
 
@@ -122,22 +122,21 @@ class FixedAssetTest extends TestCase
     /** @test */
     public function readAllDeprecationMethodsData()
     {
-        $response = $this->json('GET', FixedAssetTest::$path."/depreciation-methods", [], [$this->headers]);
-        
+        $response = $this->json('GET', FixedAssetTest::$path . "/depreciation-methods", [], [$this->headers]);
+
         $response->assertJson([
             'data' => [
                 [
-                    "id" => "STRAIGHT_LINE",
-                    "label" => "Garis Lurus"
+                    'id' => 'STRAIGHT_LINE',
+                    'label' => 'Garis Lurus'
                 ],
                 [
-                    "id" => "NO_DEPRECIATION",
-                    "label" => "Tidak Disusutkan"
-                ]
+                    'id' => 'NO_DEPRECIATION',
+                    'label' => 'Tidak Disusutkan'
+                ],
             ]
         ]);
 
         $response->assertStatus(200);
     }
-
 }

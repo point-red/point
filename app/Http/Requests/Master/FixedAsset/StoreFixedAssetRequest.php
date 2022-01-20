@@ -14,7 +14,7 @@ class StoreFixedAssetRequest extends FormRequest
      */
     public function authorize()
     {   
-        if (env("APP_ENV") === "testing") return true;
+        if (env("APP_ENV") === 'testing') return true;
         return tenant(auth()->user()->id)->hasPermissionTo('create fixed asset');
     }
 
@@ -29,7 +29,7 @@ class StoreFixedAssetRequest extends FormRequest
             'name' => 'required|string',
             'code' => 'required|string|unique:tenant.fixed_assets,code',
             'fixed_asset_group_id' => 'nullable|numeric|exists:tenant.fixed_asset_groups,id',
-            'depreciation_method' => 'required|string|in:'.implode(",", array_column(FixedAsset::getAllDepreciationMethods(), "id")),
+            'depreciation_method' => 'required|string|in:'.implode(',', array_column(FixedAsset::getAllDepreciationMethods(), 'id')),
             'chart_of_account_id' => 'required|numeric',
             'accumulation_chart_of_account_id' => 'required_if:depreciation_method,STRAIGHT_LINE|nullable|numeric',
             'depreciation_chart_of_account_id' => 'required_if:depreciation_method,STRAIGHT_LINE|nullable|numeric',

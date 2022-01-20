@@ -15,7 +15,7 @@ class FixedAssetGroup extends MasterModel
     protected $appends = ['label'];
 
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     public static $alias = 'fixed_asset_groups';

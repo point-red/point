@@ -24,7 +24,7 @@ class FixedAsset extends MasterModel
         'accumulation_chart_of_account_id',
         'depreciation_chart_of_account_id',
         'useful_life_year',
-        'salvage_value'
+        'salvage_value',
     ];
 
     public static $alias = 'fixed_asset';
@@ -40,7 +40,9 @@ class FixedAsset extends MasterModel
 
     public function getUsefulLifeMonthAttribute()
     {
-        if (!$this->useful_life_year) return null;
+        if (!$this->useful_life_year){
+            return null;
+        }
 
         return $this->useful_life_year * 12;
     }

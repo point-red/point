@@ -14,7 +14,7 @@ class CreateFixedAssetsTable extends Migration
     public function up()
     {
         Schema::create('fixed_assets', function (Blueprint $table) {
-            $table->increments("id");
+            $table->increments('id');
             $table->string('code')->nullable()->unique();
             $table->string('name');
             $table->string('depreciation_method');

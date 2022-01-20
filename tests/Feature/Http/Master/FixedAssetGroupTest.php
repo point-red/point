@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class FixedAssetGroupTest extends TestCase
 {
-    static $path = '/api/v1/master/fixed-asset-groups/';
+    public static $path = '/api/v1/master/fixed-asset-groups/';
 
     public function setUp(): void
     {

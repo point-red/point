@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Model\Auth\Permission;
 use App\Model\Auth\Role;
+use Illuminate\Console\Command;
 
 class SyncPermission extends Command
 {

@@ -2,10 +2,10 @@
 
 namespace Tests;
 
-use App\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
+use App\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Log;
@@ -41,7 +41,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        if (! defined('LARAVEL_START')) {
+        if (!defined('LARAVEL_START')) {
             define('LARAVEL_START', microtime(true));
         }
 
@@ -85,30 +85,31 @@ abstract class TestCase extends BaseTestCase
         $start = LARAVEL_START;
         $end = microtime(true);
         $diff = $end - $start;
-        Log::channel('testing')->info('['.app('request')->method().'] '
-            .app('request')->url()
-            .' '
-            .$diff);
+        Log::channel('testing')->info('[' . app('request')->method() . '] '
+            . app('request')->url()
+            . ' '
+            . $diff);
     }
 
-    protected function createSampleChartAccountType(){
+    protected function createSampleChartAccountType()
+    {
         $chartOfAccountType = new ChartOfAccountType();
-        $chartOfAccountType->name = "Test Type";
-        $chartOfAccountType->alias = "Testing one";
+        $chartOfAccountType->name = 'Test Type';
+        $chartOfAccountType->alias = 'Testing one';
         $chartOfAccountType->is_debit = true;
         $chartOfAccountType->save();
 
         $this->createSampleChartAccount($chartOfAccountType);
     }
 
-    protected function createSampleChartAccount($chartOfAccountType){
+    protected function createSampleChartAccount($chartOfAccountType)
+    {
         $chartOfAccount = new ChartOfAccount();
         $chartOfAccount->type_id = $chartOfAccountType->id;
-        $chartOfAccount->number = "TEST01";
-        $chartOfAccount->name = "Testing Chart";
-        $chartOfAccount->alias = "Testing chart";
+        $chartOfAccount->number = 'TEST01';
+        $chartOfAccount->name = 'Testing Chart';
+        $chartOfAccount->alias = 'Testing chart';
         $chartOfAccount->save();
         $this->account = $chartOfAccount;
     }
-
 }

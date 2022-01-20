@@ -14,7 +14,7 @@ class CreateFixedAssetGroupsTable extends Migration
     public function up()
     {
         Schema::create('fixed_asset_groups', function (Blueprint $table) {
-            $table->increments("id");
+            $table->increments('id');
             $table->string('name')->unique();
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();

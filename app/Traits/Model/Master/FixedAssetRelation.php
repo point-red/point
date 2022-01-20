@@ -5,7 +5,6 @@ namespace App\Traits\Model\Master;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\Journal;
 use App\Model\Master\FixedAssetGroup;
-use App\Model\Master\ItemGroup;
 
 trait FixedAssetRelation
 {

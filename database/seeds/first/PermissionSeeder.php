@@ -48,7 +48,7 @@ class PermissionSeeder extends Seeder
             'customer', 'supplier', 'expedition',
             'item', 'service',
             'allocation', 'warehouse', 'branch',
-            'fixed asset'
+            'fixed asset',
         ];
 
         foreach ($allPermission as $permission) {

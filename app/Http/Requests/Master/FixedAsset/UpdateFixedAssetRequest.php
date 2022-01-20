@@ -16,6 +16,7 @@ class UpdateFixedAssetRequest extends FormRequest
         if (env('APP_ENV') == 'testing') {
             return true;
         }
+
         return tenant(auth()->user()->id)->hasPermissionTo('update fixed asset');
     }
 

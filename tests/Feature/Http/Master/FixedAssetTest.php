@@ -9,13 +9,13 @@ class FixedAssetTest extends TestCase
 {
     public static $path = '/api/v1/master/fixed-assets';
 
-
     public function setUp(): void
     {
         parent::setUp();
 
         $this->signIn();
     }
+    
     /** @test */
     public function storeData()
     {

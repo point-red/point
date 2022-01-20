@@ -26,7 +26,7 @@ class StoreFixedAssetRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:tenant.fixed_assets,name',
+            'name' => 'required|string',
             'code' => 'required|string|unique:tenant.fixed_assets,code',
             'fixed_asset_group_id' => 'nullable|numeric|exists:tenant.fixed_asset_groups,id',
             'depreciation_method' => 'required|string|in:'.implode(",", array_column(FixedAsset::getAllDepreciationMethods(), "id")),

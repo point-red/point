@@ -122,7 +122,7 @@ class FixedAssetTest extends TestCase
     /** @test */
     public function readAllDeprecationMethodsData()
     {
-        $response = $this->json('GET', FixedAssetTest::$path."/depreciation-methods", [], [$this->headers]);
+        $response = $this->json('GET', FixedAssetTest::$path.'/depreciation-methods', [], [$this->headers]);
 
         $response->assertJson([
             'data' => [

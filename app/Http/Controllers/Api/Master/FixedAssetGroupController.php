@@ -15,7 +15,7 @@ class FixedAssetGroupController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  Request $request
+     * @param  Request  $request
      * @return ApiCollection
      */
     public function index(Request $request)
@@ -32,7 +32,7 @@ class FixedAssetGroupController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  StoreRequest $request
+     * @param  StoreRequest  $request
      * @return ApiResource
      */
     public function store(StoreFixedAssetGroupRequest $request)
@@ -47,7 +47,7 @@ class FixedAssetGroupController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Request $request
+     * @param  Request  $request
      * @param  int $id
      * @return ApiResource
      */
@@ -65,7 +65,7 @@ class FixedAssetGroupController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  UpdateRequest $request
+     * @param  UpdateRequest  $request
      * @param  $id
      * @return ApiResource
      */
@@ -81,7 +81,7 @@ class FixedAssetGroupController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

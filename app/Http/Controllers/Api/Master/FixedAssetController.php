@@ -74,7 +74,7 @@ class FixedAssetController extends Controller
      * Update the specified resource in storage.
      *
      * @param  UpdateFixedAssetRequest  $request
-     * @param  int $id
+     * @param  int  $id
      * @return ApiResource
      */
     public function update(UpdateFixedAssetRequest $request, $id)

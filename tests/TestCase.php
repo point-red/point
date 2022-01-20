@@ -85,7 +85,7 @@ abstract class TestCase extends BaseTestCase
         $start = LARAVEL_START;
         $end = microtime(true);
         $diff = $end - $start;
-        Log::channel('testing')->info('[' . app('request')->method() . '] '
+        Log::channel('testing')->info('['.app('request')->method().'] '
             .app('request')->url()
             .' '
             .$diff);

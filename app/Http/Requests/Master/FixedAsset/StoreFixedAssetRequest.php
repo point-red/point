@@ -14,7 +14,7 @@ class StoreFixedAssetRequest extends FormRequest
      */
     public function authorize()
     {   
-        if (env("APP_ENV") === 'testing') {
+        if (env('APP_ENV') === 'testing') {
             return true;
         }
         return tenant(auth()->user()->id)->hasPermissionTo('create fixed asset');

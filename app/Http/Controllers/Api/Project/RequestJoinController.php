@@ -121,6 +121,13 @@ class RequestJoinController extends Controller
         $role = Role::findByName('super admin', 'api');
         $tenantUser->assignRole($role);
 
+        // Set user acces to branch central
+        $tenantUser->branches()->syncWithoutDetaching(1);
+        // Set as default user to branch central
+        $tenantUser->branches()->updateExistingPivot(1, [
+            'is_default' => true,
+        ], false);
+
         DB::commit();
 
         return new UserInvitationResource($projectUser);

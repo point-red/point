@@ -15,7 +15,7 @@ class FixedAssetTest extends TestCase
 
         $this->signIn();
     }
-    
+
     /** @test */
     public function storeData()
     {

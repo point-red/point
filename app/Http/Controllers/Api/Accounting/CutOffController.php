@@ -18,7 +18,7 @@ class CutOffController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return ApiCollection
      */
     public function index(Request $request)
@@ -28,9 +28,9 @@ class CutOffController extends Controller
         if ($request->get('join')) {
             $fields = explode(',', $request->get('join'));
             if (in_array('form', $fields)) {
-                $cutOffs = $cutOffs->join(Form::getTableName() . ' as ' . Form::$alias, function ($q) {
-                    $q->on(Form::$alias . '.formable_id', '=', CutOff::getTableName('id'))
-                        ->where(Form::$alias . '.formable_type', CutOff::$morphName);
+                $cutOffs = $cutOffs->join(Form::getTableName().' as '.Form::$alias, function ($q) {
+                    $q->on(Form::$alias.'.formable_id', '=', CutOff::getTableName('id'))
+                        ->where(Form::$alias.'.formable_type', CutOff::$morphName);
                 });
             }
         }
@@ -89,8 +89,8 @@ class CutOffController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Request $request
-     * @param int $id
+     * @param  Request  $request
+     * @param  int  $id
      * @return ApiResource
      */
     public function show(Request $request, $id)
@@ -128,7 +128,6 @@ class CutOffController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     *
      * @return \App\Http\Resources\Accounting\CutOff\CutOffResource
      */
     public function destroy($id)

@@ -13,7 +13,9 @@ class DeleteFixedAssetRequest extends FormRequest
      */
     public function authorize()
     {
-        if (env("APP_ENV") == 'testing') return true;
+        if (env("APP_ENV") == 'testing') {
+            return true;
+        }
         return tenant(auth()->user()->id)->hasPermissionTo('delete fixed asset');
     }
 

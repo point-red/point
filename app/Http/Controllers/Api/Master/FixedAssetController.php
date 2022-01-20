@@ -16,12 +16,12 @@ class FixedAssetController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return ApiCollection
      */
     public function index(Request $request)
     {
-        $fixedAssets = FixedAsset::from(FixedAsset::getTableName() . ' as ' . FixedAsset::$alias)->eloquentFilter($request);
+        $fixedAssets = FixedAsset::from(FixedAsset::getTableName().' as '.FixedAsset::$alias)->eloquentFilter($request);
 
         $fixedAssets = FixedAsset::joins($fixedAssets, $request->get('join'));
 
@@ -39,7 +39,7 @@ class FixedAssetController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreFixedAssetRequest $request
+     * @param  StoreFixedAssetRequest  $request
      * @return ApiResource
      */
     public function store(StoreFixedAssetRequest $request)
@@ -61,11 +61,11 @@ class FixedAssetController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $fixedAsset = FixedAsset::from(FixedAsset::getTableName() . ' as ' . FixedAsset::$alias)->eloquentFilter($request);
+        $fixedAsset = FixedAsset::from(FixedAsset::getTableName().' as '.FixedAsset::$alias)->eloquentFilter($request);
 
         $fixedAsset = FixedAsset::joins($fixedAsset, $request->get('join'));
 
-        $fixedAsset = $fixedAsset->where(FixedAsset::$alias . '.id', $id)->first();
+        $fixedAsset = $fixedAsset->where(FixedAsset::$alias.'.id', $id)->first();
 
         return new ApiResource($fixedAsset);
     }
@@ -103,7 +103,7 @@ class FixedAssetController extends Controller
     /**
      * Display a listing of the fixed asset depreciation method.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return ApiCollection
      */
     public function depreciationMethodList(Request $request)

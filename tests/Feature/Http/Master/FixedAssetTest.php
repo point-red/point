@@ -21,7 +21,7 @@ class FixedAssetTest extends TestCase
     {
         $this->createSampleChartAccountType();
         $data = [
-            'code' => '' . $this->faker->randomNumber(null, false),
+            'code' => ''.$this->faker->randomNumber(null, false),
             'name' => $this->faker->name,
             'depreciation_method' => FixedAsset::$DEPRECIATION_METHOD_NO_DEPRECIATION,
             'chart_of_account_id' => $this->account->id,
@@ -38,7 +38,7 @@ class FixedAssetTest extends TestCase
     {
         $fixedAsset = factory(FixedAsset::class)->create();
 
-        $response = $this->json('GET', FixedAssetTest::$path . '/' . $fixedAsset->id, [], [$this->headers]);
+        $response = $this->json('GET', FixedAssetTest::$path.'/'.$fixedAsset->id, [], [$this->headers]);
 
         $response->assertJson([
             'data' => [
@@ -95,7 +95,7 @@ class FixedAssetTest extends TestCase
             'name' => $this->faker->name,
         ];
 
-        $response = $this->json('PUT', FixedAssetTest::$path . '/' . $fixedAsset->id, $data, [$this->headers]);
+        $response = $this->json('PUT', FixedAssetTest::$path.'/'.$fixedAsset->id, $data, [$this->headers]);
 
         $response->assertStatus(200);
 
@@ -109,7 +109,7 @@ class FixedAssetTest extends TestCase
     {
         $fixedAsset = factory(FixedAsset::class)->create();
 
-        $response = $this->json('DELETE', FixedAssetTest::$path . '/' . $fixedAsset->id, [], [$this->headers]);
+        $response = $this->json('DELETE', FixedAssetTest::$path.'/'.$fixedAsset->id, [], [$this->headers]);
 
         $response->assertStatus(204);
 
@@ -122,19 +122,19 @@ class FixedAssetTest extends TestCase
     /** @test */
     public function readAllDeprecationMethodsData()
     {
-        $response = $this->json('GET', FixedAssetTest::$path . "/depreciation-methods", [], [$this->headers]);
+        $response = $this->json('GET', FixedAssetTest::$path."/depreciation-methods", [], [$this->headers]);
 
         $response->assertJson([
             'data' => [
                 [
                     'id' => 'STRAIGHT_LINE',
-                    'label' => 'Garis Lurus'
+                    'label' => 'Garis Lurus',
                 ],
                 [
                     'id' => 'NO_DEPRECIATION',
-                    'label' => 'Tidak Disusutkan'
+                    'label' => 'Tidak Disusutkan',
                 ],
-            ]
+            ],
         ]);
 
         $response->assertStatus(200);

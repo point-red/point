@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Master\FixedAsset;
 
-use App\Model\Master\FixedAsset;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateFixedAssetRequest extends FormRequest
@@ -14,7 +13,9 @@ class UpdateFixedAssetRequest extends FormRequest
      */
     public function authorize()
     {
-        if(env("APP_ENV") == 'testing') return true;
+        if(env("APP_ENV") == 'testing') {
+            return true;
+        }
         return tenant(auth()->user()->id)->hasPermissionTo('update fixed asset');
     }
 
@@ -27,7 +28,7 @@ class UpdateFixedAssetRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'fixed_asset_group_id' => 'nullable|numeric|exists:tenant.fixed_asset_groups,id'
+            'fixed_asset_group_id' => 'nullable|numeric|exists:tenant.fixed_asset_groups,id',
         ];
     }
 }

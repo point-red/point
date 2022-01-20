@@ -41,7 +41,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        if (!defined('LARAVEL_START')) {
+        if (! defined('LARAVEL_START')) {
             define('LARAVEL_START', microtime(true));
         }
 
@@ -86,9 +86,9 @@ abstract class TestCase extends BaseTestCase
         $end = microtime(true);
         $diff = $end - $start;
         Log::channel('testing')->info('[' . app('request')->method() . '] '
-            . app('request')->url()
-            . ' '
-            . $diff);
+            .app('request')->url()
+            .' '
+            .$diff);
     }
 
     protected function createSampleChartAccountType()

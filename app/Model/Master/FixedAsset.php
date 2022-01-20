@@ -40,7 +40,7 @@ class FixedAsset extends MasterModel
 
     public function getUsefulLifeMonthAttribute()
     {
-        if (!$this->useful_life_year){
+        if (! $this->useful_life_year) {
             return null;
         }
 

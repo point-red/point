@@ -9,22 +9,23 @@ class FixedAssetTest extends TestCase
 {
     static $path = '/api/v1/master/fixed-assets';
 
+
     public function setUp(): void
     {
         parent::setUp();
 
         $this->signIn();
     }
-
     /** @test */
-    public function createData()
+    public function storeData()
     {
+        $this->createSampleChartAccountType();
         $data = [
             'code' => "".$this->faker->randomNumber(null, false),
             'name' => $this->faker->name,
-            'depreciation_method' => FixedAsset::$DEPRECIATION_METHOD_STRAIGHT_LINE
+            'depreciation_method' => FixedAsset::$DEPRECIATION_METHOD_NO_DEPRECIATION,
+            'chart_of_account_id' => $this->account->id
         ];
-
         $response = $this->json('POST', FixedAssetTest::$path, $data, [$this->headers]);
 
         $response->assertStatus(201);
@@ -64,6 +65,24 @@ class FixedAssetTest extends TestCase
         }
 
         $response->assertStatus(200);
+    }    
+    
+    /** @test */
+    public function readAllArchiveData()
+    {
+        $fixedAssets = factory(FixedAsset::class, 2)->create();
+
+        $response = $this->call('GET', FixedAssetTest::$path, ['is_archived' => true], [$this->headers]);
+
+        foreach ($fixedAssets as $fixedAsset) {
+            $this->assertDatabaseHas('fixed_assets', [
+                'code' => $fixedAsset->code,
+                'name' => $fixedAsset->name,
+                'depreciation_method' => $fixedAsset->depreciation_method,
+            ], 'tenant');
+        }
+
+        $response->assertStatus(200);
     }
 
     /** @test */
@@ -73,10 +92,7 @@ class FixedAssetTest extends TestCase
 
         $data = [
             'id' => $fixedAsset->id,
-            'name' => $this->faker->name,
-            'depreciation_method' => $fixedAsset->depreciation_method,
-            'useful_life_year' => $this->faker->randomNumber(2),
-            'salvage_value' => $this->faker->randomNumber()
+            'name' => $this->faker->name
         ];
 
         $response = $this->json('PUT', FixedAssetTest::$path.'/'.$fixedAsset->id, $data, [$this->headers]);
@@ -102,4 +118,26 @@ class FixedAssetTest extends TestCase
             'name' => $fixedAsset->name,
         ], 'tenant');
     }
+
+    /** @test */
+    public function readAllDeprecationMethodsData()
+    {
+        $response = $this->json('GET', FixedAssetTest::$path."/depreciation-methods", [], [$this->headers]);
+        
+        $response->assertJson([
+            'data' => [
+                [
+                    "id" => "STRAIGHT_LINE",
+                    "label" => "Garis Lurus"
+                ],
+                [
+                    "id" => "NO_DEPRECIATION",
+                    "label" => "Tidak Disusutkan"
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(200);
+    }
+
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\Accounting\CutOff\StoreRequest;
 use App\Http\Resources\Accounting\CutOff\CutOffResource;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\CutOff;
 use App\Model\Accounting\Journal;
 use App\Model\Form;
@@ -24,16 +25,7 @@ class CutOffController extends Controller
     public function index(Request $request)
     {
         $cutOffs = CutOff::eloquentFilter($request);
-
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-            if (in_array('form', $fields)) {
-                $cutOffs = $cutOffs->join(Form::getTableName().' as '.Form::$alias, function ($q) {
-                    $q->on(Form::$alias.'.formable_id', '=', CutOff::getTableName('id'))
-                        ->where(Form::$alias.'.formable_type', CutOff::$morphName);
-                });
-            }
-        }
+        $cutOffs = CutOff::joins($cutOffs, $request);
 
         $cutOffs = pagination($cutOffs, $request->get('limit'));
 
@@ -48,42 +40,46 @@ class CutOffController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        DB::connection('tenant')->beginTransaction();
+        try{
+            DB::connection('tenant')->beginTransaction();
 
-        // cannot have more than one cutoff in single day
-        if (CutOff::all()->count() > 1) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'cutoff already exists',
-            ], 422);
+            $chartOfAccounts = ChartOfAccount::findOrFail(array_column($request->get("details"), "chart_of_account_id"));
+            // $chartOfAccount = array_first($chartOfAccounts, function($item) {
+            //     return $item->id == 2;
+            // });
+            // return $chartOfAccount;
+
+            $cutOff = new CutOff;
+            $cutOff->fill($request->all());
+            $cutOff->save();
+
+            $form = new Form;
+            $form->saveData($request->all(), $cutOff);
+
+            //        $details = $request->get('details');
+            //        for ($i = 0; $i < count($details); $i++) {
+            //            $cutOffAccount = new CutOffAccount;
+            //            $cutOffAccount->cut_off_id = $cutOff->id;
+            //            $cutOffAccount->chart_of_account_id = $request->get('details')[$i]['id'];
+            //            $cutOffAccount->debit = $request->get('details')[$i]['debit'] ?? 0;
+            //            $cutOffAccount->credit = $request->get('details')[$i]['credit'] ?? 0;
+            //            $cutOffAccount->save();
+
+            //            $journal = new Journal;
+            //            $journal->form_id = $form->id;
+            //            $journal->chart_of_account_id = $cutOffAccount->chart_of_account_id;
+            //            $journal->debit = $cutOffAccount->debit;
+            //            $journal->credit = $cutOffAccount->credit;
+            //            $journal->save();
+            //        }
+
+            DB::connection('tenant')->commit();
+            return new ApiResource($cutOff);
+        } catch(\Exception $e) {
+            DB::connection('tenant')->rollBack();
+            throw $e;
         }
 
-        $cutOff = new CutOff;
-        $cutOff->save();
-
-        $form = new Form;
-        $form->saveData($request->all(), $cutOff, ['auto_approve' => false]);
-
-        //        $details = $request->get('details');
-        //        for ($i = 0; $i < count($details); $i++) {
-        //            $cutOffAccount = new CutOffAccount;
-        //            $cutOffAccount->cut_off_id = $cutOff->id;
-        //            $cutOffAccount->chart_of_account_id = $request->get('details')[$i]['id'];
-        //            $cutOffAccount->debit = $request->get('details')[$i]['debit'] ?? 0;
-        //            $cutOffAccount->credit = $request->get('details')[$i]['credit'] ?? 0;
-        //            $cutOffAccount->save();
-
-        //            $journal = new Journal;
-        //            $journal->form_id = $form->id;
-        //            $journal->chart_of_account_id = $cutOffAccount->chart_of_account_id;
-        //            $journal->debit = $cutOffAccount->debit;
-        //            $journal->credit = $cutOffAccount->credit;
-        //            $journal->save();
-        //        }
-
-        DB::connection('tenant')->commit();
-
-        return new ApiResource($cutOff);
     }
 
     /**

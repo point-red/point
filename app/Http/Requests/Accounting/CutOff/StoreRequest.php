@@ -13,7 +13,11 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        if (env('APP_ENV') === 'testing') {
+            return true;
+        }
+
+        return tenant(auth()->user()->id)->hasPermissionTo('create cut off');
     }
 
     /**
@@ -24,7 +28,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'date' => 'required|date',
+            'details.*.chart_of_account_id' => 'required|numeric',
         ];
     }
 }

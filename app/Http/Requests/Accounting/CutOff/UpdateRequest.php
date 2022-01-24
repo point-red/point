@@ -13,7 +13,11 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        if (env('APP_ENV') === 'testing') {
+            return true;
+        }
+
+        return tenant(auth()->user()->id)->hasPermissionTo('update cut off');
     }
 
     /**

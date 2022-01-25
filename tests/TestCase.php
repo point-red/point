@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\ChartOfAccountType;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -30,6 +32,7 @@ abstract class TestCase extends BaseTestCase
     protected $connectionsToTransact = ['mysql', 'tenant'];
 
     protected $user;
+    protected $account = null;
 
     /**
      *  Set up the test.
@@ -86,5 +89,27 @@ abstract class TestCase extends BaseTestCase
             .app('request')->url()
             .' '
             .$diff);
+    }
+
+    protected function createSampleChartAccountType()
+    {
+        $chartOfAccountType = new ChartOfAccountType();
+        $chartOfAccountType->name = 'Test Type';
+        $chartOfAccountType->alias = 'Testing one';
+        $chartOfAccountType->is_debit = true;
+        $chartOfAccountType->save();
+
+        $this->createSampleChartAccount($chartOfAccountType);
+    }
+
+    protected function createSampleChartAccount($chartOfAccountType)
+    {
+        $chartOfAccount = new ChartOfAccount();
+        $chartOfAccount->type_id = $chartOfAccountType->id;
+        $chartOfAccount->number = 'TEST01';
+        $chartOfAccount->name = 'Testing Chart';
+        $chartOfAccount->alias = 'Testing chart';
+        $chartOfAccount->save();
+        $this->account = $chartOfAccount;
     }
 }

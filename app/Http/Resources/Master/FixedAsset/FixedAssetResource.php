@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Resources\Master\Warehouse;
+namespace App\Http\Resources\Master\FixedAsset;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class WarehouseResource extends JsonResource
+class FixedAssetResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request
+     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     public function toArray($request)

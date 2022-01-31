@@ -7,6 +7,7 @@ use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Item;
 use App\Model\Master\ItemGroup;
 use App\Model\Master\ItemUnit;
@@ -110,6 +111,60 @@ class ItemController extends Controller
         });
 
         return $result;
+    }
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function import(Request $request)
+    {
+        $items = $request->get('items');
+        $success = 0;
+        $fail = 0;
+
+        foreach ($items as $item) {
+            try{
+                //check chart of account
+                $accounts = ChartOfAccount::select('id')->where('alias', strtoupper($item['chart_of_account']))->first();
+                if(isset($accounts->id) && $item['name'] != null){
+                    $item['chart_of_account_id'] = $accounts->id;
+
+                        DB::connection('tenant')->beginTransaction();
+                        if($item['group_name'] != null){
+                            $itemGroup = ItemGroup::select('id','name')->where('name', $item['group_name'])->get();
+                            if($itemGroup->isEmpty()){
+                                $itemGroup = new ItemGroup();
+                                $itemGroup->name = $item['group_name'];
+                                $itemGroup->save();
+                                $itemGroup = [$itemGroup];
+                            }
+                            $item['groups'] = $itemGroup;
+                        }
+                        $save = Item::create($item);
+                        DB::connection('tenant')->commit();
+
+                        $success++; 
+                    
+
+                }else{
+                    $fail++;
+                }
+            }catch(\Exception $e){
+                $fail++; 
+            }
+        }
+
+        $response['data'] = [
+            'success' => $success,
+            'fail' => $fail
+        ];
+
+        return response()->json($response, 200);
     }
 
     /**

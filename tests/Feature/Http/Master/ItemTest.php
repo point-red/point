@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Master;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Http\UploadedFile;
 
 use Tests\TestCase;
 
@@ -17,47 +18,31 @@ class ItemTest extends TestCase
     /** @test */
     public function import_item_test()
     {
-        $chart_account = ['Persediaan Barang Jadi', 'Persediaan Dalam Perjalanan', 'Persediaan Dalam Bahan Mentah'];
-        $units = [
-            "Pcs" => 1,
-            "Box" => 10,
-            "Kardus" => 100,
+        $file = new UploadedFile(
+          base_path('tests//import/import_master_item_test.xlsx'),
+          'import.xlsx',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          null,
+          true
+        );
+
+        $send = [
+          'start_row' => 3,
+          'code' => 3,
+          'name' => 4,
+          'chart_of_account' => 9,
+          'units_measurement_1' => 5,
+          'units_measurement_2' => 6,
+          'units_converter_1' => 7,
+          'units_converter_2' => 8,
+          'require_expiry_date' => 11,
+          'require_production_number' => 12,
+          'group_name' => 10,
+          'file' => $file
         ];
 
-        $payload = [];
-        for($i=0;$i<3;$i++){
-            $data = [
-                'code' => $this->faker->randomNumber(null, false),
-                'name' => $this->faker->name,
-                'chart_of_account' => $chart_account[array_rand($chart_account)],
-                'units' => [
-                  [
-                    'label' => array_rand($units),
-                    'name' => array_rand($units),
-                    'converter' => $units[array_rand($units)],
-                    'default_purchase' => true,
-                    'default_sales' => true
-                  ],
-                  [
-                    'label' => array_rand($units),
-                    'name' => array_rand($units),
-                    'converter' => $units[array_rand($units)],
-                    'default_purchase' => true,
-                    'default_sales' => true
-                  ]
-                ],
-                'require_expiry_date' => false,
-                'require_production_number' => false,
-                'group_name' => $this->faker->name
-            ];
-            array_push($payload, $data);
-        }
-        array_push($payload, []);
-
-        $send['items'] = $payload;
-
         // API Request
-        $response = $this->post('/api/v1/master/items/import', $send, [$this->headers]);
+        $response = $this->post('/api/v1/master/items/import', $send, ['Content-Type:multipart/form-data']);
         // $response = $this->get('/');
 
         // Check Status Response

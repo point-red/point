@@ -7,10 +7,11 @@ use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Item;
 use App\Model\Master\ItemGroup;
 use App\Model\Master\ItemUnit;
+use App\Imports\Master\ItemImport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -123,48 +124,22 @@ class ItemController extends Controller
      */
     public function import(Request $request)
     {
-        $items = $request->get('items');
-        $success = 0;
-        $fail = 0;
+        $request->validate([
+            'code' => 'required',
+            'name' => 'required',
+            'chart_of_account' => 'required',
+            'start_row' => 'required',
+            'file' => 'required|mimes:xlsx,xls,csv|max:1024'
+        ]);
+        
+        $result = new ItemImport;
+        $result->startRow(request()->get("start_row"));
+        Excel::import($result, request()->file('file'));
 
-        foreach ($items as $item) {
-            try{
-                //check chart of account
-                $accounts = ChartOfAccount::select('id')->where('alias', strtoupper($item['chart_of_account']))->first();
-                if(isset($accounts->id) && $item['name'] != null){
-                    $item['chart_of_account_id'] = $accounts->id;
-
-                        DB::connection('tenant')->beginTransaction();
-                        if($item['group_name'] != null){
-                            $itemGroup = ItemGroup::select('id','name')->where('name', $item['group_name'])->get();
-                            if($itemGroup->isEmpty()){
-                                $itemGroup = new ItemGroup();
-                                $itemGroup->name = $item['group_name'];
-                                $itemGroup->save();
-                                $itemGroup = [$itemGroup];
-                            }
-                            $item['groups'] = $itemGroup;
-                        }
-                        $save = Item::create($item);
-                        DB::connection('tenant')->commit();
-
-                        $success++; 
-                    
-
-                }else{
-                    $fail++;
-                }
-            }catch(\Exception $e){
-                $fail++; 
-            }
-        }
-
-        $response['data'] = [
-            'success' => $success,
-            'fail' => $fail
-        ];
-
-        return response()->json($response, 200);
+        return response()->json([
+            'message' => 'success',
+            'data' => $result->getResult()
+        ], 200);
     }
 
     /**

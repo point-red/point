@@ -10,6 +10,8 @@ use App\Http\Resources\ApiResource;
 use App\Model\Master\Item;
 use App\Model\Master\ItemGroup;
 use App\Model\Master\ItemUnit;
+use App\Imports\Master\ItemImport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -110,6 +112,34 @@ class ItemController extends Controller
         });
 
         return $result;
+    }
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'code' => 'required',
+            'name' => 'required',
+            'chart_of_account' => 'required',
+            'start_row' => 'required',
+            'file' => 'required|mimes:xlsx,xls,csv|max:1024'
+        ]);
+        
+        $result = new ItemImport;
+        $result->startRow(request()->get("start_row"));
+        Excel::import($result, request()->file('file'));
+
+        return response()->json([
+            'message' => 'success',
+            'data' => $result->getResult()
+        ], 200);
     }
 
     /**

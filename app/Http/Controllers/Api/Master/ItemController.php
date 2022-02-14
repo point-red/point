@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Exports\ItemExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
@@ -139,6 +140,23 @@ class ItemController extends Controller
         return response()->json([
             'message' => 'success',
             'data' => $result->getResult()
+        ], 200);
+    }
+
+      /**
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function export()
+    {
+        Excel::download(new ItemExport, 'item.xlsx'); 
+
+        return response()->json([
+            'message' => 'success',
+            'data' => 'Export berhasil'
         ], 200);
     }
 

@@ -15,7 +15,7 @@ class CreateTableCutoffAsset extends Migration
     {
         Schema::create('cutoff_assets', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cutoff_detail_id');
+            $table->unsignedInteger('chart_of_account_id');
             $table->unsignedInteger('fixed_asset_id');
             $table->unsignedInteger('supplier_id');
             $table->string('location');
@@ -24,12 +24,12 @@ class CreateTableCutoffAsset extends Migration
             $table->unsignedDecimal('price', '65', 30);
             $table->unsignedDecimal('total', '65', 30);
             $table->unsignedDecimal('accumulation', '65', 30);
-            $table->unsignedDecimal('salvage_value', '65', 30);
+            $table->unsignedDecimal('book_value', '65', 30);
             $table->timestamps();
 
-            $table->foreign('cutoff_detail_id')->references('id')->on('cutoff_details')->onDelete('restrict');
             $table->foreign('fixed_asset_id')->references('id')->on('fixed_assets')->onDelete('restrict');
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');
+            $table->unique(['chart_of_account_id', 'fixed_asset_id'], 'unique_data_key');
         });
     }
 
@@ -40,6 +40,6 @@ class CreateTableCutoffAsset extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('table_cutoff_asset');
+        Schema::dropIfExists('cutoff_assets');
     }
 }

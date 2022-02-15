@@ -15,21 +15,20 @@ class CreateTableCutoffInventory extends Migration
     {
         Schema::create('cutoff_inventories', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cutoff_detail_id');
+            $table->unsignedInteger('chart_of_account_id');
             $table->unsignedInteger('item_id');
             $table->unsignedInteger('warehouse_id');
             $table->unsignedDecimal('quantity', '65', 30);
             $table->string('unit');
             $table->unsignedDecimal('converter', '65', 30);
             $table->unsignedDecimal('price', '65', 30);
-            $table->date('expiry_date');
-            $table->string('production_number');
             $table->unsignedDecimal('total', '65', 30);
             $table->timestamps();
 
-            $table->foreign('cutoff_detail_id')->references('id')->on('cutoff_details')->onDelete('restrict');
             $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');
             $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('restrict');
+
+            $table->unique(['chart_of_account_id', 'item_id'], 'unique_data_key');
         });
     }
 
@@ -40,6 +39,6 @@ class CreateTableCutoffInventory extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('table_cutoff_inventory');
+        Schema::dropIfExists('cutoff_inventories');
     }
 }

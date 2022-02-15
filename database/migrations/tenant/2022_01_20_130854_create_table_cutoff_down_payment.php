@@ -15,16 +15,16 @@ class CreateTableCutoffDownPayment extends Migration
     {
         Schema::create('cutoff_down_payments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cutoff_detail_id');
+            $table->unsignedInteger('chart_of_account_id');
             $table->enum('payment_type', ['RECEIVABLE', 'PAYABLE']);
-            $table->unsignedInteger('cutoff_paymentable_id')->index();
+            $table->unsignedInteger('cutoff_downpaymentable_id')->index();
             $table->string('cutoff_downpaymentable_type');
-            $table->string('cutoff_downpaymentable_name');
-            $table->unsignedDecimal('amout', '65', 30);
-            $table->text('notes');
+            $table->date('date');
+            $table->unsignedDecimal('amount', '65', 30);
+            $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->foreign('cutoff_detail_id')->references('id')->on('cutoff_details')->onDelete('restrict');
+            $table->unique(['chart_of_account_id', 'payment_type', 'cutoff_downpaymentable_id', 'cutoff_downpaymentable_type'], 'unique_data_key');
         });
     }
 
@@ -35,6 +35,6 @@ class CreateTableCutoffDownPayment extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('table_cutoff_down_payment');
+        Schema::dropIfExists('cutoff_down_payments');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableCutoffDetail extends Migration
+class CreateTableCutoffAccounts extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,16 @@ class CreateTableCutoffDetail extends Migration
      */
     public function up()
     {
-        Schema::create('cutoff_details', function (Blueprint $table) {
+        Schema::create('cutoff_accounts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('cutoff_account_id');
+            $table->unsignedBigInteger('cutoff_id');
             $table->unsignedInteger('chart_of_account_id');
-            $table->unsignedInteger('cutoffable_id')->index();
-            $table->string('cutoffable_type');
+            $table->unsignedDecimal('debit', '65', 30);
+            $table->unsignedDecimal('credit', '65', 30);
             $table->timestamps();
 
-            $table->foreign('cutoff_account_id')->references('id')->on('cutoff_accounts')->onDelete('restrict');
             $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
+            $table->foreign('cutoff_id')->references('id')->on('cutoffs_new')->onDelete('restrict');
         });
     }
 
@@ -33,6 +33,6 @@ class CreateTableCutoffDetail extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cutoff_details');
+        Schema::dropIfExists('cutoff_accounts');
     }
 }

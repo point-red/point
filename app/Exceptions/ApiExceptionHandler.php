@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 use Laravel\Passport\Exceptions\OAuthServerException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -82,8 +83,15 @@ trait ApiExceptionHandler
         if ($exception instanceof StockNotEnoughException || $exception instanceof ItemQuantityInvalidException) {
             return response()->json([
                 'code' => 422,
-                'message' => $exception->getMessage(),
+                'message' => $this->getMessage(),
             ], 422);
+        }
+
+        if ($exception instanceof QueryException) {
+            return response()->json([
+                'code' => 400,
+                'message' => $this->queryExceptionMessage($exception),
+            ], 400);
         }
 
         /* Handle server error or library error */
@@ -99,5 +107,12 @@ trait ApiExceptionHandler
             'code' => $exception->getCode(),
             'message' => $exception->getMessage(),
         ], $exception->getCode());
+    }
+
+    private function queryExceptionMessage($exception) {
+        if (strpos($exception->getMessage(), 'Integrity constraint violation') !== false) {
+            return "Duplicate data entry";
+        }
+        return "Invalid data";
     }
 }

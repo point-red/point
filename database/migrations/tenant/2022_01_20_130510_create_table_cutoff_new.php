@@ -15,11 +15,8 @@ class CreateTableCutoffNew extends Migration
     {
         Schema::create('cutoffs_new', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('chart_of_account_id');
             $table->date('date');
             $table->timestamps();
-
-            $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts')->onDelete('restrict');
         });
     }
 

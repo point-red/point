@@ -54,7 +54,11 @@ trait EloquentFilters
     {
         if ($values) {
             foreach (explode(';', $values) as $value) {
-                $query->addSelect($value);
+                if (strpos($value, 'raw:') !== false){
+                    $query->selectRaw(substr($value, 4));
+                } else {
+                    $query->addSelect($value);
+                }
             }
         }
     }
@@ -156,7 +160,7 @@ trait EloquentFilters
 
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
-                $query->where($key, $value);
+                $query->orWhere($key, $value);
             }
         });
     }
@@ -194,7 +198,7 @@ trait EloquentFilters
                 $query->orWhere(function ($query) use ($value, $key) {
                     $words = explode(' ', $value);
                     foreach ($words as $word) {
-                        $query->where($key, 'like', '%'.$word.'%');
+                        if ($word) $query->where($key, 'like', '%'.$word.'%');
                     }
                 });
             }

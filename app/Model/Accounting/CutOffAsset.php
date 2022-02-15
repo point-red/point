@@ -2,54 +2,52 @@
 
 namespace App\Model\Accounting;
 
+use App\Model\Master\FixedAsset;
 use App\Model\Master\Item;
+use App\Model\Master\Supplier;
 use App\Model\Master\Warehouse;
 use App\Model\PointModel;
 
-class CutOffInventory extends PointModel
+class CutOffAsset extends PointModel
 {
     protected $connection = 'tenant';
 
-    public static $alias = 'cutoff_inventory';
+    public static $alias = 'cutoff_asset';
 
-    protected $table = 'cutoff_inventories';
+    protected $table = 'cutoff_assets';
 
-    public static $morphName = 'CutoffInventory';
+    public static $morphName = 'CutOffAsset';
 
     protected $fillable = [
-        'warehouse_id',
+        'supplier_id',
+        'location',
+        'purchase_date',
         'quantity',
-        'unit',
-        'converter',
         'price',
         'total',
+        'accumulation',
+        'book_value',
     ];
 
     protected $casts = [
         'quantity' => 'double',
         'price' => 'double',
         'total' => 'double',
+        'accumulation' => 'double',
+        'book_value' => 'double',
     ];
 
     /**
      * Get the item that owns the cut off account.
      */
-    public function item()
+    public function fixedAsset()
     {
-        return $this->belongsTo(Item::class, 'item_id');
+        return $this->belongsTo(FixedAsset::class, 'fixed_asset_id');
     }
 
-    public function dna()
+    public function supplier()
     {
-        return $this->hasMany(CutOffInventoryDna::class, 'item_id');
-    }
-
-    /**
-     * Get the warehouse that owns the cut off account.
-     */
-    public function warehouse()
-    {
-        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
     /**

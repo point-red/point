@@ -3,14 +3,17 @@
 namespace App\Model\Accounting;
 
 use App\Model\PointModel;
+use App\Traits\Model\Accounting\CutOffAccountJoin;
 
 class CutOffAccount extends PointModel
 {
+    use CutOffAccountJoin;
+
     protected $connection = 'tenant';
 
-    public static $alias = 'cut_off_account';
+    public static $alias = 'cutoff_accounts';
 
-    protected $table = 'cut_off_accounts';
+    protected $table = 'cutoff_accounts';
 
     protected $casts = [
         'debit' => 'double',
@@ -18,18 +21,26 @@ class CutOffAccount extends PointModel
     ];
 
     /**
-     * Get the cut off that owns the cut off account.
-     */
-    public function cutOff()
-    {
-        return $this->belongsTo(CutOff::class, 'cut_off_id');
-    }
-
-    /**
      * Get the account that owns the cut off account.
      */
     public function chartOfAccount()
     {
         return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
+    }
+
+    /**
+     * Get the account that owns the cut off account.
+     */
+    public function cutoff()
+    {
+        return $this->belongsTo(CutOff::class, 'cutoff_id');
+    }
+
+    /**
+     * Get the account that owns the cut off account.
+     */
+    public function cutOffDetails()
+    {
+        return $this->hasMany(CutOffDetail::class, 'cutoff_account_id');
     }
 }

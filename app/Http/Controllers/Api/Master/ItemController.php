@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Exports\PinPoint\ItemExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
@@ -11,6 +12,7 @@ use App\Model\Master\Item;
 use App\Model\Master\ItemGroup;
 use App\Model\Master\ItemUnit;
 use App\Imports\Master\ItemImport;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -268,5 +270,28 @@ class ItemController extends Controller
         $item->delete();
 
         return response()->json([], 204);
+    }
+
+    public function export()
+    {
+        $dateFrom = request()->get('date_from') ?: null;
+        $dateTo = request()->get('date_to') ?: null;
+
+        $tenant = strtolower(request()->header('Tenant'));
+        $path = 'tmp/'.$tenant.'/items_'.Carbon::now()->format('Ymd').'.xlsx';
+
+        $res = Excel::store(new ItemExport($dateFrom, $dateTo), $path, 'local');
+
+        if (! $res) {
+            return response()->json([
+                'message' => 'Failed to export',
+            ], 422);
+        }
+
+        return response()->json([
+            'data' => [
+                'res' => $res,
+            ],
+        ], 200);
     }
 }

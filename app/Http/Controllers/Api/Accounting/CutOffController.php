@@ -180,7 +180,7 @@ class CutOffController extends Controller
             $chartOfAccount->name = "RETAINED EARNING";
             $chartOfAccount->alias = $accountName;
             $chartOfAccount->position = "CREDIT";
-            $chartOfAccount->is_locket = true;
+            $chartOfAccount->is_locked = true;
             $chartOfAccount->save();
         }
         return $labaDitahan;

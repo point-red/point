@@ -36,7 +36,7 @@ class StoreRequest extends FormRequest
                 'details.*.chart_of_account_id' => 'required|numeric',
                 'details.*.debit' => 'required|numeric',
                 'details.*.credit' => 'required|numeric',
-                'details.*.items' => 'nullable|required_unless:details.*.chart_of_account_sub_ledger,null'
+                // 'details.*.items' => 'nullable|required_unless:details.*.chart_of_account_sub_ledger,null'
             ],
             $this->customerRules(),
             $this->expeditionRules(),

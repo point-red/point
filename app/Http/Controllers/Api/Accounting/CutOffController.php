@@ -174,14 +174,14 @@ class CutOffController extends Controller
         if (!$labaDitahan){
             $typeId = ChartOfAccountType::where('name', 'RETAINED EARNING')->first()->id;
             
-            $chartOfAccount = new ChartOfAccount;
-            $chartOfAccount->type_id = $typeId;
-            $chartOfAccount->number = "32000";
-            $chartOfAccount->name = "RETAINED EARNING";
-            $chartOfAccount->alias = $accountName;
-            $chartOfAccount->position = "CREDIT";
-            $chartOfAccount->is_locked = true;
-            $chartOfAccount->save();
+            $labaDitahan = new ChartOfAccount;
+            $labaDitahan->type_id = $typeId;
+            $labaDitahan->number = "32000";
+            $labaDitahan->name = "RETAINED EARNING";
+            $labaDitahan->alias = $accountName;
+            $labaDitahan->position = "CREDIT";
+            $labaDitahan->is_locked = true;
+            $labaDitahan->save();
         }
         return $labaDitahan;
     }

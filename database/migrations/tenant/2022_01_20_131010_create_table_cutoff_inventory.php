@@ -28,7 +28,7 @@ class CreateTableCutoffInventory extends Migration
             $table->foreign('item_id')->references('id')->on('items')->onDelete('restrict');
             $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('restrict');
 
-            $table->unique(['chart_of_account_id', 'item_id'], 'unique_data_key');
+            $table->index(['chart_of_account_id', 'item_id'], 'data_key');
         });
     }
 

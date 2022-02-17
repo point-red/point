@@ -29,7 +29,7 @@ class CreateTableCutoffAsset extends Migration
 
             $table->foreign('fixed_asset_id')->references('id')->on('fixed_assets')->onDelete('restrict');
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('restrict');
-            $table->unique(['chart_of_account_id', 'fixed_asset_id'], 'unique_data_key');
+            $table->index(['chart_of_account_id', 'fixed_asset_id'], 'data_key');
         });
     }
 

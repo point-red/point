@@ -24,7 +24,7 @@ class CreateTableCutoffPayment extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->unique(['chart_of_account_id', 'payment_type', 'cutoff_paymentable_id', 'cutoff_paymentable_type'], 'unique_data_key');
+            $table->index(['chart_of_account_id', 'cutoff_paymentable_id', 'cutoff_paymentable_type'], 'data_key');
         });
     }
 

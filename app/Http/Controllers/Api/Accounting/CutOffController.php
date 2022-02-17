@@ -66,7 +66,7 @@ class CutOffController extends Controller
     {
         try {
             
-            $chartOfAccounts = ChartOfAccount::with('type')->findOrFail(array_column($request->get("details"), "chart_of_account_id"));
+            $chartOfAccounts = ChartOfAccount::with('type')->findOrFail(array_column($request->get("details"), "chart_of_account_id"));     
             
             DB::connection('tenant')->beginTransaction();
 
@@ -102,8 +102,8 @@ class CutOffController extends Controller
                 $journal1 = new Journal;
                 $journal1->form_id = $form->id;
                 $journal1->chart_of_account_id = $labaDitahan->id;
-                $journal1->debit = $chartOfAccount->position === 'DEBIT' ? 0 : $cutOffAccount->debit;
-                $journal1->credit = $chartOfAccount->position === 'CREDIT' ? 0 : $cutOffAccount->credit;
+                $journal1->debit = $cutOffAccount->credit;
+                $journal1->credit = $cutOffAccount->debit;
                 $journal1->save();
 
                 if ($chartOfAccount->sub_ledger) {

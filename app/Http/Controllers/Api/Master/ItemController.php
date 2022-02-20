@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Exports\Master\ItemExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
@@ -11,9 +12,11 @@ use App\Model\Master\Item;
 use App\Model\Master\ItemGroup;
 use App\Model\Master\ItemUnit;
 use App\Imports\Master\ItemImport;
+use Illuminate\Http\JsonResponse;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ItemController extends Controller
 {
@@ -92,7 +95,7 @@ class ItemController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      * @throws \Throwable
      */
     public function storeMany(Request $request)
@@ -119,7 +122,7 @@ class ItemController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      * @throws \Throwable
      */
     public function import(Request $request)
@@ -131,7 +134,7 @@ class ItemController extends Controller
             'start_row' => 'required',
             'file' => 'required|mimes:xlsx,xls,csv|max:1024'
         ]);
-        
+
         $result = new ItemImport;
         $result->startRow(request()->get("start_row"));
         Excel::import($result, request()->file('file'));
@@ -213,7 +216,7 @@ class ItemController extends Controller
      * Update the specified resource in storage.
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function updateMany(Request $request)
     {
@@ -268,5 +271,13 @@ class ItemController extends Controller
         $item->delete();
 
         return response()->json([], 204);
+    }
+
+    /**
+     * @return BinaryFileResponse
+     */
+    public function exportToExcel()
+    {
+        return Excel::download(new ItemExport, 'item.xlsx');
     }
 }

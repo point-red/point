@@ -1,9 +1,10 @@
 <?php
 
 namespace Tests\Feature\Http\Master;
+
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\UploadedFile;
-
+use Maatwebsite\Excel\Facades\Excel;
 use Tests\TestCase;
 
 class ItemTest extends TestCase
@@ -47,6 +48,15 @@ class ItemTest extends TestCase
 
         // Check Status Response
         $response->assertStatus(200);
+    }
 
+    /** @test */
+    public function export_to_excel_item_test()
+    {
+        Excel::fake();
+
+        $this->get('/api/v1/master/items/exportToExcel');
+
+        Excel::assertDownloaded('item.xlsx');
     }
 }

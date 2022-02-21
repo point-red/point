@@ -23,14 +23,6 @@ class AppServiceProvider extends ServiceProvider
         Horizon::auth(function () {
             return true;
         });
-        
-        Validator::extend('poly_exists', function ($attribute, $value, $parameters, $validator) {
-            if (!$objectType = array_get($validator->getData(), $parameters[0], false)) {
-                return false;
-            }
-        
-            return !empty(resolve($objectType)->find($value));
-        });
     }
 
     /**

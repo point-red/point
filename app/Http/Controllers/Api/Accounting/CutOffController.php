@@ -7,20 +7,17 @@ use App\Http\Requests\Accounting\CutOff\StoreRequest;
 use App\Http\Resources\Accounting\CutOff\CutOffResource;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Accounting\ChartOfAccount;
-use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\CutOff;
 use App\Model\Accounting\CutOffAccount;
-use App\Model\Accounting\CutOffAsset;
-use App\Model\Accounting\CutOffDetail;
-use App\Model\Accounting\CutOffDownPayment;
-use App\Model\Accounting\CutOffInventory;
-use App\Model\Accounting\CutOffInventoryDna;
-use App\Model\Accounting\CutOffPayment;
 use App\Model\Accounting\Journal;
-use App\Model\Form;
+use App\Model\CloudStorage;
+use App\Model\Project\Project;
+use App\Model\Setting\SettingLogo;
+use Barryvdh\DomPDF\Facade as PDF;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class CutOffController extends Controller
 {
@@ -51,9 +48,69 @@ class CutOffController extends Controller
         $cutOffs = CutOffAccount::eloquentFilter($request);
         $cutOffs = CutOffAccount::joins($cutOffs, $request);
 
+        if($request->get("isDownload")) {
+            return $this->exportByAccount($request, $cutOffs);
+        }
+
         $cutOffs = pagination($cutOffs, $request->get('limit'));
 
         return new ApiCollection($cutOffs);
+    }
+
+    public function exportByAccount($request, $cutOffs)
+    {
+        $data = $cutOffs->get();
+
+        $tenant = strtolower($request->header('Tenant'));
+        $project = Project::where('code', $tenant)->first();
+        $logo = SettingLogo::orderBy("id", 'desc')->first();
+        $key = str_random(16);
+        $fileName = strtoupper($tenant)
+            .' - Cut Off Export';
+        $fileExt = 'pdf';
+        $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
+
+        $pdfData = [
+            'tenant' => $tenant,
+            'data' => $data,
+            'logo' => $logo,
+            'address' => $project->address,
+            'phone' => $project->phone,
+        ];
+        $pdf = PDF::loadView('exports.accounting.cutoff', $pdfData);
+        $pdf = $pdf->setPaper('a4', 'portrait')->setWarnings(false);
+        $pdf = $pdf->download()->getOriginalContent();
+        Storage::disk(env('STORAGE_DISK'))->put($path, $pdf);
+
+        if (! $pdf) {
+            return response()->json([
+                'message' => 'Failed to export',
+            ], 422);
+        }
+
+        $cloudStorage = new CloudStorage();
+        $cloudStorage->file_name = $fileName;
+        $cloudStorage->file_ext = $fileExt;
+        $cloudStorage->feature = 'cut off';
+        $cloudStorage->key = $key;
+        $cloudStorage->path = $path;
+        $cloudStorage->disk = env('STORAGE_DISK');
+        $cloudStorage->project_id = $project->id;
+        $cloudStorage->owner_id = 1;
+        $cloudStorage->expired_at = Carbon::now()->addDay(1);
+        $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
+        $cloudStorage->save();
+
+        return response()->json([
+            'data' => [
+                'url' => env('API_URL').'/download?key='.$key,
+            ],
+        ], 200);
+    }
+
+    public function totalCutoff(Request $request)
+    {
+        return CutOffAccount::selectRaw("SUM(debit) as debit, SUM(credit) as credit")->first();
     }
 
     /**
@@ -65,125 +122,11 @@ class CutOffController extends Controller
     public function store(StoreRequest $request)
     {
         try {
-            
-            $chartOfAccounts = ChartOfAccount::with('type')->findOrFail(array_column($request->get("details"), "chart_of_account_id"));     
-            
-            DB::connection('tenant')->beginTransaction();
-
-            $cutOff = new CutOff;
-            $cutOff->fill($request->all());
-            $cutOff->save();
-
-            $form = new Form;
-            $form->saveData($request->all(), $cutOff);
-
-            $labaDitahan = $this->getAccountForLabaDitahan();
-
-            $details = $request->get('details', []);
-            foreach ($details as $cutOffReq) {
-                $chartOfAccount = array_first($chartOfAccounts, function ($item) use ($cutOffReq) {
-                    return $item->id == $cutOffReq['chart_of_account_id'];
-                });
-
-                $cutOffAccount = new CutOffAccount();
-                $cutOffAccount->cutoff_id = $cutOff->id;
-                $cutOffAccount->chart_of_account_id = $chartOfAccount->id;
-                $cutOffAccount->debit = $cutOffReq['debit'];
-                $cutOffAccount->credit = $cutOffReq['credit'];
-                $cutOffAccount->save();
-
-                $journal = new Journal;
-                $journal->form_id = $form->id;
-                $journal->chart_of_account_id = $chartOfAccount->id;
-                $journal->debit = $cutOffAccount->debit;
-                $journal->credit = $cutOffAccount->credit;
-                $journal->save();
-
-                $journal1 = new Journal;
-                $journal1->form_id = $form->id;
-                $journal1->chart_of_account_id = $labaDitahan->id;
-                $journal1->debit = $cutOffAccount->credit;
-                $journal1->credit = $cutOffAccount->debit;
-                $journal1->save();
-
-                if ($chartOfAccount->sub_ledger) {
-                    if (!isset($cutOffReq['items']) || count($cutOffReq['items']) < 1) throw new \App\Exceptions\PointException('Items can not be null');
-                    $subLedger = trim($chartOfAccount->sub_ledger);
-                    $items = isset($cutOffReq['items']) ? $cutOffReq['items'] : [];
-                    foreach ($items as $item) {
-                        $cutoffAble = null;
-                        $cutoffAbleType = null;
-                        if ($subLedger == 'ITEM') {
-                            $cutoffAbleType = CutOffInventory::$morphName;
-                            $cutoffAble = new CutOffInventory();
-                            $cutoffAble->item_id = $item['object_id'];
-
-                            if (isset($item['dna']) && is_array($item['dna']) && count($item['dna']) > 0) {
-                                foreach($item['dna'] as $dnaItem) {
-                                    $itemDna = new CutOffInventoryDna();
-                                    $itemDna->fill($dnaItem);
-                                    $itemDna->item_id = $item['object_id'];
-                                    $itemDna->save();
-                                }
-                            }
-                        } elseif ($subLedger == 'FIXED ASSET') {
-                            $cutoffAbleType = CutOffAsset::$morphName;
-                            $cutoffAble = new CutOffAsset();
-                            $cutoffAble->fixed_asset_id = $item['object_id'];
-                        } elseif (strpos($chartOfAccount->type->name, 'DOWN PAYMENT') !== FALSE && in_array($subLedger, ['CUSTOMER', 'SUPPLIER', 'EXPEDITION', 'EMPLOYEE'])) {
-                            $cutoffAbleType = CutOffDownPayment::$morphName;
-                            $cutoffAble = new CutOffDownPayment();
-                            $cutoffAble->cutoff_downpaymentable_id = $item['object_id'];
-                            $cutoffAble->cutoff_downpaymentable_type = CutOffDownPayment::getCutOffDownPaymentableType($subLedger);
-                            $cutoffAble->payment_type = $chartOfAccount->position === 'DEBIT' ? 'RECEIVABLE' : 'PAYABLE';
-                        } elseif (in_array($subLedger, ['CUSTOMER', 'SUPPLIER', 'EXPEDITION', 'EMPLOYEE'])) {
-                            $cutoffAbleType = CutOffPayment::$morphName;
-                            $cutoffAble = new CutOffPayment();
-                            $cutoffAble->cutoff_paymentable_type = CutOffPayment::getCutOffPaymentableType($subLedger);
-                            $cutoffAble->payment_type = $chartOfAccount->position === 'DEBIT' ? 'RECEIVABLE' : 'PAYABLE';
-                            $cutoffAble->cutoff_paymentable_id = $item['object_id'];
-                        }
-
-                        if ($cutoffAble) {
-                            $cutoffAble->fill($item);
-                            $cutoffAble->chart_of_account_id = $chartOfAccount->id;
-                            $cutoffAble->save();
-    
-                            $cutOffDetail = new CutOffDetail();
-                            $cutOffDetail->cutoff_account_id = $cutOffAccount->id;
-                            $cutOffDetail->chart_of_account_id = $chartOfAccount->id;
-                            $cutOffDetail->cutoffable_id = $cutoffAble->id;
-                            $cutOffDetail->cutoffable_type = $cutoffAbleType;
-                            $cutOffDetail->save();
-                        }
-                    }
-                }
-            }
-
-            DB::connection('tenant')->commit();
-            return new ApiResource($cutOff);
+            CutOff::createCutoff($request->all());
         } catch (\Exception $e) {
             DB::connection('tenant')->rollBack();
             throw $e;
         }
-    }
-
-    private function getAccountForLabaDitahan() {
-        $accountName = 'LABA DITAHAN';
-        $labaDitahan = ChartOfAccount::where('alias', $accountName)->first();
-        if (!$labaDitahan){
-            $typeId = ChartOfAccountType::where('name', 'RETAINED EARNING')->first()->id;
-            
-            $labaDitahan = new ChartOfAccount;
-            $labaDitahan->type_id = $typeId;
-            $labaDitahan->number = "32000";
-            $labaDitahan->name = "RETAINED EARNING";
-            $labaDitahan->alias = $accountName;
-            $labaDitahan->position = "CREDIT";
-            $labaDitahan->is_locked = true;
-            $labaDitahan->save();
-        }
-        return $labaDitahan;
     }
 
     /**

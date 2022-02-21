@@ -8,6 +8,7 @@ Route::prefix('accounting')->namespace('Accounting')->group(function () {
     Route::post('chart-of-account-generators', 'ChartOfAccountGeneratorController@store');
     Route::apiResource('chart-of-accounts', 'ChartOfAccountController');
     Route::get('cut-offs/account', 'CutOffController@indexByAccount');
+    Route::get('cut-offs/total', 'CutOffController@totalCutoff');
     Route::apiResource('cut-offs', 'CutOffController');
     Route::apiResource('cut-off-accounts', 'CutOffAccountController');
     Route::apiResource('cut-off-inventories', 'CutOffInventoryController');

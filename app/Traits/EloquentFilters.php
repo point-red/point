@@ -55,7 +55,7 @@ trait EloquentFilters
         if ($values) {
             foreach (explode(';', $values) as $value) {
                 if (strpos($value, 'raw:') !== false){
-                    $query->selectRaw(substr($value, 4));
+                    $query->selectRaw(addslashes(substr($value, 4)));
                 } else {
                     $query->addSelect($value);
                 }

@@ -55,7 +55,7 @@ class CutOffDetailRule implements Rule
     private function nonSubledger($cutoff)
     {
         $subLedger = trim($cutoff['chart_of_account_sub_ledger']);
-        if ($subLedger && Journal::select('id')->where('chart_of_account_id', $cutoff['chart_of_account_id'])->first()) {
+        if (!$subLedger && Journal::select('id')->where('chart_of_account_id', $cutoff['chart_of_account_id'])->first()) {
             throw new PointException("Duplicate data entry");
         }
     }

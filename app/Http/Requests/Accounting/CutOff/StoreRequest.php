@@ -3,8 +3,6 @@
 namespace App\Http\Requests\Accounting\CutOff;
 
 use App\Rules\CutOffDetailRule;
-use App\Rules\CutOffNonSubledgerRule;
-use App\Rules\NotExistInJournal;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -39,7 +37,7 @@ class StoreRequest extends FormRequest
             [
                 'date' => 'required|date',
                 'details.*' => new CutOffDetailRule(),
-                'details.*.chart_of_account_id' => ['required', 'numeric'], // , new NotExistInJournal
+                'details.*.chart_of_account_id' => ['required', 'numeric'],
                 'details.*.debit' => 'required|numeric',
                 'details.*.credit' => 'required|numeric',
                 'details.*.items' => 'nullable'

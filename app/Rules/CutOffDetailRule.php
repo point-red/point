@@ -8,6 +8,7 @@ use App\Model\Accounting\CutOffAsset;
 use App\Model\Accounting\CutOffDownPayment;
 use App\Model\Accounting\CutOffInventory;
 use App\Model\Accounting\CutOffPayment;
+use App\Model\Accounting\Journal;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
@@ -40,6 +41,7 @@ class CutOffDetailRule implements Rule
     private function validate($value)
     {
         try{
+            $this->nonSubledger($value);
             $this->validatePayment($value);
             $this->validateItem($value);
             $this->validateAsset($value);
@@ -47,6 +49,14 @@ class CutOffDetailRule implements Rule
         } catch (PointException $e) {
             $this->message = $e->getMessage();
             return false;
+        }
+    }
+
+    private function nonSubledger($cutoff)
+    {
+        $subLedger = trim($cutoff['chart_of_account_sub_ledger']);
+        if ($subLedger && Journal::select('id')->where('chart_of_account_id', $cutoff['chart_of_account_id'])->first()) {
+            throw new PointException("Duplicate data entry");
         }
     }
 

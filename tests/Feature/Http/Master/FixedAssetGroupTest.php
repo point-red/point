@@ -16,7 +16,10 @@ class FixedAssetGroupTest extends TestCase
         $this->signIn();
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function createData()
     {
         $data = [
@@ -30,7 +33,10 @@ class FixedAssetGroupTest extends TestCase
         $this->assertDatabaseHas('fixed_asset_groups', $data, 'tenant');
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function readSingleData()
     {
         $fixedAssetGroups = factory(FixedAssetGroup::class)->create();
@@ -44,7 +50,10 @@ class FixedAssetGroupTest extends TestCase
         ]);
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function readAllData()
     {
         $fixedAssetGroupss = factory(FixedAssetGroup::class, 2)->create();
@@ -60,7 +69,10 @@ class FixedAssetGroupTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function updateData()
     {
         $fixedAssetGroups = factory(FixedAssetGroup::class)->create();
@@ -79,7 +91,10 @@ class FixedAssetGroupTest extends TestCase
         $this->assertDatabaseHas('fixed_asset_groups', $data, 'tenant');
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function deleteData()
     {
         $fixedAssetGroups = factory(FixedAssetGroup::class)->create();

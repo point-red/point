@@ -3,14 +3,12 @@
 namespace App\Rules;
 
 use App\Exceptions\PointException;
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\CutOffAsset;
 use App\Model\Accounting\CutOffDownPayment;
 use App\Model\Accounting\CutOffInventory;
 use App\Model\Accounting\CutOffPayment;
 use App\Model\Accounting\Journal;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Support\Facades\DB;
 
 class CutOffDetailRule implements Rule
 {

@@ -27,15 +27,15 @@ class CutOffController extends Controller
      * @param  Request  $request
      * @return ApiCollection
      */
-    public function index(Request $request)
-    {
-        $cutOffs = CutOff::eloquentFilter($request);
-        $cutOffs = CutOff::joins($cutOffs, $request);
+    // public function index(Request $request)
+    // {
+    //     $cutOffs = CutOff::eloquentFilter($request);
+    //     $cutOffs = CutOff::joins($cutOffs, $request);
 
-        $cutOffs = pagination($cutOffs, $request->get('limit'));
+    //     $cutOffs = pagination($cutOffs, $request->get('limit'));
 
-        return new ApiCollection($cutOffs);
-    }
+    //     return new ApiCollection($cutOffs);
+    // }
 
     /**
      * Display a listing of the resource.
@@ -96,7 +96,7 @@ class CutOffController extends Controller
         $cloudStorage->path = $path;
         $cloudStorage->disk = env('STORAGE_DISK');
         $cloudStorage->project_id = $project->id;
-        $cloudStorage->owner_id = 1;
+        $cloudStorage->owner_id = optional(auth()->user())->id;
         $cloudStorage->expired_at = Carbon::now()->addDay(1);
         $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
         $cloudStorage->save();
@@ -122,7 +122,8 @@ class CutOffController extends Controller
     public function store(StoreRequest $request)
     {
         try {
-            CutOff::createCutoff($request->all());
+            $cutoff = CutOff::createCutoff($request->all());
+            return new ApiResource($cutoff);
         } catch (\Exception $e) {
             DB::connection('tenant')->rollBack();
             throw $e;
@@ -136,46 +137,9 @@ class CutOffController extends Controller
      * @param  int  $id
      * @return ApiResource
      */
-    public function show(Request $request, $id)
+    public function showByAccount(Request $request, $id)
     {
         $cutOff = CutOffAccount::eloquentFilter($request)->findOrFail($id);
         return new ApiResource($cutOff);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return ApiResource
-     */
-    public function update(Request $request, $id)
-    {
-        $cutOff = CutOff::findOrFail($id);
-        $cutOff->form->date = $request->get('date');
-        $cutOff->form->save();
-
-        return new ApiResource($cutOff);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \App\Http\Resources\Accounting\CutOff\CutOffResource
-     */
-    public function destroy($id)
-    {
-        DB::connection('tenant')->beginTransaction();
-
-        $cutOff = CutOff::findOrFail($id);
-
-        $cutOff->delete();
-
-        Journal::where('journalable_type', CutOff::class)->where('journalable_id', $id)->delete();
-
-        DB::connection('tenant')->commit();
-
-        return new CutOffResource($cutOff);
     }
 }

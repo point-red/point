@@ -59,7 +59,7 @@ class CutOff extends TransactionModel
                 return $item->id == $cutOffReq['chart_of_account_id'];
             });
 
-            $cutOffAccount = self::saveCutoffAccount($chartOfAccount, $cutOff, $cutOffReq);
+            $cutOffAccount = self::saveCutoffAccount($chartOfAccount, $labaDitahan, $cutOff, $cutOffReq);
             self::saveJournal($form, $cutOffAccount, $chartOfAccount, $labaDitahan);
 
             self::saveCutOffAble($form, $labaDitahan, $cutOffAccount, $chartOfAccount, $cutOffReq);
@@ -84,7 +84,7 @@ class CutOff extends TransactionModel
         return $form;
     }
 
-    private static function saveCutoffAccount($chartOfAccount, $cutOff, $data)
+    private static function saveCutoffAccount($chartOfAccount, $labaDitahan, $cutOff, $data)
     {
         $cutOffAccount = new CutOffAccount();
         $cutOffAccount->cutoff_id = $cutOff->id;
@@ -92,6 +92,14 @@ class CutOff extends TransactionModel
         $cutOffAccount->debit = $data['debit'];
         $cutOffAccount->credit = $data['credit'];
         $cutOffAccount->save();
+
+        $cutOffAccountLabaDitahan = new CutOffAccount();
+        $cutOffAccountLabaDitahan->cutoff_id = $cutOff->id;
+        $cutOffAccountLabaDitahan->chart_of_account_id = $labaDitahan->id;
+        $cutOffAccountLabaDitahan->debit = $cutOffAccount->credit;
+        $cutOffAccountLabaDitahan->credit = $cutOffAccount->debit;
+        $cutOffAccountLabaDitahan->save();
+
         return $cutOffAccount;
     }
 

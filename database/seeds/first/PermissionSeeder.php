@@ -217,6 +217,8 @@ class PermissionSeeder extends Seeder
             'cash advance',
             'cash',
             'bank',
+            'cash report',
+            'bank report',
         ];
 
         Permission::createIfNotExists('read debt aging report');

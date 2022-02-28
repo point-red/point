@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Finance\CashAdvance\CashAdvance;
+namespace App\Http\Requests\Finance\CashAdvance;
 
 use App\Http\Requests\ValidationRule;
 use App\Model\Accounting\ChartOfAccount;
@@ -28,16 +28,20 @@ class StoreCashAdvanceRequest extends FormRequest
     {
         $rulesForm = ValidationRule::form();
 
-        $rulesCashAdvanceForm = [
-            'employee_id' => ValidationRule::foreignKey(Employee::getTableName()),
-            'details' => 'required|array',
+        $rulesCashAdvance = [
+            'employee_id'           => ValidationRule::foreignKey(Employee::getTableName()),
+            'date'                  => 'required',
+            'payment_type'          => 'required',
+            'request_approval_to'   => 'required',
+            'activity'              => 'required',
+            'details'               => 'required|array',
         ];
 
-        $rulesCashAdvanceForm = [
+        $rulesCashAdvanceDetail = [
             'details.*.chart_of_account_id' => ValidationRule::foreignKey(ChartOfAccount::getTableName()),
-            'details.*.amount' => ValidationRule::price(),
+            'details.*.amount'              => ValidationRule::price(),
         ];
 
-        return array_merge($rulesForm, $rulesPayment, $rulesPaymentDetail);
+        return array_merge($rulesForm, $rulesCashAdvance, $rulesCashAdvanceDetail);
     }
 }

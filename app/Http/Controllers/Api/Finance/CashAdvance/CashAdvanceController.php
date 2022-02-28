@@ -39,7 +39,7 @@ class CashAdvanceController extends Controller
      * @return Response
      * @throws Throwable
      */
-    public function store(Request $request)
+    public function store(StoreCashAdvanceRequest $request)
     {
         return DB::connection('tenant')->transaction(function () use ($request) {
             $cashAdvance = CashAdvance::create($request->all());
@@ -70,28 +70,30 @@ class CashAdvanceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param UpdateCashAdvanceRequest $request
      * @param  int $id
      * @return Response
      * @throws Throwable
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCashAdvanceRequest $request, $id)
     {
         
         $cashAdvance = CashAdvance::findOrFail($id);
         $cashAdvance->mapHistory($cashAdvance->form, $request->all());
         $cashAdvance->archive();
 
-        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+        $result = DB::connection('tenant')->transaction(function () use ($request, $cashAdvance) {
 
-            $cashAdvance = CashAdvance::create($request->all());
+            $cashAdvanceNew = CashAdvance::create($request->all());
+            $cashAdvanceNew->form->increment = $cashAdvance->form->increment;
+            $cashAdvanceNew->form->save();
 
-            $cashAdvance
+            $cashAdvanceNew
                 ->load('form')
                 ->load('details.account')
                 ->load('employee');
 
-            return new ApiResource($cashAdvance);
+            return new ApiResource($cashAdvanceNew);
         });
 
         return $result;

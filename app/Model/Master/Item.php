@@ -3,6 +3,7 @@
 namespace App\Model\Master;
 
 use App\Helpers\Inventory\InventoryHelper;
+use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\Journal;
 use App\Model\Form;
 use App\Model\Inventory\Inventory;
@@ -152,5 +153,10 @@ class Item extends MasterModel
         }
 
         return ($valueDebit - $valueCredit) / $qty;
+    }
+
+    public function relatedChartOfAccount()
+    {
+        return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');
     }
 }

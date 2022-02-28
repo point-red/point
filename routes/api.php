@@ -10,6 +10,8 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
 Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(function () {
     Route::post('register', 'RegisterController@store');
 

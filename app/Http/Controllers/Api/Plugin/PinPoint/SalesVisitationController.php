@@ -71,6 +71,32 @@ class SalesVisitationController extends Controller
             $salesVisitationForm = $salesVisitationForm->where('form.created_by', auth()->user()->id);
         }
 
+        if (! empty($request->get('payment_method'))) {
+            $salesVisitationForm->where(SalesVisitation::$alias.'.payment_method', $request->get('payment_method'));
+        }
+
+        if (! empty($request->get('branch_id'))) {
+            $salesVisitationForm->where(SalesVisitation::$alias.'.branch_id', $request->get('branch_id'));
+        }
+
+        if (! empty($request->get('item_id'))) {
+            $salesVisitationForm->whereIn(SalesVisitation::$alias.'.id', function ($query) use ($request) {
+                $query->select('sales_visitation_id')->from(SalesVisitationDetail::getTableName())->where('item_id', $request->get('item_id'));
+            });
+        }
+
+        if (! empty($request->get('item_sold'))) {
+            if ($request->get('item_sold') == 'item_sold') {
+                $salesVisitationForm->whereIn(SalesVisitation::$alias.'.id', function ($query) use ($request) {
+                    $query->select('sales_visitation_id')->from(SalesVisitationDetail::getTableName());
+                });
+            } elseif ($request->get('item_sold') == 'no_item_sold') {
+                $salesVisitationForm->whereNotIn(SalesVisitation::$alias.'.id', function ($query) use ($request) {
+                    $query->select('sales_visitation_id')->from(SalesVisitationDetail::getTableName());
+                });
+            }
+        }
+
         $salesVisitationForm = pagination($salesVisitationForm, $request->get('limit'));
 
         foreach ($salesVisitationForm as $svf) {

@@ -1,6 +1,7 @@
 <?php
 
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\ChartOfAccountType;
 use App\Model\SettingJournal;
 use Illuminate\Database\Seeder;
 
@@ -24,6 +25,7 @@ class SettingJournalSeeder extends Seeder
         $this->stockCorrection();
         $this->transferItem();
         $this->manufacture();
+        $this->cutoff();
     }
 
     private function openingBalanceInventory()
@@ -184,6 +186,42 @@ class SettingJournalSeeder extends Seeder
                 $settingJournal->save();
             } else {
                 $settingJournal = SettingJournal::where('feature', 'stock correction')->where('name', $key)->first();
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
+        }
+    }
+
+    private function cutoff()
+    {
+        $retainedEarning = $this->getAccountId('RETAINED EARNING');
+        if (!$retainedEarning){
+            $typeId = ChartOfAccountType::where('name', 'NET INCOME')->first()->id;
+            
+            $labaDitahan = new ChartOfAccount;
+            $labaDitahan->type_id = $typeId;
+            $labaDitahan->number = "32000";
+            $labaDitahan->name = "RETAINED EARNING";
+            $labaDitahan->alias = 'LABA DITAHAN';
+            $labaDitahan->position = "CREDIT";
+            $labaDitahan->is_locked = true;
+            $labaDitahan->save();
+            $retainedEarning = $labaDitahan->id;
+        }
+        $accounts = [
+            'retained earning' => $retainedEarning,
+        ];
+
+        foreach ($accounts as $key => $value) {
+            if (! $this->isExists('cutoff', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'cutoff';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            } else {
+                $settingJournal = SettingJournal::where('feature', 'cutoff')->where('name', $key)->first();
                 $settingJournal->chart_of_account_id = $value;
                 $settingJournal->save();
             }

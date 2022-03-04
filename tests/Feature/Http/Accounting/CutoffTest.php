@@ -28,6 +28,13 @@ class CutoffTest extends TestCase
     private function importChartOfAccount()
     {
         Excel::import(new ChartOfAccountImport(), storage_path('template/chart_of_accounts_manufacture.xlsx'));
+
+
+        $this->artisan('db:seed', [
+            '--database' => 'tenant',
+            '--class' => 'SettingJournalSeeder',
+            '--force' => true,
+        ]);
     }
 
     /**

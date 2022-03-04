@@ -52,7 +52,7 @@ class CutOff extends TransactionModel
 
         $cutOff = self::saveCutoff($reqData);
         $form = self::saveForm($reqData, $cutOff);
-        $labaDitahan = self::getAccountForLabaDitahan();
+        $labaDitahan = get_setting_journal('cutoff', 'retained earning');
 
         foreach ($reqData['details'] as $cutOffReq) {
             $chartOfAccount = array_first($chartOfAccounts, function ($item) use ($cutOffReq) {
@@ -95,7 +95,7 @@ class CutOff extends TransactionModel
 
         $cutOffAccountLabaDitahan = new CutOffAccount();
         $cutOffAccountLabaDitahan->cutoff_id = $cutOff->id;
-        $cutOffAccountLabaDitahan->chart_of_account_id = $labaDitahan->id;
+        $cutOffAccountLabaDitahan->chart_of_account_id = $labaDitahan;
         $cutOffAccountLabaDitahan->debit = $cutOffAccount->credit;
         $cutOffAccountLabaDitahan->credit = $cutOffAccount->debit;
         $cutOffAccountLabaDitahan->save();
@@ -114,30 +114,30 @@ class CutOff extends TransactionModel
 
         $journal1 = new Journal;
         $journal1->form_id = $form->id;
-        $journal1->chart_of_account_id = $labaDitahan->id;
+        $journal1->chart_of_account_id = $labaDitahan;
         $journal1->debit = $cutOffAccount->credit;
         $journal1->credit = $cutOffAccount->debit;
         $journal1->save();
     }
 
-    private static function getAccountForLabaDitahan()
-    {
-        $accountName = 'LABA DITAHAN';
-        $labaDitahan = ChartOfAccount::where('alias', $accountName)->first();
-        if (!$labaDitahan){
-            $typeId = ChartOfAccountType::where('name', 'NET INCOME')->first()->id;
+    // private static function getAccountForLabaDitahan()
+    // {
+    //     $accountName = 'LABA DITAHAN';
+    //     $labaDitahan = ChartOfAccount::where('alias', $accountName)->first();
+    //     if (!$labaDitahan){
+    //         $typeId = ChartOfAccountType::where('name', 'NET INCOME')->first()->id;
             
-            $labaDitahan = new ChartOfAccount;
-            $labaDitahan->type_id = $typeId;
-            $labaDitahan->number = "32000";
-            $labaDitahan->name = "RETAINED EARNING";
-            $labaDitahan->alias = $accountName;
-            $labaDitahan->position = "CREDIT";
-            $labaDitahan->is_locked = true;
-            $labaDitahan->save();
-        }
-        return $labaDitahan;
-    }
+    //         $labaDitahan = new ChartOfAccount;
+    //         $labaDitahan->type_id = $typeId;
+    //         $labaDitahan->number = "32000";
+    //         $labaDitahan->name = "RETAINED EARNING";
+    //         $labaDitahan->alias = $accountName;
+    //         $labaDitahan->position = "CREDIT";
+    //         $labaDitahan->is_locked = true;
+    //         $labaDitahan->save();
+    //     }
+    //     return $labaDitahan;
+    // }
 
     private static function saveCutOffAble($form, $labaDitahan, $cutOffAccount, $chartOfAccount, $data)
     {
@@ -249,7 +249,7 @@ class CutOff extends TransactionModel
 
             $journal1 = new Journal;
             $journal1->form_id = $form->id;
-            $journal1->chart_of_account_id = $labaDitahan->id;
+            $journal1->chart_of_account_id = $labaDitahan;
             $journal1->debit = $journal->credit;
             $journal1->credit = $journal->debit;
             $journal1->save();

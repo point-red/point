@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\CutOff;
+use App\Model\Accounting\CutOffAsset;
+use App\Model\Accounting\CutOffDownPayment;
+use App\Model\Accounting\CutOffInventory;
+use App\Model\Accounting\CutOffPayment;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\HumanResource\Employee\Employee;
@@ -19,6 +23,8 @@ use App\Model\Manufacture\ManufactureOutput\ManufactureOutput;
 use App\Model\Master\Allocation;
 use App\Model\Master\Branch;
 use App\Model\Master\Customer;
+use App\Model\Master\Expedition;
+use App\Model\Master\FixedAsset;
 use App\Model\Master\Item;
 use App\Model\Master\Service;
 use App\Model\Master\Supplier;
@@ -57,6 +63,8 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             Supplier::$morphName => Supplier::class,
             Customer::$morphName => Customer::class,
             Employee::$morphName => Employee::class,
+            Expedition::$morphName => Expedition::class,
+            FixedAsset::$morphName => FixedAsset::class,
             Item::$morphName => Item::class,
             Service::$morphName => Service::class,
             Branch::$morphName => Branch::class,
@@ -97,6 +105,10 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             // Accounting
             ChartOfAccount::$morphName => ChartOfAccount::class,
             CutOff::$morphName => CutOff::class,
+            CutOffPayment::$morphName => CutOffPayment::class,
+            CutOffDownPayment::$morphName => CutOffDownPayment::class,
+            CutOffAsset::$morphName => CutOffAsset::class,
+            CutOffInventory::$morphName => CutOffInventory::class,
         ]);
     }
 

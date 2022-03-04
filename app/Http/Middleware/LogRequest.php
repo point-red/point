@@ -15,6 +15,7 @@ class LogRequest
      */
     public function handle($request, Closure $next)
     {
+        log_object(json_encode($request->headers->all()).'----'.json_encode($request->all()));
         return $next($request);
     }
 
@@ -24,6 +25,6 @@ class LogRequest
         $end = microtime(true);
         $diff = $end - $start;
 
-        log_object('['.$request->method().'] '.$request->url().' '.$diff);
+        log_object('['.$request->method().'] '.$request->url().' Response::'.json_encode($response->getContent()).' '.$diff);
     }
 }

@@ -125,7 +125,7 @@ class CutOff extends TransactionModel
         $accountName = 'LABA DITAHAN';
         $labaDitahan = ChartOfAccount::where('alias', $accountName)->first();
         if (!$labaDitahan){
-            $typeId = ChartOfAccountType::where('name', 'RETAINED EARNING')->first()->id;
+            $typeId = ChartOfAccountType::where('name', 'NET INCOME')->first()->id;
             
             $labaDitahan = new ChartOfAccount;
             $labaDitahan->type_id = $typeId;

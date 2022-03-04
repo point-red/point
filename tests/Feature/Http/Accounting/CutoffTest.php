@@ -245,7 +245,7 @@ class CutoffTest extends TestCase
     {
         $this->storeDataPayment();
         $cutoff = CutOffAccount::orderBy('id', 'asc')->first();
-        $response = $this->json('GET', self::$path.'/account'.$cutoff->id, [], $this->headers);
+        $response = $this->json('GET', self::$path.'/account/'.$cutoff->id, [], $this->headers);
         $response->assertStatus(200);
     }
 

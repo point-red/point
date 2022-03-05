@@ -81,7 +81,9 @@ class TenantMiddleware
             }
 
             config()->set('database.connections.tenant.database', env('DB_DATABASE', 'point').'_'.$request->header('Tenant'));
-            DB::connection('tenant')->reconnect();
+            if (env("APP_ENV", 'production') !== 'testing') {
+                DB::connection('tenant')->reconnect();
+            }
         }
 
         return $next($request);

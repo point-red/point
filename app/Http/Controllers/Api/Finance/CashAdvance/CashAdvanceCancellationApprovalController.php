@@ -26,7 +26,7 @@ class CashAdvanceCancellationApprovalController extends Controller
         $cashAdvance->form->cancellation_status = 1;
         $cashAdvance->form->save();
 
-        $cashAdvance->mapHistory($cashAdvance->form, $request->all());
+        $cashAdvance->mapHistory($cashAdvance, $request->all());
 
         return new ApiResource($cashAdvance);
     }
@@ -47,7 +47,7 @@ class CashAdvanceCancellationApprovalController extends Controller
         $cashAdvance->form->cancellation_status = -1;
         $cashAdvance->form->save();
 
-        $cashAdvance->mapHistory($cashAdvance->form, $request->all());
+        $cashAdvance->mapHistory($cashAdvance, $request->all());
         
         return new ApiResource($cashAdvance);
     }

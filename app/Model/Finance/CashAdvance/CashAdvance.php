@@ -44,16 +44,16 @@ class CashAdvance extends TransactionModel
     public function isAllowedToUpdate()
     {
         // Check if not referenced by another form
-        if (optional($this->payment)->count()) {
-            throw new IsReferencedException('Cannot edit form because it is already paid', $this->payment);
+        if (optional($this->payments)->count()) {
+            throw new IsReferencedException('Cannot edit form because it is already paid', $this->payments);
         }
     }
 
     public function isAllowedToDelete()
     {
         // Check if not referenced by another form
-        if (optional($this->payment)->count()) {
-            throw new IsReferencedException('Cannot delete form because it is already paid', $this->payment);
+        if (optional($this->payments)->count()) {
+            throw new IsReferencedException('Cannot delete form because it is already paid', $this->payments);
         }
     }
 
@@ -99,15 +99,16 @@ class CashAdvance extends TransactionModel
         }, $details);
     }
 
-    public static function mapHistory($form, $data)
+    public static function mapHistory($cashAdvance, $data)
     {
         $history = new UserActivity;
         $history->fill($data);
 
-        $history->table_name = 'Form';
-        $history->table_id = $form->id;
-        $history->number = $form->number;
+        $history->table_type = self::$morphName;
+        $history->table_id = $cashAdvance->id;
+        $history->number = $cashAdvance->form->number;
         $history->user_id = optional(auth()->user())->id;
+        $history->date = date('Y-m-d H:i:s');
         
         $history->save();
     }

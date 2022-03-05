@@ -16,7 +16,7 @@ class UserActivity extends PointModel
     public $timestamps = false;
 
     protected $fillable = [
-        'table_name', 'table_id', 'number',
+        'table_type', 'table_id', 'number',
         'date', 'user_id', 'activity',
     ];
 

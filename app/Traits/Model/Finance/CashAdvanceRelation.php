@@ -19,9 +19,9 @@ trait CashAdvanceRelation
         return $this->belongsTo(Employee::class);
     }
 
-    public function payment()
+    public function payments()
     {
-        return $this->belongsTo(Payment::class);
+        return $this->belongsToMany(Payment::class, 'cash_advance_payment')->withPivot(['archived_at']);
     }
 
     public function details()

@@ -8,6 +8,8 @@ use App\Http\Requests\Finance\CashAdvance\UpdateCashAdvanceRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Finance\CashAdvance\CashAdvance;
+use App\Model\UserActivity;
+use App\Model\Form;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -33,6 +35,21 @@ class CashAdvanceController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return ApiCollection
+     */
+    public function history(Request $request)
+    {
+        $userActivity = UserActivity::from(UserActivity::getTableName().' as '.UserActivity::$alias)->eloquentFilter($request);
+
+        $userActivity = pagination($userActivity, $request->get('limit'));
+
+        return new ApiCollection($userActivity);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param StoreCashAdvanceRequest $request
@@ -43,7 +60,7 @@ class CashAdvanceController extends Controller
     {
         return DB::connection('tenant')->transaction(function () use ($request) {
             $cashAdvance = CashAdvance::create($request->all());
-            $cashAdvance->mapHistory($cashAdvance->form, $request->all());
+            $cashAdvance->mapHistory($cashAdvance, $request->all());
             $cashAdvance
                 ->load('form')
                 ->load('details.account')
@@ -79,7 +96,8 @@ class CashAdvanceController extends Controller
     {
         
         $cashAdvance = CashAdvance::findOrFail($id);
-        $cashAdvance->mapHistory($cashAdvance->form, $request->all());
+        $cashAdvance->isAllowedToUpdate();
+        $cashAdvance->mapHistory($cashAdvance, $request->all());
         $cashAdvance->archive();
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $cashAdvance) {
@@ -113,7 +131,7 @@ class CashAdvanceController extends Controller
 
         $response = $cashAdvance->requestCancel($request);
 
-        $cashAdvance->mapHistory($cashAdvance->form, $request->all());
+        $cashAdvance->mapHistory($cashAdvance, $request->all());
 
         return response()->json([], 204);
     }

@@ -17,13 +17,11 @@ class CreateCashAdvancesTable extends Migration
             $table->increments('id');
             $table->string('payment_type');
             $table->unsignedInteger('employee_id')->nullable();
-            $table->unsignedInteger('payment_id')->nullable();
             $table->decimal('amount', 65, 30);
             $table->decimal('amount_remaining', 65, 30);
             $table->datetime('archived_at')->nullable();
 
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('restrict');
-            $table->foreign('payment_id')->references('id')->on('payments')->onDelete('set null');
         });
     }
 

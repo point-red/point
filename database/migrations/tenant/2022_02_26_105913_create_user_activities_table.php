@@ -15,7 +15,7 @@ class CreateUserActivitiesTable extends Migration
     {
         Schema::create('user_activities', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('table_name');
+            $table->string('table_type');
             $table->unsignedInteger('table_id')->index();
             $table->string('number')->nullable();
             $table->timestamp('date')->useCurrent();

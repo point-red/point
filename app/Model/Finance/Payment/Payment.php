@@ -6,6 +6,7 @@ use App\Exceptions\BranchNullException;
 use App\Exceptions\PointException;
 use App\Model\Accounting\Journal;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
+use App\Model\Finance\CashAdvance\CashAdvance;
 use App\Model\Form;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use App\Model\TransactionModel;
@@ -112,6 +113,24 @@ class Payment extends TransactionModel
             $data['paymentable_id']
         );
         $form->save();
+
+        // Reference Cash Advance
+        if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'CashAdvance') {
+            $cashAdvance = CashAdvance::find($data['referenceable_id']);
+            if ($cashAdvance->payment_id != null || $cashAdvance->amount_remaining < $payment->amount) {
+                throw new PointException();
+            }
+            $cashAdvance->payments()->attach($payment->id);
+            $cashAdvance->amount_remaining = $cashAdvance->amount_remaining - $payment->amount;
+            if($cashAdvance->amount_remaining == 0) {
+                $cashAdvance->form->done = 1;
+                $cashAdvance->form->save();
+            }
+            $cashAdvance->save();
+
+            $data['activity'] = ucfirst(strtolower($cashAdvance->payment_type)).' Out Withdrawal ('.$form->number.')';
+            CashAdvance::mapHistory($cashAdvance, $data);
+        }
 
         self::updateReferenceDone($paymentDetails);
         self::updateJournal($payment);

@@ -16,7 +16,10 @@ class FixedAssetTest extends TestCase
         $this->signIn();
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function storeData()
     {
         $this->createSampleChartAccountType();
@@ -33,7 +36,10 @@ class FixedAssetTest extends TestCase
         $this->assertDatabaseHas('fixed_assets', $data, 'tenant');
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function readSingleData()
     {
         $fixedAsset = factory(FixedAsset::class)->create();
@@ -49,7 +55,10 @@ class FixedAssetTest extends TestCase
         ]);
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function readAllData()
     {
         $fixedAssets = factory(FixedAsset::class, 2)->create();
@@ -67,7 +76,10 @@ class FixedAssetTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function readAllArchiveData()
     {
         $fixedAssets = factory(FixedAsset::class, 2)->create();
@@ -85,7 +97,10 @@ class FixedAssetTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function updateData()
     {
         $fixedAsset = factory(FixedAsset::class)->create();
@@ -104,7 +119,10 @@ class FixedAssetTest extends TestCase
         $this->assertDatabaseHas('fixed_assets', $data, 'tenant');
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function deleteData()
     {
         $fixedAsset = factory(FixedAsset::class)->create();
@@ -119,7 +137,10 @@ class FixedAssetTest extends TestCase
         ], 'tenant');
     }
 
-    /** @test */
+    /**
+     * @group ramadhani 
+     * @test 
+     */
     public function readAllDeprecationMethodsData()
     {
         $response = $this->json('GET', FixedAssetTest::$path.'/depreciation-methods', [], [$this->headers]);

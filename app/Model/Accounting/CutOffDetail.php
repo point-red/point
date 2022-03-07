@@ -12,7 +12,7 @@ class CutOffDetail extends PointModel
 
     protected $connection = 'tenant';
 
-    public static $alias = 'cut_off_account';
+    public static $alias = 'cutoff_account';
 
     protected $table = 'cutoff_details';
 

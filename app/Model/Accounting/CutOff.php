@@ -30,9 +30,9 @@ class CutOff extends TransactionModel
 
     protected $connection = 'tenant';
 
-    public static $alias = 'cut_off';
+    public static $alias = 'cutoff';
 
-    protected $table = 'cutoffs_new';
+    protected $table = 'cutoffs';
 
     public $defaultNumberPrefix = 'CUT';
 

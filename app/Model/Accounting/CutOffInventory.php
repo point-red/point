@@ -41,7 +41,7 @@ class CutOffInventory extends PointModel
 
     public function dna()
     {
-        return $this->hasMany(CutOffInventoryDna::class, 'item_id');
+        return $this->hasMany(CutOffInventoryDna::class, 'item_id',  'item_id');
     }
 
     /**

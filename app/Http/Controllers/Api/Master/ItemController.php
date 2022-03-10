@@ -14,6 +14,7 @@ use App\Imports\Master\ItemImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Exports\ItemsExport;
 
 class ItemController extends Controller
 {
@@ -30,8 +31,9 @@ class ItemController extends Controller
         $items = Item::joins($items, $request->get('join'));
 
         if ($request->has('group_id')) {
-            $items = $items->join('item_item_group', 'item_item_group.item_id', '=', 'item.id')
-                ->where('item_item_group.item_group_id', '=', $request->get('group_id'));
+            $items = $items->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
+                ->where('groupables.groupable_type', Item::class)
+                ->where('groupables.group_id', '=', $request->get('group_id'));
         }
 
         if ($request->has('with_stock')) {
@@ -80,7 +82,6 @@ class ItemController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $item = Item::create($request->all());
             $item->load('units', 'groups');
-
             return new ApiResource($item);
         });
 
@@ -268,4 +269,12 @@ class ItemController extends Controller
 
         return response()->json([], 204);
     }
+	
+	/**
+	 * export excel
+	 */
+	public function excel()
+	{		
+		return Excel::download(new ItemsExport, 'export item.xlsx');
+	}	
 }

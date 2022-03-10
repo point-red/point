@@ -32,6 +32,7 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::put('items/bulk', 'ItemController@updateMany');
     Route::patch('items/bulk', 'ItemController@updateMany');
     Route::apiResource('items', 'ItemController');
+	Route::post('items/excel', 'ItemController@excel');
     // Service
     Route::post('service-groups/attach', 'ServiceGroupController@attach');
     Route::post('service-groups/detach', 'ServiceGroupController@detach');

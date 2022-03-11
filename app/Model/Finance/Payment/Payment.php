@@ -118,7 +118,7 @@ class Payment extends TransactionModel
         if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'CashAdvance') {
             $cashAdvance = CashAdvance::find($data['referenceable_id']);
             if ($cashAdvance->payment_id != null || $cashAdvance->amount_remaining < $payment->amount) {
-                throw new PointException();
+                throw new PointException('Amount is over pay');
             }
             $cashAdvance->payments()->attach($payment->id);
             $cashAdvance->amount_remaining = $cashAdvance->amount_remaining - $payment->amount;

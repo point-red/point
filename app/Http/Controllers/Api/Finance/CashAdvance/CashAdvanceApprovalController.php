@@ -51,4 +51,27 @@ class CashAdvanceApprovalController extends Controller
 
         return new ApiResource($cashAdvance);
     }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return ApiResource
+     * @throws UnauthorizedException
+     * @throws ApprovalNotFoundException
+     */
+    public function bulkApproval(Request $request)
+    {
+        $bulkId = $request->get('bulk_id');
+        foreach($bulkId as $id){
+            $cashAdvance = CashAdvance::findOrFail($id);
+            $cashAdvance->form->approval_by = auth()->user()->id;
+            $cashAdvance->form->approval_at = now();
+            $cashAdvance->form->approval_status = $request->get('status');
+            $cashAdvance->form->save();
+
+            $cashAdvance->mapHistory($cashAdvance, $request->all());
+        }
+
+        return response()->json([], 204);
+    }
 }

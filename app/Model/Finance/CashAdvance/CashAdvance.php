@@ -7,6 +7,7 @@ use App\Exceptions\PointException;
 use App\Model\Form;
 use App\Model\UserActivity;
 use App\Model\TransactionModel;
+use App\Model\Accounting\ChartOfAccount;
 use App\Traits\Model\Finance\CashAdvanceJoin;
 use App\Traits\Model\Finance\CashAdvanceRelation;
 use Carbon\Carbon;
@@ -26,6 +27,7 @@ class CashAdvance extends TransactionModel
     protected $fillable = [
         'payment_type',
         'employee_id',
+        'created_at'
     ];
 
     protected $casts = [
@@ -57,6 +59,14 @@ class CashAdvance extends TransactionModel
         }
     }
 
+    public function isAllowedToRefund()
+    {
+        //check if amount remaining not null and form not done
+        if($this->amount_remaining == 0 || $this->form->done == 1){
+            throw new PointException('Refund not allowed');
+        }
+    }
+
     public static function create($data)
     {
         $cashAdvance = new self;
@@ -72,6 +82,7 @@ class CashAdvance extends TransactionModel
 
         $cashAdvance->amount = $amount;
         $cashAdvance->amount_remaining = $amount;
+        $cashAdvance->created_at = date("Y-m-d H:i:s");
         $cashAdvance->save();
 
         $cashAdvance->details()->saveMany($cashAdvanceDetails);
@@ -92,6 +103,13 @@ class CashAdvance extends TransactionModel
     private static function mapCashAdvanceDetails($details)
     {
         return array_map(function ($detail) {
+            //check cash/bank remaining
+            $chartOfAccount = ChartOfAccount::find($detail['chart_of_account_id']);
+            $chartOfAccountBalance = $chartOfAccount->total(date("Y-m-d H:i:s"));
+            if($chartOfAccountBalance < $detail['amount']){
+                throw new PointException('Balance not enough');
+            }
+
             $cashAdvanceDetail = new CashAdvanceDetail;
             $cashAdvanceDetail->fill($detail);
 
@@ -121,5 +139,12 @@ class CashAdvance extends TransactionModel
 
         // Archiving form
         $this->form->archive();
+    }
+
+    public function timestampRequestApproval()
+    {
+        // last request timestamp
+        $this->last_request_approval_at = date("Y-m-d H:i:s");
+        $this->save();
     }
 }

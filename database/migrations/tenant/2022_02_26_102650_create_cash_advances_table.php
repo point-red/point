@@ -19,7 +19,9 @@ class CreateCashAdvancesTable extends Migration
             $table->unsignedInteger('employee_id')->nullable();
             $table->decimal('amount', 65, 30);
             $table->decimal('amount_remaining', 65, 30);
+            $table->datetime('created_at')->nullable();
             $table->datetime('archived_at')->nullable();
+            $table->datetime('last_request_approval_at')->nullable();
 
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('restrict');
         });

@@ -7,12 +7,14 @@ use App\Http\Requests\Finance\CashAdvance\StoreCashAdvanceRequest;
 use App\Http\Requests\Finance\CashAdvance\UpdateCashAdvanceRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Mail\CashAdvanceBulkRequestApprovalNotificationMail;
 use App\Model\Finance\CashAdvance\CashAdvance;
 use App\Model\UserActivity;
 use App\Model\Form;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class CashAdvanceController extends Controller
@@ -94,15 +96,16 @@ class CashAdvanceController extends Controller
      */
     public function update(UpdateCashAdvanceRequest $request, $id)
     {
-        
-        $cashAdvance = CashAdvance::findOrFail($id);
-        $cashAdvance->isAllowedToUpdate();
-        $cashAdvance->mapHistory($cashAdvance, $request->all());
-        $cashAdvance->archive();
-
-        $result = DB::connection('tenant')->transaction(function () use ($request, $cashAdvance) {
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+            $cashAdvance = CashAdvance::findOrFail($id);
+            $cashAdvance->isAllowedToUpdate();
+            $cashAdvance->mapHistory($cashAdvance, $request->all());
+            $cashAdvance->archive();
 
             $cashAdvanceNew = CashAdvance::create($request->all());
+            $cashAdvanceNew->created_at = date("Y-m-d H:i:s", strtotime($cashAdvance->created_at.' Asia/Jakarta'));
+            $cashAdvanceNew->save();
+
             $cashAdvanceNew->form->increment = $cashAdvance->form->increment;
             $cashAdvanceNew->form->save();
 
@@ -134,5 +137,52 @@ class CashAdvanceController extends Controller
         $cashAdvance->mapHistory($cashAdvance, $request->all());
 
         return response()->json([], 204);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function sendBulkRequestApproval(Request $request)
+    {
+        $cashAdvanceGroup = CashAdvance::whereIn('id', $request->get('bulk_id'))
+                       ->with('form.requestApprovalTo','form.createdBy','details.account', 'employee')
+                       ->get()
+                       ->groupBy('form.requestApprovalTo.email');
+        
+        foreach($cashAdvanceGroup as $email => $cashAdvances){
+            Mail::to($email)->send(new CashAdvanceBulkRequestApprovalNotificationMail($cashAdvances, $request->get('tenant_base_url'), $request->get('bulk_id')));
+            //set timestamp
+            foreach($cashAdvances as $cashAdvance){
+                $cashAdvance->timestampRequestApproval();
+                $cashAdvance->mapHistory($cashAdvance, $request->all());
+            }
+        }
+
+        return response()->json([], 204);
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return ApiResource
+     * @throws UnauthorizedException
+     * @throws ApprovalNotFoundException
+     */
+    public function refund(Request $request, $id)
+    {
+        $cashAdvance = CashAdvance::findOrFail($id);
+        $cashAdvance->isAllowedToRefund();
+        $cashAdvance->amount_remaining = 0;
+        $cashAdvance->save();
+
+        $cashAdvance->form->done = 1;
+        $cashAdvance->form->save();
+
+        $cashAdvance->mapHistory($cashAdvance, $request->all());
+
+        return new ApiResource($cashAdvance);
     }
 }

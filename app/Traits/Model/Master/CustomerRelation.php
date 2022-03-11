@@ -94,4 +94,17 @@ trait CustomerRelation
     {
         return $this->morphMany(Payment::class, 'paymentable');
     }
+
+    /**
+     * Get the customer's payment.
+     */
+    public function cutoffPayments()
+    {
+        return $this->morphMany(CutOffPayment::class, 'cutoff_paymentable');
+    }
+
+    public function cutoffDownPayments()
+    {
+        return $this->morphMany(CutOffPayment::class, 'cutoff_downpaymentable');
+    }
 }

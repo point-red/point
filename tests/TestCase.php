@@ -4,8 +4,10 @@ namespace Tests;
 
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
+use App\Model\Master\Branch;
 use App\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use App\Model\Package;
+use App\Model\Project\Project;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Log;
@@ -48,6 +50,8 @@ abstract class TestCase extends BaseTestCase
         $this->headers = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
+            'Tenant' => 'test',
+            'Timezone' => 'asia/jakarta'
         ];
 
         \DB::beginTransaction();
@@ -78,6 +82,26 @@ abstract class TestCase extends BaseTestCase
         $tenantUser->name = $this->user->name;
         $tenantUser->email = $this->user->email;
         $tenantUser->save();
+
+        $this->userBranch($tenantUser);
+    }
+
+    protected function userBranch($tenantUser)
+    {
+        $branch = $this->createBranch();
+        $tenantUser->branches()->syncWithoutDetaching($branch->id);
+        foreach ($tenantUser->branches as $branch) {
+            $branch->pivot->is_default = true;
+            $branch->pivot->save();
+        }
+    }
+
+    protected function createBranch()
+    {
+        $branch = new Branch();
+        $branch->name = 'Test branch';
+        $branch->save();
+        return $branch;
     }
 
     protected function logRequestTime()
@@ -131,5 +155,30 @@ abstract class TestCase extends BaseTestCase
         $hasPermission->model_type    = 'App\Model\Master\User';
         $hasPermission->model_id      = $this->user->id;
         $hasPermission->save();
+    }
+
+    protected function setProject()
+    {
+        $package = new Package();
+        $package->code = 'code';
+        $package->name = 'test';
+        $package->description = 'test';
+        $package->max_user = 3;
+        $package->price = 3000000;
+        $package->price_per_user = 50000;
+        $package->is_active = true;
+        $package->save();   
+
+        $project = new Project();
+        $project->code = 'test';
+        $project->name = 'testing';
+        $project->total_user = 10;
+        $project->timezone = 'asia/jakarta';
+        $project->owner_id = $this->user->id;
+        $project->invitation_code_enabled = 0;
+        $project->is_generated = 0;
+        $project->package_id = $package->id;
+        $project->expired_date = date('Y-m-d H:i:s');
+        $project->save();
     }
 }

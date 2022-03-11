@@ -30,9 +30,8 @@ class ItemController extends Controller
         $items = Item::joins($items, $request->get('join'));
 
         if ($request->has('group_id')) {
-            $items = $items->leftJoin('groupables', 'groupables.groupable_id', '=', 'items.id')
-                ->where('groupables.groupable_type', Item::class)
-                ->where('groupables.group_id', '=', $request->get('group_id'));
+            $items = $items->join('item_item_group', 'item_item_group.item_id', '=', 'item.id')
+                ->where('item_item_group.item_group_id', '=', $request->get('group_id'));
         }
 
         if ($request->has('with_stock')) {

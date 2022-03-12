@@ -36,14 +36,6 @@ class CutOff extends TransactionModel
 
     public $defaultNumberPrefix = 'CUT';
 
-    /**
-     * Get all of the item's journals.
-     */
-    public function cutOffAccount()
-    {
-        return $this->hasMany(CutOffAccount::class, 'cutoff_id');
-    }
-
     public static function createCutoff($reqData)
     {
         $chartOfAccounts = ChartOfAccount::with('type')->findOrFail(array_column($reqData['details'], "chart_of_account_id"));     

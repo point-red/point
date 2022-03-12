@@ -51,12 +51,4 @@ class CutOffInventory extends PointModel
     {
         return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
-
-    /**
-     * Get all of the item's journals.
-     */
-    public function cutoffDetail()
-    {
-        return $this->morphMany(CutOffDetail::class, 'cutoffable');
-    }
 }

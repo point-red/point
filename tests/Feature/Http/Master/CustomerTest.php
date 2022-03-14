@@ -49,6 +49,7 @@ class CustomerTest extends TestCase
             'group_id' => '1',
             'join' => 'address,phone,email'
         );
+        
         $customer = new Customer();
         $customer->name = "Ramadhan";
         $customer->branch_id = $this->branch_id;

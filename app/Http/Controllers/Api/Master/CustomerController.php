@@ -136,8 +136,6 @@ class CustomerController extends Controller
 
     public function exportCustomer(Request $request)
     {
-        DB::connection('tenant')->beginTransaction();
-
         $user = tenant(auth()->user()->id);
         $nameUser = $user->name;
         $dateNow = date("Ymdhis", strtotime($request->post('datetimenow')));

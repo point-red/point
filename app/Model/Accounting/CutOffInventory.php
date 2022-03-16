@@ -41,7 +41,7 @@ class CutOffInventory extends PointModel
 
     public function dna()
     {
-        return $this->hasMany(CutOffInventoryDna::class, 'item_id');
+        return $this->hasMany(CutOffInventoryDna::class, 'item_id',  'item_id');
     }
 
     /**
@@ -50,13 +50,5 @@ class CutOffInventory extends PointModel
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class, 'warehouse_id');
-    }
-
-    /**
-     * Get all of the item's journals.
-     */
-    public function cutoffDetail()
-    {
-        return $this->morphMany(CutOffDetail::class, 'cutoffable');
     }
 }

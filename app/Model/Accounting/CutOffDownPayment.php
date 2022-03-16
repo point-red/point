@@ -24,14 +24,6 @@ class CutOffDownPayment extends PointModel
         'notes',
     ];
 
-    /**
-     * Get all of the item's journals.
-     */
-    public function cutoffDetail()
-    {
-        return $this->morphOne(CutOffDetail::class, 'cutoffable');
-    }
-
     public function cutoff_downpaymentable()
     {
         return $this->morphTo();

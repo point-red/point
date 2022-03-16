@@ -49,12 +49,4 @@ class CutOffAsset extends PointModel
     {
         return $this->belongsTo(Supplier::class, 'supplier_id');
     }
-
-    /**
-     * Get all of the item's journals.
-     */
-    public function cutoffDetail()
-    {
-        return $this->morphMany(CutOffDetail::class, 'cutoffable');
-    }
 }

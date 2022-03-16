@@ -5,6 +5,7 @@
 		font-style: normal;
 		font-variant: normal;
 		font-size: 10;
+    padding: 5px;
 	}
 	td {
 		font-family: 'Helvetica';
@@ -12,7 +13,7 @@
 		font-style: normal;
 		font-variant: normal;
 		font-size: 8;
-	
+    padding: 5px;
 	}
 </style>
 <table width="100%">
@@ -31,14 +32,14 @@
   </tr>
 </table>
 
-<table width="100%" border="1" style="border-collapse: collapse; border: 1px solid #000;" cellspacing="4">
+<table width="100%" border="1" style="border-collapse: collapse; border: 1px solid #000;margin-top:50px;" cellspacing="4">
     <thead>
     	<tr>
 	        <th width="7%">
 	        	No
 	        </th>
-	        <th width="14%">Account Number</th>
-	        <th width="43%">Account Name</th>
+	        <th width="16%">Account Number</th>
+	        <th width="41%">Account Name</th>
 	        <th width="15%">Debit</th>
 	        <th width="15%">Credit</th>
 	    </tr>

@@ -21,21 +21,6 @@ use Illuminate\Support\Facades\Storage;
 
 class CutOffController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @param  Request  $request
-     * @return ApiCollection
-     */
-    // public function index(Request $request)
-    // {
-    //     $cutOffs = CutOff::eloquentFilter($request);
-    //     $cutOffs = CutOff::joins($cutOffs, $request);
-
-    //     $cutOffs = pagination($cutOffs, $request->get('limit'));
-
-    //     return new ApiCollection($cutOffs);
-    // }
 
     /**
      * Display a listing of the resource.
@@ -81,12 +66,6 @@ class CutOffController extends Controller
         $pdf = $pdf->setPaper('a4', 'portrait')->setWarnings(false);
         $pdf = $pdf->download()->getOriginalContent();
         Storage::disk(env('STORAGE_DISK'))->put($path, $pdf);
-
-        if (! $pdf) {
-            return response()->json([
-                'message' => 'Failed to export',
-            ], 422);
-        }
 
         $cloudStorage = new CloudStorage();
         $cloudStorage->file_name = $fileName;

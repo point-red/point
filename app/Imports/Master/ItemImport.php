@@ -60,12 +60,12 @@ class ItemImport implements ToCollection
     $item['units'] = [];
     if(request()->get("units_converter_1") != null && request()->get("units_measurement_1") != null){
         if($row[request()->get("units_converter_1")] != null && $row[request()->get("units_measurement_1")] != null){
-            array_push($item['units'], $this->generateUnits($row[request()->get("units_converter_1")],$row[request()->get("units_measurement_1")]));
+            array_push($item['units'], $this->generateUnits($row[request()->get("units_measurement_1")],1));
         }
     }
     if(request()->get("units_converter_2") != null && request()->get("units_measurement_2") != null){
       if($row[request()->get("units_converter_2")] != null && $row[request()->get("units_measurement_2")] != null){
-          array_push($item['units'], $this->generateUnits($row[request()->get("units_converter_2")],$row[request()->get("units_measurement_2")]));
+          array_push($item['units'], $this->generateUnits($row[request()->get("units_measurement_2")],$row[request()->get("units_converter_2")]));
       }
     }
     if(empty($item['units'])){
@@ -83,12 +83,12 @@ class ItemImport implements ToCollection
     return $item;
   }
 
-  public function generateUnits($converter, $measurement)
+  public function generateUnits($measurement, $converter)
   {
     return [
-        "label" => $converter,
-        "name" => $converter,
-        "converter" => $measurement,
+        "label" => $measurement,
+        "name" => $measurement,
+        "converter" => $converter,
         "default_purchase" => false,
         "default_sales" => false
     ];

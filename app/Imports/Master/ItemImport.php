@@ -72,10 +72,10 @@ class ItemImport implements ToCollection
       array_push($item['units'], $this->generateUnits('pcs', 1));
     }
     if(request()->get("require_expiry_date") != null && $row[request()->get("require_expiry_date")]!= null){
-      $item['require_expiry_date'] = $row[request()->get("require_expiry_date")];
+      $item['require_expiry_date'] = $row[request()->get("require_expiry_date")] == "true";
     }
     if(request()->get("require_production_number") != null && $row[request()->get("require_production_number")]!= null){
-      $item['require_production_number'] = $row[request()->get("require_production_number")];
+      $item['require_production_number'] = $row[request()->get("require_production_number")] == "true";
     }
     if(request()->get("group_name") != null && $row[request()->get("group_name")]!= null){
       $item['group_name'] = $row[request()->get("group_name")];

@@ -58,8 +58,8 @@ class ItemImport implements ToCollection
     $item['name'] = $row[request()->get("name")];
     $item['chart_of_account'] = $row[request()->get("chart_of_account")];
     $item['units'] = [];
-    if(request()->get("units_converter_1") != null && request()->get("units_measurement_1") != null){
-        if($row[request()->get("units_converter_1")] != null && $row[request()->get("units_measurement_1")] != null){
+    if(request()->get("units_measurement_1") != null){
+        if($row[request()->get("units_measurement_1")] != null){
             array_push($item['units'], $this->generateUnits($row[request()->get("units_measurement_1")],1));
         }
     }

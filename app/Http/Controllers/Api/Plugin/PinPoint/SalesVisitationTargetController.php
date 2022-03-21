@@ -59,10 +59,8 @@ class SalesVisitationTargetController extends Controller
                 $newTarget = SalesVisitationTarget::where('user_id', $target['user_id'])
                     ->where('date', $target['date'])->first();
                 if (! $newTarget) {
-                    info(++$i.' new');
                     $newTarget = new SalesVisitationTarget;
                 } else {
-                    info(++$i.' old '.$target['date']);
                 }
                 $newTarget->date = $target['date'];
                 $newTarget->user_id = $target['user_id'];

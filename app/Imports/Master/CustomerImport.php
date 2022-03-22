@@ -2,6 +2,7 @@
 
 namespace App\Imports\Master;
 
+use App\Model\Master\Branch;
 use App\Model\Master\Customer;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -16,6 +17,8 @@ class CustomerImport implements ToCollection
       if($index == 1)  {
         continue;
       }
+
+      
       
       if ($row[request()->get("name")] !== null) {
         $customer = new Customer();
@@ -24,7 +27,17 @@ class CustomerImport implements ToCollection
         $customer->address = $row[request()->get("address")];
         $customer->phone = $row[request()->get("phone")];
         $customer->email = $row[request()->get("email")];
-        $customer->branch_id = auth()->user()->branch_id ?? 1;
+
+        $branchName = $row[request()->get("branch")];
+        $branch = Branch::where('name', $branchName)->first();
+
+        $branchId = auth()->user()->branch_id ?? 1;
+        if ($branch) {
+          $branchId = $branch->id;
+        }
+        
+
+        $customer->branch_id = $branchId;
         $customer->save();
       }
     }

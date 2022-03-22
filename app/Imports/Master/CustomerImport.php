@@ -2,6 +2,7 @@
 
 namespace App\Imports\Master;
 
+use App\Exceptions\PointException;
 use App\Model\Master\Branch;
 use App\Model\Master\Customer;
 use Illuminate\Support\Collection;
@@ -29,14 +30,17 @@ class CustomerImport implements ToCollection
         $customer->email = $row[request()->get("email")];
 
         $branchName = $row[request()->get("branch")];
-        $branch = Branch::where('name', $branchName)->first();
-
         $branchId = auth()->user()->branch_id ?? 1;
-        if ($branch) {
-          $branchId = $branch->id;
+
+        if ($branchName) {
+          $branch = Branch::where('name', $branchName)->first();
+          if ($branch) {
+            $branchId = $branch->id;
+          } else {
+            throw new PointException("Branch " . $branchName . " invalid");
+          }
         }
         
-
         $customer->branch_id = $branchId;
         $customer->save();
       }

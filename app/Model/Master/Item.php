@@ -143,9 +143,9 @@ class Item extends MasterModel
 
     public static function cogs($itemId)
     {
-        $qty = Inventory::where("item_id", $itemId)->sum("quantity");
-        $valueDebit = Journal::where("journalable_id", $itemId)->where("journalable_type", "Item")->sum("debit");
-        $valueCredit = Journal::where("journalable_id", $itemId)->where("journalable_type", "Item")->sum("credit");
+        $qty = Inventory::where('item_id', $itemId)->sum('quantity');
+        $valueDebit = Journal::where('journalable_id', $itemId)->where('journalable_type', 'Item')->sum('debit');
+        $valueCredit = Journal::where('journalable_id', $itemId)->where('journalable_type', 'Item')->sum('credit');
 
         if ($qty <= 0) {
             return 0;

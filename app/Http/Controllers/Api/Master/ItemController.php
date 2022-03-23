@@ -25,7 +25,7 @@ class ItemController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return ApiCollection
      */
     public function index(Request $request)
@@ -76,8 +76,9 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreItemRequest $request
+     * @param  StoreItemRequest  $request
      * @return \App\Http\Resources\ApiResource
+     *
      * @throws \Throwable
      */
     public function store(StoreItemRequest $request)
@@ -95,8 +96,9 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
+     *
      * @throws \Throwable
      */
     public function storeMany(Request $request)
@@ -150,8 +152,9 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
+     *
      * @throws \Throwable
      */
     public function import(Request $request)
@@ -161,24 +164,24 @@ class ItemController extends Controller
             'name' => 'required',
             'chart_of_account' => 'required',
             'start_row' => 'required',
-            'file' => 'required|mimes:xlsx,xls,csv|max:1024'
+            'file' => 'required|mimes:xlsx,xls,csv|max:1024',
         ]);
-        
+
         $result = new ItemImport;
-        $result->startRow(request()->get("start_row"));
+        $result->startRow(request()->get('start_row'));
         Excel::import($result, request()->file('file'));
 
         return response()->json([
             'message' => 'success',
-            'data' => $result->getResult()
+            'data' => $result->getResult(),
         ], 200);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param Request $request
-     * @param  int $id
+     * @param  Request  $request
+     * @param  int  $id
      * @return ApiResource
      */
     public function show(Request $request, $id)
@@ -197,7 +200,7 @@ class ItemController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateItemRequest $request
+     * @param  UpdateItemRequest  $request
      * @param $id
      * @return ApiResource
      */
@@ -244,7 +247,7 @@ class ItemController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateMany(Request $request)

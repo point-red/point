@@ -58,24 +58,24 @@ class ItemImport implements ToCollection
     $item['name'] = $row[request()->get("name")];
     $item['chart_of_account'] = $row[request()->get("chart_of_account")];
     $item['units'] = [];
-    if(request()->get("units_converter_1") != null && request()->get("units_measurement_1") != null){
-        if($row[request()->get("units_converter_1")] != null && $row[request()->get("units_measurement_1")] != null){
-            array_push($item['units'], $this->generateUnits($row[request()->get("units_converter_1")],$row[request()->get("units_measurement_1")]));
+    if(request()->get("units_measurement_1") != null){
+        if($row[request()->get("units_measurement_1")] != null){
+            array_push($item['units'], $this->generateUnits($row[request()->get("units_measurement_1")],1));
         }
     }
     if(request()->get("units_converter_2") != null && request()->get("units_measurement_2") != null){
       if($row[request()->get("units_converter_2")] != null && $row[request()->get("units_measurement_2")] != null){
-          array_push($item['units'], $this->generateUnits($row[request()->get("units_converter_2")],$row[request()->get("units_measurement_2")]));
+          array_push($item['units'], $this->generateUnits($row[request()->get("units_measurement_2")],$row[request()->get("units_converter_2")]));
       }
     }
     if(empty($item['units'])){
       array_push($item['units'], $this->generateUnits('pcs', 1));
     }
     if(request()->get("require_expiry_date") != null && $row[request()->get("require_expiry_date")]!= null){
-      $item['require_expiry_date'] = $row[request()->get("require_expiry_date")];
+      $item['require_expiry_date'] = $row[request()->get("require_expiry_date")] == "true";
     }
     if(request()->get("require_production_number") != null && $row[request()->get("require_production_number")]!= null){
-      $item['require_production_number'] = $row[request()->get("require_production_number")];
+      $item['require_production_number'] = $row[request()->get("require_production_number")] == "true";
     }
     if(request()->get("group_name") != null && $row[request()->get("group_name")]!= null){
       $item['group_name'] = $row[request()->get("group_name")];
@@ -83,12 +83,12 @@ class ItemImport implements ToCollection
     return $item;
   }
 
-  public function generateUnits($converter, $measurement)
+  public function generateUnits($measurement, $converter)
   {
     return [
-        "label" => $converter,
-        "name" => $converter,
-        "converter" => $measurement,
+        "label" => $measurement,
+        "name" => $measurement,
+        "converter" => $converter,
         "default_purchase" => false,
         "default_sales" => false
     ];

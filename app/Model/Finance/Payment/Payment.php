@@ -12,6 +12,7 @@ use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use App\Model\TransactionModel;
 use App\Traits\Model\Finance\PaymentJoin;
 use App\Traits\Model\Finance\PaymentRelation;
+use DB;
 
 class Payment extends TransactionModel
 {

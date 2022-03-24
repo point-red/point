@@ -3,15 +3,16 @@
 namespace App\Traits\Model\Accounting;
 
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\CutOff;
 use App\Model\Accounting\CutOffAccount;
 use App\Model\Form;
 
 trait CutOffAccountJoin
 {
-    public static function joins($query, $req)
+    public static function joins($query, $joins)
     {
-        $joins = explode(',', $req->get('join'));
+        $joins = explode(',', $joins);
 
         if (!$joins) {
             return $query;
@@ -29,6 +30,10 @@ trait CutOffAccountJoin
         if (in_array('account', $joins)) {
             $query = $query->join(ChartOfAccount::getTableName().' as '.ChartOfAccount::$alias,
                 'account.id', '=', CutOffAccount::$alias.'.chart_of_account_id');
+            if (in_array('account_type', $joins)) {
+                $query = $query->join(ChartOfAccountType::getTableName().' as '.ChartOfAccountType::$alias,
+                ChartOfAccountType::$alias.'.id', '=', ChartOfAccount::$alias.'.type_id');
+            }
         }
 
         return $query;

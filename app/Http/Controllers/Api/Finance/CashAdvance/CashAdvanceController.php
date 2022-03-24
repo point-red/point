@@ -73,6 +73,23 @@ class CashAdvanceController extends Controller
     }
 
     /**
+     * Store a history activity of cash advance in storage.
+     *
+     * @param Request $request
+     * @param  int $id
+     * @return Response
+     */
+    public function storeHistory(Request $request)
+    {
+        return DB::connection('tenant')->transaction(function () use ($request) {
+            $cashAdvance = CashAdvance::findOrFail($request->get('id'));
+            $cashAdvance->mapHistory($cashAdvance, $request->all());
+
+            return response()->json([], 204);
+        });
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  \Illuminate\Http\Request  $request

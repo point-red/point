@@ -15,6 +15,8 @@ Route::prefix('finance')->namespace('Finance')->group(function () {
     Route::post('cash-advances/bulk-approval', 'CashAdvance\\CashAdvanceApprovalController@bulkApproval');
     Route::post('cash-advances/{id}/refund', 'CashAdvance\\CashAdvanceController@refund');
     Route::get('cash-advances/history', 'CashAdvance\\CashAdvanceController@history');
+    Route::post('cash-advances/history', 'CashAdvance\\CashAdvanceController@storeHistory');
     Route::apiResource('cash-advances', 'CashAdvance\\CashAdvanceController');
+    Route::apiResource('reports', 'Report\\ReportController');
     // Route::apiResource('budgeting', 'BudgetingController');
 });

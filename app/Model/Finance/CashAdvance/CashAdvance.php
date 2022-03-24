@@ -119,6 +119,10 @@ class CashAdvance extends TransactionModel
 
     public static function mapHistory($cashAdvance, $data)
     {
+        if(strtolower($data['activity']) == 'updated'){
+            $sequence = Form::where('edited_number', $cashAdvance->form->number)->count();
+            $data['activity'] = 'Updated - '.($sequence + 1);
+        }
         $history = new UserActivity;
         $history->fill($data);
 

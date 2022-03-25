@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Master;
 
+use App\Model\Master\Branch;
 use App\Model\Master\Warehouse;
 use Tests\TestCase;
 
@@ -17,9 +18,12 @@ class WarehouseTest extends TestCase
     /** @test */
     public function create_warehouse()
     {
+        $branch = factory(Branch::class)->create();
+
         $data = [
             'code' => $this->faker->randomNumber(null, false),
             'name' => $this->faker->name,
+            'branch_id' => $branch->id,
         ];
 
         $response = $this->json('POST', '/api/v1/master/warehouses', $data, [$this->headers]);
@@ -64,6 +68,7 @@ class WarehouseTest extends TestCase
     /** @test */
     public function update_warehouse()
     {
+        $branch = factory(Branch::class)->create();
         $warehouse = factory(Warehouse::class)->create();
 
         $data = [
@@ -72,6 +77,7 @@ class WarehouseTest extends TestCase
             'name' => $this->faker->name,
             'address' => $this->faker->address,
             'phone' => $this->faker->phoneNumber,
+            'branch_id' => $branch->id,
         ];
 
         $response = $this->json('PUT', '/api/v1/master/warehouses/'.$warehouse->id, $data, [$this->headers]);

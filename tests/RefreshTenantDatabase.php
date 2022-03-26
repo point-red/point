@@ -25,6 +25,14 @@ trait RefreshTenantDatabase
                 '--database' => 'tenant',
                 '--path' => 'database/migrations/tenant',
             ]);
+            $this->artisan('db:seed', [
+                '--database' => 'tenant',
+                '--class' => 'TenantDatabaseSeeder',
+            ]);
+            $this->artisan('db:seed', [
+                '--database' => 'tenant',
+                '--class' => 'DummyTenantDatabaseSeeder',
+            ]);
 
             RefreshTenantDatabaseState::$migrated = true;
         }

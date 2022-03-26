@@ -28,6 +28,7 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::post('items/{id}/detach-groups', 'ItemGroupController@detach');
     Route::post('items/{id}/sync-groups', 'ItemGroupController@sync');
     Route::post('items/bulk', 'ItemController@storeMany');
+    Route::post('items/export', 'ItemController@export');
     Route::post('items/import', 'ItemController@import');
     Route::put('items/bulk', 'ItemController@updateMany');
     Route::patch('items/bulk', 'ItemController@updateMany');

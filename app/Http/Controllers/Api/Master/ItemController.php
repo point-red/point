@@ -2,18 +2,23 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Exports\Master\ItemExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Item\StoreItemRequest;
 use App\Http\Requests\Master\Item\UpdateItemRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Imports\Master\ItemImport;
+use App\Model\CloudStorage;
 use App\Model\Master\Item;
 use App\Model\Master\ItemGroup;
 use App\Model\Master\ItemUnit;
-use App\Imports\Master\ItemImport;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Model\Project\Project;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ItemController extends Controller
 {
@@ -113,6 +118,34 @@ class ItemController extends Controller
         return $result;
     }
 
+    public function export(Request $request)
+    {
+        $tenant = strtolower($request->header('Tenant'));
+        $key = Str::random(16);
+        $fileName = strtoupper($tenant).' - Item';
+        $fileExt = 'xlsx';
+        $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
+        Excel::store(new ItemExport($request), $path, env('STORAGE_DISK'));
+
+        $cloudStorage = new CloudStorage();
+        $cloudStorage->file_name = $fileName;
+        $cloudStorage->file_ext = $fileExt;
+        $cloudStorage->feature = 'item';
+        $cloudStorage->key = $key;
+        $cloudStorage->path = $path;
+        $cloudStorage->disk = env('STORAGE_DISK');
+        $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
+        $cloudStorage->owner_id = auth()->user()->id;
+        $cloudStorage->expired_at = Carbon::now()->addDay(1);
+        $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
+        $cloudStorage->save();
+
+        return response()->json([
+            'data' => [
+                'url' => $cloudStorage->download_url,
+            ],
+        ], 200);
+    }
 
     /**
      * Store a newly created resource in storage.

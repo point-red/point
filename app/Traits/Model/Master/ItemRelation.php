@@ -31,6 +31,16 @@ trait ItemRelation
         return $this->belongsToMany(ItemGroup::class);
     }
 
+    public function unitDefaultPurchase()
+    {
+        return $this->belongsTo(ItemUnit::class);
+    }
+
+    public function unitDefaultSales()
+    {
+        return $this->belongsTo(ItemUnit::class);
+    }
+
     /**
      * Get all of the units for the items.
      */

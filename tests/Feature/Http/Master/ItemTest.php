@@ -49,4 +49,14 @@ class ItemTest extends TestCase
         $response->assertStatus(200);
 
     }
+
+    /** @test */
+    public function export_item_test()
+    {
+        $this->setProject();
+
+        $response = $this->json('POST', '/api/v1/master/items/export', [], $this->headers);
+
+        $response->assertStatus(200);
+    }
 }

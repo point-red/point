@@ -21,6 +21,8 @@ abstract class TestCase extends BaseTestCase
      * Instead run migrate on each test, you can run manually
      * "php artisan migrate:fresh --env=testing"
      * "php artisan migrate:fresh --env=testing --database=tenant --path=database/migrations/tenant"
+     * "php artisan db:seed --env=testing --database=tenant --class=TenantDatabaseSeeder"
+     * "php artisan db:seed --env=testing --database=tenant --class=DummyTenantDatabaseSeeder"
      * and comment this code below "use RefreshTenantDatabase;"
      * and uncomment "use DatabaseTransactions;".
      *

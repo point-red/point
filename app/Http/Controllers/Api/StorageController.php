@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
+use App\Http\Resources\ApiResource;
 use App\Model\CloudStorage;
 use App\Model\Project\Project;
 use Carbon\Carbon;
@@ -40,7 +41,7 @@ class StorageController extends Controller
             $cloudStorages->where(function ($query) use ($value) {
                 $words = explode(' ', $value);
                 foreach ($words as $word) {
-                    $query->where('file_name', 'like', '%'.$word.'%');
+                    $query->where('file_name', 'like', '%' . $word . '%');
                 }
             });
         }
@@ -49,11 +50,11 @@ class StorageController extends Controller
 
         $allowedMimeTypes = ['image/jpeg', 'image/gif', 'image/png', 'image/bmp', 'image/svg+xml'];
         foreach ($cloudStorages as $key => $cloudStorage) {
-            if (! Storage::disk($cloudStorage->disk)->exists($cloudStorage->path)) {
+            if (!Storage::disk($cloudStorage->disk)->exists($cloudStorage->path)) {
                 continue;
             }
             $base64 = base64_encode(Storage::disk($cloudStorage->disk)->get($cloudStorage->path));
-            $preview = 'data:'.$cloudStorage->mime_type.';base64,'.$base64;
+            $preview = 'data:' . $cloudStorage->mime_type . ';base64,' . $base64;
             if (in_array($cloudStorage->mime_type, $allowedMimeTypes)) {
                 $cloudStorage->preview = $preview;
             }
@@ -78,6 +79,93 @@ class StorageController extends Controller
         return response()->json([], 204);
     }
 
+    public function showBy($feature, $feature_id)
+    {
+        $cloudStorage = CloudStorage::where('feature', $feature)->where('feature_id', $feature_id)->first();
+
+        $allowedMimeTypes = [
+            'image/jpeg', 'image/png',
+            'image/jpg', 'application/pdf', 'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel', 'application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ];
+        if (!Storage::disk($cloudStorage->disk)->exists($cloudStorage->path)) {
+        }
+        // $base64 = base64_encode(Storage::disk($cloudStorage->disk)->get($cloudStorage->path));
+        // $preview = 'data:' . $cloudStorage->mime_type . ';base64,' . $base64;
+        $preview = Storage::url($cloudStorage->path);
+        if (in_array($cloudStorage->mime_type, $allowedMimeTypes)) {
+            $cloudStorage->preview = env('API_URL') . $preview;
+        }
+
+        return new ApiResource($cloudStorage);
+    }
+
+    public function replace(Request $request)
+    {
+        $file = $request->file('file');
+        $feature = $request->get('feature');
+        $featureSlug = str_replace(' ', '-', $request->get('feature'));
+        $featureId = $request->get('feature_id') ?? null;
+        $tenant = strtolower($request->header('Tenant'));
+        $key = Str::random(16);
+
+        $cloudStorage = CloudStorage::where('feature', $feature)->where('feature_id', $featureId);
+
+        $cloudStorage->where(function ($query) {
+            $query->where(function ($query2) {
+                $query2->where('owner_id', auth()->user()->id)
+                    ->where('is_user_protected', '=', true);
+            })->orWhere(function ($query2) {
+                $query2->where('is_user_protected', '=', false);
+            });
+        });
+
+        $resultStorage = $cloudStorage->first();
+        DB::beginTransaction();
+
+        if ($resultStorage && $resultStorage->key == $request->get('key')) {
+            $resultStorage->delete();
+
+            $path = $resultStorage->path . '' . $resultStorage->key . '.' . $resultStorage->file_ext;
+            if (Storage::disk(env('STORAGE_DISK'))->exists($path)) {
+                Storage::disk(env('STORAGE_DISK'))->delete($path);
+            }
+        }
+
+        DB::commit();
+
+        $path = 'tenant/' . $tenant . '/upload/' . $featureSlug . '/';
+        Storage::disk(env('STORAGE_DISK'))->putFileAs(
+            $path,
+            $file,
+            $key . '.' . $file->getClientOriginalExtension()
+        );
+
+        $cloudStorage = new CloudStorage;
+        $fileName = basename($request->file('file')->getClientOriginalName(), '.' . $request->file('file')->getClientOriginalExtension());
+        $cloudStorage->file_name = $fileName;
+        $cloudStorage->file_ext = $request->file('file')->getClientOriginalExtension();
+        $cloudStorage->mime_type = $request->file('file')->getClientMimeType();
+        $cloudStorage->feature = $feature;
+        if ($featureId > 0) {
+            $cloudStorage->feature_id = $featureId;
+        }
+        $cloudStorage->key = $key;
+        $cloudStorage->path = $path . $key . '.' . $file->getClientOriginalExtension();
+        $cloudStorage->disk = env('STORAGE_DISK');
+        $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
+        $cloudStorage->owner_id = auth()->user()->id;
+        $userProtected = filter_var($request->get('is_user_protected'), FILTER_VALIDATE_BOOLEAN);
+        $cloudStorage->is_user_protected = $userProtected;
+        $cloudStorage->notes = $request->get('notes');
+        if ($request->has('expiration_day') && $request->get('expiration_day') > 0) {
+            $cloudStorage->expired_at = Carbon::now()->addDay($request->get('expiration_day'));
+        }
+        $cloudStorage->download_url = env('API_URL') . '/download?key=' . $key;
+        $cloudStorage->save();
+    }
+
     public function destroy(Request $request, $id)
     {
         $cloudStorage = CloudStorage::findOrFail($id);
@@ -87,7 +175,7 @@ class StorageController extends Controller
         if ($cloudStorage && $cloudStorage->key == $request->get('key')) {
             $cloudStorage->delete();
 
-            $path = $cloudStorage->path.''.$cloudStorage->key.'.'.$cloudStorage->file_ext;
+            $path = $cloudStorage->path . '' . $cloudStorage->key . '.' . $cloudStorage->file_ext;
             if (Storage::disk(env('STORAGE_DISK'))->exists($path)) {
                 Storage::disk(env('STORAGE_DISK'))->delete($path);
             }
@@ -106,15 +194,15 @@ class StorageController extends Controller
         $featureId = $request->get('feature_id') ?? null;
         $tenant = strtolower($request->header('Tenant'));
         $key = Str::random(16);
-        $path = 'tenant/'.$tenant.'/upload/'.$featureSlug.'/';
+        $path = 'tenant/' . $tenant . '/upload/' . $featureSlug . '/';
         Storage::disk(env('STORAGE_DISK'))->putFileAs(
             $path,
             $file,
-            $key.'.'.$file->getClientOriginalExtension()
+            $key . '.' . $file->getClientOriginalExtension()
         );
 
         $cloudStorage = new CloudStorage;
-        $fileName = basename($request->file('file')->getClientOriginalName(), '.'.$request->file('file')->getClientOriginalExtension());
+        $fileName = basename($request->file('file')->getClientOriginalName(), '.' . $request->file('file')->getClientOriginalExtension());
         $cloudStorage->file_name = $fileName;
         $cloudStorage->file_ext = $request->file('file')->getClientOriginalExtension();
         $cloudStorage->mime_type = $request->file('file')->getClientMimeType();
@@ -123,7 +211,7 @@ class StorageController extends Controller
             $cloudStorage->feature_id = $featureId;
         }
         $cloudStorage->key = $key;
-        $cloudStorage->path = $path.$key.'.'.$file->getClientOriginalExtension();
+        $cloudStorage->path = $path . $key . '.' . $file->getClientOriginalExtension();
         $cloudStorage->disk = env('STORAGE_DISK');
         $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
         $cloudStorage->owner_id = auth()->user()->id;
@@ -133,7 +221,7 @@ class StorageController extends Controller
         if ($request->has('expiration_day') && $request->get('expiration_day') > 0) {
             $cloudStorage->expired_at = Carbon::now()->addDay($request->get('expiration_day'));
         }
-        $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
+        $cloudStorage->download_url = env('API_URL') . '/download?key=' . $key;
         $cloudStorage->save();
     }
 }

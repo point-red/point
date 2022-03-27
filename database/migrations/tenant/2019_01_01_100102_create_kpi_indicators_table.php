@@ -23,6 +23,9 @@ class CreateKpiIndicatorsTable extends Migration
             $table->unsignedInteger('score');
             $table->float('score_percentage');
             $table->text('score_description');
+            $table->text('notes')->nullable();
+            $table->text('comment')->nullable();
+            $table->string('attachment')->nullable();
             $table->timestamps();
 
             $table->foreign('kpi_group_id')

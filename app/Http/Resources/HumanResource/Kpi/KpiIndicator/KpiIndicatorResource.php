@@ -22,9 +22,12 @@ class KpiIndicatorResource extends JsonResource
             'weight' => $this->weight,
             'target' => $this->target,
             'score' => $this->score,
+            'notes' => $this->notes,
+            'comment' => $this->comment,
             'score_percentage' => $this->score_percentage,
             'score_description' => $this->score_description,
             'automated_code' => $this->automated_code,
+            'attachment' => $this->attachment,
             'scores' => KpiScoreResource::collection($this->scores->sortBy('score')),
         ];
     }

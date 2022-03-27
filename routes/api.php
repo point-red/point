@@ -43,6 +43,8 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::resource('transactions', 'TransactionController');
         Route::apiResource('firebase-token', 'FirebaseTokenController');
         Route::post('storage/upload', 'StorageController@upload');
+        Route::get('storage/show-by/{feature}/{feature_id}', 'StorageController@showBy');
+        Route::post('storage/replace', 'StorageController@replace');
         Route::apiResource('storage', 'StorageController');
         require base_path('routes/api/reward.php');
 

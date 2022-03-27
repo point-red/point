@@ -15,7 +15,7 @@ class WarehouseController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return ApiCollection
      */
     public function index(Request $request)
@@ -38,7 +38,7 @@ class WarehouseController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\Master\Warehouse\StoreWarehouseRequest $request
+     * @param  \App\Http\Requests\Master\Warehouse\StoreWarehouseRequest  $request
      * @return ApiResource
      */
     public function store(StoreWarehouseRequest $request)
@@ -53,8 +53,8 @@ class WarehouseController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Request $request
-     * @param  int $id
+     * @param  Request  $request
+     * @param  int  $id
      * @return ApiResource
      */
     public function show(Request $request, $id)

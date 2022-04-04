@@ -11,6 +11,9 @@ use App\Mail\CashAdvanceBulkRequestApprovalNotificationMail;
 use App\Model\Finance\CashAdvance\CashAdvance;
 use App\Model\UserActivity;
 use App\Model\Form;
+use App\Model\Master\User;
+use App\Model\Token;
+use App\Model\Project\Project;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -170,7 +173,21 @@ class CashAdvanceController extends Controller
                        ->groupBy('form.requestApprovalTo.email');
         
         foreach($cashAdvanceGroup as $email => $cashAdvances){
-            Mail::to($email)->send(new CashAdvanceBulkRequestApprovalNotificationMail($cashAdvances, $request->get('tenant_base_url'), $request->get('bulk_id')));
+            // create token based on request_approval_to
+            $approver = User::findOrFail($cashAdvances[0]->form->request_approval_to);
+            $token = Token::where('user_id', $approver->id)->first();
+
+            if (!$token) {
+                $token = new Token([
+                    'user_id' => $approver->id,
+                    'token' => md5($approver->email.''.now()),
+                ]);
+                $token->save();
+            }
+
+            $project = Project::where('code', $request->header('Tenant'))->first();
+
+            Mail::to($email)->send(new CashAdvanceBulkRequestApprovalNotificationMail($cashAdvances, $request->header('Tenant'), $request->get('bulk_id'), $token->token, $project->name));
             //set timestamp
             foreach($cashAdvances as $cashAdvance){
                 $cashAdvance->timestampRequestApproval();

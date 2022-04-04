@@ -12,7 +12,6 @@ Route::prefix('finance')->namespace('Finance')->group(function () {
     Route::post('cash-advances/{id}/cancellation-approve', 'CashAdvance\\CashAdvanceCancellationApprovalController@approve');
     Route::post('cash-advances/{id}/cancellation-reject', 'CashAdvance\\CashAdvanceCancellationApprovalController@reject');
     Route::post('cash-advances/send-bulk-request-approval', 'CashAdvance\\CashAdvanceController@sendBulkRequestApproval');
-    Route::post('cash-advances/bulk-approval', 'CashAdvance\\CashAdvanceApprovalController@bulkApproval');
     Route::post('cash-advances/{id}/refund', 'CashAdvance\\CashAdvanceController@refund');
     Route::get('cash-advances/history', 'CashAdvance\\CashAdvanceController@history');
     Route::post('cash-advances/history', 'CashAdvance\\CashAdvanceController@storeHistory');

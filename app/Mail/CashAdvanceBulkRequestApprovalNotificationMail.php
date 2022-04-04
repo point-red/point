@@ -11,8 +11,10 @@ class CashAdvanceBulkRequestApprovalNotificationMail extends Mailable
     use Queueable, SerializesModels;
 
     public $cashAdvances;
-    public $tenantBaseUrl;
+    public $tenant;
     public $bulkId;
+    public $token;
+    public $projectName;
 
     /**
      * Create a new message instance.
@@ -20,11 +22,13 @@ class CashAdvanceBulkRequestApprovalNotificationMail extends Mailable
      * @param $employeeContractExpired
      * @param $employeeContractExpiredSoon
      */
-    public function __construct($cashAdvances, $tenantBaseUrl, $bulkId)
+    public function __construct($cashAdvances, $tenant, $bulkId, $token, $projectName)
     {
         $this->cashAdvances = $cashAdvances;
-        $this->tenantBaseUrl = $tenantBaseUrl;
+        $this->tenant = $tenant;
         $this->bulkId = $bulkId;
+        $this->token = $token;
+        $this->projectName = $projectName;
     }
 
     /**

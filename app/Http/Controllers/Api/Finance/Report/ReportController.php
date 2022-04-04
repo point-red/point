@@ -162,9 +162,9 @@ class ReportController extends Controller
         $reports['total'] = $total;
         $reports['ending_balance'] = $total['debit'] - $total['credit'] + $reports['opening_balance']['debit'] - $reports['opening_balance']['credit'];
 
-        $paymentsCashAdvance = $this->reportsCashAdvance($request);
+        $cashAdvance = $this->reportsCashAdvance($request);
 
-        $reports['cash_advance'] = $paymentsCashAdvance->amount;
+        $reports['cash_advance'] = (int)$cashAdvance->amount_remaining_total;
 
         return $reports;
     }
@@ -240,36 +240,30 @@ class ReportController extends Controller
 
     private function reportsCashAdvance($request)
     {
-        $paymentsCashAdvance = Payment::from(Payment::getTableName().' as '.Payment::$alias)
-                    ->fields('raw:sum(payment.amount) as amount')
+        $cashAdvance = CashAdvance::from(CashAdvance::getTableName().' as '.CashAdvance::$alias)
+                    ->fields('raw:sum(cash_advance.amount_remaining) as amount_remaining_total')
                     ->sortBy('form.date')
-                    ->filterEqual(['payment.payment_type' => strtoupper($request->get('report_type'))])
+                    ->filterEqual(['cash_advance.payment_type' => strtoupper($request->get('report_type'))])
                     ->filterLike([
                         'form.number' => $request->get('search'),
-                        'payment_detail.notes' => $request->get('search'),
+                        'details.notes' => $request->get('search'),
                     ])
                     ->filterDateMin($request->get('filter_date_min'))
                     ->filterDateMax($request->get('filter_date_max'))
+                    ->filterForm('approvalApproved')
                     ->filterForm($request->get('filter_form'));
         
         if($request->get('account_id') != null){
-            $paymentsCashAdvance->filterEqual(['payment_account.id' => $request->get('account_id')]);
+            $cashAdvance->filterEqual(['cash_advance_detail.chart_of_account_id' => $request->get('account_id')]);
         }
 
-        if($request->get('journal_account_id') != null){
-            $paymentsCashAdvance->filterEqual(['account.id' => $request->get('journal_account_id')]);
+        if($request->get('subledger_id') != null && $request->get('subledger_type') != null && strtolower($request->get('subledger_type'))=='employee'){
+            $cashAdvance->filterEqual(['cash_advance.employee_id' => $request->get('subledger_id')]);
         }
 
-        if($request->get('subledger_id') != null && $request->get('subledger_type') != null){
-            $paymentsCashAdvance->filterEqual(['payment.paymentable_type' => $request->get('subledger_type')])
-                    ->filterEqual(['payment.paymentable_id' => $request->get('subledger_id')]);
-        }
+        $cashAdvance = CashAdvance::joins($cashAdvance, 'form,employee,details,account')->first();
 
-        $paymentsCashAdvance->filterEqual(['payment_detail.referenceable_type' => CashAdvance::$morphName]);
-
-        $paymentsCashAdvance = Payment::joins($paymentsCashAdvance, 'form,payment_account,details,account,allocation')->first();
-
-        return $paymentsCashAdvance;
+        return $cashAdvance;
     }
 
 }

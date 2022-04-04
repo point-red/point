@@ -54,9 +54,9 @@
                     <td style="padding: 5px; text-align: center">{{ date('d F Y', strtotime($cashAdvance->created_at.' Asia/Jakarta')) }}</td>
                     <td style="padding: 5px; text-align: center;">
                         <div style="display: flex;">
-                            <a href="{{$tenantBaseUrl}}/finance/cash-advance/{{$cashAdvance->id}}" style="padding: 5px 15px 5px 15px; margin: 2px; min-width: 30px; border-radius: 5px; background-color:#666699; color:white; text-decoration: none;">Check</a>
-                            <a href="{{$tenantBaseUrl}}/finance/cash-advance/{{$cashAdvance->id}}?approval=approve" style="padding: 5px 15px 5px 15px; margin: 2px; min-width: 30px; border-radius: 5px; background-color:#1aa3ff; color:white; text-decoration: none;">Approve</a>
-                            <a href="{{$tenantBaseUrl}}/finance/cash-advance/{{$cashAdvance->id}}?approval=reject" style="padding: 5px 15px 5px 15px; margin: 2px; min-width: 30px; border-radius: 5px; background-color:#ff3333; color:white; text-decoration: none;">Reject</a>
+                            <a href="{{$tenant}}.{{env('TENANT_DOMAIN')}}/finance/cash-advance/{{$cashAdvance->id}}" style="padding: 5px 15px 5px 15px; margin: 2px; min-width: 30px; border-radius: 5px; background-color:#666699; color:white; text-decoration: none;">Check</a>
+                            <a href="{{$tenant}}.{{env('TENANT_DOMAIN')}}/approval?resource-type=CashAdvance&tenant={{$tenant}}&action=approve&id={{$cashAdvance->id}}&project-name={{$projectName}}&token={{$token}}" style="padding: 5px 15px 5px 15px; margin: 2px; min-width: 30px; border-radius: 5px; background-color:#1aa3ff; color:white; text-decoration: none;">Approve</a>
+                            <a href="{{$tenant}}.{{env('TENANT_DOMAIN')}}/approval?resource-type=CashAdvance&tenant={{$tenant}}&action=reject&id={{$cashAdvance->id}}&project-name={{$projectName}}&token={{$token}}" style="padding: 5px 15px 5px 15px; margin: 2px; min-width: 30px; border-radius: 5px; background-color:#ff3333; color:white; text-decoration: none;">Reject</a>
                         </div>
                     </td>
                 </tr>
@@ -65,8 +65,8 @@
             </tbody>
         </table>
         <div style="display: flex; margin-top:15px">
-            <a href="{{$tenantBaseUrl}}/finance/cash-advance/do-bulk-approval/approve/{{base64_encode(json_encode($bulkId))}}" style="padding: 5px 15px 5px 15px; margin: 2px; min-width: 30px; border-radius: 5px; background-color:#1aa3ff; color:white; text-decoration: none;">Approve All</a>
-            <a href="{{$tenantBaseUrl}}/finance/cash-advance/do-bulk-approval/reject/{{base64_encode(json_encode($bulkId))}}" style="padding: 5px 15px 5px 15px; margin: 2px; min-width: 30px; border-radius: 5px; background-color:#ff3333; color:white; text-decoration: none;">Reject All</a>
+            <a href="{{$tenant}}.{{env('TENANT_DOMAIN')}}/approval-all?resource-type=CashAdvance&tenant={{$tenant}}&action=approve&ids={{json_encode($bulkId)}}&project-name={{$projectName}}&token={{$token}}" style="padding: 5px 15px 5px 15px; margin: 2px; min-width: 30px; border-radius: 5px; background-color:#1aa3ff; color:white; text-decoration: none;">Approve All</a>
+            <a href="{{$tenant}}.{{env('TENANT_DOMAIN')}}/approval-all?resource-type=CashAdvance&tenant={{$tenant}}&action=reject&ids={{json_encode($bulkId)}}&project-name={{$projectName}}&token={{$token}}" style="padding: 5px 15px 5px 15px; margin: 2px; min-width: 30px; border-radius: 5px; background-color:#ff3333; color:white; text-decoration: none;">Reject All</a>
         </div>
     </div>
 @stop

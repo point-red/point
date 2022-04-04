@@ -51,6 +51,18 @@ class CashAdvance extends TransactionModel
         }
     }
 
+    public function isAllowedToApprove($cashAdvance)
+    {
+        // Check if remaining balance of account is enough
+        $chartOfAccount = ChartOfAccount::find($cashAdvance->details[0]->chart_of_account_id);
+        $chartOfAccountBalance = $chartOfAccount->total(date("Y-m-d H:i:s"));
+        if($chartOfAccountBalance >= $cashAdvance->amount){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public function isAllowedToDelete()
     {
         // Check if not referenced by another form
@@ -129,7 +141,7 @@ class CashAdvance extends TransactionModel
         $history->table_type = self::$morphName;
         $history->table_id = $cashAdvance->id;
         $history->number = $cashAdvance->form->number;
-        $history->user_id = optional(auth()->user())->id;
+        $history->user_id = isset(optional(auth()->user())->id) ? optional(auth()->user())->id : $data['user_id'] ;
         $history->date = date('Y-m-d H:i:s');
         
         $history->save();

@@ -12,6 +12,7 @@ class CashAdvanceBulkRequestApprovalNotificationMail extends Mailable
 
     public $cashAdvances;
     public $tenant;
+    public $tenantUrl;
     public $bulkId;
     public $token;
     public $projectName;
@@ -22,10 +23,11 @@ class CashAdvanceBulkRequestApprovalNotificationMail extends Mailable
      * @param $employeeContractExpired
      * @param $employeeContractExpiredSoon
      */
-    public function __construct($cashAdvances, $tenant, $bulkId, $token, $projectName)
+    public function __construct($cashAdvances, $tenant, $tenantUrl, $bulkId, $token, $projectName)
     {
         $this->cashAdvances = $cashAdvances;
         $this->tenant = $tenant;
+        $this->tenantUrl = $tenantUrl;
         $this->bulkId = $bulkId;
         $this->token = $token;
         $this->projectName = $projectName;

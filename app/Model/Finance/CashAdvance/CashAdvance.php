@@ -142,7 +142,7 @@ class CashAdvance extends TransactionModel
         $history->table_id = $cashAdvance->id;
         $history->number = $cashAdvance->form->number;
         $history->user_id = isset(optional(auth()->user())->id) ? optional(auth()->user())->id : $data['user_id'] ;
-        $history->date = date('Y-m-d H:i:s');
+        $history->date = convert_to_local_timezone(date('Y-m-d H:i:s'));
         
         $history->save();
     }
@@ -162,5 +162,12 @@ class CashAdvance extends TransactionModel
         // last request timestamp
         $this->last_request_approval_at = date("Y-m-d H:i:s");
         $this->save();
+    }
+
+    public function getLastRequestApprovalAtAttribute($value)
+    {
+        if($value != null){
+            return convert_to_local_timezone($value);
+        }
     }
 }

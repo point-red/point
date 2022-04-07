@@ -123,7 +123,7 @@ class CashAdvanceController extends Controller
             $cashAdvance->archive();
 
             $cashAdvanceNew = CashAdvance::create($request->all());
-            $cashAdvanceNew->created_at = date("Y-m-d H:i:s", strtotime($cashAdvance->created_at.' Asia/Jakarta'));
+            $cashAdvanceNew->created_at = convert_to_server_timezone(date("Y-m-d H:i:s", strtotime($cashAdvance->created_at)));
             $cashAdvanceNew->save();
 
             $cashAdvanceNew->form->increment = $cashAdvance->form->increment;
@@ -187,7 +187,7 @@ class CashAdvanceController extends Controller
 
             $project = Project::where('code', $request->header('Tenant'))->first();
 
-            Mail::to($email)->send(new CashAdvanceBulkRequestApprovalNotificationMail($cashAdvances, $request->header('Tenant'), $request->get('bulk_id'), $token->token, $project->name));
+            Mail::to($email)->send(new CashAdvanceBulkRequestApprovalNotificationMail($cashAdvances, $request->header('Tenant'), $request->get('tenant_url'), $request->get('bulk_id'), $token->token, $project->name));
             //set timestamp
             foreach($cashAdvances as $cashAdvance){
                 $cashAdvance->timestampRequestApproval();

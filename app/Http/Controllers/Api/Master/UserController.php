@@ -19,7 +19,7 @@ class UserController extends ApiController
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return ApiCollection
      */
     public function index(Request $request)
@@ -41,7 +41,7 @@ class UserController extends ApiController
             $users = $users->joinSub($queryRole, 'query_roles', function ($join) use ($permission) {
                 $join->on(TenantUser::$alias.'.id', '=', 'query_roles.user_id')
                     ->where('query_roles.permission_name', $permission);
-                });
+            });
         }
 
         $users = pagination($users, $request->get('limit'));
@@ -52,7 +52,7 @@ class UserController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreUserRequest $request
+     * @param  StoreUserRequest  $request
      * @return ApiResource
      */
     public function store(StoreUserRequest $request)
@@ -60,7 +60,6 @@ class UserController extends ApiController
         $tenantUser = new TenantUser;
         $tenantUser->name = $request->name;
         $tenantUser->email = $request->email;
-        $tenantUser->password = bcrypt($request->password);
         $tenantUser->save();
 
         return new ApiResource($tenantUser);
@@ -69,8 +68,8 @@ class UserController extends ApiController
     /**
      * Display the specified resource.
      *
-     * @param Request $request
-     * @param int $id
+     * @param  Request  $request
+     * @param  int  $id
      * @return ApiResource
      */
     public function show(Request $request, $id)
@@ -87,8 +86,8 @@ class UserController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateUserRequest $request
-     * @param int $id
+     * @param  UpdateUserRequest  $request
+     * @param  int  $id
      * @return ApiResource
      */
     public function update(UpdateUserRequest $request, $id)
@@ -107,17 +106,20 @@ class UserController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
-     * @param int $id
+     * @param  Request  $request
+     * @param  int  $id
      * @return Response
      */
     public function destroy(Request $request, $id)
     {
         TenantUser::findOrFail($id)->delete();
 
-        $project = Project::where('code', $request->header('Tenant'))->first();
+        /** @var null|Project */
+        $project = Project::query()->where('code', $request->header('Tenant'))->first();
 
-        ProjectUser::where('user_id', $id)->where('project_id', $project->id)->delete();
+        if ($project) {
+            ProjectUser::where('user_id', $id)->where('project_id', $project->id)->delete();
+        }
 
         return response(null, 204);
     }

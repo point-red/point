@@ -8,6 +8,17 @@ use App\Traits\Model\Master\TenantUserRelation;
 use Illuminate\Support\Arr;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $address
+ * @property string $phone
+ * @property string $email
+ * @property int $branch_id
+ * @property int $warehouse_id
+ */
 class User extends MasterModel
 {
     use HasRoles, TenantUserJoin, TenantUserRelation;
@@ -30,14 +41,19 @@ class User extends MasterModel
 
     public function getFullNameAttribute()
     {
-        return $this->first_name.' '.$this->last_name;
+        return join(' ', array_filter([
+            $this->first_name,
+            $this->last_name,
+        ]));
     }
 
+    /**
+     * @return string[]
+     */
     public function getPermissions()
     {
         $permissions = $this->getAllPermissions();
-        $names = Arr::pluck($permissions, 'name');
 
-        return $names;
+        return Arr::pluck($permissions, 'name');
     }
 }

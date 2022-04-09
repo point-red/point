@@ -5,9 +5,10 @@ namespace Tests;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Master\Branch;
-use App\User;
 use App\Model\Package;
 use App\Model\Project\Project;
+use App\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Log;
@@ -33,6 +34,7 @@ abstract class TestCase extends BaseTestCase
     // Setting this allows both DB connections to be reset between tests
     protected $connectionsToTransact = ['mysql', 'tenant'];
 
+    protected $headers = [];
     protected $user;
     protected $account = null;
 
@@ -51,7 +53,7 @@ abstract class TestCase extends BaseTestCase
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
             'Tenant' => 'test',
-            'Timezone' => 'asia/jakarta'
+            'Timezone' => 'asia/jakarta',
         ];
 
         \DB::beginTransaction();
@@ -101,6 +103,7 @@ abstract class TestCase extends BaseTestCase
         $branch = new Branch();
         $branch->name = 'Test branch';
         $branch->save();
+
         return $branch;
     }
 
@@ -139,21 +142,21 @@ abstract class TestCase extends BaseTestCase
 
     protected function setRole()
     {
-        $role                = \App\Model\Auth\Role::createIfNotExists('super admin');
-        $hasRole             = new \App\Model\Auth\ModelHasRole();
-        $hasRole->role_id    = $role->id;
+        $role = \App\Model\Auth\Role::createIfNotExists('super admin');
+        $hasRole = new \App\Model\Auth\ModelHasRole();
+        $hasRole->role_id = $role->id;
         $hasRole->model_type = 'App\Model\Master\User';
-        $hasRole->model_id   = $this->user->id;
+        $hasRole->model_id = $this->user->id;
         $hasRole->save();
     }
 
     protected function setPermission()
     {
-        $permission                   = \App\Model\Auth\Permission::createIfNotExists('read pin point sales visitation form');
-        $hasPermission                = new \App\Model\Auth\ModelHasPermission();
+        $permission = \App\Model\Auth\Permission::createIfNotExists('read pin point sales visitation form');
+        $hasPermission = new \App\Model\Auth\ModelHasPermission();
         $hasPermission->permission_id = $permission->id;
-        $hasPermission->model_type    = 'App\Model\Master\User';
-        $hasPermission->model_id      = $this->user->id;
+        $hasPermission->model_type = 'App\Model\Master\User';
+        $hasPermission->model_id = $this->user->id;
         $hasPermission->save();
     }
 
@@ -167,7 +170,7 @@ abstract class TestCase extends BaseTestCase
         $package->price = 3000000;
         $package->price_per_user = 50000;
         $package->is_active = true;
-        $package->save();   
+        $package->save();
 
         $project = new Project();
         $project->code = 'test';

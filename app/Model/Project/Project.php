@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
+/**
+ * @property int $id
+ */
 class Project extends Model
 {
     protected $connection = 'mysql';

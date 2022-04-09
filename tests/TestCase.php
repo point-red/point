@@ -8,8 +8,10 @@ use App\Model\Master\Branch;
 use App\Model\Package;
 use App\Model\Project\Project;
 use App\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 abstract class TestCase extends BaseTestCase
@@ -35,6 +37,7 @@ abstract class TestCase extends BaseTestCase
     // Setting this allows both DB connections to be reset between tests
     protected $connectionsToTransact = ['mysql', 'tenant'];
 
+    protected $headers = [];
     protected $user;
     protected $account = null;
 

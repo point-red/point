@@ -9,6 +9,13 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $email
+ */
 class User extends Authenticatable
 {
     protected $connection = 'mysql';

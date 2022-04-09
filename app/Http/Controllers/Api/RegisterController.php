@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\Master\User\StoreUserRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\ApiResource;
+use App\Model\Project\ProjectUser;
 use App\User;
 use Illuminate\Support\Facades\DB;
-use App\Model\Project\ProjectUser;
 
 class RegisterController extends ApiController
 {
-    public function store(StoreUserRequest $request)
+    public function store(RegisterRequest $request)
     {
         $emailConfirmationCode = substr(encrypt($request->input('email')), 0, 30);
 
@@ -28,7 +28,7 @@ class RegisterController extends ApiController
         $user->save();
 
         $projects = ProjectUser::where('user_email', $user->email)->get();
-        foreach($projects as $project) {
+        foreach ($projects as $project) {
             $project->user_id = $user->id;
             $project->save();
         }

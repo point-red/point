@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Master\User;
+namespace App\Http\Requests;
 
-use App\Http\Requests\ApiFormRequest;
+use Illuminate\Foundation\Http\FormRequest;
 
-class StoreUserRequest extends ApiFormRequest
+class RegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,9 @@ class StoreUserRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:tenant.users,email',
+            'username' => 'required|max:255|unique:mysql.users,name',
+            'password' => 'required|min:8|max:255',
+            'email' => 'required|email|max:255|unique:mysql.users,email',
         ];
     }
 }

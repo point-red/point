@@ -19,7 +19,7 @@ class ItemTest extends TestCase
     public function import_item_test()
     {
         $file = new UploadedFile(
-          base_path('tests//import/import_master_item_test.xlsx'),
+          base_path('tests/Import/import_master_item_test.xlsx'),
           'import.xlsx',
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           null,

@@ -63,7 +63,7 @@ class WarehouseController extends Controller
 
         $warehouse = Warehouse::joins($warehouse, $request->get('join'));
 
-        $warehouse = $warehouse->where('warehouse.id', $id)->first();
+        $warehouse = $warehouse->where('warehouse.id', $id)->firstOrFail();
 
         return new ApiResource($warehouse);
     }

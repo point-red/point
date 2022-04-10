@@ -5,9 +5,10 @@ namespace Tests;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Master\Branch;
-use App\User;
 use App\Model\Package;
 use App\Model\Project\Project;
+use App\User;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Log;
@@ -33,7 +34,11 @@ abstract class TestCase extends BaseTestCase
     // Setting this allows both DB connections to be reset between tests
     protected $connectionsToTransact = ['mysql', 'tenant'];
 
+    /**
+     * @var null|User
+     */
     protected $user;
+
     protected $account = null;
 
     /**

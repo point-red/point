@@ -1,5 +1,6 @@
 <?php
 
+use App\Model\Master\Branch;
 use App\Model\Master\Warehouse;
 use Faker\Generator as Faker;
 
@@ -7,7 +8,11 @@ use Faker\Generator as Faker;
 
 $factory->define(Warehouse::class, function (Faker $faker) {
     return [
-        'code' => $faker->numberBetween($min = 10, $max = 999999),
+        'code' => $faker->postcode,
         'name' => $faker->name,
+        'address' => $faker->address,
+        'phone' => $faker->e164PhoneNumber,
+        'notes' => $faker->text(),
+        'branch_id' => factory(Branch::class),
     ];
 });

@@ -9,6 +9,9 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property int $id
+ */
 class User extends Authenticatable
 {
     protected $connection = 'mysql';

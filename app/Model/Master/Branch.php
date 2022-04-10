@@ -6,6 +6,9 @@ use App\Model\MasterModel;
 use App\Traits\Model\Master\BranchJoin;
 use App\Traits\Model\Master\BranchRelation;
 
+/**
+ * @property int $id
+ */
 class Branch extends MasterModel
 {
     use BranchJoin, BranchRelation;

@@ -1,9 +1,9 @@
 <?php
 
 namespace Tests\Feature\Http\Master;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Http\UploadedFile;
 
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 class ItemTest extends TestCase
@@ -27,18 +27,18 @@ class ItemTest extends TestCase
         );
 
         $send = [
-          'start_row' => 3,
-          'code' => 3,
-          'name' => 4,
-          'chart_of_account' => 9,
-          'units_measurement_1' => 5,
-          'units_measurement_2' => 6,
-          'units_converter_1' => 7,
-          'units_converter_2' => 8,
-          'require_expiry_date' => 11,
-          'require_production_number' => 12,
-          'group_name' => 10,
-          'file' => $file
+            'start_row' => 3,
+            'code' => 3,
+            'name' => 4,
+            'chart_of_account' => 9,
+            'units_measurement_1' => 5,
+            'units_measurement_2' => 6,
+            'units_converter_1' => 7,
+            'units_converter_2' => 8,
+            'require_expiry_date' => 11,
+            'require_production_number' => 12,
+            'group_name' => 10,
+            'file' => $file,
         ];
 
         // API Request
@@ -47,6 +47,5 @@ class ItemTest extends TestCase
 
         // Check Status Response
         $response->assertStatus(200);
-
     }
 }

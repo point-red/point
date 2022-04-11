@@ -25,6 +25,10 @@ class Form extends PointModel
         'increment_group',
     ];
 
+    protected $casts = [
+        'is_updated' => 'boolean',
+    ];
+
     public function save(array $options = [])
     {
         // First we need to create a fresh query instance and touch the creation and
@@ -99,6 +103,16 @@ class Form extends PointModel
     public function approvalBy()
     {
         return $this->belongsTo(User::class, 'approval_by');
+    }
+
+    public function isUpdated()
+    {
+        $check = self::where('edited_number', $this->number)->count();
+        if($check > 0){
+            $this->is_updated = true;
+        }else{
+            $this->is_updated = false;
+        }
     }
 
     public function saveData($data, $transaction, $options = [])

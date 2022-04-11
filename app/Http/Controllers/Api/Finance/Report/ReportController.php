@@ -250,7 +250,7 @@ class ReportController extends Controller
                     ])
                     ->filterDateMin($request->get('filter_date_min'))
                     ->filterDateMax($request->get('filter_date_max'))
-                    ->filterForm('approvalApproved')
+                    ->filterForm('approvalApproved;notCanceled')
                     ->filterForm($request->get('filter_form'));
         
         if($request->get('account_id') != null){

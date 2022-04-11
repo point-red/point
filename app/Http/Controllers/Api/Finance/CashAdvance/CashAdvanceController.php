@@ -102,6 +102,7 @@ class CashAdvanceController extends Controller
     public function show(Request $request, $id)
     {
         $cashAdvance = CashAdvance::eloquentFilter($request)->findOrFail($id);
+        $cashAdvance->form->isUpdated();
 
         return new ApiResource($cashAdvance);
     }

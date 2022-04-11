@@ -31,6 +31,11 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::get('reset-password', 'ResetPasswordController@store');
     });
 
+    Route::prefix('inventory')->namespace('Inventory')->group(function () {
+        Route::post('transfer-items/approve', 'TransferItem\\TransferItemApprovalByEmailController@approve');
+        Route::post('transfer-items/reject', 'TransferItem\\TransferItemApprovalByEmailController@reject');
+    });
+
     // This routes below require authentication
     Route::middleware('auth:api')->group(function () {
         Route::post('send-email', 'EmailServiceController@send');

@@ -3,6 +3,7 @@
 namespace App\Model\Inventory\TransferItem;
 
 use App\Model\Master\Item;
+use App\Model\Inventory\TransferItem\TransferItem;
 use App\Model\TransactionModel;
 
 class TransferItemItem extends TransactionModel
@@ -16,15 +17,21 @@ class TransferItemItem extends TransactionModel
     protected $casts = [
         'quantity' => 'double',
         'converter' => 'double',
+        'stock' => 'double',
+        'balance' => 'double',
     ];
 
     protected $fillable = [
         'item_id',
+        'item_name',
         'quantity',
+        'converter',
         'expiry_date',
         'production_number',
         'unit',
         'notes',
+        'stock',
+        'balance'
     ];
 
     public function setExpiryDateAttribute($value)
@@ -40,5 +47,10 @@ class TransferItemItem extends TransactionModel
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    public function TransferItem()
+    {
+        return $this->belongsTo(TransferItem::class);
     }
 }

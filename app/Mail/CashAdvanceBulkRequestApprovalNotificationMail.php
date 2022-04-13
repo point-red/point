@@ -40,6 +40,7 @@ class CashAdvanceBulkRequestApprovalNotificationMail extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.finance.cash-advance.bulk-request-approval-notification');
+        return $this->subject('Approval Email')
+                ->view('emails.finance.cash-advance.bulk-request-approval-notification');
     }
 }

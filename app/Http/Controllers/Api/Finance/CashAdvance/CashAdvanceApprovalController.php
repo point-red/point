@@ -74,19 +74,21 @@ class CashAdvanceApprovalController extends Controller
             }
             
             $cashAdvance = CashAdvance::with('form')->findOrFail($request->get('id'));
-            if($request->get('status') == -1 || ($cashAdvance->isAllowedToApprove($cashAdvance) && $request->get('status') == 1)){
-                $cashAdvance->form->approval_by = $token->user_id;
-                $cashAdvance->form->approval_at = now();
-                $cashAdvance->form->approval_status = $request->get('status');
-                if($request->get('status') == -1){
-                    $cashAdvance->form->approval_reason = 'rejected by email';
+            if($cashAdvance->form->approval_status == 0){
+                if($request->get('status') == -1 || ($cashAdvance->isAllowedToApprove($cashAdvance) && $request->get('status') == 1)){
+                    $cashAdvance->form->approval_by = $token->user_id;
+                    $cashAdvance->form->approval_at = now();
+                    $cashAdvance->form->approval_status = $request->get('status');
+                    if($request->get('status') == -1){
+                        $cashAdvance->form->approval_reason = 'rejected by email';
+                    }
+                    $cashAdvance->form->save();
+    
+                    $data['activity'] = $request->get('activity');
+                    $data['user_id'] = $token->user_id;
+    
+                    $cashAdvance->mapHistory($cashAdvance, $data);
                 }
-                $cashAdvance->form->save();
-
-                $data['activity'] = $request->get('activity');
-                $data['user_id'] = $token->user_id;
-
-                $cashAdvance->mapHistory($cashAdvance, $data);
             }
 
             return new ApiResource($cashAdvance);
@@ -112,19 +114,21 @@ class CashAdvanceApprovalController extends Controller
             $bulkId = $request->get('bulk_id');
             foreach($bulkId as $id){
                 $cashAdvance = CashAdvance::findOrFail($id);
-                if($request->get('status') == -1 || ($cashAdvance->isAllowedToApprove($cashAdvance) && $request->get('status') == 1)){
-                    $cashAdvance->form->approval_by = $token->user_id;
-                    $cashAdvance->form->approval_at = now();
-                    $cashAdvance->form->approval_status = $request->get('status');
-                    if($request->get('status') == -1){
-                        $cashAdvance->form->approval_reason = 'rejected by email';
+                if($cashAdvance->form->approval_status == 0){
+                    if($request->get('status') == -1 || ($cashAdvance->isAllowedToApprove($cashAdvance) && $request->get('status') == 1)){
+                        $cashAdvance->form->approval_by = $token->user_id;
+                        $cashAdvance->form->approval_at = now();
+                        $cashAdvance->form->approval_status = $request->get('status');
+                        if($request->get('status') == -1){
+                            $cashAdvance->form->approval_reason = 'rejected by email';
+                        }
+                        $cashAdvance->form->save();
+
+                        $data['activity'] = $request->get('activity');
+                        $data['user_id'] = $token->user_id;
+
+                        $cashAdvance->mapHistory($cashAdvance, $data);
                     }
-                    $cashAdvance->form->save();
-
-                    $data['activity'] = $request->get('activity');
-                    $data['user_id'] = $token->user_id;
-
-                    $cashAdvance->mapHistory($cashAdvance, $data);
                 }
             }
 

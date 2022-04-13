@@ -15,11 +15,11 @@
                 </tr>
                 <tr>
                     <td>Form date</td>
-                    <td>: {{$cashAdvances[0]->form->date}} - {{$cashAdvances[count($cashAdvances)-1]->form->date}}</td>
+                    <td>: {{date('d F Y', strtotime($cashAdvances[0]->form->date))}} - {{date('d F Y', strtotime($cashAdvances[count($cashAdvances)-1]->form->date))}}</td>
                 </tr>
                 <tr>
                     <td>Created at</td>
-                    <td>: {{date('d F Y', strtotime($cashAdvances[0]->created_at.' Asia/Jakarta'))}} - {{date('d F Y', strtotime($cashAdvances[count($cashAdvances)-1]->created_at.' Asia/Jakarta'))}}</td>
+                    <td>: {{date('d F Y H:i', strtotime($cashAdvances[0]->created_at))}} - {{date('d F Y H:i', strtotime($cashAdvances[count($cashAdvances)-1]->created_at))}}</td>
                 </tr>
             </tbody>
         </table>

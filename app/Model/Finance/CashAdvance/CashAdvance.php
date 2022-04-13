@@ -53,10 +53,18 @@ class CashAdvance extends TransactionModel
 
     public function isAllowedToApprove($cashAdvance)
     {
+        // Get total amount remaining of cashadvance with approved
+        $cashAdvanceAmountRemaining = self::from(self::getTableName().' as '.self::$alias)
+                    ->fields('raw:sum(cash_advance.amount_remaining) as amount_remaining_total')
+                    ->filterEqual(['cash_advance_detail.chart_of_account_id' => $cashAdvance->details[0]->chart_of_account_id])
+                    ->filterForm('approvalApproved;notCanceled;notArchived');
+
+        $cashAdvanceAmountRemaining = self::joins($cashAdvanceAmountRemaining, 'form,details')->first();
+
         // Check if remaining balance of account is enough
         $chartOfAccount = ChartOfAccount::find($cashAdvance->details[0]->chart_of_account_id);
         $chartOfAccountBalance = $chartOfAccount->total(date("Y-m-d H:i:s"));
-        if($chartOfAccountBalance >= $cashAdvance->amount){
+        if($chartOfAccountBalance >= ($cashAdvanceAmountRemaining->amount_remaining_total + $cashAdvance->amount)){
             return true;
         }else{
             return false;

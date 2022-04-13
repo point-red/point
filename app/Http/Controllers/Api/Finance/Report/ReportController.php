@@ -12,6 +12,9 @@ use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Accounting\CutOff;
 use App\Model\Accounting\CutOffAccount;
 use App\Model\Accounting\Journal;
+use App\Model\Master\Customer;
+use App\Model\Master\Supplier;
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\UserActivity;
 use App\Model\Form;
 use Illuminate\Http\Request;
@@ -57,6 +60,11 @@ class ReportController extends Controller
                     ->filterLike([
                         'form.number' => $request->get('search'),
                         'payment_detail.notes' => $request->get('search'),
+                        'account.alias' => $request->get('search'),
+                        'account.number' => $request->get('search'),
+                        Customer::$alias.'.name' => $request->get('search'),
+                        Supplier::$alias.'.name' => $request->get('search'),
+                        Employee::$alias.'.name' => $request->get('search'),
                     ])
                     ->filterDateMin($request->get('filter_date_min'))
                     ->filterDateMax($request->get('filter_date_max'))
@@ -75,7 +83,7 @@ class ReportController extends Controller
                     ->filterEqual(['payment.paymentable_id' => $request->get('subledger_id')]);
         }
 
-        $payments = Payment::joins($payments, 'form,payment_account,details,account,allocation')->get();
+        $payments = Payment::joins($payments, 'form,payment_account,details,account,allocation,paymentable')->get();
 
         $reports['data'] = [];
         foreach($payments as $payment){
@@ -175,10 +183,6 @@ class ReportController extends Controller
                     ->fields('payment.*')
                     ->sortBy('form.date')
                     ->filterEqual(['payment.payment_type' => strtoupper($request->get('report_type'))])
-                    ->filterLike([
-                        'form.number' => $request->get('search'),
-                        'payment_detail.notes' => $request->get('search'),
-                    ])
                     ->filterDateMax($request->get('filter_date_min'))
                     ->filterForm($request->get('filter_form'));
         
@@ -195,7 +199,7 @@ class ReportController extends Controller
                     ->filterEqual(['payment.paymentable_id' => $request->get('subledger_id')]);
         }
 
-        $payments = Payment::joins($payments, 'form,payment_account,details,account,allocation')->get();
+        $payments = Payment::joins($payments, 'form,payment_account,details,account,allocation,paymentable')->get();
 
         $balance['debit'] = 0;
         $balance['credit'] = 0;
@@ -244,10 +248,6 @@ class ReportController extends Controller
                     ->fields('raw:sum(cash_advance.amount_remaining) as amount_remaining_total')
                     ->sortBy('form.date')
                     ->filterEqual(['cash_advance.payment_type' => strtoupper($request->get('report_type'))])
-                    ->filterLike([
-                        'form.number' => $request->get('search'),
-                        'details.notes' => $request->get('search'),
-                    ])
                     ->filterDateMin($request->get('filter_date_min'))
                     ->filterDateMax($request->get('filter_date_max'))
                     ->filterForm('approvalApproved;notCanceled')

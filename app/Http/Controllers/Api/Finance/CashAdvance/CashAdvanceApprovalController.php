@@ -25,7 +25,7 @@ class CashAdvanceApprovalController extends Controller
     {
         $cashAdvance = CashAdvance::findOrFail($id);
         if(!$cashAdvance->isAllowedToApprove($cashAdvance)){
-            throw new PointException('Remaining Balance Not Enough');
+            throw new PointException('Balance Not Enough');
         }
         $cashAdvance->form->approval_by = auth()->user()->id;
         $cashAdvance->form->approval_at = now();

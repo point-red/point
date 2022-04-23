@@ -6,6 +6,9 @@ use App\Model\MasterModel;
 use App\Traits\Model\Accounting\ChartOfAccountTypeJoin;
 use App\Traits\Model\Accounting\ChartOfAccountTypeRelation;
 
+/**
+ * @property int $id
+ */
 class ChartOfAccountType extends MasterModel
 {
     use ChartOfAccountTypeJoin, ChartOfAccountTypeRelation;

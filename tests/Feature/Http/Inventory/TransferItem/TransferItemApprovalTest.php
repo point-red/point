@@ -10,6 +10,7 @@ use App\Model\Master\User as TenantUser;
 use App\Model\Master\Warehouse;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\Accounting\ChartOfAccountType;
 use App\Model\Form;
 use App\Model\Inventory\TransferItem\TransferItem;
 use Maatwebsite\Excel\Facades\Excel;
@@ -148,9 +149,15 @@ class TransferItemApprovalTest extends TestCase
         // $item->chart_of_account_id = 137;
         // $item->save();
 
+        /** @var ChartOfAccountType */
+        $chartOfAccountType = ChartOfAccountType::query()->where('name', 'INVENTORY')->firstOrFail();
+
+        /** @var ChartOfAccount */
+        $chartOfAccount = factory(ChartOfAccount::class)->create(['type_id' => $chartOfAccountType->id, 'name' => 'INVENTORY IN DISTRIBUTION']);
+
         $item = new Item;
         $item->name = $this->faker->name;
-        $item->chart_of_account_id = 137;
+        $item->chart_of_account_id = $chartOfAccount->id;
         $item->save();
 
         $data = $this->dummyData($item);
@@ -172,9 +179,16 @@ class TransferItemApprovalTest extends TestCase
     public function reject_transfer_item()
     {
         // $this->create_transfer_item();
+
+        /** @var ChartOfAccountType */
+        $chartOfAccountType = ChartOfAccountType::query()->where('name', 'INVENTORY')->firstOrFail();
+
+        /** @var ChartOfAccount */
+        $chartOfAccount = factory(ChartOfAccount::class)->create(['type_id' => $chartOfAccountType->id, 'name' => 'INVENTORY IN DISTRIBUTION']);
+
         $item = new Item;
         $item->name = $this->faker->name;
-        $item->chart_of_account_id = 136;
+        $item->chart_of_account_id = $chartOfAccount->id;
         $item->save();
 
         $data = $this->dummyData($item);

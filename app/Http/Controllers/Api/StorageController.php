@@ -89,13 +89,19 @@ class StorageController extends Controller
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'application/vnd.ms-excel', 'application/application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ];
-        if (!Storage::disk($cloudStorage->disk)->exists($cloudStorage->path)) {
-        }
-        // $base64 = base64_encode(Storage::disk($cloudStorage->disk)->get($cloudStorage->path));
-        // $preview = 'data:' . $cloudStorage->mime_type . ';base64,' . $base64;
-        $preview = Storage::url($cloudStorage->path);
-        if (in_array($cloudStorage->mime_type, $allowedMimeTypes)) {
-            $cloudStorage->preview = env('API_URL') . $preview;
+        $disk = Storage::disk($cloudStorage->disk);
+        if ($disk->exists($cloudStorage->path)) {
+            $command = $disk->getDriver()->getAdapter()->getClient()->getCommand('GetObject', [
+                'Bucket'                     => env('AWS_BUCKET'),
+                'Key'                        => $cloudStorage->path,
+            ]);
+
+            $request = $disk->getDriver()->getAdapter()->getClient()->createPresignedRequest($command, '+5 minutes');
+            if (in_array($cloudStorage->mime_type, $allowedMimeTypes)) {
+                $cloudStorage->preview = (string) $request->getUri();
+            }
+        }else{
+            $cloudStorage->preview = '';
         }
 
         return new ApiResource($cloudStorage);

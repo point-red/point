@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 // kpi reminder
 use App\Mail\KpiReminderEmail;
 use App\Model\CloudStorage;
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\Project\Project;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -237,6 +238,8 @@ class EmployeeAssessmentController extends Controller
 
     public function getByPeriode($employeeId, $date)
     {
+        $employee = Employee::where('id', $employeeId)->first();
+        $date = date('Y-m-d', strtotime($date . " -1 day"));
         $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
             ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
             ->select('kpis.*')
@@ -246,6 +249,7 @@ class EmployeeAssessmentController extends Controller
             ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
             ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'))
             ->where('employee_id', $employeeId)
+            ->where('scorer_id', $employee->user_id)
             ->whereDate('kpis.date', $date)
             ->first();
 
@@ -411,7 +415,6 @@ class EmployeeAssessmentController extends Controller
         DB::connection('tenant')->beginTransaction();
 
         $kpi = Kpi::findOrFail($id);
-        $kpi->date = date('Y-m-d', strtotime($request->post('date')));
 
         $kpi->status = 'COMPLETED';
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {

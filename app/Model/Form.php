@@ -10,6 +10,7 @@ use App\Model\Master\Branch;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\Master\User;
+use App\Model\FormChecklist;
 
 class Form extends PointModel
 {
@@ -112,6 +113,16 @@ class Form extends PointModel
             $this->is_updated = true;
         }else{
             $this->is_updated = false;
+        }
+    }
+
+    public function getChecklist($feature)
+    {
+        $checklist = FormChecklist::where('number', $this->number)->where('feature', $feature)->first();
+        if($checklist){
+            return $checklist->is_checked;
+        }else{
+            return false;
         }
     }
 

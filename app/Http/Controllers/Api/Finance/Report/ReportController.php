@@ -17,6 +17,7 @@ use App\Model\Master\Supplier;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\UserActivity;
 use App\Model\Form;
+use App\Model\FormChecklist;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +42,18 @@ class ReportController extends Controller
 
         $reports['data'] = $this->paginate($reports['data'], $request->get('limit'), $request->get('page'));
         return json_encode($reports);
+    }
+
+    public function setChecklist(Request $request)
+    {
+        $checklist = FormChecklist::where('number', $request->get('number'))->where('feature', $request->get('report_name'))->first();
+        if(!$checklist){
+            $checklist = FormChecklist::create($request);
+        }
+        $checklist->is_checked = $request->get('is_checked');
+        $checklist->save();
+
+        return json_encode($checklist);
     }
 
     private function paginate($items, $perPage = 1000, $page = null, $options = [])
@@ -100,6 +113,7 @@ class ReportController extends Controller
                 $data['account_id'] = $detail->chartOfAccount->id;
                 $data['account_number'] = $detail->chartOfAccount->number;
                 $data['account_alias'] = $detail->chartOfAccount->alias;
+                $data['is_checked'] = $payment->form->getChecklist($request->get('report_name'));
                 if(!$payment->disbursed){
                     $data['debit'] = $detail->amount;
                     $data['credit'] = 0.0;
@@ -144,6 +158,7 @@ class ReportController extends Controller
             $data['account_id'] = $cutoff->chartOfAccount->id;
             $data['account_number'] = $cutoff->chartOfAccount->number;
             $data['account_alias'] = $cutoff->chartOfAccount->alias;
+            $data['is_checked'] = $cutoff->cutoff->form->getChecklist($request->get('report_name'));
             $data['debit'] = $cutoff->debit;
             $data['credit'] = $cutoff->credit;
             $data['type'] = 'cut-off';

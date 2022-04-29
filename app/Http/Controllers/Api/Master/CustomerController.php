@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Master;
 
-use App\Exports\CustomersExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Customer\StoreCustomerRequest;
 use App\Http\Requests\Master\Customer\UpdateCustomerRequest;
@@ -25,8 +24,6 @@ use App\Imports\Kpi\TemplateCheckImport;
 use App\Imports\Master\CustomerImport;
 use App\Model\CloudStorage;
 use App\Model\HumanResource\Kpi\KpiTemplate;
-use App\Model\Project\Project;
-
 class CustomerController extends Controller
 {
     /**
@@ -37,7 +34,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::from(Customer::getTableName() . ' as ' . Customer::$alias)->eloquentFilter($request);
+        $customers = Customer::from(Customer::getTableName().' as '.Customer::$alias)->eloquentFilter($request);
 
         $customers = Customer::joins($customers, $request->get('join'));
 
@@ -77,13 +74,13 @@ class CustomerController extends Controller
 
         $user = tenant(auth()->user()->id);
         $defaultBranch = null;
-        foreach ($user->branches as $branch) {
+        foreach($user->branches as $branch) {
             if ($branch->pivot->is_default == true) {
                 $defaultBranch = $branch->id;
                 break;
             }
         }
-
+        
         $customer = new Customer;
         $customer->fill($request->all());
         $customer->branch_id = $defaultBranch;
@@ -91,9 +88,9 @@ class CustomerController extends Controller
 
         if ($request->has('groups')) {
             foreach ($request->get('groups') as $arrGroups) {
-                if (!empty($arrGroups['name'])) {
+                if (! empty($arrGroups['name'])) {
                     $group = CustomerGroup::where('name', $arrGroups['name'])->first();
-                    if (!$group) {
+                    if (! $group) {
                         $group = new CustomerGroup;
                         $group->name = $arrGroups['name'];
                         $group->save();
@@ -134,65 +131,6 @@ class CustomerController extends Controller
         ], 200);
     }
 
-    public function exportCustomer(Request $request)
-    {
-        $user = tenant(auth()->user()->id);
-        $nameUser = $user->name;
-        $dateNow = date("Ymdhis", strtotime($request->post('datetimenow')));
-        $nameFile = $nameUser . '-' . $dateNow . '-customers.xlsx';
-        $customers = Customer::from(Customer::getTableName() . ' as ' . Customer::$alias)->eloquentFilter($request);
-        $gettimenow = $request->post('datetimenow');
-
-        $customers = Customer::joins($customers, $request->post('join'));
-
-        if ($request->post('group_id')) {
-            $customers = $customers->join('customer_customer_group', function ($q) use ($request) {
-                $q->on('customer_customer_group.customer_id', '=', 'customer.id')
-                    ->where('customer_customer_group.customer_group_id', $request->post('group_id'));
-            });
-        }
-
-        if ($request->post('is_archived')) {
-            $customers = $customers->whereNotNull('archived_at');
-        } else {
-            $customers = $customers->whereNull('archived_at');
-        }
-
-        $tenant_name = "";
-        if ($request->header('Tenant')) {
-            $project = Project::where('code', $request->header('Tenant'))->first();
-            if ($project) {
-                $tenant_name = $project->name;
-            }
-        }
-
-        $customers->whereIn('customer.branch_id', $user->branches->pluck('id'));
-        $customers = $customers->get();
-        $count_customers = 0;
-        if (!empty($customers)) {
-            foreach ($customers as $index => $customer) {
-                $count_customers++;
-                $customer->increments = $index + 1;
-                if (!empty($customer->pricingGroup->label)) {
-                    $customer->pricing_group_label = $customer->pricingGroup->label;
-                }
-                if (!empty($customer->groups)) {
-                    $groups = "";
-                    foreach ($customer->groups as $i => $group) {
-                        if ($i > 0) {
-                            $groups .= ", ";
-                        }
-                        $groups .= $group->name;
-                    }
-                    $customer->groups = $groups;
-                }
-            }
-        }else{
-            $customers = [];
-        }
-        return Excel::download(new CustomersExport($customers, $tenant_name, $count_customers, $gettimenow), $nameFile);
-    }
-
 
     /**
      * Display the specified resource.
@@ -203,11 +141,11 @@ class CustomerController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $customer = Customer::from(Customer::getTableName() . ' as ' . Customer::$alias)->eloquentFilter($request);
+        $customer = Customer::from(Customer::getTableName().' as '.Customer::$alias)->eloquentFilter($request);
 
         $customer = Customer::joins($customer, $request->get('join'));
 
-        $customer = $customer->where(Customer::$alias . '.id', $id)->first();
+        $customer = $customer->where(Customer::$alias.'.id', $id)->first();
 
         if ($request->get('total_payable')) {
             $customer->total_payable = $customer->totalAccountPayable();
@@ -237,9 +175,9 @@ class CustomerController extends Controller
 
         if ($request->has('groups')) {
             foreach ($request->get('groups') as $arrGroups) {
-                if (!empty($arrGroups['name'])) {
+                if (! empty($arrGroups['name'])) {
                     $group = CustomerGroup::where('name', $arrGroups['name'])->first();
-                    if (!$group) {
+                    if (! $group) {
                         $group = new CustomerGroup;
                         $group->name = $arrGroups['name'];
                         $group->save();

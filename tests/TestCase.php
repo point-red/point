@@ -35,7 +35,6 @@ abstract class TestCase extends BaseTestCase
 
     protected $user;
     protected $account = null;
-    protected $branch_id;
 
     /**
      *  Set up the test.
@@ -70,7 +69,6 @@ abstract class TestCase extends BaseTestCase
     protected function signIn()
     {
         $this->user = factory(User::class)->create();
-        
 
         $this->actingAs($this->user, 'api');
 
@@ -91,7 +89,6 @@ abstract class TestCase extends BaseTestCase
     protected function userBranch($tenantUser)
     {
         $branch = $this->createBranch();
-        $this->branch_id = $branch->id;
         $tenantUser->branches()->syncWithoutDetaching($branch->id);
         foreach ($tenantUser->branches as $branch) {
             $branch->pivot->is_default = true;

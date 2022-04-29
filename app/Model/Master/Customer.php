@@ -37,7 +37,6 @@ class Customer extends MasterModel
         'credit_limit',
         'pricing_group_id',
         'disabled',
-        'branch_id'
     ];
 
     public static $morphName = 'Customer';

@@ -78,7 +78,7 @@ class SalesOrder extends TransactionModel
                 if ($orderItem->deliveryOrder->form->cancellation_status == null
                     || $orderItem->deliveryOrder->form->cancellation_status !== 1
                     || $orderItem->deliveryOrder->form->number !== null) {
-                        $quantityOrdered = $item->deliveryOrderItems->sum('quantity');
+                        $quantityOrdered = $item->deliveryOrderItems->sum('quantity_delivered');
                         if ($item->quantity > $quantityOrdered) {
                             $complete = false;
                             break;

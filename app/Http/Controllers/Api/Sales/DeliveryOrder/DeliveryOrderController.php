@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Sales\DeliveryOrder;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder\StoreDeliveryOrderRequest;
 use App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder\UpdateDeliveryOrderRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
@@ -34,11 +35,11 @@ class DeliveryOrderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreDeliveryOrderRequest $request
      * @return Response
      * @throws Throwable
      */
-    public function store(Request $request)
+    public function store(StoreDeliveryOrderRequest $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
             $deliveryOrder = DeliveryOrder::create($request->all());

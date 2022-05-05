@@ -28,6 +28,24 @@ class SalesOrderController extends Controller
 
         $salesOrders = pagination($salesOrders, $request->get('limit'));
 
+        /*
+         * anything except 0 is considered true, including string "false"
+         */
+        if ($request->get('remaining_delivery_order_info')) {
+            foreach ($salesOrders as $salesOrder) {
+                foreach ($salesOrder->items as $item) {
+                    $item->quantity_remaining = $item->quantity;
+    
+                    $deliveryOrderItems = $item->deliveryOrderItems()->get();
+                    foreach ($deliveryOrderItems as $orderItem) {
+                        if ($orderItem->deliveryOrder->form->approval_status == 1) {
+                            $item->quantity_remaining -= $deliveryOrderItems->sum('quantity_delivered');
+                        }
+                    }
+                }
+            }
+        }
+
         return new ApiCollection($salesOrders);
     }
 

@@ -22,6 +22,8 @@ class DeliveryOrderApprovalController extends Controller
         $deliveryOrder->form->approval_status = 1;
         $deliveryOrder->form->save();
 
+        $deliveryOrder->form->fireEventApproved();
+
         return new ApiResource($deliveryOrder);
     }
 
@@ -38,6 +40,8 @@ class DeliveryOrderApprovalController extends Controller
         $deliveryOrder->form->approval_reason = $request->get('reason');
         $deliveryOrder->form->approval_status = -1;
         $deliveryOrder->form->save();
+
+        $deliveryOrder->form->fireEventRejected();
 
         return new ApiResource($deliveryOrder);
     }

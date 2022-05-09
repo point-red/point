@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Observers\FormObserver;
 use App\Exceptions\BranchNullException;
 use App\Exceptions\FormActiveException;
 use App\Model\Accounting\Journal;
@@ -10,9 +11,12 @@ use App\Model\Master\Branch;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\Master\User;
+use App\Traits\Model\FormCustomEvent;
 
 class Form extends PointModel
 {
+    use FormCustomEvent;
+    
     protected $connection = 'tenant';
 
     public static $alias = 'form';
@@ -24,6 +28,17 @@ class Form extends PointModel
         'notes',
         'increment_group',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::observe(FormObserver::class);
+    }
+
+    public function __construct() {
+        parent::__construct();
+        $this->bindObservables();
+    }
 
     public function save(array $options = [])
     {

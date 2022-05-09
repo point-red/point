@@ -10,12 +10,13 @@ use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Form;
 use App\Model\Inventory\TransferItem\TransferItem;
+use App\Model\Inventory\TransferItem\ReceiveItem;
 use Maatwebsite\Excel\Facades\Excel;
 use Tests\TestCase;
 
-class TransferItemApprovalTest extends TestCase
+class ReceiveItemApprovalTest extends TestCase
 {
-    public static $path = '/api/v1/inventory/approval/transfer-items';
+    public static $path = '/api/v1/inventory/approval/receive-items';
 
     public function setUp(): void
     {
@@ -24,7 +25,6 @@ class TransferItemApprovalTest extends TestCase
         $this->signIn();
         $this->setProject();
         $this->importChartOfAccount();
-        $_SERVER['HTTP_REFERER'] = 'http://www.example.com/';
     }
 
     private function importChartOfAccount()
@@ -45,9 +45,9 @@ class TransferItemApprovalTest extends TestCase
         $warehouse = factory(Warehouse::class)->create();
         $to_warehouse = factory(Warehouse::class)->create();
 
-        $user = new Warehouse();
-        $user->name = 'DISTRIBUTION WAREHOUSE';
-        $user->save();
+        $distributionWarehouse = new Warehouse();
+        $distributionWarehouse->name = 'DISTRIBUTION WAREHOUSE';
+        $distributionWarehouse->save();
 
         $user = new TenantUser;
         $user->name = $this->faker->name;
@@ -110,23 +110,7 @@ class TransferItemApprovalTest extends TestCase
         return $data;
     }
 
-    /**
-     * @test 
-     */
-    public function read_all_transfer_item_approval()
-    {
-        $response = $this->json('GET', self::$path, [
-            'limit' => '10',
-            'page' => '1',
-        ], $this->headers);
-
-        $response->assertStatus(200);
-    }
-
-    /**
-     * @test 
-     */
-    public function approve_transfer_item()
+    public function create_receive_item()
     {
         $coa = ChartOfAccount::orderBy('id', 'desc')->first();
         
@@ -141,8 +125,72 @@ class TransferItemApprovalTest extends TestCase
 
         $transferItem = TransferItem::orderBy('id', 'asc')->first();
 
-        $response = $this->json('POST', '/api/v1/inventory/transfer-items/'.$transferItem->id.'/approve', [
-            'id' => $transferItem->id
+        $warehouse = Warehouse::findOrFail($transferItem->to_warehouse_id);
+        $from_warehouse = Warehouse::findOrFail($transferItem->warehouse_id);
+
+        $distributionWarehouse = Warehouse::where('name', 'DISTRIBUTION WAREHOUSE')->first();
+        
+        $form = new Form;
+        $form->date = now()->toDateTimeString();
+        $form->created_by = $this->user->id;
+        $form->updated_by = $this->user->id;
+        $form->save();
+        
+        $item = Item::findOrFail($transferItem->items[0]->item_id);
+        
+        $options = [];
+        if ($item->require_expiry_date) {
+            $options['expiry_date'] = $item->expiry_date;
+        }
+        if ($item->require_production_number) {
+            $options['production_number'] = $item->production_number;
+        }
+
+        $options['quantity_reference'] = $item->quantity;
+        $options['unit_reference'] = $item->unit;
+        $options['converter_reference'] = $item->converter;
+
+        InventoryHelper::increase($form, $distributionWarehouse, $item, 100, "PCS", 1, $options);
+
+        $data = [
+            "date" => date("Y-m-d H:i:s"),
+            "increment_group" => date("Ym"),
+            "notes" => $transferItem->form->notes,
+            "warehouse_id" => $warehouse->id,
+            "from_warehouse_id" => $from_warehouse->id,
+            "request_approval_to" => $transferItem->form->request_approval_to,
+            "transfer_item_id" => $transferItem->id,
+            "items" => [
+                [
+                    "item_id" => $transferItem->items[0]->item_id,
+                    "item_name" => $transferItem->items[0]->item_name,
+                    "unit" => $transferItem->items[0]->unit,
+                    "converter" => $transferItem->items[0]->converter,
+                    "quantity" => $transferItem->items[0]->quantity,
+                    "stock" => 50,
+                    "balance" => 60,
+                    "warehouse_id" => $warehouse->id,
+                    "expiry_date" => $transferItem->items[0]->expiry_date,
+                    "production_number" => $transferItem->items[0]->production_number,
+                ]
+            ]
+        ];
+
+        $this->json('POST', '/api/v1/inventory/receive-items', $data, $this->headers);
+    }
+
+    /**
+     * @test 
+     */
+    public function approve_receive_item()
+    {
+        $this->create_receive_item();
+
+        $receiveItem = ReceiveItem::orderBy('id', 'asc')->first();
+
+        $response = $this->json('POST', '/api/v1/inventory/receive-items/'.$receiveItem->id.'/approve', [
+            'id' => $receiveItem->id,
+            'form_send_done' => 1
         ], $this->headers);
         
         $response->assertStatus(200);
@@ -153,50 +201,14 @@ class TransferItemApprovalTest extends TestCase
      */
     public function reject_transfer_item()
     {
-        $coa = ChartOfAccount::orderBy('id', 'asc')->first();
+        $this->create_receive_item();
 
-        $item = new Item;
-        $item->name = $this->faker->name;
-        $item->chart_of_account_id = $coa->id;
-        $item->save();
+        $receiveItem = ReceiveItem::orderBy('id', 'asc')->first();
 
-        $data = $this->dummyData($item);
-
-        $this->json('POST', '/api/v1/inventory/transfer-items', $data, $this->headers);
-
-        $transferItem = TransferItem::orderBy('id', 'desc')->first();
-
-        $response = $this->json('POST', '/api/v1/inventory/transfer-items/'.$transferItem->id.'/reject', [
-            'id' => $transferItem->id,
+        $response = $this->json('POST', '/api/v1/inventory/transfer-items/'.$receiveItem->id.'/reject', [
+            'id' => $receiveItem->id,
             'reason' => 'some reason'
         ], $this->headers);
-        
-        $response->assertStatus(200);
-    }
-
-    /** @test */
-    public function send_transfer_item_approval()
-    {
-        $coa = ChartOfAccount::orderBy('id', 'asc')->first();
-
-        $item = new Item;
-        $item->name = $this->faker->name;
-        $item->chart_of_account_id = $coa->id;
-        $item->save();
-
-        $data = $this->dummyData($item);
-
-        $this->json('POST', '/api/v1/inventory/transfer-items', $data, $this->headers);
-
-        $transferItem = TransferItem::orderBy('id', 'desc')->first();
-
-        $data = [
-            "ids" => [
-                "id" => $transferItem->id,
-            ],
-        ];
-
-        $response = $this->json('POST', self::$path.'/send', $data, $this->headers);
         
         $response->assertStatus(200);
     }

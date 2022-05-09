@@ -2,8 +2,6 @@
 
 namespace Tests\Feature\Http\Inventory\TransferItem;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use App\Imports\Template\ChartOfAccountImport;
 use App\Model\Master\Item;
 use App\Model\Master\User as TenantUser;
@@ -155,6 +153,23 @@ class TransferItemTest extends TestCase
     }
 
     /** @test */
+    public function close_transfer_item()
+    {
+        $this->create_transfer_item();
+
+        $transferItem = TransferItem::orderBy('id', 'asc')->first();
+
+        $data = [
+            "id" => $transferItem->id,
+            "data" => ["reason" => "sample reason"]
+        ];
+
+        $response = $this->json('POST', self::$path.'/'.$transferItem->id.'/close', $data, [$this->headers]);
+
+        $response->assertStatus(204);
+    }
+
+    /** @test */
     public function export_transfer_item_success()
     {
         $this->create_transfer_item();
@@ -165,7 +180,8 @@ class TransferItemTest extends TestCase
             "data" => [
                 "ids" => [$transferItem->id],
                 "date_start" => date("Y-m-d", strtotime("-1 days")),
-                "date_end" => date("Y-m-d", strtotime("+1 days"))
+                "date_end" => date("Y-m-d", strtotime("+1 days")),
+                "tenant_name" => "development"
             ]
         ];
 

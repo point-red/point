@@ -134,6 +134,31 @@ class TransferItemController extends Controller
         return response()->json([], 204);
     }
 
+    /**
+     * Close Form the specified resource from storage.
+     *
+     * @param Request $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function close(Request $request, $id)
+    {
+        DB::connection('tenant')->beginTransaction();
+
+        $transferItem = TransferItem::findOrFail($id);
+
+        $transferItem->form->request_close_to = $transferItem->form->request_approval_to;
+        $transferItem->form->request_close_by = tenant(auth()->user()->id)->id;
+        $transferItem->form->request_close_at = now();
+        $transferItem->form->request_close_reason = $request->get('data')['reason'];
+        $transferItem->form->close_status = false;
+        $transferItem->form->save();
+
+        DB::connection('tenant')->commit();
+
+        return response()->json([], 204);
+    }
+
     public function export(Request $request)
     {
         $request->validate([
@@ -142,12 +167,15 @@ class TransferItemController extends Controller
         
         $tenant = strtolower($request->header('Tenant'));
 
+        $dateForm = date('d F Y', strtotime($request->data['date_start']));
+        $dateTo = date('d F Y', strtotime($request->data['date_end']));
+        
         $key = Str::random(16);
-        $fileName = 'Transfer Item Send_Period';
+        $fileName = 'Transfer Item Send_'.$dateForm.'-'.$dateTo;
         $fileExt = 'xlsx';
         $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
 
-        Excel::store(new TransferItemSendExport($request->data['date_start'], $request->data['date_end'], $request->data['ids']), $path, env('STORAGE_DISK'));
+        Excel::store(new TransferItemSendExport($request->data['date_start'], $request->data['date_end'], $request->data['ids'], $request->data['tenant_name']), $path, env('STORAGE_DISK'));
 
         $cloudStorage = new CloudStorage();
         $cloudStorage->file_name = $fileName;

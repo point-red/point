@@ -9,6 +9,7 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -32,16 +33,12 @@ class SalesOrderController extends Controller
          * anything except 0 is considered true, including string "false"
          */
         if ($request->get('remaining_delivery_order_info')) {
-            foreach ($salesOrders as $salesOrder) {
-                foreach ($salesOrder->items as $item) {
-                    $item->quantity_remaining = $item->quantity;
+            foreach ((object) $salesOrders as $salesOrder) {
+                foreach ($salesOrder->items as $salesOrderItem) {
+                    $salesOrderItem->convertUnitToSmallest();
     
-                    $deliveryOrderItems = $item->deliveryOrderItems()->get();
-                    foreach ($deliveryOrderItems as $orderItem) {
-                        if ($orderItem->deliveryOrder->form->approval_status == 1) {
-                            $item->quantity_remaining -= $deliveryOrderItems->sum('quantity_delivered');
-                        }
-                    }
+                    // delivery order item unit always in smallest unit. should'nt convert
+                    $salesOrderItem->quantity_remaining -= $salesOrderItem->deliveryOrderItemsOrdered();
                 }
             }
         }

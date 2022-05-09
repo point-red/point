@@ -17,11 +17,18 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::post('down-payments/{id}/cancellation-approve', 'SalesDownPayment\\SalesDownPaymentCancellationApprovalController@approve');
     Route::post('down-payments/{id}/cancellation-reject', 'SalesDownPayment\\SalesDownPaymentCancellationApprovalController@reject');
     Route::apiResource('down-payments', 'SalesDownPayment\\SalesDownPaymentController');
-    Route::post('delivery-orders/{id}/approve', 'DeliveryOrder\\DeliveryOrderApprovalController@approve');
-    Route::post('delivery-orders/{id}/reject', 'DeliveryOrder\\DeliveryOrderApprovalController@reject');
-    Route::post('delivery-orders/{id}/cancellation-approve', 'DeliveryOrder\\DeliveryOrderCancellationApprovalController@approve');
-    Route::post('delivery-orders/{id}/cancellation-reject', 'DeliveryOrder\\DeliveryOrderCancellationApprovalController@reject');
-    Route::apiResource('delivery-orders', 'DeliveryOrder\\DeliveryOrderController');
+
+    Route::namespace('DeliveryOrder')
+        ->middleware('tenant.module-access:sales delivery order')
+        ->group(function () {
+            Route::post('delivery-orders/{id}/approve', 'DeliveryOrderApprovalController@approve');
+            Route::post('delivery-orders/{id}/reject', 'DeliveryOrderApprovalController@reject');
+            Route::post('delivery-orders/{id}/cancellation-approve', 'DeliveryOrderCancellationApprovalController@approve');
+            Route::post('delivery-orders/{id}/cancellation-reject', 'DeliveryOrderCancellationApprovalController@reject');
+            Route::get('delivery-orders/{id}/histories', 'DeliveryOrderHistoryController@index');
+            Route::apiResource('delivery-orders', 'DeliveryOrderController');
+        });
+
     Route::apiResource('delivery-notes', 'DeliveryNote\\DeliveryNoteController');
     Route::get('invoices/last-price/{itemId}', 'SalesInvoice\\SalesInvoicePricingController@lastPrice');
     Route::apiResource('invoices', 'SalesInvoice\\SalesInvoiceController');

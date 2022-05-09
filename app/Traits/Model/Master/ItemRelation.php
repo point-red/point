@@ -39,6 +39,11 @@ trait ItemRelation
         return $this->hasMany(ItemUnit::class);
     }
 
+    public function smallest_unit()
+    {
+        return $this->hasOne(ItemUnit::class)->where('converter', 1);
+    }
+
     public function account()
     {
         return $this->belongsTo(ChartOfAccount::class, 'chart_of_account_id');

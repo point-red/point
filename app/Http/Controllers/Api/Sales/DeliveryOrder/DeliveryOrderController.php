@@ -65,6 +65,10 @@ class DeliveryOrderController extends Controller
     {
         $deliveryOrder = DeliveryOrder::eloquentFilter($request)->findOrFail($id);
 
+        if ($request->has('with_archives')) {
+            $deliveryOrder->archives = $deliveryOrder->archives();
+        }
+
         if ($request->get('remaining_info')) {
             $deliveryNotes = $deliveryOrder->deliveryNotes()->with('items')->get();
 
@@ -99,7 +103,7 @@ class DeliveryOrderController extends Controller
         $deliveryOrder->isAllowedToUpdate();
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $deliveryOrder) {
-            $deliveryOrder->form->archive();
+            $deliveryOrder->form->archive($request->notes);
             $request['number'] = $deliveryOrder->form->edited_number;
             $request['old_increment'] = $deliveryOrder->form->increment;
 

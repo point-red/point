@@ -29,7 +29,33 @@ class FormObserver
     public function created(Form $form)
     {
         $activity = 'Created';
-        $this->_storeActivity($form, $activity);
+
+        $formNumberExist = Form::where('edited_number', $form->number)->first();
+        if (! $formNumberExist) {
+            $this->_storeActivity($form, $activity);
+        }
+    }
+
+    /**
+     * Handle the form "updated" event.
+     *
+     * @param  \App\Model\Form  $form
+     * @return void
+     */
+    public function updated(Form $form)
+    {
+        $activity = 'Update';
+
+        if ($form->edited_number) {
+            $userActivity = UserActivity::where('number', $form->edited_number)
+                ->where('activity', 'like', '%' . $activity . '%');
+                    
+            $updatedTo = $userActivity->count() + 1;
+            
+            $form->number = $form->edited_number;
+            $activity = $activity . ' - ' . $updatedTo;
+            $this->_storeActivity($form, $activity);
+        }
     }
 
     protected function _storeActivity($form, $activity)

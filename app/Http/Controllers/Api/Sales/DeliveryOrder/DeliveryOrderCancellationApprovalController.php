@@ -16,13 +16,21 @@ class DeliveryOrderCancellationApprovalController extends Controller
      */
     public function approve(Request $request, $id)
     {
-        $salesOrder = DeliveryOrder::findOrFail($id);
-        $salesOrder->form->cancellation_approval_by = auth()->user()->id;
-        $salesOrder->form->cancellation_approval_at = now();
-        $salesOrder->form->cancellation_status = 1;
-        $salesOrder->form->save();
+        $deliveryOrder = DeliveryOrder::findOrFail($id);
 
-        return new ApiResource($salesOrder);
+        $deliveryOrder->form->cancellation_approval_by = auth()->user()->id;
+        $deliveryOrder->form->cancellation_approval_at = now();
+        $deliveryOrder->form->cancellation_status = 1;
+        $deliveryOrder->form->save();
+
+        if ($deliveryOrder->salesOrder) {
+            $deliveryOrder->salesOrder->form->done = false;
+            $deliveryOrder->salesOrder->form->save();
+        }
+
+        $deliveryOrder->form->fireEventCancelApproved();
+
+        return new ApiResource($deliveryOrder);
     }
 
     /**
@@ -32,13 +40,22 @@ class DeliveryOrderCancellationApprovalController extends Controller
      */
     public function reject(Request $request, $id)
     {
-        $salesOrder = DeliveryOrder::findOrFail($id);
-        $salesOrder->form->cancellation_approval_by = auth()->user()->id;
-        $salesOrder->form->cancellation_approval_at = now();
-        $salesOrder->form->cancellation_approval_reason = $request->get('reason');
-        $salesOrder->form->cancellation_status = -1;
-        $salesOrder->form->save();
+        $request->validate([ 'reason' => 'required ']);
+        
+        $deliveryOrder = DeliveryOrder::findOrFail($id);
+        $deliveryOrder->form->cancellation_approval_by = auth()->user()->id;
+        $deliveryOrder->form->cancellation_approval_at = now();
+        $deliveryOrder->form->cancellation_approval_reason = $request->get('reason');
+        $deliveryOrder->form->cancellation_status = -1;
+        $deliveryOrder->form->save();
 
-        return new ApiResource($salesOrder);
+        if ($deliveryOrder->salesOrder) {
+            $deliveryOrder->salesOrder->form->done = false;
+            $deliveryOrder->salesOrder->form->save();
+        }
+
+        $deliveryOrder->form->fireEventCancelRejected();
+
+        return new ApiResource($deliveryOrder);
     }
 }

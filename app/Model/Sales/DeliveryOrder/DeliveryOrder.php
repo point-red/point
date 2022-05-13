@@ -85,7 +85,24 @@ class DeliveryOrder extends TransactionModel
     public function isAllowedToDelete()
     {
         $this->updatedFormNotArchived();
+        
+        $this->formStateActivePending();
+
         $this->isNotReferenced();
+    }
+
+    private function formStateActivePending()
+    {
+        $formIsActivePending = self::from(DeliveryOrder::getTableName().' as '.DeliveryOrder::$alias)
+            ->where(DeliveryOrder::$alias.'.id', $this->attributes['id']);
+
+        $formIsActivePending = self::joins($formIsActivePending, 'form')
+            ->activePending()
+            ->first();
+
+        if(! $formIsActivePending) {
+            throw new Exception ("Delivery order not active and in pending state");
+        }
     }
 
     private function isNotReferenced()

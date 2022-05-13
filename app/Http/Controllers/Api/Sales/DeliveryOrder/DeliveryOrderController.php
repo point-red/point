@@ -128,14 +128,9 @@ class DeliveryOrderController extends Controller
         $deliveryOrder = DeliveryOrder::findOrFail($id);
         $deliveryOrder->isAllowedToDelete();
 
+        $request->validate([ 'reason' => 'required ']);
+        
         $response = $deliveryOrder->requestCancel($request);
-
-        if (! $response) {
-            if ($deliveryOrder->salesOrder) {
-                $deliveryOrder->salesOrder->form->done = false;
-                $deliveryOrder->salesOrder->form->save();
-            }
-        }
 
         return response()->json([], 204);
     }

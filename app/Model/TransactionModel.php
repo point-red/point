@@ -29,6 +29,8 @@ class TransactionModel extends PointModel
         $this->form->request_cancellation_reason = $request->get('reason');
         $this->form->cancellation_status = $canceled;
         $this->form->save();
+
+        $this->form->fireEventCanceled();
     }
 
     /**

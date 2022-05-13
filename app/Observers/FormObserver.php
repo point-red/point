@@ -19,6 +19,21 @@ class FormObserver
         $activity = 'Rejected';
         $this->_storeActivity($form, $activity);
     }
+    public function canceled(Form $form)
+    {
+        $activity = 'Canceled';
+        $this->_storeActivity($form, $activity);
+    }
+    public function cancelApproved(Form $form)
+    {
+        $activity = 'Cancel Approved';
+        $this->_storeActivity($form, $activity);
+    }
+    public function cancelRejected(Form $form)
+    {
+        $activity = 'Cancel Rejected';
+        $this->_storeActivity($form, $activity);
+    }
 
     /**
      * Handle the form "created" event.

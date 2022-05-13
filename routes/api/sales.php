@@ -21,6 +21,8 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::namespace('DeliveryOrder')
         ->middleware('tenant.module-access:sales delivery order')
         ->group(function () {
+            Route::get('delivery-orders/approval', 'DeliveryOrderApprovalController@index');
+            Route::post('delivery-orders/approval/send', 'DeliveryOrderApprovalController@sendApproval');
             Route::post('delivery-orders/{id}/approve', 'DeliveryOrderApprovalController@approve');
             Route::post('delivery-orders/{id}/reject', 'DeliveryOrderApprovalController@reject');
             Route::post('delivery-orders/{id}/cancellation-approve', 'DeliveryOrderCancellationApprovalController@approve');

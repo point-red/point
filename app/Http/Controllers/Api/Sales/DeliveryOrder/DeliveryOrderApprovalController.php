@@ -48,10 +48,12 @@ class DeliveryOrderApprovalController extends Controller
      */
     public function reject(Request $request, $id)
     {
+        $validated = $request->validate([ 'reason' => 'required' ]);
+
         $deliveryOrder = DeliveryOrder::findOrFail($id);
         $deliveryOrder->form->approval_by = auth()->user()->id;
         $deliveryOrder->form->approval_at = now();
-        $deliveryOrder->form->approval_reason = $request->get('reason');
+        $deliveryOrder->form->approval_reason = $validated['reason'];
         $deliveryOrder->form->approval_status = -1;
         $deliveryOrder->form->save();
 

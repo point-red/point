@@ -34,6 +34,8 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
     Route::prefix('inventory')->namespace('Inventory')->group(function () {
         Route::post('transfer-items/approve', 'TransferItem\\TransferItemApprovalByEmailController@approve');
         Route::post('transfer-items/reject', 'TransferItem\\TransferItemApprovalByEmailController@reject');
+        Route::post('receive-items/approve', 'TransferItem\\ReceiveItemApprovalByEmailController@approve');
+        Route::post('receive-items/reject', 'TransferItem\\ReceiveItemApprovalByEmailController@reject');
     });
 
     // This routes below require authentication

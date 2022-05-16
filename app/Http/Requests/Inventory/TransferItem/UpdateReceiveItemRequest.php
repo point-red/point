@@ -5,7 +5,7 @@ namespace App\Http\Requests\Inventory\TransferItem;
 use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreReceiveItemRequest extends FormRequest
+class UpdateReceiveItemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +29,6 @@ class StoreReceiveItemRequest extends FormRequest
         $rulesReceiveItem = [
             'warehouse_id' => ValidationRule::foreignKey('warehouses'),
             'from_warehouse_id' => ValidationRule::foreignKey('warehouses'),
-            'transfer_item_id' => ValidationRule::foreignKey('transfer_items'),
 
             'items' => 'required_without:services|array',
         ];

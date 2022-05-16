@@ -53,7 +53,7 @@ class TransferItemApprovalByEmailController extends Controller
             }
 
             if (!in_array( $transferItem->id, $exclude )) {
-                if ($transferItem->form->approval_status === 0 && $transferItem->form->cancellation_status === 0) {
+                if ($transferItem->form->cancellation_status === 0) {
                     $transferItem->form->cancellation_approval_by = $request->approver_id;
                     $transferItem->form->cancellation_approval_at = now();
                     $transferItem->form->cancellation_status = 1;
@@ -120,7 +120,7 @@ class TransferItemApprovalByEmailController extends Controller
         $transferItems = TransferItem::whereIn('id', $request->ids)->get();
         
         foreach ($transferItems as $transferItem) {
-            if ($transferItem->form->approval_status === 0 && $transferItem->form->cancellation_status === 0) {
+            if ($transferItem->form->cancellation_status === 0) {
                 $transferItem->form->cancellation_approval_by = $request->approver_id;
                 $transferItem->form->cancellation_approval_at = now();
                 $transferItem->form->cancellation_approval_reason = $request->get('reason');

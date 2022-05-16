@@ -3,6 +3,7 @@
 namespace App\Exports\TransferItem;
 
 use App\Model\Inventory\TransferItem\TransferItem;
+use App\Model\Inventory\TransferItem\ReceiveItem;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -13,7 +14,7 @@ use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Carbon\Carbon;
 
-class TransferItemSendExport implements WithColumnFormatting, FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithEvents
+class ReceiveItemSendExport implements WithColumnFormatting, FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithEvents
 {
     /**
      * ScaleWeightItemExport constructor.
@@ -34,26 +35,21 @@ class TransferItemSendExport implements WithColumnFormatting, FromQuery, WithHea
      */
     public function query()
     {
-        $transferItems = TransferItem::join('forms', 'forms.formable_id', '=', TransferItem::getTableName().'.id')
-            ->where('forms.formable_type', TransferItem::$morphName)
-            ->whereIn(TransferItem::getTableName().'.id', $this->ids)
-            ->join('warehouses as w1', 'w1.id', '=', TransferItem::getTableName().'.warehouse_id')
-            ->join('warehouses as w2', 'w2.id', '=', TransferItem::getTableName().'.to_warehouse_id')
-            ->join('users as u1', 'u1.id', '=', 'forms.created_by')
-            ->leftJoin('users as u2', 'u2.id', '=', 'forms.approval_by')
-            ->join('transfer_item_items as tii', 'tii.transfer_item_id', '=', TransferItem::getTableName().'.id')
-            ->select('date', 'number', 'w1.name as warehouse_send', 'w2.name as warehouse_receive')
-            ->addSelect('item_name', 'unit', 'production_number', 'expiry_date', 'quantity', 'balance')
-            ->addSelect('u1.name as created_by', 'u2.name as approved_by')
-            ->selectRaw("(CASE WHEN approval_status = 0 THEN 'Pending' WHEN approval_status = -1 THEN 'Rejected' ELSE 'Approved' END) AS approval_status")
-            ->selectRaw("(CASE WHEN cancellation_status = 1 THEN 'Canceled' WHEN done = 1 THEN 'Approved' ELSE 'Pending' END) AS form_status")
-            ->selectRaw("(SELECT COALESCE(quantity, 0) from receive_item_items rii 
-                where receive_item_id = (SELECT ri.id from receive_items ri
-                JOIN forms f on f.formable_id = ri.id and f.formable_type = 'ReceiveItem'
-                where ri.transfer_item_id = transfer_items.id and f.number is not null and f.cancellation_status IS NOT TRUE and f.approval_status = 1) and item_id = tii.item_id 
-                and COALESCE(expiry_date, '') = COALESCE(tii.expiry_date, '') and COALESCE(production_number, '') = COALESCE(tii.production_number, '')) as quantity_receive")
-            ->orderBy('number', 'desc');
-        return $transferItems;
+        $receiveItems = ReceiveItem::join('forms as f1', 'f1.formable_id', '=', ReceiveItem::getTableName().'.id')
+            ->where('f1.formable_type', ReceiveItem::$morphName)
+            ->whereIn(ReceiveItem::getTableName().'.id', $this->ids)
+            ->join('forms as f2', 'f2.formable_id', '=', ReceiveItem::getTableName().'.transfer_item_id')
+            ->where('f2.formable_type', TransferItem::$morphName)
+            ->join('warehouses as w1', 'w1.id', '=', ReceiveItem::getTableName().'.from_warehouse_id')
+            ->join('warehouses as w2', 'w2.id', '=', ReceiveItem::getTableName().'.warehouse_id')
+            ->join('receive_item_items as rii', 'rii.receive_item_id', '=', ReceiveItem::getTableName().'.id')
+            ->select('f1.number as form_number', 'f1.date as date_receive', 'f2.number as form_reference', 'f2.date as date_send', 'w1.name as from_warehouse', 'w2.name as to_warehouse', 'rii.notes')
+            ->addSelect('item_name', 'unit', 'production_number', 'expiry_date', 'quantity as quantity_receive')
+            ->selectRaw("(SELECT COALESCE(quantity, 0) from transfer_item_items tii 
+                where transfer_item_id = receive_items.transfer_item_id and item_id = rii.item_id 
+                and COALESCE(expiry_date, '') = COALESCE(rii.expiry_date, '') and COALESCE(production_number, '') = COALESCE(rii.production_number, '')) as quantity_send")
+            ->orderBy('f1.number', 'desc');
+        return $receiveItems;
     }
 
     public function columnFormats(): array
@@ -72,21 +68,20 @@ class TransferItemSendExport implements WithColumnFormatting, FromQuery, WithHea
             ['Date Export', ': ' . date('d F Y', strtotime(Carbon::now()))],
             ['Period Export', ': ' . $this->dateFrom . ' - ' . $this->dateTo],
             [$this->tenantName],
-            ['Transfer Item Send'],
+            ['Transfer Item Receive'],
             [
-            'Date Form',
+            'Form Reference',
             'Form Number',
-            'Warehouse Send',
-            'Warehouse Receive',
+            'From Warehouse',
+            'To Warehouse',
+            'Date Send',
+            'Date Receive',
             'Item',
             'Production Number',
             'Expiry Date',
             'Quantity Send',
             'Quantity Receive',
-            'Created By',
-            'Approved By',
-            'Approval Status',
-            'Form Status'
+            'Notes'
             ]
         ];
     }
@@ -98,19 +93,18 @@ class TransferItemSendExport implements WithColumnFormatting, FromQuery, WithHea
     public function map($row): array
     {
         return [
-            date('d F Y', strtotime($row->date)),
-            $row->number,
-            $row->warehouse_send,
-            $row->warehouse_receive,
+            $row->form_reference,
+            $row->form_number,
+            $row->from_warehouse,
+            $row->to_warehouse,
+            date('d F Y', strtotime($row->date_send)),
+            date('d F Y', strtotime($row->date_receive)),
             $row->item_name,
             $row->production_number,
             date('d F Y', strtotime($row->expiry_date)),
-            (int)$row->quantity . ' ' . $row->unit,
+            (int)$row->quantity_send . ' ' . $row->unit,
             (int)$row->quantity_receive . ' ' . $row->unit,
-            $row->created_by,
-            $row->approved_by,
-            $row->approval_status,
-            $row->form_status
+            $row->notes
         ];
     }
 
@@ -124,13 +118,13 @@ class TransferItemSendExport implements WithColumnFormatting, FromQuery, WithHea
                 $event->sheet->getColumnDimension('B')
                             ->setAutoSize(false)
                             ->setWidth(18);
-                $tenanName = 'A3:M3'; // All headers
+                $tenanName = 'A3:L3'; // All headers
                 $event->sheet->mergeCells($tenanName);
                 $event->sheet->getDelegate()->getStyle($tenanName)->getFont()->setBold(true);
                 $event->sheet->getDelegate()->getStyle($tenanName)
                                 ->getAlignment()
                                 ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-                $title = 'A4:M4'; // All headers
+                $title = 'A4:L4'; // All headers
                 $event->sheet->mergeCells($title);
                 $event->sheet->getDelegate()->getStyle($title)->getFont()->setBold(true);
                 $event->sheet->getDelegate()->getStyle($title)

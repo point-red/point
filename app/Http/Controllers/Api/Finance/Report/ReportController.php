@@ -101,9 +101,6 @@ class ReportController extends Controller
         $reports['data'] = [];
         foreach($payments as $payment){
             foreach($payment->details as $detail){
-                if($request->get('journal_account_id') != null && $detail->chartOfAccount->id != $request->get('journal_account_id')){
-                    continue;
-                }
                 $data = [];
                 $data['id'] = $payment->id;
                 $data['date'] = $payment->form->date; 
@@ -146,9 +143,6 @@ class ReportController extends Controller
         $cuttoffs = CutOffAccount::joins($cuttoffs, 'account,account_type,cutoff.form')->get();
 
         foreach($cuttoffs as $cutoff){
-            if($cutoff->id == null){
-                continue;
-            }
             $data = [];
             $data['id'] = $cutoff->chartOfAccount->id;
             $data['date'] = $cutoff->cutoff->form->date; 
@@ -220,9 +214,6 @@ class ReportController extends Controller
         $balance['credit'] = 0;
         foreach($payments as $payment){
             foreach($payment->details as $detail){
-                if($request->get('journal_account_id') != null && $detail->chartOfAccount->id != $request->get('journal_account_id')){
-                    continue;
-                }
                 if($payment->disbursed == false){
                     $balance['debit'] +=  $detail->amount;
                 }else {
@@ -248,9 +239,6 @@ class ReportController extends Controller
         $cuttoffs = CutOffAccount::joins($cuttoffs, 'account,account_type,cutoff.form')->get();
 
         foreach($cuttoffs as $cutoff){
-            if($cutoff->id == null){
-                continue;
-            }
             $balance['debit'] += $cutoff->debit; 
             $balance['credit'] += $cutoff->credit;
         }

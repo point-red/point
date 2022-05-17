@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Api\Sales\DeliveryOrder;
 
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\Token;
 use App\Model\UserActivity;
+use App\Model\Master\User;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Mail\Sales\DeliveryOrderApprovalRequestSent;
 
 class DeliveryOrderApprovalController extends Controller
 {
@@ -32,7 +36,8 @@ class DeliveryOrderApprovalController extends Controller
      
         $deliveryOrders = $deliveryOrders->leftJoinSub($userActivity, 'user_activity', function ($q) {
             $q->on('form.id', '=', 'user_activity.table_id');
-        });
+        })
+        ->addSelect('user_activity.last_request_date');
         
         $deliveryOrders = pagination($deliveryOrders, $request->get('limit'));
 
@@ -92,79 +97,84 @@ class DeliveryOrderApprovalController extends Controller
     }
 
     
-    // /**
-    //  * Send approval request to a specific approver.
-    //  */
-    // public function sendApproval(Request $request)
-    // {
-    //     DB::connection('tenant')->beginTransaction();
-    //     $transferItems = TransferItem::whereIn('id', $request->ids)->get();
+    /**
+     * Send approval request to a specific approver.
+     */
+    public function sendApproval(Request $request)
+    {
+        $deliveryOrderByApprovers = [];
 
-    //     foreach ($transferItems as $transferItem) { 
-    //         $datas[$transferItem->form->request_approval_to][] = $transferItem;
-    //     }
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+            $deliveryOrders = DeliveryOrder::whereIn('id', $request->ids)->get();
 
-    //     foreach ($datas as $data) {
-    //         $no = 1;
-    //         $ids = '';
-    //         foreach ($data as $transferItem) {
-    //             $transferItem['no'] = $no;
-    //             $transferItem['created_by'] = User::findOrFail($transferItem->form->created_by)->getFullNameAttribute();
-    //             if ($transferItem->form->cancellation_status === 0) {
-    //                 $transferItem['action'] = 'delete';
-    //             } else if ($transferItem->form->cancellation_status === null and $transferItem->form->approval_status === 0) {
-    //                 $userActivity = UserActivity::where('number', $transferItem->form->number);
-    //                 $userActivity = $userActivity->where('activity', 'like', '%' . 'Update' . '%');
-    //                 $updateCount = $userActivity->count();
-    //                 if ($updateCount > 0) {
-    //                     $transferItem['action'] = 'update';
-    //                 } else {
-    //                     $transferItem['action'] = 'create';
-    //                 }
-    //             }
-    //             $no++;
-    //             $ids .= $transferItem->id . ',';
-    //         }
-    //         $ids = substr($ids, 0, -1);
-    //         $approver = User::findOrFail($data[0]->form->request_approval_to);
+            // delivery order grouped by approver
+            foreach ($deliveryOrders as $do) { 
+                $deliveryOrderByApprovers[$do->form->request_approval_to][] = $do;
+            }
+    
+            foreach ($deliveryOrderByApprovers as $deliveryOrdersByApprover) {
+                $approver = null;
 
-    //         // create token based on request_approval_to
-    //         $token = Token::where('user_id', $approver->id)->first();
+                $formStart = head($deliveryOrdersByApprover)->form;
+                $formEnd = last($deliveryOrdersByApprover)->form;
 
-    //         if (!$token) {
-    //             $token = new Token([
-    //                 'user_id' => $approver->id,
-    //                 'token' => md5($approver->email.''.now()),
-    //             ]);
-    //             $token->save();
-    //         }
+                $form = [
+                    'number' => $formStart->number,
+                    'date' => $formStart->date,
+                    'created' => $formStart->created_at,
+                ];
 
-    //         if (count($data) > 1) {
-    //             $form['number'] = $data[0]->form->number . ' - ' . end($data)->form->number;
-    //             $form['date'] = date('d F Y', strtotime($data[0]->form->date)) . ' - ' . date('d F Y', strtotime(end($data)->form->date));
-    //             $form['created'] = date('d F Y H:i:s', strtotime($data[0]->form->created_at)) . ' - ' . date('d F Y H:i:s', strtotime(end($data)->form->created_at));
-    //         } else {
-    //             $form['number'] = $data[0]->form->number;
-    //             $form['date'] = $data[0]->form->date;
-    //             $form['created'] = $data[0]->form->created_at;
-    //         };
+                // loop each delivery order by group approver
+                foreach ($deliveryOrdersByApprover as $deliveryOrder) {
+                    $deliveryOrder->action = 'create';
+                    
+                    if(!$approver) {
+                        $approver = $deliveryOrder->form->requestApprovalTo;
+                        // create token based on request_approval_to
+                        $approverToken = Token::where('user_id', $approver->id)->first();
+                        if (!$approverToken) {
+                            $approverToken = new Token();
+                            $approverToken->user_id = $approver->id;
+                            $approverToken->token = md5($approver->email.''.now());
+                            $approverToken->save();
+                        }
 
-    //         DB::connection('tenant')->commit();
+                        $approver->token = $approverToken->token;
+                    }
+                    
+                    if ($deliveryOrder->form->cancellation_status === 0) {
+                        $deliveryOrder->action = 'delete';
+                    }
 
-    //         Mail::to([
-    //             $approver->email,
-    //         ])->queue(new TransferItemApprovalRequestSent(
-    //             $data,
-    //             $approver,
-    //             $form,
-    //             $_SERVER['HTTP_REFERER'],
-    //             $ids,
-    //             $token->token
-    //         ));
-    //     }
+                    if ($deliveryOrder->form->cancellation_status === null and $deliveryOrder->form->approval_status === 0) {
+                        $userActivity = UserActivity::where('number', $deliveryOrder->form->number)
+                            ->where('activity', 'like', '%' . 'Update' . '%');
 
-    //     return [
-    //         'input' => $request->all(),
-    //     ];
-    // }
+                        $updateCount = $userActivity->count();
+                        if ($updateCount > 0) $deliveryOrder->action = 'update';
+                    }
+
+                    $deliveryOrder->form->fireEventRequestApproval();
+                }
+    
+                if (count($deliveryOrdersByApprover) > 1) {
+                    $formattedFormStartDate = date('d F Y', strtotime($formStart->date));
+                    $formattedFormEndDate = date('d F Y', strtotime($formEnd->date));
+                    $formattedFormStartCreate = date('d F Y H:i:s', strtotime($formStart->created_at));
+                    $formattedFormEndCreate = date('d F Y H:i:s', strtotime($formEnd->created_at));
+
+                    $form['number'] = $formStart->number . ' - ' . $formEnd->number;
+                    $form['date'] = $formattedFormStartDate . ' - ' . $formattedFormEndDate;
+                    $form['created'] = $formattedFormStartCreate . ' - ' . $formattedFormEndCreate;
+                }
+
+                Mail::to([ $approver->email ])->queue(new DeliveryOrderApprovalRequestSent($deliveryOrdersByApprover, $approver, (object) $form));
+            }
+        });
+
+        // return $result;
+        return [
+            'input' => $request->all(),
+        ];
+    }
 }

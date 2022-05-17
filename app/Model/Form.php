@@ -11,11 +11,11 @@ use App\Model\Master\Branch;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\Master\User;
-use App\Traits\Model\FormCustomEvent;
+use App\Traits\Model\FormCustomObserver;
 
 class Form extends PointModel
 {
-    use FormCustomEvent;
+    use FormCustomObserver;
     
     protected $connection = 'tenant';
 
@@ -149,6 +149,10 @@ class Form extends PointModel
 
         if (array_key_exists('request_approval_to', $data)) {
             $this->request_approval_to = $data['request_approval_to'];
+        }
+
+        if (array_key_exists('request_approval_at', $data)) {
+            $this->request_approval_at = $data['request_approval_at'];
         }
 
         $this->save();

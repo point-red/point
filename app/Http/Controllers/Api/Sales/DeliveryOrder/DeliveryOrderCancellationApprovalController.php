@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Api\Sales\DeliveryOrder;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ApiResource;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use Exception;
 use Illuminate\Http\Request;
+use App\Http\Resources\ApiResource;
+use App\Http\Controllers\Controller;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 
 class DeliveryOrderCancellationApprovalController extends Controller
 {
@@ -17,18 +18,27 @@ class DeliveryOrderCancellationApprovalController extends Controller
     public function approve(Request $request, $id)
     {
         $deliveryOrder = DeliveryOrder::findOrFail($id);
+        
+        try {
+            $deliveryOrder->isAllowedToUpdate();
+            if($deliveryOrder->form->cancellation_status !== 0) {
+                throw new Exception("form not in cancellation pending state", 1);
+            }
 
-        $deliveryOrder->form->cancellation_approval_by = auth()->user()->id;
-        $deliveryOrder->form->cancellation_approval_at = now();
-        $deliveryOrder->form->cancellation_status = 1;
-        $deliveryOrder->form->save();
+            $deliveryOrder->form->cancellation_approval_by = auth()->user()->id;
+            $deliveryOrder->form->cancellation_approval_at = now();
+            $deliveryOrder->form->cancellation_status = 1;
+            $deliveryOrder->form->save();
 
-        if ($deliveryOrder->salesOrder) {
-            $deliveryOrder->salesOrder->form->done = false;
-            $deliveryOrder->salesOrder->form->save();
+            if ($deliveryOrder->salesOrder) {
+                $deliveryOrder->salesOrder->form->done = false;
+                $deliveryOrder->salesOrder->form->save();
+            }
+
+            $deliveryOrder->form->fireEventCancelApproved();
+        } catch (\Throwable $th) {
+            return response(['code' => $th->getCode(), 'message' => $th->getMessage()], 422);
         }
-
-        $deliveryOrder->form->fireEventCancelApproved();
 
         return new ApiResource($deliveryOrder);
     }
@@ -43,18 +53,28 @@ class DeliveryOrderCancellationApprovalController extends Controller
         $request->validate([ 'reason' => 'required ']);
         
         $deliveryOrder = DeliveryOrder::findOrFail($id);
-        $deliveryOrder->form->cancellation_approval_by = auth()->user()->id;
-        $deliveryOrder->form->cancellation_approval_at = now();
-        $deliveryOrder->form->cancellation_approval_reason = $request->get('reason');
-        $deliveryOrder->form->cancellation_status = -1;
-        $deliveryOrder->form->save();
 
-        if ($deliveryOrder->salesOrder) {
-            $deliveryOrder->salesOrder->form->done = false;
-            $deliveryOrder->salesOrder->form->save();
+        try {
+            $deliveryOrder->isAllowedToUpdate();
+            if($deliveryOrder->form->cancellation_status !== 0) {
+                throw new Exception("form not in cancellation pending state", 1);
+            }
+
+            $deliveryOrder->form->cancellation_approval_by = auth()->user()->id;
+            $deliveryOrder->form->cancellation_approval_at = now();
+            $deliveryOrder->form->cancellation_approval_reason = $request->get('reason');
+            $deliveryOrder->form->cancellation_status = -1;
+            $deliveryOrder->form->save();
+
+            if ($deliveryOrder->salesOrder) {
+                $deliveryOrder->salesOrder->form->done = false;
+                $deliveryOrder->salesOrder->form->save();
+            }
+
+            $deliveryOrder->form->fireEventCancelRejected();
+        } catch (\Throwable $th) {
+            return response(['code' => $th->getCode(), 'message' => $th->getMessage()], 422);
         }
-
-        $deliveryOrder->form->fireEventCancelRejected();
 
         return new ApiResource($deliveryOrder);
     }

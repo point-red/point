@@ -27,6 +27,9 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
             Route::post('delivery-orders/{id}/reject', 'DeliveryOrderApprovalController@reject');
             Route::post('delivery-orders/{id}/cancellation-approve', 'DeliveryOrderCancellationApprovalController@approve');
             Route::post('delivery-orders/{id}/cancellation-reject', 'DeliveryOrderCancellationApprovalController@reject');
+            Route::post('delivery-orders/{id}/close-approve', 'DeliveryOrderCloseApprovalController@approve');
+            Route::post('delivery-orders/{id}/close-reject', 'DeliveryOrderCloseApprovalController@reject');
+            Route::post('delivery-orders/{id}/close', 'DeliveryOrderCloseApprovalController@close');
             Route::get('delivery-orders/{id}/histories', 'DeliveryOrderHistoryController@index');
             Route::apiResource('delivery-orders', 'DeliveryOrderController');
         });

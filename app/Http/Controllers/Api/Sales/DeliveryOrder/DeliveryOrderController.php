@@ -125,12 +125,16 @@ class DeliveryOrderController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $deliveryOrder = DeliveryOrder::findOrFail($id);
-        $deliveryOrder->isAllowedToDelete();
-
-        $request->validate([ 'reason' => 'required ']);
-        
-        $response = $deliveryOrder->requestCancel($request);
+        try {
+            $deliveryOrder = DeliveryOrder::findOrFail($id);
+            $deliveryOrder->isAllowedToDelete();
+    
+            $request->validate([ 'reason' => 'required']);
+            
+            $response = $deliveryOrder->requestCancel($request);
+        } catch (\Throwable $th) {
+            return response()->json(['code' => $th->getCode(), 'message' => $th->getMessage()], 422);
+        }
 
         return response()->json([], 204);
     }

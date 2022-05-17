@@ -83,9 +83,7 @@ class DeliveryOrder extends TransactionModel
     }
 
     public function isAllowedToDelete()
-    {
-        $this->updatedFormNotArchived();
-        
+    {       
         $this->formStateActivePending();
 
         $this->isNotReferenced();

@@ -9,14 +9,29 @@ use Illuminate\Support\Facades\Log;
 class FormObserver
 {
     // Handle custom form event's
+    public function requestApproval(Form $form)
+    {
+        $activity = 'Request Approval';
+        $this->_storeActivity($form, $activity);
+    }
     public function approved(Form $form)
     {
         $activity = 'Approved';
         $this->_storeActivity($form, $activity);
     }
+    public function approvedByEmail(Form $form)
+    {
+        $activity = 'Approved by Email';
+        $this->_storeActivity($form, $activity);
+    }
     public function rejected(Form $form)
     {
         $activity = 'Rejected';
+        $this->_storeActivity($form, $activity);
+    }
+    public function rejectedByEmail(Form $form)
+    {
+        $activity = 'Rejected by Email';
         $this->_storeActivity($form, $activity);
     }
     public function canceled(Form $form)
@@ -32,6 +47,21 @@ class FormObserver
     public function cancelRejected(Form $form)
     {
         $activity = 'Cancel Rejected';
+        $this->_storeActivity($form, $activity);
+    }
+    public function closed(Form $form)
+    {
+        $activity = 'Close';
+        $this->_storeActivity($form, $activity);
+    }
+    public function closeApproved(Form $form)
+    {
+        $activity = 'Close Approved';
+        $this->_storeActivity($form, $activity);
+    }
+    public function closeRejected(Form $form)
+    {
+        $activity = 'Close Rejected';
         $this->_storeActivity($form, $activity);
     }
 

@@ -158,13 +158,13 @@
                 $urlApprovalQueries['ids'] = implode(",", Illuminate\Support\Arr::pluck($deliveryOrders, 'id')); 
             @endphp
             <a
-                href="{{ env('TENANT_DOMAIN') .'approval?action=approve&' . http_build_query($urlApprovalQueries) }}"
+                href="{{ env('TENANT_DOMAIN') .'approval-all?action=approve&' . http_build_query($urlApprovalQueries) }}"
                 target="_blank"
                 style="background-color: #4CAF50; border: none; color: white; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                 Approve All
             </a>
             <a
-                href="{{ env('TENANT_DOMAIN') .'approval?action=reject&' . http_build_query($urlApprovalQueries) }}"
+                href="{{ env('TENANT_DOMAIN') .'approval-all?action=reject&' . http_build_query($urlApprovalQueries) }}"
                 target="_blank"
                 style="background-color: rgb(238, 238, 238); border: none; color: rgb(83, 83, 83); margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                 Reject All

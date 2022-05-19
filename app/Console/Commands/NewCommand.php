@@ -61,6 +61,15 @@ class NewCommand extends Command
         Artisan::call('db:seed --class=PluginSeeder');
 
         $this->line('setup new user "admin" and password "admin"');
+
+        $user = new User;
+        $user->name = 'test123';
+        $user->first_name = 'test123';
+        $user->last_name = 'test123';
+        $user->email = 'test123@point';
+        $user->password = bcrypt('test123');
+        $user->save();
+
         $user = new User;
         $user->name = 'admin';
         $user->first_name = 'admin';

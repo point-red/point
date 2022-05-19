@@ -31,7 +31,7 @@ class CutOffController extends Controller
     public function indexByAccount(Request $request)
     {
         $cutOffs = CutOffAccount::eloquentFilter($request);
-        $cutOffs = CutOffAccount::joins($cutOffs, $request);
+        $cutOffs = CutOffAccount::joins($cutOffs, $request->get('join'));
 
         if($request->get("isDownload")) {
             return $this->exportByAccount($request, $cutOffs);

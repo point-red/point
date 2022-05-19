@@ -216,7 +216,7 @@ class PermissionSeeder extends Seeder
             'payment order',
             'cash advance',
             'cash',
-            'bank',
+            'bank'
         ];
 
         Permission::createIfNotExists('read debt aging report');
@@ -228,6 +228,16 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('update '.$permission);
             Permission::createIfNotExists('delete '.$permission);
             Permission::createIfNotExists('approve '.$permission);
+        }
+
+        $reportPermission = [
+            'cash report',
+            'bank report'
+        ];
+
+        foreach ($reportPermission as $permission) {
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('check '.$permission);
         }
     }
 

@@ -10,6 +10,7 @@ use App\Model\Master\Branch;
 use App\Model\Master\Customer;
 use App\Model\Master\Supplier;
 use App\Model\Master\User;
+use App\Model\FormChecklist;
 
 class Form extends PointModel
 {
@@ -23,6 +24,10 @@ class Form extends PointModel
         'date',
         'notes',
         'increment_group',
+    ];
+
+    protected $casts = [
+        'is_updated' => 'boolean',
     ];
 
     public function save(array $options = [])
@@ -99,6 +104,26 @@ class Form extends PointModel
     public function approvalBy()
     {
         return $this->belongsTo(User::class, 'approval_by');
+    }
+
+    public function isUpdated()
+    {
+        $check = self::where('edited_number', $this->number)->count();
+        if($check > 0){
+            $this->is_updated = true;
+        }else{
+            $this->is_updated = false;
+        }
+    }
+
+    public function getChecklist($feature)
+    {
+        $checklist = FormChecklist::where('number', $this->number)->where('feature', $feature)->first();
+        if($checklist){
+            return $checklist->is_checked;
+        }else{
+            return false;
+        }
     }
 
     public function saveData($data, $transaction, $options = [])

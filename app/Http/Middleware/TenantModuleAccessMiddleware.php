@@ -12,6 +12,7 @@ use App\Exceptions\WarehouseNullException;
 
 use App\Model\Token;
 use App\Model\Form;
+use \Route;
 
 class TenantModuleAccessMiddleware
 {
@@ -181,36 +182,16 @@ class TenantModuleAccessMiddleware
     }
 
     protected function _matchModuleAction($action) {
-        $match = null;
-
-        switch ($action) {
-            case 'index':
-                $match = 'read';
-                break;
-            case 'show':
-                $match = 'read';
-                break;
-            case 'store':
-                $match = 'create';
-                break;
-            case 'destroy':
-                $match = 'delete';
-                break;
-            case 'approve':
-                $match = 'approve';
-                break;
-            case 'reject':
-                $match = 'approve';
-                break;
-            case 'sendApproval':
-                $match = 'create';
-                break;
-            
-            default:
-                $match = $action;
-                break;
+        if (in_array($action, ['index', 'show', 'showReceipt', 'export'])) {
+            return 'read';
         }
 
-        return $match;
+        if (in_array($action, ['store', 'sendApproval'])) return 'create';
+
+        if (in_array($action, ['destroy'])) return 'delete';
+
+        if (in_array($action, ['approve', 'reject'])) return 'approve';
+
+        return $action;
     }
 }

@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers\Api\Sales\DeliveryOrder;
 
+use Throwable;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\Sales\DeliveryOrder\DeliveryOrderExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder\StoreDeliveryOrderRequest;
 use App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder\UpdateDeliveryOrderRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\CloudStorage;
+use App\Model\Project\Project;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class DeliveryOrderController extends Controller
 {
@@ -87,6 +93,16 @@ class DeliveryOrderController extends Controller
         return new ApiResource($deliveryOrder);
     }
 
+    public function showReceipt(Request $request, $id)
+    {
+        $tenantCode = strtolower($request->header('Tenant'));
+        $tenant = Project::where('code', $tenantCode)->first();
+
+        $deliveryOrder = DeliveryOrder::eloquentFilter($request)->findOrFail($id);
+
+        return view('emails.sales.delivery-order.delivery-order-receipt', compact('deliveryOrder', 'tenant'));
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -137,5 +153,40 @@ class DeliveryOrderController extends Controller
         }
 
         return response()->json([], 204);
+    }
+
+    public function export(Request $request)
+    {
+        try {
+            $tenant = strtolower($request->header('Tenant'));
+            $key = Str::random(16);
+            $fileName = strtoupper($tenant).' - Sales Delivery Order';
+            $fileExt = 'xlsx';
+            $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
+
+            Excel::store(new DeliveryOrderExport($tenant, $request), $path, env('STORAGE_DISK'));
+
+            $cloudStorage = new CloudStorage;
+            $cloudStorage->file_name = $fileName;
+            $cloudStorage->file_ext = $fileExt;
+            $cloudStorage->feature = 'Sales Delivery Order';
+            $cloudStorage->key = $key;
+            $cloudStorage->path = $path;
+            $cloudStorage->disk = env('STORAGE_DISK');
+            $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
+            $cloudStorage->owner_id = auth()->user()->id;
+            $cloudStorage->expired_at = Carbon::now()->addDay(1);
+            $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
+            $cloudStorage->save();
+
+            return response()->json([
+                'data' => [ 'url' => $cloudStorage->download_url ],
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'code' => $th->getCode(),
+                'message' => 'Failed to export, '.$th->getMessage(),
+            ], 500);
+        }
     }
 }

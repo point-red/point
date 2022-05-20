@@ -38,7 +38,7 @@ class DeliveryOrderApprovalRequestSent extends Mailable
         $this->approver->token = $this->approverToken;
 
         return $this->subject('Approval Email')
-            ->view('emails.sales.delivery-order.delivery-order-approval-sent', [
+            ->view('emails.sales.delivery-order.delivery-order-approval-request', [
                 'deliveryOrders' => $this->deliveryOrders,
                 'approver' => $this->approver,
                 'form' => $this->form

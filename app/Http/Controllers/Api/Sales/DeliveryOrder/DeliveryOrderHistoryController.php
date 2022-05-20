@@ -22,13 +22,12 @@ class DeliveryOrderHistoryController extends Controller
         $deliveryOrder = DeliveryOrder::findOrFail($id);
         $formNumber = $deliveryOrder->form->number;
         
-        $histories = UserActivity::from(UserActivity::getTableName().' as '.UserActivity::$alias)
+        $histories = UserActivity::select(UserActivity::getTableName().'.*', Form::$alias.'.formable_id')
             ->eloquentFilter($request)
             ->join(Form::getTableName().' as '.Form::$alias, function ($query) {
-                $query->on(Form::$alias.'.id', '=', UserActivity::$alias.'.table_id');
+                $query->on(Form::$alias.'.id', '=', UserActivity::getTableName().'.table_id');
             })
-            ->where(UserActivity::$alias.'.number', $formNumber)
-            ->select(UserActivity::$alias.'.*', Form::$alias.'.formable_id');
+            ->where(UserActivity::getTableName().'.number', $formNumber);
 
         $histories = pagination($histories, $request->limit);
 

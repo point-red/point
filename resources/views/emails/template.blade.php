@@ -172,6 +172,7 @@
             text-decoration: underline;
         }
     </style>
+    @yield('css')
 </head>
 <body style="margin:0; padding:0;" bgcolor="#F0F0F0" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 

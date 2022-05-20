@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Mail;
 
 class EmailServiceController extends Controller
 {
+    private $tenant;
+
     /**
      * Store a newly created resource in storage.
      *
@@ -17,18 +19,16 @@ class EmailServiceController extends Controller
      */
     public function send(SendEmailRequest $request)
     {
-        $project = Project::join('project_preferences', 'project_preferences.project_id', '=', 'projects.id')
-            ->where('code', $request->header('Tenant'))
-            ->select('projects.*')
-            ->with('preference')
-            ->first();
+        $project = Project::where('code', $request->header('Tenant'))->first();
 
         // doesn't allow send custom email with default mail ...@point.red
-        if (! $project || ! $project->preference) {
+        if (! $project) {
             return response()->json([
                 'message' => 'Cannot send custom email from default email address',
             ], 422);
         }
+
+        $this->tenant = $project;
 
         Mail::send([], [], function ($message) use ($request) {
             $message->to($request->get('to'));
@@ -60,11 +60,28 @@ class EmailServiceController extends Controller
 
     private function createPDF($config)
     {
+        if (!isset($config['html']) && (!isset($config['view']) && !isset($config['view_data']))) {
+            return response()->json([
+                'message' => 'Cannot send custom email, html / view must filled',
+            ], 422);
+        }
+
         // $pdf = PDF::loadHTML($config['html']) don't know why doesn't work
         // https://github.com/barryvdh/laravel-dompdf#using
         $pdf = app()->make('dompdf.wrapper');
-        $pdf->loadHTML($config['html'])
-            ->setPaper($config['paper'] ?? 'a4', $config['orientation'] ?? 'portrait')
+        
+        if(isset($config['html'])) $pdf->loadHTML($config['html']);
+
+        if(isset($config['view'])){
+            $viewData = ['tenant' => $this->tenant];
+
+            foreach ($config['view_data'] as $key => $value) {
+                $viewData[$key] = $value;
+            }
+            $pdf->loadView('emails.' . $config['view'], $viewData);
+        }
+
+        $pdf->setPaper($config['paper'] ?? 'a4', $config['orientation'] ?? 'portrait')
             ->setWarnings(false);
 
         return $pdf->output();

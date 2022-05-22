@@ -29,6 +29,15 @@ class EmailServiceController extends Controller
 
         $this->tenant = $project;
 
+        $viewData = [
+            'logo' => 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/logo.png'))),
+            'draftimg' => 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/draft-watermark.png'))),
+            'tenant' => $this->tenant,
+        ];
+        $attachments = $request->get('attachments');
+        foreach ($attachments[0]['view_data'] as $key => $value) {
+            $viewData[$key] = $value;
+        }
         Mail::send([], [], function ($message) use ($request) {
             $user = tenant(auth()->user()->id);
 
@@ -81,6 +90,7 @@ class EmailServiceController extends Controller
         if(isset($config['view'])){
             $viewData = [
                 'logo' => 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/logo.png'))),
+                'draftimg' => 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/draft-watermark.png'))),
                 'tenant' => $this->tenant,
             ];
             foreach ($config['view_data'] as $key => $value) {

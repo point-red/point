@@ -30,6 +30,13 @@ table.table-items, .table-items th, .table-items td {
   color:gray;
   background-color:gray;
 }
+.watermark{
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  height: 100%;
+  width: 100%;
+}
 </style>
 
 @php
@@ -51,6 +58,16 @@ if(gettype($deliveryOrder) === 'array') {
   $deliveryOrder->form->requestApprovalTo = (object) $deliveryOrder->form->request_approval_to;
 }
 @endphp
+
+@if($deliveryOrder->form->cancellation_status === 1)
+<div class="watermark">
+  <img 
+    src="{{ $draftimg ?? url('/img/draft-watermark.png') }}" 
+    style="opacity: 0.5; display: block; margin: 15% auto 0px; width: 600px"
+  >
+</div>
+@endif
+
 <table class="receipt-container m-2 mb-4 mx-auto">
   <thead>
     <tr>
@@ -82,7 +99,7 @@ if(gettype($deliveryOrder) === 'array') {
         </div>
         <hr class="header-divider">
         <div style="margin-top: 10px; margin-bottom: 10px">
-        <table>
+        <table width="100%">
           <tr>
             <td valign="top">
               <table class="header-detail" style="margin-right: 20px;">

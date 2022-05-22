@@ -66,11 +66,6 @@ class DeliveryOrderCancellationApprovalController extends Controller
             $deliveryOrder->form->cancellation_status = -1;
             $deliveryOrder->form->save();
 
-            if ($deliveryOrder->salesOrder) {
-                $deliveryOrder->salesOrder->form->done = false;
-                $deliveryOrder->salesOrder->form->save();
-            }
-
             $deliveryOrder->form->fireEventCancelRejected();
         } catch (\Throwable $th) {
             return response(['code' => $th->getCode(), 'message' => $th->getMessage()], 422);

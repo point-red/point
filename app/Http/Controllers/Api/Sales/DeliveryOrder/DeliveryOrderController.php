@@ -95,15 +95,6 @@ class DeliveryOrderController extends Controller
         return new ApiResource($deliveryOrder);
     }
 
-    public function showReceipt(Request $request, $id)
-    {
-        $logo = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/logo.png')));
-        $tenantCode = strtolower($request->header('Tenant'));
-        $tenant = Project::where('code', $tenantCode)->first();
-        $deliveryOrder = DeliveryOrder::eloquentFilter($request)->findOrFail($id);
-
-        return view('emails.sales.delivery-order.delivery-order-receipt', compact('deliveryOrder', 'tenant', 'logo'));
-    }
 
     /**
      * Update the specified resource in storage.
@@ -191,37 +182,4 @@ class DeliveryOrderController extends Controller
             ], 500);
         }
     }
-
-    // private function storeReceiptPDF($request, $deliveryOrder)
-    // {
-    //     $tenantCode = strtolower($request->header('Tenant'));
-    //     $tenant = Project::where('code', strtolower($tenantCode))->first();
-    //     $key = Str::random(16);
-
-    //     $fileName = strtoupper($tenantCode).'-Receipt-'.$deliveryOrder->form->number;
-    //     $fileExt = 'pdf';
-    //     $filePath = 'tmp/'.$tenantCode.'/'.$key.'.'.$fileExt;
-
-    //     $pdf = app()->make('dompdf.wrapper');
-    //     $pdf->loadView('emails.sales.delivery-order.delivery-order-receipt', compact('deliveryOrder', 'tenant'))
-    //         ->setPaper('a4', 'portrait')
-    //         ->setWarnings(false);
-
-    //     Storage::disk(env('STORAGE_DISK'))->put($filePath, $pdf->output());
-
-    //     $cloudStorage = new CloudStorage;
-    //     $cloudStorage->file_name = $fileName;
-    //     $cloudStorage->file_ext = $fileExt;
-    //     $cloudStorage->feature = 'Sales Delivery Order Receipt';
-    //     $cloudStorage->key = $key;
-    //     $cloudStorage->path = $filePath;
-    //     $cloudStorage->disk = env('STORAGE_DISK');
-    //     $cloudStorage->project_id = $tenant->id;
-    //     $cloudStorage->owner_id = auth()->user()->id;
-    //     $cloudStorage->expired_at = Carbon::now()->addDay(1);
-    //     $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
-    //     $cloudStorage->save();
-
-    //     return $cloudStorage;
-    // }
 }

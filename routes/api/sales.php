@@ -20,9 +20,10 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::post('down-payments/{id}/cancellation-reject', 'SalesDownPayment\\SalesDownPaymentCancellationApprovalController@reject');
     Route::apiResource('down-payments', 'SalesDownPayment\\SalesDownPaymentController');
 
-    Route::namespace('DeliveryOrder')
-        ->middleware('tenant.module-access:sales delivery order')
-        ->group(function () {
+    Route::namespace('DeliveryOrder')->group(function () {
+        Route::post('delivery-orders/{id}/histories', 'DeliveryOrderHistoryController@store');
+
+        Route::group(['middleware' => ['tenant.module-access:sales delivery order']], function () {
             Route::post('delivery-orders/{id}/approve', 'DeliveryOrderApprovalController@approve');
             Route::post('delivery-orders/{id}/reject', 'DeliveryOrderApprovalController@reject');
             Route::post('delivery-orders/approval/send', 'DeliveryOrderApprovalController@sendApproval');
@@ -37,10 +38,10 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
 
             Route::get('delivery-orders/{id}/histories', 'DeliveryOrderHistoryController@index');
 
-            Route::get('delivery-orders/{id}/receipt', 'DeliveryOrderController@showReceipt');
             Route::get('delivery-orders/export', 'DeliveryOrderController@export');
             Route::apiResource('delivery-orders', 'DeliveryOrderController');
         });
+    });
 
     Route::apiResource('delivery-notes', 'DeliveryNote\\DeliveryNoteController');
     Route::get('invoices/last-price/{itemId}', 'SalesInvoice\\SalesInvoicePricingController@lastPrice');

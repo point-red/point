@@ -21,7 +21,7 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::apiResource('down-payments', 'SalesDownPayment\\SalesDownPaymentController');
 
     Route::namespace('DeliveryOrder')
-        // ->middleware('tenant.module-access:sales delivery order')
+        ->middleware('tenant.module-access:sales delivery order')
         ->group(function () {
             Route::post('delivery-orders/{id}/approve', 'DeliveryOrderApprovalController@approve');
             Route::post('delivery-orders/{id}/reject', 'DeliveryOrderApprovalController@reject');

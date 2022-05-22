@@ -1,13 +1,7 @@
-@extends('emails.template')
-
-@section('css')
 <style>
 .receipt-container {
-  width: 90%;
+  width: 100%;
   padding: 30px;
-}
-.d-flex {
- display: flex; justify-content: space-between;  display: flex;
 }
 .table-items {
   border: solid 1px black;
@@ -27,6 +21,8 @@ table.table-items, .table-items th, .table-items td {
 .receipt-detail {
   min-width: 200px;
   max-width: 250px;
+  display: inline;
+  float: right;
 }
 .header-divider {
   height:10px;
@@ -35,9 +31,7 @@ table.table-items, .table-items th, .table-items td {
   background-color:gray;
 }
 </style>
-@stop
 
-@section('content')
 @php
 //parse if data is array, it happen when view load from app/Http/Controllers/Api/EmailServiceController.php@send
 if(gettype($deliveryOrder) === 'array') {
@@ -57,20 +51,13 @@ if(gettype($deliveryOrder) === 'array') {
   $deliveryOrder->form->requestApprovalTo = (object) $deliveryOrder->form->request_approval_to;
 }
 @endphp
-<table
-  id="print-sales-invoice"
-  class="receipt-container m-2 mb-4 mx-auto"
->
+<table class="receipt-container m-2 mb-4 mx-auto">
   <thead>
     <tr>
       <td>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-          <div style="width: 110px; height: 110px; align-self: center;">
-            <img
-              :src="logoUrl"
-              alt="Logo"
-              style="width: 100px; height: 100px;"
-            >
+        <div style="margin-bottom: 10px;">
+          <div style="display: inline; width: 110px; height: 110px; align-self: center;">
+            <img src="{{ $logo ?? url('/img/logo.png') }}" alt="Logo" style="width: 100px; height: 100px;">
           </div>
           <div class="receipt-detail">
             <h1 style="margin-top: 0; margin-bottom: 5px;">
@@ -94,52 +81,57 @@ if(gettype($deliveryOrder) === 'array') {
           </div>
         </div>
         <hr class="header-divider">
-        <div style="display: flex; justify-content: space-between; margin-top: 10px; margin-bottom: 10px">
-          <table
-            class="header-detail"
-            style="margin-right: 20px;"
-          >
-            <tr>
-              <td>Form Number</td>
-              <td>:</td>
-              <td>{{ $deliveryOrder->form->number }}</td>
-            </tr>
-            <tr>
-              <td>Date</td>
-              <td>:</td>
-              <td>{{ date('d M Y', strtotime($deliveryOrder->form->date)) }}</td>
-            </tr>
-            <tr>
-              <td>Sales Order</td>
-              <td>:</td>
-              <td>{{ optional($deliveryOrder->salesOrder)->form->number }}</td>
-            </tr>
-            <tr>
-              <td>Warehouse</td>
-              <td>:</td>
-              <td>{{ optional($deliveryOrder->warehouse)->name }}</td>
-            </tr>
-          </table>
-          <table
-            class="header-detail"
-            style="margin-left: 20px;"
-          >
-            <tr>
-              <td>Customer</td>
-              <td>:</td>
-              <td>{{ optional($deliveryOrder->customer)->name }}</td>
-            </tr>
-            <tr>
-              <td>Address</td>
-              <td>:</td>
-              <td>{{ optional($deliveryOrder->customer)->address }}</td>
-            </tr>
-            <tr>
-              <td>Phone number</td>
-              <td>:</td>
-              <td>{{ optional($deliveryOrder->customer)->phone }}</td>
-            </tr>
-          </table>
+        <div style="margin-top: 10px; margin-bottom: 10px">
+        <table>
+          <tr>
+            <td valign="top">
+              <table class="header-detail" style="margin-right: 20px;">
+                <tr>
+                  <td>Form Number</td>
+                  <td>:</td>
+                  <td>{{ $deliveryOrder->form->number }}</td>
+                </tr>
+                <tr>
+                  <td>Date</td>
+                  <td>:</td>
+                  <td>{{ date('d M Y', strtotime($deliveryOrder->form->date)) }}</td>
+                </tr>
+                <tr>
+                  <td>Sales Order</td>
+                  <td>:</td>
+                  <td>{{ optional($deliveryOrder->salesOrder)->form->number }}</td>
+                </tr>
+                <tr>
+                  <td>Warehouse</td>
+                  <td>:</td>
+                  <td>{{ optional($deliveryOrder->warehouse)->name }}</td>
+                </tr>
+              </table>
+            </td>
+            <td valign="top" align="right">
+              <table
+                class="header-detail"
+                style="margin-left: 20px;"
+              >
+                <tr>
+                  <td>Customer</td>
+                  <td>:</td>
+                  <td>{{ optional($deliveryOrder->customer)->name }}</td>
+                </tr>
+                <tr>
+                  <td>Address</td>
+                  <td>:</td>
+                  <td>{{ optional($deliveryOrder->customer)->address }}</td>
+                </tr>
+                <tr>
+                  <td>Phone number</td>
+                  <td>:</td>
+                  <td>{{ optional($deliveryOrder->customer)->phone }}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
         </div>
       </td>
     </tr>
@@ -180,23 +172,20 @@ if(gettype($deliveryOrder) === 'array') {
             @endforeach
           </tbody>
         </table>
-        <div style="display: flex; justify-content: flex-end; margin-top: 75px;">
-          <div
-            class="text-center"
-            style="margin-right: 75px;"
-          >
-            <h3>Created By</h3>
-            <br><br><br>
-            {{ $deliveryOrder->form->createdBy->full_name || $deliveryOrder->form->createdBy->getFullNameAttribute() }}
-          </div>
-          <div class="text-center">
+        <div style="margin-top: 75px;">
+          <div class="text-center" style="display: inline; float: right;">
             <h3>Approved By</h3>
             <br><br><br>
-            {{ $deliveryOrder->form->requestApprovalTo->full_name || $deliveryOrder->form->requestApprovalTo->getFullNameAttribute() }}
+            {{ $deliveryOrder->form->requestApprovalTo->full_name ?? $deliveryOrder->form->requestApprovalTo->getFullNameAttribute() }}
           </div>
+          <div class="text-center" style="display: inline; float: right; margin-right: 75px;">
+            <h3>Created By</h3>
+            <br><br><br>
+            {{ $deliveryOrder->form->createdBy->full_name ?? $deliveryOrder->form->createdBy->getFullNameAttribute() }}
+          </div>
+          <div style="clear: both"></div>
         </div>
       </td>
     </tr>
   </tbody>
 </table>
-@stop

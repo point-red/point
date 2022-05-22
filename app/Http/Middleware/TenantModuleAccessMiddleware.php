@@ -12,7 +12,6 @@ use App\Exceptions\WarehouseNullException;
 
 use App\Model\Token;
 use App\Model\Form;
-use \Route;
 
 class TenantModuleAccessMiddleware
 {

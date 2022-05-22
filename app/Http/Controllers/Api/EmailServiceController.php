@@ -18,9 +18,8 @@ class EmailServiceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function send(SendEmailRequest $request)
-    {
+    {   
         $project = Project::where('code', $request->header('Tenant'))->first();
-
         // doesn't allow send custom email with default mail ...@point.red
         if (! $project) {
             return response()->json([
@@ -31,6 +30,9 @@ class EmailServiceController extends Controller
         $this->tenant = $project;
 
         Mail::send([], [], function ($message) use ($request) {
+            $user = tenant(auth()->user()->id);
+
+            $message->from($user->email, $user->getFullNameAttribute());
             $message->to($request->get('to'));
             if ($request->has('cc')) {
                 $message->cc($request->get('cc'));
@@ -42,10 +44,9 @@ class EmailServiceController extends Controller
                 $message->replyTo($request->get('reply_to'), $request->get('reply_to_name'));
             }
             $message->subject($request->get('subject'));
-            $message->setBody($request->get('body'), 'text/html');
+            $message->setBody($request->get('body'), 'text/plain');
 
             $attachments = $request->get('attachments') ?? [];
-
             foreach ($attachments as $attachment) {
                 if ($attachment['type'] === 'pdf') {
                     $filename = $attachment['filename'] ?? 'untitled.pdf';
@@ -56,6 +57,8 @@ class EmailServiceController extends Controller
                 // TODO excel attachment
             }
         });
+
+        return response()->json([], 204);
     }
 
     private function createPDF($config)
@@ -68,21 +71,24 @@ class EmailServiceController extends Controller
 
         // $pdf = PDF::loadHTML($config['html']) don't know why doesn't work
         // https://github.com/barryvdh/laravel-dompdf#using
-        $pdf = app()->make('dompdf.wrapper');
+        $pdf = app()->make('dompdf.wrapper')
+            ->setPaper($config['paper'] ?? 'a4', $config['orientation'] ?? 'portrait')
+            ->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])
+            ->setWarnings(false);
         
         if(isset($config['html'])) $pdf->loadHTML($config['html']);
 
         if(isset($config['view'])){
-            $viewData = ['tenant' => $this->tenant];
-
+            $viewData = [
+                'logo' => 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/logo.png'))),
+                'tenant' => $this->tenant,
+            ];
             foreach ($config['view_data'] as $key => $value) {
                 $viewData[$key] = $value;
             }
+
             $pdf->loadView('emails.' . $config['view'], $viewData);
         }
-
-        $pdf->setPaper($config['paper'] ?? 'a4', $config['orientation'] ?? 'portrait')
-            ->setWarnings(false);
 
         return $pdf->output();
     }

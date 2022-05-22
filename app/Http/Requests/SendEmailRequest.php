@@ -41,7 +41,6 @@ class SendEmailRequest extends FormRequest
             // TODO support more type, separated by comma
             'attachments.*.type' => 'required|in:pdf',
             'attachments.*.filename' => 'string',
-            // 'attachments.*.html' => 'required_if:attachments.*.type,pdf',
             'attachments.*.orientation' => 'in:portrait,landscape',
 
             // TODO add more paper size https://github.com/dompdf/dompdf/blob/d30679a47a067a69540c988405cb675404898acc/src/Adapter/CPDF.php#L45

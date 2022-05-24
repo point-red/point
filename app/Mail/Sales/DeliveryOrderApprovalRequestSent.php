@@ -39,7 +39,7 @@ class DeliveryOrderApprovalRequestSent extends Mailable
 
         $user = tenant(auth()->user()->id);
 
-        return $this->subject('Approval Email')
+        return $this->subject('Request Approval All')
             ->from($user->email, $user->getFullNameAttribute())
             ->view('emails.sales.delivery-order.delivery-order-approval-request', [
                 'deliveryOrders' => $this->deliveryOrders,

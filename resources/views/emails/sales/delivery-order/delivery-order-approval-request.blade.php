@@ -8,7 +8,7 @@
         ];
         $urlApprovalQueries = array_merge($urlQueries, ['resource-type' => 'SalesDeliveryOrder']); 
     @endphp
-    <div class="title">Approval Email</div>
+    <div class="title">Request Approval All</div>
     <br>
     <div class="body-text">
         Hello Mrs/Mr/Ms {{ $approver->getFullNameAttribute() }},

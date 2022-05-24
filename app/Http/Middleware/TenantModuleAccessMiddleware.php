@@ -20,6 +20,7 @@ class TenantModuleAccessMiddleware
     protected $user;
     protected $userDefaultBranch;
     protected $userDefaultWarehouse;
+    protected $whitelistCheckPermissionOnDB = ['close'];
     /**
      * Handle an incoming request.
      *
@@ -39,26 +40,32 @@ class TenantModuleAccessMiddleware
         $this->_loadFormReference();
 
         try {
+            if (
+                $this->_isCheckPermissionOnDB()
+                && !$this->user->hasPermissionTo($this->action.' '.$module) 
+                && !$this->user->hasRole('super admin')
+            )
+            {
+                throw new UnauthorizedException();
+            }
+
+            if ($this->action === 'read') return $next($request);
+
             $this->_hasDefaultBranch();
 
             $this->_hasDefaultWarehouse();
 
             $this->_isWarehouseBranchAsDefault();
-            
-            if ($this->action === 'close' && ($this->_hasCRUDPermissions() || $this->user->hasRole('super admin'))) {
-                return $next($request);
+
+            if(in_array($this->action, ['create', 'update'])) {
+               $this->_isRequestWarehouseAsDefault($request);
             }
 
-            if ($this->user->hasPermissionTo($this->action.' '.$module) || $this->user->hasRole('super admin'))
-            {
-                if(in_array($this->action, ['create', 'update'])) {
-                   $this->_isRequestWarehouseAsDefault($request);
-                }
-    
-                return $next($request);
+            if ($this->action === 'close' && (!$this->_hasCRUDPermissions() && !$this->user->hasRole('super admin'))) {
+                throw new UnauthorizedException();
             }
 
-            throw new UnauthorizedException();
+            return $next($request);
         } catch (\Throwable $th) {
             $code = $th->getCode();
             $message = $th->getMessage();
@@ -78,10 +85,16 @@ class TenantModuleAccessMiddleware
             if (! $token) throw new UnauthorizedException();
 
             $this->user = $token->user;
-            return null;
+        } else {
+            $this->user = tenant(auth()->user()->id);
         }
 
-        $this->user = tenant(auth()->user()->id);
+        $this->userDefaultBranch = Arr::first($this->user->branches, function ($value) {
+            return $value->pivot->is_default;
+        });
+        $this->userDefaultWarehouse = Arr::first($this->user->warehouses, function ($value) {
+            return $value->pivot->is_default;
+        });
     }
     protected function _loadFormReference()
     {
@@ -102,17 +115,14 @@ class TenantModuleAccessMiddleware
     {
         return $this->user->hasAnyPermission([
             'create '.$this->module,
-            'create '.$this->module,
-            'create '.$this->module,
-            'create '.$this->module
+            'read '.$this->module,
+            'update '.$this->module,
+            'delete '.$this->module
         ]);
     }
 
     protected function _hasDefaultBranch()
     {
-        $this->userDefaultBranch = Arr::first($this->user->branches, function ($value) {
-            return $value->pivot->is_default;
-        });
         if (! $this->userDefaultBranch) throw new BranchNullException($this->action);
 
         if($this->form instanceof \Illuminate\Database\Eloquent\Collection) {
@@ -124,11 +134,7 @@ class TenantModuleAccessMiddleware
             return true;
         }
         
-        if (
-            $this->action !== 'read' 
-            && $this->form 
-            && $this->form->branch_id !== $this->userDefaultBranch->id
-        ) {
+        if ($this->form && $this->form->branch_id !== $this->userDefaultBranch->id) {
             throw new BranchNullException($this->action);
         }
 
@@ -136,9 +142,6 @@ class TenantModuleAccessMiddleware
     }
     protected function _hasDefaultWarehouse()
     {
-        $this->userDefaultWarehouse = Arr::first($this->user->warehouses, function ($value) {
-            return $value->pivot->is_default;
-        });
         if (! $this->userDefaultWarehouse) throw new WarehouseNullException($this->action);
 
         if($this->form instanceof \Illuminate\Database\Eloquent\Collection) {
@@ -150,13 +153,16 @@ class TenantModuleAccessMiddleware
             return true;
         }
 
-        if (
-            $this->action !== 'read' 
-            && $this->form 
-            && $this->form->formable->warehouse_id !== $this->userDefaultWarehouse->id
-        ) {
+        if ($this->form && $this->form->formable->warehouse_id !== $this->userDefaultWarehouse->id) {
             throw new WarehouseNullException($this->action);
         }
+
+        return true;
+    }
+
+    protected function _isCheckPermissionOnDB ()
+    {
+        return !in_array($this->action, $this->whitelistCheckPermissionOnDB);
     }
 
     protected function _isWarehouseBranchAsDefault()

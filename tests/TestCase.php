@@ -110,6 +110,25 @@ abstract class TestCase extends BaseTestCase
         return $branch;
     }
 
+    protected function userWarehouse($tenantUser)
+    {
+        $warehouse = $this->createWarehouse();
+        $tenantUser->warehouses()->syncWithoutDetaching($warehouse->id);
+        foreach ($tenantUser->warehouses as $warehouse) {
+            $warehouse->pivot->is_default = true;
+            $warehouse->pivot->save();
+        }
+    }
+
+    protected function createWarehouse()
+    {
+        $branch = new Warehouse();
+        $branch->name = 'Test warehouse';
+        $branch->save();
+
+        return $branch;
+    }
+
     protected function logRequestTime()
     {
         $start = LARAVEL_START;

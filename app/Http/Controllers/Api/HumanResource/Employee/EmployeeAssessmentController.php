@@ -107,6 +107,11 @@ class EmployeeAssessmentController extends Controller
         $kpi->date = date('Y-m-d', strtotime($dateTo));
         $kpi->employee_id = $employeeId;
         $kpi->scorer_id = auth()->user()->id;
+        $comment = '';
+        if (array_key_exists('comment',$template)) {
+            $comment = $template['comment'];
+        }
+        $kpi->comment = $comment;
 
         $kpi->status = 'COMPLETED';
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
@@ -415,6 +420,7 @@ class EmployeeAssessmentController extends Controller
         DB::connection('tenant')->beginTransaction();
 
         $kpi = Kpi::findOrFail($id);
+        $kpi->comment = $request->get('comment');
 
         $kpi->status = 'COMPLETED';
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {

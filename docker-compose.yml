@@ -23,7 +23,7 @@ services:
       - 8000:80
     volumes:
       - ./:/var/www
-      - ./docker-compose/nginx:/etc/nginx/conf.d
+      - ./docker-compose:/etc/nginx/conf.d
     networks:
       - point_network
   db:

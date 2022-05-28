@@ -61,7 +61,7 @@ class TenantModuleAccessMiddleware
                $this->_isRequestWarehouseAsDefault($request);
             }
 
-            if ($this->action === 'close' && (!$this->_hasCRUDPermissions() && !$this->user->hasRole('super admin'))) {
+            if ($this->action === 'close' && (!$this->user->hasRole('super admin') && !$this->_hasCRUDPermissions())) {
                 throw new UnauthorizedException();
             }
 

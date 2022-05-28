@@ -343,3 +343,23 @@ if (! function_exists('base64_to_jpeg')) {
         }
     }
 }
+
+if (! function_exists('response_error')) {
+    /**
+     * Get Tenant User.
+     *
+     * @param $userId
+     *
+     * @return \App\Model\Master\User
+     */
+    function response_error($error)
+    {
+        $code = $error->getCode();
+        $message = $error->getMessage();
+        
+        $httpCode = 500;
+        if($code !== 0) $httpCode = $code;
+
+        return response (['code' => $code, 'message' => $message], $httpCode);
+    }
+}

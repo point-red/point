@@ -49,16 +49,25 @@ class DeliveryOrderController extends Controller
      */
     public function store(StoreDeliveryOrderRequest $request)
     {
-        $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $deliveryOrder = DeliveryOrder::create($request->all());
-            $deliveryOrder
-                ->load('form')
-                ->load('customer')
-                ->load('items.item')
-                ->load('items.allocation');
+        try {
+            $result = DB::connection('tenant')->transaction(function () use ($request) {
+                $deliveryOrder = DeliveryOrder::create($request->all());
+                $deliveryOrder
+                    ->load('form')
+                    ->load('customer')
+                    ->load('items.item')
+                    ->load('items.allocation');
 
-            return new ApiResource($deliveryOrder);
-        });
+                return new ApiResource($deliveryOrder);
+            });
+        }  catch (\Throwable $th) {
+            $code = $th->getCode();
+            $message = $th->getMessage();
+
+            $httpCode = $code === 0 ? 500 : $code;
+
+            return response (['code' => $code, 'message' => $message], $httpCode);
+        }
 
         return $result;
     }
@@ -109,18 +118,22 @@ class DeliveryOrderController extends Controller
         // TODO prevent delete if referenced by delivery order
         $deliveryOrder = DeliveryOrder::with('form')->findOrFail($id);
 
-        $deliveryOrder->isAllowedToUpdate();
+        try {
+            $deliveryOrder->isAllowedToUpdate();
 
-        $result = DB::connection('tenant')->transaction(function () use ($request, $deliveryOrder) {
-            $deliveryOrder->form->archive($request->notes);
-            $request['number'] = $deliveryOrder->form->edited_number;
-            $request['old_increment'] = $deliveryOrder->form->increment;
+            $result = DB::connection('tenant')->transaction(function () use ($request, $deliveryOrder) {
+                $deliveryOrder->form->archive($request->notes);
+                $request['number'] = $deliveryOrder->form->edited_number;
+                $request['old_increment'] = $deliveryOrder->form->increment;
 
-            $deliveryOrder = DeliveryOrder::create($request->all());
-            $deliveryOrder->load(['form', 'customer', 'items']);
+                $deliveryOrder = DeliveryOrder::create($request->all());
+                $deliveryOrder->load(['form', 'customer', 'items']);
 
-            return new ApiResource($deliveryOrder);
-        });
+                return new ApiResource($deliveryOrder);
+            });
+        } catch (\Throwable $th) {
+            return response_error($th);
+        }
 
         return $result;
     }

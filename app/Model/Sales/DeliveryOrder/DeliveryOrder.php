@@ -123,7 +123,7 @@ class DeliveryOrder extends TransactionModel
             $deliveredOrderItemQuantity = $salesOrderItem->deliveryOrderItemsOrdered();
             // delivery order item unit always in smallest unit. should'nt convert
             if($salesOrderItem->quantity_remaining < ($requestDeliveryOrderItem->quantity_delivered + $deliveredOrderItemQuantity)) {
-                throw new Exception ("Delivery order item can't exceed sales order request");
+                throw new Exception ("Delivery order item can't exceed sales order request", 422);
             }
         }
     }

@@ -3,8 +3,6 @@
 namespace Tests\Feature\Http\Sales\DeliveryOrder;
 
 use App\Model\Master\Customer;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 use App\Model\Auth\Role;
@@ -12,10 +10,16 @@ use App\Model\Master\Item;
 use App\Model\Master\ItemUnit;
 use App\Model\Master\Warehouse;
 use App\Model\Master\User as TenantUser;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\SalesOrder\SalesOrder;
 
 class DeliveryOrderTest extends TestCase
 {
     public static $path = '/api/v1/sales/delivery-orders';
+
+    private $tenantUser;
+    private $branchDefault;
+    private $warehouseSelected;
 
     public function setUp(): void
     {
@@ -24,7 +28,45 @@ class DeliveryOrderTest extends TestCase
         $this->signIn();
         $this->setProject();
 
-        $this->userWarehouse($this->user);
+        $this->tenantUser = TenantUser::find($this->user->id);
+        $this->branchDefault = $this->tenantUser->branches()
+                ->where('is_default', true)
+                ->first();
+
+        $this->setUserWarehouse($this->branchDefault);
+    }
+    
+    private function setUserWarehouse($branch = null)
+    {
+        $warehouse = $this->createWarehouse($branch);
+        $this->tenantUser->warehouses()->syncWithoutDetaching($warehouse->id);
+        foreach ($this->tenantUser->warehouses as $warehouse) {
+            $warehouse->pivot->is_default = true;
+            $warehouse->pivot->save();
+
+            $this->warehouseSelected = $warehouse;
+        }
+    }
+
+    protected function unsetUserRole()
+    {
+        $role = \App\Model\Auth\Role::createIfNotExists('super admin');
+        $hasRole = \App\Model\Auth\ModelHasRole::where('role_id', $role->id)
+            ->where('model_type', 'App\Model\Master\User')
+            ->where('model_id', $this->user->id)
+            ->delete();
+    }
+
+    private function createWarehouse($branch = null)
+    {
+        $warehouse = new Warehouse();
+        $warehouse->name = 'Test warehouse';
+
+        if($branch) $warehouse->branch_id = $branch->id;
+
+        $warehouse->save();
+
+        return $warehouse;
     }
 
     private function createSalesOrderApprove()
@@ -35,7 +77,7 @@ class DeliveryOrderTest extends TestCase
         $item = factory(Item::class)->create();
         $item->units()->save($unit);
 
-        $role = Role::findByName('super admin', 'api');
+        $role = Role::createIfNotExists('super admin');
         $approver = factory(TenantUser::class)->create();
         $approver->assignRole($role);
 
@@ -89,7 +131,7 @@ class DeliveryOrderTest extends TestCase
                     ]
                 ]
             ],
-            "request_approval_to" => 1,
+            "request_approval_to" => $approver->id,
             "approver_name" => $approver->getFullNameAttribute(),
             "approver_email" => $approver->email,
             "sales_quotation_id" => null,
@@ -106,18 +148,22 @@ class DeliveryOrderTest extends TestCase
         return $salesOrder;
     }
     
-    private function getDummyData($warehouse)
+    private function getDummyData($deliveryOrder = null)
     {
-        $salesOrderApproved = $this->createSalesOrderApprove();
+        $warehouse = $this->warehouseSelected;
+        $order = $deliveryOrder ?? $this->createSalesOrderApprove();
         
-        $customer = $salesOrderApproved->customer;
-        $approver = $salesOrderApproved->form->request_approval_to;
+        $customer = $order->customer;
+        $approver = $order->form->requestApprovalTo;
+        
+        $orderItem = $order->items()->first();
+        $item = $orderItem->item;
 
-        $salesOrderItem = $salesOrderApproved->items()->first();
-        $item = $salesOrderItem->item;
-        $quantityRequested = $salesOrderItem->quantity;
-        $quantityDelivered = $salesOrderItem->quantity;
-        $quantityRemaining = $quantityRequested - $quantityDelivered;
+        $salesOrder = $order instanceof DeliveryOrder ? $order->salesOrder : $order;
+        $salesOrderItemId = $order instanceof DeliveryOrder ? $orderItem->sales_order_item_id : $orderItem->id;
+        $quantityRequested = $order instanceof DeliveryOrder ? $orderItem->quantity_requested : $orderItem->quantity;
+        $quantityDelivered = $order instanceof DeliveryOrder ? $orderItem->quantity_delivered : $orderItem->quantity;
+        $quantityRemaining = $order instanceof DeliveryOrder ? $orderItem->quantity_remaining : $quantityRequested - $quantityDelivered;
 
         return [
             "increment_group" => date("Ym"),
@@ -139,21 +185,21 @@ class DeliveryOrderTest extends TestCase
             "type_of_tax" => "exclude",
             "items" => [
                 [
-                    "sales_order_item_id" => $salesOrderItem->id,
-                    "item_id" => $salesOrderItem->item_id,
-                    "item_name" => $salesOrderItem->item_name,
+                    "sales_order_item_id" => $salesOrderItemId,
+                    "item_id" => $orderItem->item_id,
+                    "item_name" => $orderItem->item_name,
                     "item_label" => "[{$item->code}] - {$item->name}",
                     "more" => false,
-                    "unit" => $salesOrderItem->unit,
-                    "converter" => $salesOrderItem->converter,
+                    "unit" => $orderItem->unit,
+                    "converter" => $orderItem->converter,
                     "quantity_requested" => $quantityRequested,
                     "quantity_delivered" => $quantityDelivered,
                     "quantity_remaining" => $quantityRemaining,
                     "is_quantity_over" => false,
-                    "price" => $salesOrderItem->price,
+                    "price" => $orderItem->price,
                     "discount_percent" => 0,
                     "discount_value" => 0,
-                    "total" => $salesOrderApproved->amount,
+                    "total" => $order->amount,
                     "allocation_id" => null,
                     "notes" => null,
                     "warehouse_id" => $warehouse->id,
@@ -163,39 +209,166 @@ class DeliveryOrderTest extends TestCase
             "request_approval_to" => $approver->id,
             "approver_name" => $approver->name,
             "approver_email" => $approver->email,
-            "sales_order_id" => $salesOrderApproved->id
+            "sales_order_id" => $salesOrder->id
         ];
     }
 
     /** @test */
     public function unauthorized_create_delivery_order()
     {
-        // use different warehouse with authorized user
-        $warehouse = factory(Warehouse::class)->create();
-        $data = $this->getDummyData($warehouse);
+        $data = $this->getDummyData();
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
-        dd($response);
+        $response->assertStatus(500)
+            ->assertJson([
+                "code" => 0,
+                "message" => "There is no permission named `create sales delivery order` for guard `api`."
+            ]);
+    }
+    /** @test */
+    public function overquantity_create_delivery_order()
+    {
+        $this->setRole();
+
+        $data = $this->getDummyData();
+        $data = data_set($data, 'items.0.quantity_delivered', 1000);
+
+        $response = $this->json('POST', self::$path, $data, $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "Delivery order item can't exceed sales order request"
+            ]);
+    }
+    /** @test */
+    public function invalid_create_delivery_order()
+    {
+        $this->setRole();
+
+        $data = $this->getDummyData();
+        $data = data_set($data, 'sales_order_id', null);
+
+        $response = $this->json('POST', self::$path, $data, $this->headers);
+
+        $response->assertStatus(422);
+    }
+    /** @test */
+    public function success_create_delivery_order()
+    {
+        $this->setRole();
+
+        $data = $this->getDummyData();
+
+        $response = $this->json('POST', self::$path, $data, $this->headers);
 
         $response->assertStatus(201);
     }
     /** @test */
-    // public function invalid_create_delivery_order()
-    // {
-    //     $data = $this->getDummyData();
+    public function read_all_delivery_order()
+    {
+        $this->setRole();
 
-    //     $response = $this->json('POST', self::$path, $data, $this->headers);
+        $data = [
+            'join' => 'form,customer,items,item',
+            'fields' => 'sales_delivery_order.*',
+            'sort_by' => '-form.number',
+            'group_by' => 'form.id',
+            'filter_form' => 'notArchived;null',
+            'filter_like' => '{}',
+            'filter_date_min' => '{"form.date":"2022-05-01 00:00:00"}',
+            'filter_date_max' => '{"form.date":"2022-05-08 23:59:59"}',
+            'limit' => 10,
+            'includes' => 'form;customer;warehouse;items.item;items.allocation',
+            'page' => 1
+        ];
 
-    //     $response->assertStatus(201);
-    // }
+        $response = $this->json('GET', self::$path, $data, $this->headers);
+
+        $response->assertStatus(200);
+    }
     /** @test */
-    // public function can_create_delivery_order()
-    // {
-    //     $data = $this->getDummyData();
+    public function read_delivery_order()
+    {
+        $this->success_create_delivery_order();
 
-    //     $response = $this->json('POST', self::$path, $data, $this->headers);
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
 
-    //     $response->assertStatus(201);
-    // }
+        $data = [
+            'with_archives' => 'true',
+            'with_origin' => 'true',
+            'includes' => 'customer;warehouse;items.item;items.allocation;salesOrder.form;form.createdBy;form.requestApprovalTo;form.branch'
+        ];
+
+        $response = $this->json('GET', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
+
+        $response->assertStatus(200);
+    }
+    /** @test */
+    public function unauthorized_update_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $this->unsetUserRole();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+        $data = $this->getDummyData($deliveryOrder);
+
+        $response = $this->json('PATCH', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
+
+        $response->assertStatus(500)
+            ->assertJson([
+                "code" => 0,
+                "message" => "There is no permission named `update sales delivery order` for guard `api`."
+            ]);
+    }
+    /** @test */
+    public function overquantity_update_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+        
+        $data = $this->getDummyData($deliveryOrder);
+        $data = data_set($data, 'id', $deliveryOrder->id, false);
+        $data = data_set($data, 'items.0.quantity_delivered', 1000);
+
+        $response = $this->json('PATCH', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "Delivery order item can't exceed sales order request"
+            ]);
+    }
+    /** @test */
+    public function invalid_update_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+        
+        $data = $this->getDummyData($deliveryOrder);
+        $data = data_set($data, 'id', $deliveryOrder->id, false);
+        $data = data_set($data, 'sales_order_id', null);
+
+        $response = $this->json('PATCH', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
+
+        $response->assertStatus(422);
+    }
+    /** @test */
+    public function success_update_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+        
+        $data = $this->getDummyData($deliveryOrder);
+        $data = data_set($data, 'id', $deliveryOrder->id, false);
+
+        $response = $this->json('PATCH', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
+
+        $response->assertStatus(201);
+    }
 }

@@ -42,8 +42,8 @@ class TenantModuleAccessMiddleware
         try {
             if (
                 $this->_isCheckPermissionOnDB()
-                && !$this->user->hasPermissionTo($this->action.' '.$module) 
                 && !$this->user->hasRole('super admin')
+                && !$this->user->hasPermissionTo($this->action.' '.$module) 
             )
             {
                 throw new UnauthorizedException();
@@ -171,7 +171,7 @@ class TenantModuleAccessMiddleware
         $defaultWarehouse = $this->userDefaultWarehouse;
 
         if ($defaultWarehouse->branch_id !== $defaultBranch->id) {
-            throw new Exception("Branch " . $defaultWarehouse->branch->name . " not set as default", 422);
+            throw new Exception("Branch " . optional($defaultWarehouse->branch)->name . " not set as default", 422);
         }
     }
 

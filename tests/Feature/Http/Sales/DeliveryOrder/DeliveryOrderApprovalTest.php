@@ -96,4 +96,17 @@ class DeliveryOrderApprovalTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    /** @test */
+    public function success_send_approval_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+        $data['ids'][] = ['id' => $deliveryOrder->id];
+
+        $response = $this->json('POST', self::$path . '/approval/send', $data, $this->headers);
+
+        $response->assertStatus(200);
+    }
 }

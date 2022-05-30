@@ -16,7 +16,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 // kpi reminder
 use App\Mail\KpiReminderEmail;
+use App\Model\CloudStorage;
+use App\Model\HumanResource\Employee\Employee;
+use App\Model\Project\Project;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EmployeeAssessmentController extends Controller
 {
@@ -87,11 +93,12 @@ class EmployeeAssessmentController extends Controller
      */
     public function store(Request $request, $employeeId)
     {
-        $template = $request->get('template');
+        $template = $request->post('template');
 
-        $date = $request->get('date');
-        $dateFrom = $date['start'];
-        $dateTo = $date['end'];
+        $date = $request->post('date');
+        $dateFrom = isset($date['start']) ? $date['start'] : $date;
+        $dateTo = isset($date['end']) ? $date['end'] : $date;
+        $idIndicatorForAttach = 0;
 
         DB::connection('tenant')->beginTransaction();
 
@@ -128,6 +135,27 @@ class EmployeeAssessmentController extends Controller
                 $kpiIndicator->kpi_group_id = $kpiGroup->id;
                 $kpiIndicator->name = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
                 $kpiIndicator->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['notes'])) {
+                    $notes = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['notes'];
+                    if (strlen($notes) > 4000) {
+                        $notes = substr($notes, 0, 4001);
+                    }
+                    $kpiIndicator->notes =  $notes;
+                } else {
+                    $kpiIndicator->notes = '';
+                }
+
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
+                    $kpiIndicator->comment =  $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                } else {
+                    $kpiIndicator->comment = '';
+                }
+
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['attachment'])) {
+                    $kpiIndicator->attachment =  $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['attachment'];
+                } else {
+                    $kpiIndicator->attachment = '';
+                }
                 if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code'])) {
                     $kpiIndicator->automated_code = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code'];
 
@@ -160,8 +188,11 @@ class EmployeeAssessmentController extends Controller
                 }
 
                 $kpiIndicator->save();
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['attachment'])) {
+                    $idIndicatorForAttach = $kpiIndicator->id;
+                }
 
-                if (! $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code']) {
+                if (!$template['groups'][$groupIndex]['indicators'][$indicatorIndex]['automated_code']) {
                     for ($scoreIndex = 0; $scoreIndex < count($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['scores']); $scoreIndex++) {
                         $kpiScore = new KpiScore();
                         $kpiScore->kpi_indicator_id = $kpiIndicator->id;
@@ -174,8 +205,13 @@ class EmployeeAssessmentController extends Controller
                 }
             }
         }
-
+        $data = [
+            'kpi_id' => $kpi->id,
+            'indicator_id_attach' => $idIndicatorForAttach
+        ];
         DB::connection('tenant')->commit();
+
+        return $data;
     }
 
     /**
@@ -197,6 +233,29 @@ class EmployeeAssessmentController extends Controller
             ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'))
             ->where('employee_id', $employeeId)
             ->where('kpis.id', $id)
+            ->first();
+
+        $kpis->score = (float) $kpis->score;
+        $kpis->target = (float) $kpis->target;
+
+        return new KpiResource($kpis);
+    }
+
+    public function getByPeriode($employeeId, $date)
+    {
+        $employee = Employee::where('id', $employeeId)->first();
+        $date = date('Y-m-d', strtotime($date . " -1 day"));
+        $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
+            ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
+            ->select('kpis.*')
+            ->addSelect(DB::raw('sum(kpi_indicators.weight) / count(DISTINCT kpis.id) as weight'))
+            ->addSelect(DB::raw('sum(kpi_indicators.target) / count(DISTINCT kpis.id) as target'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score) / count(DISTINCT kpis.id) as score'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
+            ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'))
+            ->where('employee_id', $employeeId)
+            ->where('scorer_id', $employee->user_id)
+            ->whereDate('kpis.date', $date)
             ->first();
 
         $kpis->score = (float) $kpis->score;
@@ -247,7 +306,7 @@ class EmployeeAssessmentController extends Controller
         $scorer = [];
         // splite based by template
         foreach ($kpis as $kpi) {
-            if (! in_array($kpi->name, $templates)) {
+            if (!in_array($kpi->name, $templates)) {
                 array_push($templates, $kpi->name);
             }
             $index = array_search($kpi->name, $templates);
@@ -277,6 +336,9 @@ class EmployeeAssessmentController extends Controller
                         $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['name'] = $indicator->name;
                         $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['weight'] = $indicator->weight;
                         $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['target'] = $indicator->target;
+                        $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['notes'] = $indicator->notes;
+                        $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['comment'] = $indicator->comment;
+                        $rows[$index2][$group->name]['indicator'][$indicator->name]['data']['attachment'] = $indicator->attachment;
                         $rows[$index2][$group->name]['indicator'][$indicator->name]['scorer'][] = $indicator->score;
                         $rows[$index2][$group->name]['indicator'][$indicator->name]['scorer'][] = $indicator->score_percentage;
                         $sum['weight'] += $indicator->weight;
@@ -353,12 +415,11 @@ class EmployeeAssessmentController extends Controller
      */
     public function update(Request $request, $employeeId, $id)
     {
-        $template = $request->get('template');
+        $template = $request->post('template');
 
         DB::connection('tenant')->beginTransaction();
 
         $kpi = Kpi::findOrFail($id);
-        $kpi->date = date('Y-m-d', strtotime($request->get('date')));
         $kpi->comment = $request->get('comment');
 
         $kpi->status = 'COMPLETED';
@@ -378,8 +439,28 @@ class EmployeeAssessmentController extends Controller
 
             for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
                 $kpiIndicator = KpiIndicator::findOrFail($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['id']);
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['notes'])) {
+                    $notes = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['notes'];
+                    if (strlen($notes) > 4000) {
+                        $notes = substr($notes, 0, 4001);
+                    }
+                    $kpiIndicator->notes =  $notes;
+                } else {
+                    $kpiIndicator->notes = '';
+                }
 
-                if (! $kpiIndicator->automated_code) {
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
+                    $kpiIndicator->comment =  $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                } else {
+                    $kpiIndicator->comment = '';
+                }
+
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['attachment'])) {
+                    $kpiIndicator->attachment =  $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['attachment'];
+                } else {
+                    $kpiIndicator->attachment = '';
+                }
+                if (!$kpiIndicator->automated_code) {
                     $kpiIndicator->kpi_group_id = $kpiGroup->id;
                     $kpiIndicator->name = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['name'];
                     $kpiIndicator->weight = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['weight'];
@@ -432,8 +513,9 @@ class EmployeeAssessmentController extends Controller
         return new KpiResource($kpi);
     }
     // kpi reminder
-    public function kpiReminder(Request $request){
+    public function kpiReminder(Request $request)
+    {
         Mail::to($request->get('to'))->send(new KpiReminderEmail());
-		return response()->json(['message' => 'message sent to '.$request->get('to')], 200);
+        return response()->json(['message' => 'message sent to ' . $request->get('to')], 200);
     }
 }

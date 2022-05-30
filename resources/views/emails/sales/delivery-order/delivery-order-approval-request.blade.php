@@ -128,7 +128,7 @@
                         <td style="padding: .5rem">
                             <div style="display: flex; justify-content: space-between; text-align: center">
                                 <a
-                                    href="{{ env('TENANT_DOMAIN') . 'sales/delivery-order/'. $deliveryOrder->id .'?'. http_build_query($urlQueries) }}"
+                                    href="{{ env('TENANT_DOMAIN') . 'sales/delivery-order/'. $deliveryOrder->id }}"
                                     target="_blank"
                                     style="background-color: rgb(192, 192, 192); border: none; color: black; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                                     Check

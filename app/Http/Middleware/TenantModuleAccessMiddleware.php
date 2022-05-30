@@ -105,8 +105,7 @@ class TenantModuleAccessMiddleware
                 ->where('formable_type', Str::studly($this->module))
                 ->first();
         }else if ($this->request->ids) { //is action send approval by email
-            $ids = explode(',', $this->request->ids);
-            $this->form = Form::whereIn('formable_id', $ids)
+            $this->form = Form::whereIn('formable_id', $this->request->ids)
                 ->where('formable_type', Str::studly($this->module))
                 ->get();
         }

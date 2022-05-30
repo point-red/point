@@ -104,7 +104,9 @@ class DeliveryOrderApprovalByEmailTest extends TestCase
             'approver_id' => $deliveryOrder->form->request_cancellation_to,
             'token' => $approverToken->token,
             'resource-type' => 'SalesDeliveryOrder',
-            'ids' => $deliveryOrder->id,
+            'ids' => [
+                ['id' => $deliveryOrder->id]
+            ],
             'crud-type' => 'delete'
         ];
 
@@ -144,7 +146,9 @@ class DeliveryOrderApprovalByEmailTest extends TestCase
             'approver_id' => $deliveryOrder->form->request_cancellation_to,
             'token' => $approverToken->token,
             'resource-type' => 'SalesDeliveryOrder',
-            'ids' => $deliveryOrder->id,
+            'ids' => [
+                ['id' => $deliveryOrder->id]
+            ],
             'crud-type' => 'delete'
         ];
 

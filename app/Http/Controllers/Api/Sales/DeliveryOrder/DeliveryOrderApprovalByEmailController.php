@@ -37,8 +37,7 @@ class DeliveryOrderApprovalByEmailController extends Controller
         $this->request = $request;
 
         $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $ids = explode(',', $request->ids);
-            $deliveryOrders = DeliveryOrder::whereIn('id', $ids)->get();
+            $deliveryOrders = DeliveryOrder::whereIn('id', $request->ids)->get();
             
             foreach ($deliveryOrders as $deliveryOrder) {  
                 $form = $deliveryOrder->form;
@@ -93,8 +92,7 @@ class DeliveryOrderApprovalByEmailController extends Controller
         $this->request = $request;
 
         $result = DB::connection('tenant')->transaction(function () use ($request) {       
-            $ids = explode(',', $request->ids);
-            $deliveryOrders = DeliveryOrder::whereIn('id', $ids)->get();
+            $deliveryOrders = DeliveryOrder::whereIn('id', $request->ids)->get();
             
             foreach ($deliveryOrders as $deliveryOrder) {
                 $form = $deliveryOrder->form;

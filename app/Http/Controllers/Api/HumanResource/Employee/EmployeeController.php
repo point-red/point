@@ -53,6 +53,14 @@ class EmployeeController extends Controller
 
         $employees = Employee::joins($employees, $request->get('join'));
 
+        if ($request->get('scorer_id')) {
+            $employees = $employees->whereHas('scorers', function($q) use($request)
+            {
+                $q->where('user_id', '=', $request->get('scorer_id'));
+            
+            })->orWhere('employees.user_id', $request->get('scorer_id'));
+        }
+
         if ($request->get('is_archived')) {
             $employees = $employees->whereNotNull('archived_at');
         } else {
@@ -159,7 +167,7 @@ class EmployeeController extends Controller
 
         if ($request->has('scorers')) {
             foreach ($request->get('scorers') as $scorer) {
-                if (! $employee->scorers->contains($scorer['id'])) {
+                if (!$employee->scorers->contains($scorer['id'])) {
                     $employee->scorers()->attach($scorer['id']);
                 }
             }
@@ -179,7 +187,7 @@ class EmployeeController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $employee = Employee::from(Employee::getTableName().' as '.Employee::$alias)->eloquentFilter($request);
+        $employee = Employee::from(Employee::getTableName() . ' as ' . Employee::$alias)->eloquentFilter($request);
 
         $employee = $employee->with('group')
             ->with('gender')
@@ -200,7 +208,7 @@ class EmployeeController extends Controller
 
         $employee = Employee::joins($employee, $request->get('join'));
 
-        $employee = $employee->where(Employee::$alias.'.id', $id)->first();
+        $employee = $employee->where(Employee::$alias . '.id', $id)->first();
 
         return new ApiResource($employee);
     }
@@ -249,7 +257,7 @@ class EmployeeController extends Controller
         for ($i = 0; $i < count($request->get('company_emails') ?? []); $i++) {
             if ($request->get('company_emails')[$i]['email']) {
                 $employeeEmails = EmployeeCompanyEmail::first();
-                if (! $employeeEmails) {
+                if (!$employeeEmails) {
                     info('here');
                     $employeeEmails = new EmployeeCompanyEmail;
                 }
@@ -314,7 +322,7 @@ class EmployeeController extends Controller
             $deleted = array_column($request->get('scorers'), 'id');
             EmployeeScorer::where('employee_id', $employee->id)->whereNotIn('user_id', $deleted)->delete();
             foreach ($scorers as $scorer) {
-                if (! $employee->scorers->contains($scorer['id'])) {
+                if (!$employee->scorers->contains($scorer['id'])) {
                     $employee->scorers()->attach($scorer['id']);
                 }
             }

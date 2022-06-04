@@ -43,7 +43,7 @@ class Create extends Command
         $dbName = $this->argument('db_name');
 
         // drop tenant database if exists
-        $process = Process::fromShellCommandline('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "drop database if exists '.$dbName.'"');
+        $process = Process::fromShellCommandline('mysql -h '.env('DB_HOST').' -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "drop database if exists '.$dbName.'"');
         $process->run();
 
         // executes after the command finishes
@@ -53,7 +53,7 @@ class Create extends Command
         }
 
         // create new tenant database
-        $process = Process::fromShellCommandline('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "create database '.$dbName.'"');
+        $process = Process::fromShellCommandline('mysql -h '.env('DB_HOST').' -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "create database '.$dbName.'"');
         $process->run();
 
         // executes after the command finishes

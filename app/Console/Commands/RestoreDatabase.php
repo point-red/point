@@ -44,7 +44,7 @@ class RestoreDatabase extends Command
 
         $dbName = env('DB_DATABASE').'_'.$cloudStorage->project->code;
 
-        $mySqlDump = 'curl "'.$cloudStorage->download_url.'" | gunzip | mysql -u '.env('DB_USERNAME').' -p'.env('DB_PASSWORD');
+        $mySqlDump = 'curl "'.$cloudStorage->download_url.'" | gunzip | mysql -h '.env('DB_HOST').' -u '.env('DB_USERNAME').' -p'.env('DB_PASSWORD');
 
         $this->line($mySqlDump);
 

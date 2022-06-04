@@ -188,11 +188,13 @@ class ReportController extends Controller
 
     private function openingBalance($request)
     {
+        $date = date('Y-m-d H:i:s', strtotime(json_decode($request->get('filter_date_min'))->{'form.date'}.' -1 second'));
+        $filter_date = json_encode(['form.date' => $date]);
         $payments = Payment::from(Payment::getTableName().' as '.Payment::$alias)
                     ->fields('payment.*')
                     ->sortBy('form.date')
                     ->filterEqual(['payment.payment_type' => strtoupper($request->get('report_type'))])
-                    ->filterDateMax($request->get('filter_date_min'))
+                    ->filterDateMax($filter_date)
                     ->filterForm($request->get('filter_form'));
         
         if($request->get('account_id') != null){
@@ -230,7 +232,7 @@ class ReportController extends Controller
                         'form.number' => $request->get('search'),
                         'form.notes' => $request->get('search'),
                     ])
-                    ->filterDateMax($request->get('filter_date_min'));
+                    ->filterDateMax($filter_date);
         
         if($request->get('account_id') != null){
             $cuttoffs->filterEqual(['account.id' => $request->get('account_id')]);

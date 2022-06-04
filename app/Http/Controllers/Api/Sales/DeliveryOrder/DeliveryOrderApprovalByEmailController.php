@@ -48,6 +48,11 @@ class DeliveryOrderApprovalByEmailController extends Controller
                     $form->cancellation_approval_at = now();
                     $form->cancellation_status = 1;
                     $form->save();
+
+                    if ($deliveryOrder->salesOrder) {
+                        $deliveryOrder->salesOrder->form->done = false;
+                        $deliveryOrder->salesOrder->form->save();
+                    }
     
                     // Insert User Activity
                     $this->_storeUserActivity('Cancellation Approved by Email', $deliveryOrder);
@@ -59,6 +64,11 @@ class DeliveryOrderApprovalByEmailController extends Controller
                     $form->close_approval_at = now();
                     $form->close_status = 1;
                     $form->save();
+
+                    if ($deliveryOrder->salesOrder) {
+                        $deliveryOrder->salesOrder->form->done = true;
+                        $deliveryOrder->salesOrder->form->save();
+                    }
     
                     // Insert User Activity
                     $this->_storeUserActivity('Close Approved by Email', $deliveryOrder);
@@ -70,6 +80,13 @@ class DeliveryOrderApprovalByEmailController extends Controller
                     $form->approval_at = now();
                     $form->approval_status = 1;
                     $form->save();
+
+                    $deliveryOrder->salesOrder->updateStatus();
+
+                    $salesOrder = $deliveryOrder->salesOrder;
+                    if ($salesOrder) {
+                        $salesOrder->updateStatus();
+                    }
 
                     $form->fireEventApprovedByEmail();
                     continue;

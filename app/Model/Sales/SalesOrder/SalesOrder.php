@@ -86,8 +86,8 @@ class SalesOrder extends TransactionModel
                         // delivery order item unit always in smallest unit, if sales order item unit is'nt, should convert first
                         $item->convertUnitToSmallest();
 
-                        $quantityRequested = $item->quantity_remaining;
-                        $quantityOrdered = $item->deliveryOrderItemsOrdered();
+                        $quantityRequested = round($item->quantity_remaining, 2);
+                        $quantityOrdered = round($item->deliveryOrderItemsOrdered(), 2);
                         
                         if ($quantityRequested > $quantityOrdered) {
                             $complete = false;

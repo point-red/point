@@ -10,6 +10,7 @@ use App\Exceptions\BranchNullException;
 use App\Exceptions\UnauthorizedException;
 use App\Exceptions\WarehouseNullException;
 
+use App\User;
 use App\Model\Token;
 use App\Model\Form;
 
@@ -85,6 +86,9 @@ class TenantModuleAccessMiddleware
             if (! $token) throw new UnauthorizedException();
 
             $this->user = $token->user;
+
+            $authUser = User::find($this->user->id);
+            auth()->guard('api')->setUser($authUser);
         } else {
             $this->user = tenant(auth()->user()->id);
         }

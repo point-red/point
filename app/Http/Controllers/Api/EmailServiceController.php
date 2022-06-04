@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SendEmailRequest;
 use App\Model\Project\Project;
+use App\Model\Setting\SettingLogo;
 use Illuminate\Support\Facades\Mail;
 
 class EmailServiceController extends Controller
@@ -88,8 +89,14 @@ class EmailServiceController extends Controller
         if(isset($config['html'])) $pdf->loadHTML($config['html']);
 
         if(isset($config['view'])){
+            $settingLogo = SettingLogo::orderBy("id", 'desc')->first();
+            
+            $logo = $settingLogo->public_url 
+                ? $settingLogo->public_url 
+                : 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/logo.png')));
+
             $viewData = [
-                'logo' => 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/logo.png'))),
+                'logo' => $logo,
                 'draftimg' => 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/draft-watermark.png'))),
                 'tenant' => $this->tenant,
             ];

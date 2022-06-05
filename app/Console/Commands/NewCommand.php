@@ -63,20 +63,20 @@ class NewCommand extends Command
         $this->line('setup new user "admin" and password "admin"');
 
         $user = new User;
-        $user->name = 'test123';
-        $user->first_name = 'test123';
-        $user->last_name = 'test123';
-        $user->email = 'test123@point';
-        $user->password = bcrypt('test123');
-        $user->save();
-
-        $user = new User;
         $user->name = 'admin';
         $user->first_name = 'admin';
         $user->last_name = 'admin';
         $user->email = 'admin@point';
         $user->password = bcrypt('admin');
         $user->save();
+
+        $user2 = new User;
+        $user2->name = 'test123';
+        $user2->first_name = 'test123';
+        $user2->last_name = 'test123';
+        $user2->email = 'test123@point';
+        $user2->password = bcrypt('test123');
+        $user2->save();
 
         $this->line('setup new project "dev"');
         $project = new Project;

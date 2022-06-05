@@ -1,13 +1,7 @@
 version: "3.7"
 services:
   app:
-    build:
-      args:
-        user: addincw
-        uuid: 1996
-      context: ./
-      dockerfile: Dockerfile
-    image: point
+    image: martiendt/pointred
     container_name: point-app
     restart: unless-stopped
     working_dir: /var/www

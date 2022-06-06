@@ -25,6 +25,8 @@ RUN pecl install xdebug grpc \
     && docker-php-ext-enable xdebug \
     && docker-php-ext-enable grpc
 
+RUN echo xdebug.mode=coverage > /usr/local/etc/php/conf.d/xdebug.ini 
+
 # get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

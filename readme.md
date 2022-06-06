@@ -20,6 +20,8 @@ Install Docker Desktop https://www.docker.com/products/docker-desktop/
 git clone git@github.com:point-red/point.git
 # go to your project directory
 cd point
+# copy `.env.example` to `.env`
+cp .env.example .env
 # run docker
 docker compose up
 ```
@@ -28,8 +30,6 @@ docker compose up
 ```bash
 # run `composer install`
 composer install
-# copy `.env.example` to `.env`
-cp .env.example .env
 # run `php artisan key:generate`
 php artisan key:generate
 # generate database for new development

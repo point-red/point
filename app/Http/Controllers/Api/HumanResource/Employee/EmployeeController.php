@@ -52,13 +52,12 @@ class EmployeeController extends Controller
             ->with('user');
 
         $employees = Employee::joins($employees, $request->get('join'));
-
+        
         if ($request->get('scorer_id')) {
-            $employees = $employees->whereHas('scorers', function($q) use($request)
-            {
-                $q->where('user_id', '=', $request->get('scorer_id'));
-            
-            })->orWhere('employees.user_id', $request->get('scorer_id'));
+            $employees = $employees->whereHas('scorers', function ($q) use ($request) {
+                $q->where('user_id', '=', $request->get('scorer_id'))
+                    ->orWhere('employees.user_id', $request->get('scorer_id'));
+            });
         }
 
         if ($request->get('is_archived')) {

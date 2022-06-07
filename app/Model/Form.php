@@ -106,6 +106,21 @@ class Form extends PointModel
         return $this->belongsTo(User::class, 'request_cancellation_by');
     }
 
+    public function requestCloseTo()
+    {
+        return $this->belongsTo(User::class, 'request_close_to');
+    }
+
+    public function requestCloseBy()
+    {
+        return $this->belongsTo(User::class, 'request_close_by');
+    }
+
+    public function closeBy()
+    {
+        return $this->belongsTo(User::class, 'close_by');
+    }
+
     public function cancellationBy()
     {
         return $this->belongsTo(User::class, 'cancellation_by');

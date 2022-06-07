@@ -72,6 +72,19 @@ class DeliveryOrderApprovalByEmailTest extends TestCase
     }
 
     /** @test */
+    public function success_close_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+        $data['reason'] = $this->faker->text(200);
+
+        $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/close', $data, $this->headers);
+
+        $response->assertStatus(204);
+    }
+
+    /** @test */
     public function unauthorized_approve_by_email_delivery_order()
     {
         $this->success_delete_delivery_order();
@@ -90,6 +103,33 @@ class DeliveryOrderApprovalByEmailTest extends TestCase
     /** @test */
     public function success_approve_by_email_delivery_order()
     {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+
+        $approver = $deliveryOrder->form->requestApprovalTo;
+        $approverToken = $this->findOrCreateToken($approver);
+
+        $this->changeActingAs($approver, $deliveryOrder);
+
+        $data = [
+            'action' => 'approve',
+            'approver_id' => $deliveryOrder->form->request_approval_to,
+            'token' => $approverToken->token,
+            'resource-type' => 'SalesDeliveryOrder',
+            'ids' => [
+                ['id' => $deliveryOrder->id]
+            ],
+            'crud-type' => 'delete'
+        ];
+
+        $response = $this->json('POST', self::$path . '/approve', $data, $this->headers);
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function success_approve_delete_by_email_delivery_order()
+    {
         $this->success_delete_delivery_order();
 
         $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
@@ -102,6 +142,33 @@ class DeliveryOrderApprovalByEmailTest extends TestCase
         $data = [
             'action' => 'approve',
             'approver_id' => $deliveryOrder->form->request_cancellation_to,
+            'token' => $approverToken->token,
+            'resource-type' => 'SalesDeliveryOrder',
+            'ids' => [
+                ['id' => $deliveryOrder->id]
+            ],
+            'crud-type' => 'delete'
+        ];
+
+        $response = $this->json('POST', self::$path . '/approve', $data, $this->headers);
+        $response->assertStatus(200);
+    }
+    
+    /** @test */
+    public function success_approve_close_by_email_delivery_order()
+    {
+        $this->success_close_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+
+        $approver = $deliveryOrder->form->requestCloseTo;
+        $approverToken = $this->findOrCreateToken($approver);
+
+        $this->changeActingAs($approver, $deliveryOrder);
+
+        $data = [
+            'action' => 'approve',
+            'approver_id' => $deliveryOrder->form->request_close_to,
             'token' => $approverToken->token,
             'resource-type' => 'SalesDeliveryOrder',
             'ids' => [
@@ -132,6 +199,33 @@ class DeliveryOrderApprovalByEmailTest extends TestCase
     /** @test */
     public function success_reject_delivery_order()
     {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+
+        $approver = $deliveryOrder->form->requestApprovalTo;
+        $approverToken = $this->findOrCreateToken($approver);
+
+        $this->changeActingAs($approver, $deliveryOrder);
+
+        $data = [
+            'action' => 'reject',
+            'approver_id' => $deliveryOrder->form->request_approval_to,
+            'token' => $approverToken->token,
+            'resource-type' => 'SalesDeliveryOrder',
+            'ids' => [
+                ['id' => $deliveryOrder->id]
+            ],
+            'crud-type' => 'delete'
+        ];
+
+        $response = $this->json('POST', self::$path . '/reject', $data, $this->headers);
+
+        $response->assertStatus(200);
+    }
+    /** @test */
+    public function success_reject_delete_delivery_order()
+    {
         $this->success_delete_delivery_order();
 
         $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
@@ -144,6 +238,33 @@ class DeliveryOrderApprovalByEmailTest extends TestCase
         $data = [
             'action' => 'reject',
             'approver_id' => $deliveryOrder->form->request_cancellation_to,
+            'token' => $approverToken->token,
+            'resource-type' => 'SalesDeliveryOrder',
+            'ids' => [
+                ['id' => $deliveryOrder->id]
+            ],
+            'crud-type' => 'delete'
+        ];
+
+        $response = $this->json('POST', self::$path . '/reject', $data, $this->headers);
+
+        $response->assertStatus(200);
+    }
+    /** @test */
+    public function success_reject_close_delivery_order()
+    {
+        $this->success_close_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+
+        $approver = $deliveryOrder->form->requestCloseTo;
+        $approverToken = $this->findOrCreateToken($approver);
+
+        $this->changeActingAs($approver, $deliveryOrder);
+
+        $data = [
+            'action' => 'reject',
+            'approver_id' => $deliveryOrder->form->request_close_to,
             'token' => $approverToken->token,
             'resource-type' => 'SalesDeliveryOrder',
             'ids' => [

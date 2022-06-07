@@ -25,6 +25,22 @@ class DeliveryOrderCloseApprovalTest extends TestCase
     }
 
     /** @test */
+    public function invalid_state_close_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+        $deliveryOrder->form->done = true;
+        $deliveryOrder->form->save();
+
+        $data['reason'] = $this->faker->text(200);
+
+        $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/close', $data, $this->headers);
+
+        $response->assertStatus(422);
+    }
+
+    /** @test */
     public function success_close_delivery_order()
     {
         $this->success_create_delivery_order();
@@ -53,6 +69,18 @@ class DeliveryOrderCloseApprovalTest extends TestCase
                 "code" => 0,
                 "message" => "There is no permission named `approve sales delivery order` for guard `api`."
             ]);
+    }
+
+    /** @test */
+    public function invalid_state_close_approve_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+
+        $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/close-approve', [], $this->headers);
+
+        $response->assertStatus(422);
     }
 
     /** @test */
@@ -93,6 +121,20 @@ class DeliveryOrderCloseApprovalTest extends TestCase
         $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
 
         $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/close-reject', [], $this->headers);
+
+        $response->assertStatus(422);
+    }
+
+    /** @test */
+    public function invalid_state_close_reject_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+
+        $data['reason'] = $this->faker->text(200);
+
+        $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/close-reject', $data, $this->headers);
 
         $response->assertStatus(422);
     }

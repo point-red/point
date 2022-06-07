@@ -88,10 +88,10 @@ class DeliveryOrderController extends Controller
 
         if ($request->get('remaining_info')) {
             $deliveryNotes = $deliveryOrder->deliveryNotes()->with('items')->get();
-
+            
             foreach ($deliveryOrder->items as $deliveryOrderItem) {
-                $deliveryOrderItem->quantity_pending = $deliveryOrderItem->quantity;
-
+                $deliveryOrderItem->quantity_pending = $deliveryOrderItem->quantity_delivered;
+                
                 foreach ($deliveryNotes as $deliveryNote) {
                     $deliveryNoteItem = $deliveryNote->items->firstWhere('delivery_order_item_id', $deliveryOrderItem->id);
                     if ($deliveryNoteItem) {
@@ -147,16 +147,12 @@ class DeliveryOrderController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        try {
-            $deliveryOrder = DeliveryOrder::findOrFail($id);
-            $deliveryOrder->isAllowedToDelete();
-    
-            $request->validate([ 'reason' => 'required']);
-            
-            $response = $deliveryOrder->requestCancel($request);
-        } catch (\Throwable $th) {
-            return response()->json(['code' => $th->getCode(), 'message' => $th->getMessage()], 422);
-        }
+        $deliveryOrder = DeliveryOrder::findOrFail($id);
+        $deliveryOrder->isAllowedToDelete();
+
+        $request->validate([ 'reason' => 'required']);
+        
+        $deliveryOrder->requestCancel($request);
 
         return response()->json([], 204);
     }
@@ -189,10 +185,7 @@ class DeliveryOrderController extends Controller
                 'data' => [ 'url' => $cloudStorage->download_url ],
             ], 200);
         } catch (\Throwable $th) {
-            return response()->json([
-                'code' => $th->getCode(),
-                'message' => 'Failed to export, '.$th->getMessage(),
-            ], 500);
+            return response_error($th);
         }
     }
 }

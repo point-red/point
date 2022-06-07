@@ -12,12 +12,17 @@ class DeliveryOrderApprovalTest extends TestCase
 
     public static $path = '/api/v1/sales/delivery-orders';
 
-    /** @test */
-    public function success_create_delivery_order()
-    {
-        $this->setRole();
+    private $previousDeliveryOrderData;
 
+    /** @test */
+    public function success_create_delivery_order($isFirstCreate = true)
+    {
         $data = $this->getDummyData();
+        
+        if($isFirstCreate) {
+            $this->setRole();
+            $this->previousDeliveryOrderData = $data;
+        }
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
@@ -96,6 +101,30 @@ class DeliveryOrderApprovalTest extends TestCase
 
         $response->assertStatus(200);
     }
+    
+    /** @test */
+    public function success_read_approval_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $data = [
+            'join' => 'form,customer,items,item',
+            'fields' => 'sales_delivery_order.*',
+            'sort_by' => '-form.number',
+            'group_by' => 'form.id',
+            'filter_form'=>'notArchived;null',
+            'filter_like'=>'{}',
+            'filter_date_min'=>'{"form.date":"2022-05-01 00:00:00"}',
+            'filter_date_max'=>'{"form.date":"2022-05-17 23:59:59"}',
+            'includes'=>'form;customer;warehouse;items.item;items.allocation',
+            'limit'=>10,
+            'page' => 1
+        ];
+
+        $response = $this->json('GET', self::$path . '/approval', $data, $this->headers);
+        
+        $response->assertStatus(200);
+    }
 
     /** @test */
     public function success_send_approval_delivery_order()
@@ -104,6 +133,26 @@ class DeliveryOrderApprovalTest extends TestCase
 
         $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
         $data['ids'][] = ['id' => $deliveryOrder->id];
+
+        $response = $this->json('POST', self::$path . '/approval/send', $data, $this->headers);
+
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function success_send_multiple_approval_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $this->success_create_delivery_order($isFirstCreate = false);
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'desc')->first();
+        $deliveryOrder->form->request_approval_to = $this->previousDeliveryOrderData['request_approval_to'];
+        $deliveryOrder->form->save();
+
+        $data['ids'] = DeliveryOrder::get()
+            ->pluck('id')
+            ->map(function ($id) { return ['id' => $id]; })
+            ->toArray();
 
         $response = $this->json('POST', self::$path . '/approval/send', $data, $this->headers);
 

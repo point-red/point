@@ -84,16 +84,20 @@ class DeliveryOrderApprovalController extends Controller
     {
         $validated = $request->validate([ 'reason' => 'required' ]);
 
-        $deliveryOrder = DeliveryOrder::findOrFail($id);
-        $deliveryOrder->form->approval_by = auth()->user()->id;
-        $deliveryOrder->form->approval_at = now();
-        $deliveryOrder->form->approval_reason = $validated['reason'];
-        $deliveryOrder->form->approval_status = -1;
-        $deliveryOrder->form->save();
+        $result = DB::connection('tenant')->transaction(function () use ($request, $validated, $id) {
+            $deliveryOrder = DeliveryOrder::findOrFail($id);
+            $deliveryOrder->form->approval_by = auth()->user()->id;
+            $deliveryOrder->form->approval_at = now();
+            $deliveryOrder->form->approval_reason = $validated['reason'];
+            $deliveryOrder->form->approval_status = -1;
+            $deliveryOrder->form->save();
+    
+            $deliveryOrder->form->fireEventRejected();
+    
+            return new ApiResource($deliveryOrder);
+        });
 
-        $deliveryOrder->form->fireEventRejected();
-
-        return new ApiResource($deliveryOrder);
+        return $result;
     }
 
     
@@ -104,7 +108,7 @@ class DeliveryOrderApprovalController extends Controller
     {
         $deliveryOrderByApprovers = [];
 
-        $result = DB::connection('tenant')->transaction(function () use ($request) {
+        DB::connection('tenant')->transaction(function () use ($request, $deliveryOrderByApprovers) {
             $deliveryOrders = DeliveryOrder::whereIn('id', $request->ids)->get();
 
             // delivery order grouped by approver
@@ -142,9 +146,7 @@ class DeliveryOrderApprovalController extends Controller
                         $approver->token = $approverToken->token;
                     }
                     
-                    if ($deliveryOrder->form->cancellation_status === 0) {
-                        $deliveryOrder->action = 'delete';
-                    }
+                    if ($deliveryOrder->form->cancellation_status === 0) $deliveryOrder->action = 'delete';
 
                     if ($deliveryOrder->form->cancellation_status === null and $deliveryOrder->form->approval_status === 0) {
                         $userActivity = UserActivity::where('number', $deliveryOrder->form->number)
@@ -168,7 +170,8 @@ class DeliveryOrderApprovalController extends Controller
                     $form['created'] = $formattedFormStartCreate . ' - ' . $formattedFormEndCreate;
                 }
 
-                Mail::to([ $approver->email ])->queue(new DeliveryOrderApprovalRequestSent($deliveryOrdersByApprover, $approver, (object) $form));
+                $approvalRequest = new DeliveryOrderApprovalRequestSent($deliveryOrdersByApprover, $approver, (object) $form);
+                Mail::to([ $approver->email ])->queue($approvalRequest);
             }
         });
 

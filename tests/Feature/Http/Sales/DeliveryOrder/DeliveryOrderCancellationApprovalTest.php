@@ -56,6 +56,18 @@ class DeliveryOrderCancellationApprovalTest extends TestCase
     }
 
     /** @test */
+    public function invalid_state_cancellation_approve_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+
+        $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/cancellation-approve', [], $this->headers);
+
+        $response->assertStatus(422);
+    }
+
+    /** @test */
     public function success_cancellation_approve_delivery_order()
     {
         $this->success_delete_delivery_order();
@@ -93,6 +105,20 @@ class DeliveryOrderCancellationApprovalTest extends TestCase
         $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
 
         $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/cancellation-reject', [], $this->headers);
+
+        $response->assertStatus(422);
+    }
+
+    /** @test */
+    public function invalid_state_cancellation_reject_delivery_order()
+    {
+        $this->success_create_delivery_order();
+
+        $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+
+        $data['reason'] = $this->faker->text(200);
+
+        $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/cancellation-reject', $data, $this->headers);
 
         $response->assertStatus(422);
     }

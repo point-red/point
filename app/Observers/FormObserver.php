@@ -105,17 +105,13 @@ class FormObserver
 
     protected function _storeActivity($form, $activity)
     {
-        try {
-            UserActivity::create([
-                'table_type' => 'forms',
-                'table_id' => $form->id,
-                'number' => $form->number,
-                'date' => now(),
-                'user_id' => auth()->user()->id,
-                'activity' => $activity
-            ]);
-        } catch (\Throwable $th) {
-            Log::error('Failed to log UserActivity on Form model. reference_id: '.$form->id, $th);
-        }
+        UserActivity::create([
+            'table_type' => 'forms',
+            'table_id' => $form->id,
+            'number' => $form->number,
+            'date' => now(),
+            'user_id' => auth()->user()->id,
+            'activity' => $activity
+        ]);
     }
 }

@@ -15,6 +15,7 @@ trait DeliveryOrderRelation
     public function deliveryNotes()
     {
         return $this->hasMany(DeliveryNote::class)
+            ->select(DeliveryNote::getTableName() . '.*')
             ->join(Form::getTableName().' as '.Form::$alias, function ($q) {
                 $q->on(Form::$alias.'.formable_id', '=', DeliveryNote::getTableName().'.id')
                     ->where(Form::$alias.'.formable_type', DeliveryNote::$morphName);

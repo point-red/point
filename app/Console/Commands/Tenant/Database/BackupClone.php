@@ -44,7 +44,7 @@ class BackupClone extends Command
         $sourceDatabase = env('DB_DATABASE').'_'.$this->argument('project_code');
 
         // drop tenant database if exists
-        $process = Process::fromShellCommandline('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "drop database if exists '.$backupDatabase.'"');
+        $process = Process::fromShellCommandline('mysql -h '.env('DB_HOST').' -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "drop database if exists '.$backupDatabase.'"');
         $process->run();
 
         // executes after the command finishes
@@ -54,7 +54,7 @@ class BackupClone extends Command
         }
 
         // create new tenant database
-        $process = Process::fromShellCommandline('mysql -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "create database '.$backupDatabase.'"');
+        $process = Process::fromShellCommandline('mysql -h '.env('DB_HOST').' -u '.env('DB_TENANT_USERNAME').' -p'.env('DB_TENANT_PASSWORD').' -e "create database '.$backupDatabase.'"');
         $process->run();
 
         // executes after the command finishes
@@ -64,7 +64,7 @@ class BackupClone extends Command
         }
 
         // clone source database to backup database
-        $process = Process::fromShellCommandline('mysqldump -u '.env('DB_TENANT_USERNAME')
+        $process = Process::fromShellCommandline('mysqldump -h '.env('DB_HOST').' -u '.env('DB_TENANT_USERNAME')
             .' -p'.env('DB_TENANT_PASSWORD').' '.$sourceDatabase
             .' | mysql -u '.env('DB_TENANT_USERNAME')
             .' -p'.env('DB_TENANT_PASSWORD').' '.$backupDatabase);

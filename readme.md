@@ -9,40 +9,41 @@
 
 > This package still in active development and not ready for production yet.
 
-## About Point
+## Using Docker
 
-Our mission is to provide exceptional accounting and bookeeping solutions in the most demanding era. 
-
+Install Docker Desktop https://www.docker.com/products/docker-desktop/
 ## Quick Start
 
-First you need to install [Composer](https://getcomposer.org/doc/00-intro.md) and [Git](https://git-scm.com/).
-
-After that you can create new point project using composer.
-
-`composer create-project point-red/point point`
-
-Go to your project directory and install dependencies.
-
+1. Clone Project and run Docker
 ```bash
+# clone project or download from github https://github.com/point-red/point/archive/refs/heads/alpha1.zip
+git clone git@github.com:point-red/point.git
+# go to your project directory
 cd point
-composer install
+# copy `.env.example` to `.env`
+cp .env.example .env
+# run docker
+docker compose up
 ```
 
-Since Point using Firestore you should install and enable *grpc*. For more detailed guide please check [https://cloud.google.com/php/grpc](https://cloud.google.com/php/grpc)
+2. Open point_app cli from Docker Desktop and run this command
+```bash
+# run `composer install`
+composer install
+# run `php artisan key:generate`
+php artisan key:generate
+# generate database for new development
+php artisan dev:new
+# seed database
+php artisan tenant:seed:first point_dev
+```
 
-You are ready to go, please refer to our documentation below for any guide and instruction.
+## Testing
 
-## Documentation
-
-Point developer documentation can be found at [https://point-red.github.io/point](https://point-red.github.io/point/), if you have feedback or would like to write some user documentation, please let us know by emailing support.
+```
+php artisan test
+```
 
 ## Security Vulnerabilities
 
 If you discover a security vulnerability within Point, please send an e-mail to martien@point.red. All security vulnerabilities will be promptly addressed.
-
-## Related Links
-
-Official Website : [https://www.point.red](https://www.point.red)
-Api Website : [https://api.point.red](https://api.point.red)
-Api Docs : [https://docs.point.red](https://docs.point.red)
-Code Coverage : [https://point-code-coverage.netlify.com](https://point-code-coverage.netlify.com)

@@ -22,6 +22,11 @@ class ChartOfAccountImport implements ToCollection, WithHeadingRow
                 $type = new ChartOfAccountType;
                 $type->name = strtoupper($row['type']);
                 $type->alias = strtoupper($row['type_alias']);
+                if($row['position']=='DEBIT'){
+                    $type->is_debit = true;
+                }else if($row['position']=='CREDIT'){
+                    $type->is_debit = false;
+                }
                 $type->save();
             }
 
@@ -33,7 +38,7 @@ class ChartOfAccountImport implements ToCollection, WithHeadingRow
                 $group->save();
             }
 
-            $account = ChartOfAccount::where('name', $row['name'])->first();
+            $account = ChartOfAccount::where('alias', $row['alias'])->first();
             if (! $account) {
                 $account = new ChartOfAccount;
                 $account->type_id = $type->id;

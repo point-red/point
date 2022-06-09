@@ -61,6 +61,7 @@ class NewCommand extends Command
         Artisan::call('db:seed --class=PluginSeeder');
 
         $this->line('setup new user "admin" and password "admin"');
+
         $user = new User;
         $user->name = 'admin';
         $user->first_name = 'admin';
@@ -68,6 +69,14 @@ class NewCommand extends Command
         $user->email = 'admin@point';
         $user->password = bcrypt('admin');
         $user->save();
+
+        $user2 = new User;
+        $user2->name = 'test123';
+        $user2->first_name = 'test123';
+        $user2->last_name = 'test123';
+        $user2->email = 'test123@point';
+        $user2->password = bcrypt('test123');
+        $user2->save();
 
         $this->line('setup new project "dev"');
         $project = new Project;

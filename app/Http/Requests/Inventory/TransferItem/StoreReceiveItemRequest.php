@@ -30,7 +30,6 @@ class StoreReceiveItemRequest extends FormRequest
             'warehouse_id' => ValidationRule::foreignKey('warehouses'),
             'from_warehouse_id' => ValidationRule::foreignKey('warehouses'),
             'transfer_item_id' => ValidationRule::foreignKey('transfer_items'),
-            'driver' => 'required|string',
 
             'items' => 'required_without:services|array',
         ];

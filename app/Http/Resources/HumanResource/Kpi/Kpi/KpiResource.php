@@ -25,6 +25,7 @@ class KpiResource extends JsonResource
             'weight' => $this->weight,
             'target' => $this->target,
             'score' => $this->score,
+            'status' => $this->status,
             'score_percentage' => $this->score_percentage,
             'scorer' => new ApiResource($this->scorer),
             'groups' => KpiGroupResource::collection($this->groups),

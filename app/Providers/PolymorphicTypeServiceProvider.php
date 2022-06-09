@@ -9,6 +9,7 @@ use App\Model\Accounting\CutOffDownPayment;
 use App\Model\Accounting\CutOffInventory;
 use App\Model\Accounting\CutOffPayment;
 use App\Model\Finance\Payment\Payment;
+use App\Model\Finance\CashAdvance\CashAdvance;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\Inventory\InventoryAudit\InventoryAudit;
@@ -100,6 +101,7 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             ManufactureInput::$morphName => ManufactureInput::class,
             ManufactureOutput::$morphName => ManufactureOutput::class,
             // Finance
+            CashAdvance::$morphName => CashAdvance::class,
             PaymentOrder::$morphName => PaymentOrder::class,
             Payment::$morphName => Payment::class,
             // Accounting

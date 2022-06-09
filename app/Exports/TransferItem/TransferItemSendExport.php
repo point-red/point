@@ -21,11 +21,12 @@ class TransferItemSendExport implements WithColumnFormatting, FromQuery, WithHea
      * @param string $dateFrom
      * @param string $dateTo
      */
-    public function __construct(string $dateFrom, string $dateTo, array $ids)
+    public function __construct(string $dateFrom, string $dateTo, array $ids, string $tenantName)
     {
         $this->dateFrom = date('d F Y', strtotime($dateFrom));
         $this->dateTo = date('d F Y', strtotime($dateTo));
         $this->ids = $ids;
+        $this->tenantName = $tenantName;
     }
 
     /**
@@ -46,7 +47,12 @@ class TransferItemSendExport implements WithColumnFormatting, FromQuery, WithHea
             ->addSelect('u1.name as created_by', 'u2.name as approved_by')
             ->selectRaw("(CASE WHEN approval_status = 0 THEN 'Pending' WHEN approval_status = -1 THEN 'Rejected' ELSE 'Approved' END) AS approval_status")
             ->selectRaw("(CASE WHEN cancellation_status = 1 THEN 'Canceled' WHEN done = 1 THEN 'Approved' ELSE 'Pending' END) AS form_status")
-            ->orderBy('date', 'desc');
+            ->selectRaw("(SELECT COALESCE(quantity, 0) from receive_item_items rii 
+                where receive_item_id = (SELECT ri.id from receive_items ri
+                JOIN forms f on f.formable_id = ri.id and f.formable_type = 'ReceiveItem'
+                where ri.transfer_item_id = transfer_items.id and f.number is not null and f.cancellation_status IS NOT TRUE and f.approval_status = 1) and item_id = tii.item_id 
+                and COALESCE(expiry_date, '') = COALESCE(tii.expiry_date, '') and COALESCE(production_number, '') = COALESCE(tii.production_number, '')) as quantity_receive")
+            ->orderBy('number', 'desc');
         return $transferItems;
     }
 
@@ -65,7 +71,7 @@ class TransferItemSendExport implements WithColumnFormatting, FromQuery, WithHea
         return [
             ['Date Export', ': ' . date('d F Y', strtotime(Carbon::now()))],
             ['Period Export', ': ' . $this->dateFrom . ' - ' . $this->dateTo],
-            ['development'],
+            [$this->tenantName],
             ['Transfer Item Send'],
             [
             'Date Form',
@@ -100,7 +106,7 @@ class TransferItemSendExport implements WithColumnFormatting, FromQuery, WithHea
             $row->production_number,
             date('d F Y', strtotime($row->expiry_date)),
             (int)$row->quantity . ' ' . $row->unit,
-            '0' . ' ' . $row->unit,
+            (int)$row->quantity_receive . ' ' . $row->unit,
             $row->created_by,
             $row->approved_by,
             $row->approval_status,

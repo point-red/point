@@ -34,6 +34,8 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
     Route::prefix('inventory')->namespace('Inventory')->group(function () {
         Route::post('transfer-items/approve', 'TransferItem\\TransferItemApprovalByEmailController@approve');
         Route::post('transfer-items/reject', 'TransferItem\\TransferItemApprovalByEmailController@reject');
+        Route::post('receive-items/approve', 'TransferItem\\ReceiveItemApprovalByEmailController@approve');
+        Route::post('receive-items/reject', 'TransferItem\\ReceiveItemApprovalByEmailController@reject');
     });
     
     Route::prefix('sales')
@@ -56,6 +58,8 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::resource('transactions', 'TransactionController');
         Route::apiResource('firebase-token', 'FirebaseTokenController');
         Route::post('storage/upload', 'StorageController@upload');
+        Route::get('storage/show-by/{feature}/{feature_id}', 'StorageController@showBy');
+        Route::post('storage/replace', 'StorageController@replace');
         Route::apiResource('storage', 'StorageController');
         require base_path('routes/api/reward.php');
 
@@ -84,5 +88,11 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         require base_path('routes/api/plugin/scale-weight.php');
         require base_path('routes/api/plugin/pin-point.php');
         require base_path('routes/api/plugin/play-book.php');
+    });
+    
+    //Approve/reject with token
+    Route::prefix('approval-with-token')->group(function () {
+        Route::post('finance/cash-advances', 'Finance\\CashAdvance\\CashAdvanceApprovalController@approvalWithToken');
+        Route::post('finance/cash-advances/bulk', 'Finance\\CashAdvance\\CashAdvanceApprovalController@bulkApprovalWithToken');
     });
 });

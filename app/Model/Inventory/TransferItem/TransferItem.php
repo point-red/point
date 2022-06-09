@@ -55,7 +55,7 @@ class TransferItem extends TransactionModel
     // Relation that not archived and not canceled
     public function receiveItem()
     {
-        return $this->hasMany(ReceiveItem::class)->join(Form::getTableName(), function ($q) {
+        return $this->hasOne(ReceiveItem::class)->join(Form::getTableName(), function ($q) {
             $q->on(Form::getTableName('formable_id'), '=', ReceiveItem::getTableName('id'))
                 ->where(Form::getTableName('formable_type'), ReceiveItem::$morphName);
         })->whereNotNull(Form::getTableName('number'))
@@ -67,19 +67,16 @@ class TransferItem extends TransactionModel
 
     public function isAllowedToUpdate()
     {
-        // Check if not referenced by purchase order
-        if ($this->receiveItem->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->receiveItem);
+        if ($this->receiveItem != null) {
+            throw new IsReferencedException('Cannot edit form because referenced by transfer receive', $this->receiveItem);
         }
     }
 
     public function isAllowedToDelete()
     {
-        // Check if not referenced by purchase order
-        if ($this->receiveItem->count()) {
-            throw new IsReferencedException('Cannot edit form because referenced by purchase receive', $this->ReceiveItems);
+        if ($this->receiveItem != null) {
+            throw new IsReferencedException('Cannot edit form because referenced by transfer receive', $this->receiveItem);
         }
-
     }
 
     public static function create($data)
@@ -189,6 +186,38 @@ class TransferItem extends TransactionModel
             $journal->journalable_id = $transferItemItem->item_id;
             $journal->chart_of_account_id = $transferItemItem->item->chart_of_account_id;
             $journal->credit = $itemAmount;
+            $journal->save();
+        }
+    }
+
+    public static function closeForm($transferItem, $items)
+    {
+        /**
+         * Journal Table
+         * -----------------------------------------------------
+         * Account                            | Debit | Credit |
+         * -----------------------------------------------------
+         * 1. Beban Selisih Persediaan       |   v   |        | 
+         * 2. Persediaan                     |       |   v    | Master Item
+         */
+        foreach ($items as $item) {
+            $itemAmount = Item::cogs($item['item_id']) * $item['difference'];
+            // 1. Inventory in distribution
+            $journal = new Journal;
+            $journal->form_id = $transferItem->form->id;
+            $journal->journalable_type = Item::$morphName;
+            $journal->journalable_id = $item['item_id'];
+            $journal->chart_of_account_id = get_setting_journal('transfer item', 'inventory in distribution');
+            $journal->credit = $itemAmount;
+            $journal->save();
+
+            // 2. Difference stock expenses
+            $journal = new Journal;
+            $journal->form_id = $transferItem->form->id;
+            $journal->journalable_type = Item::$morphName;
+            $journal->journalable_id = $item['item_id'];
+            $journal->chart_of_account_id = get_setting_journal('transfer item', 'difference stock expenses');
+            $journal->debit = $itemAmount;
             $journal->save();
         }
     }

@@ -43,17 +43,17 @@ trait PaymentJoin
         }
 
         if (in_array('paymentable', $joins)) {
-            $query = $query->leftJoin(Customer::getTableName(), function ($q) {
+            $query = $query->leftJoin(Customer::getTableName().' as '.Customer::$alias, function ($q) {
                 $q->on(Customer::$alias.'.id', '=', Payment::$alias.'.paymentable_id')
                     ->where(Payment::$alias.'.paymentable_type', Customer::$morphName);
             });
 
-            $query = $query->leftJoin(Supplier::getTableName(), function ($q) {
+            $query = $query->leftJoin(Supplier::getTableName().' as '.Supplier::$alias, function ($q) {
                 $q->on(Supplier::$alias.'.id', '=', Payment::$alias.'.paymentable_id')
                     ->where(Payment::$alias.'.paymentable_type', Supplier::$morphName);
             });
 
-            $query = $query->leftJoin(Employee::getTableName(), function ($q) {
+            $query = $query->leftJoin(Employee::getTableName().' as '.Employee::$alias, function ($q) {
                 $q->on(Employee::$alias.'.id', '=', Payment::$alias.'.paymentable_id')
                     ->where(Payment::$alias.'.paymentable_type', Employee::$morphName);
             });

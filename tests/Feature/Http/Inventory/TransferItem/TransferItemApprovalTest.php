@@ -2,8 +2,6 @@
 
 namespace Tests\Feature\Http\Inventory\TransferItem;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use App\Imports\Template\ChartOfAccountImport;
 use App\Model\Master\Item;
 use App\Model\Master\User as TenantUser;
@@ -26,6 +24,7 @@ class TransferItemApprovalTest extends TestCase
         $this->signIn();
         $this->setProject();
         $this->importChartOfAccount();
+        $_SERVER['HTTP_REFERER'] = 'http://www.example.com/';
     }
 
     private function importChartOfAccount()
@@ -111,20 +110,6 @@ class TransferItemApprovalTest extends TestCase
         return $data;
     }
 
-    // public function create_transfer_item()
-    // {
-    //     $item     = factory(Item::class)->create();
-    //     $item->chart_of_account_id = 137;
-    //     $item->save();
-
-    //     $data = $this->dummyData($item);
-
-    //     $anu = $this->json('POST', '/api/v1/inventory/transfer-items', $data, $this->headers);
-    //     // if ($anu->id != 1) {
-    //     //     dd($anu);
-    //     // }
-    // }
-
     /**
      * @test 
      */
@@ -143,14 +128,11 @@ class TransferItemApprovalTest extends TestCase
      */
     public function approve_transfer_item()
     {
-        // $this->create_transfer_item();
-        // $item     = factory(Item::class)->create();
-        // $item->chart_of_account_id = 137;
-        // $item->save();
-
+        $coa = ChartOfAccount::orderBy('id', 'desc')->first();
+        
         $item = new Item;
         $item->name = $this->faker->name;
-        $item->chart_of_account_id = 137;
+        $item->chart_of_account_id = $coa->id;
         $item->save();
 
         $data = $this->dummyData($item);
@@ -171,10 +153,11 @@ class TransferItemApprovalTest extends TestCase
      */
     public function reject_transfer_item()
     {
-        // $this->create_transfer_item();
+        $coa = ChartOfAccount::orderBy('id', 'asc')->first();
+
         $item = new Item;
         $item->name = $this->faker->name;
-        $item->chart_of_account_id = 136;
+        $item->chart_of_account_id = $coa->id;
         $item->save();
 
         $data = $this->dummyData($item);
@@ -182,43 +165,39 @@ class TransferItemApprovalTest extends TestCase
         $this->json('POST', '/api/v1/inventory/transfer-items', $data, $this->headers);
 
         $transferItem = TransferItem::orderBy('id', 'desc')->first();
-        // dd($transferItem);
 
         $response = $this->json('POST', '/api/v1/inventory/transfer-items/'.$transferItem->id.'/reject', [
             'id' => $transferItem->id,
             'reason' => 'some reason'
         ], $this->headers);
-
-        // dd($response);
         
         $response->assertStatus(200);
     }
 
     /** @test */
-    // public function update_transfer_item()
-    // {
-    //     $this->create_transfer_item();
+    public function send_transfer_item_approval()
+    {
+        $coa = ChartOfAccount::orderBy('id', 'asc')->first();
 
-    //     $transferItem = TransferItem::orderBy('id', 'asc')->first();
+        $item = new Item;
+        $item->name = $this->faker->name;
+        $item->chart_of_account_id = $coa->id;
+        $item->save();
 
-    //     $data = $this->dummyData();
+        $data = $this->dummyData($item);
 
-    //     $data["id"] = $transferItem->id;
+        $this->json('POST', '/api/v1/inventory/transfer-items', $data, $this->headers);
 
-    //     $response = $this->json('PATCH', self::$path.'/'.$transferItem->id, $data, [$this->headers]);
+        $transferItem = TransferItem::orderBy('id', 'desc')->first();
 
-    //     $response->assertStatus(201);
-    // }
+        $data = [
+            "ids" => [
+                "id" => $transferItem->id,
+            ],
+        ];
 
-    /** @test */
-    // public function delete_transfer_item()
-    // {
-    //     $this->create_transfer_item();
-
-    //     $transferItem = TransferItem::orderBy('id', 'asc')->first();
-
-    //     $response = $this->json('DELETE', self::$path.'/'.$transferItem->id, [], [$this->headers]);
-
-    //     $response->assertStatus(204);
-    // }
+        $response = $this->json('POST', self::$path.'/send', $data, $this->headers);
+        
+        $response->assertStatus(200);
+    }
 }

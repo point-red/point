@@ -47,13 +47,12 @@ class AlterTable extends Command
             config()->set('database.connections.tenant.database', $db);
             DB::connection('tenant')->reconnect();
 
-            DB::connection('tenant')->statement('ALTER TABLE stock_correction_items
+            DB::connection('tenant')->statement('ALTER TABLE kpi_indicators
             ADD (
-                initial_stock decimal(65,30) DEFAULT NULL,
-                final_stock decimal(65,30) DEFAULT NULL,
-                allocation_id int(10) unsigned DEFAULT NULL
+                notes text DEFAULT NULL,
+                comment text DEFAULT NULL,
+                attachment varchar(255) DEFAULT NULL
             );');
-            DB::connection('tenant')->statement('ALTER TABLE stock_correction_items MODIFY quantity decimal(65,30) signed;');
         }
     }
 }

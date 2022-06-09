@@ -165,4 +165,5 @@ trait EmployeeRelation
     {
         return $this->belongsTo(Branch::class);
     }
+
 }

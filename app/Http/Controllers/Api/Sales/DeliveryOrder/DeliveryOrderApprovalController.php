@@ -146,9 +146,20 @@ class DeliveryOrderApprovalController extends Controller
                         $approver->token = $approverToken->token;
                     }
                     
-                    if ($deliveryOrder->form->cancellation_status === 0) $deliveryOrder->action = 'delete';
+                    if ($deliveryOrder->form->close_status === 0) $deliveryOrder->action = 'close';
 
-                    if ($deliveryOrder->form->cancellation_status === null and $deliveryOrder->form->approval_status === 0) {
+                    if (
+                        $deliveryOrder->form->cancellation_status === 0
+                        && $deliveryOrder->form->close_status === null
+                    ) {
+                        $deliveryOrder->action = 'delete';
+                    }
+
+                    if (
+                        $deliveryOrder->form->cancellation_status === null 
+                        && $deliveryOrder->form->close_status === null
+                        && $deliveryOrder->form->approval_status === 0
+                    ) {
                         $userActivity = UserActivity::where('number', $deliveryOrder->form->number)
                             ->where('activity', 'like', '%' . 'Update' . '%');
 

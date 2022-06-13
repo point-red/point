@@ -30,6 +30,7 @@ class DeliveryOrderCancellationApprovalController extends Controller
                 $deliveryOrder->form->cancellation_approval_by = auth()->user()->id;
                 $deliveryOrder->form->cancellation_approval_at = now();
                 $deliveryOrder->form->cancellation_status = 1;
+                $deliveryOrder->form->approval_status = 1;
                 $deliveryOrder->form->save();
     
                 if ($deliveryOrder->salesOrder) {

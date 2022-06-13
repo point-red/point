@@ -6,12 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
-use App\Model\Token;
 use App\Model\UserActivity;
-use App\Model\Master\Item;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use App\Helpers\Inventory\InventoryHelper;
-use App\Helpers\Journal\JournalHelper;
 
 class DeliveryOrderApprovalByEmailController extends Controller
 {
@@ -43,10 +39,15 @@ class DeliveryOrderApprovalByEmailController extends Controller
                 $form = $deliveryOrder->form;
 
                 // approve cancellation form
-                if ($form->approval_status === 0 && $form->cancellation_status === 0) {
+                if (
+                    $form->done === 0 
+                    && $form->cancellation_status === 0
+                    && is_null($form->close_status)
+                ) {
                     $form->cancellation_approval_by = $request->approver_id;
                     $form->cancellation_approval_at = now();
                     $form->cancellation_status = 1;
+                    $form->approval_status = 1;
                     $form->save();
 
                     if ($deliveryOrder->salesOrder) {
@@ -59,7 +60,7 @@ class DeliveryOrderApprovalByEmailController extends Controller
                     continue;    
                 } 
                 // approve close form
-                if ($form->approval_status === 0 && $form->close_status === 0) {
+                if ($form->approval_status === 1 && $form->close_status === 0) {
                     $form->close_approval_by = $request->approver_id;
                     $form->close_approval_at = now();
                     $form->close_status = 1;
@@ -75,7 +76,11 @@ class DeliveryOrderApprovalByEmailController extends Controller
                     continue;    
                 } 
                 
-                if ($form->approval_status === 0) {
+                if (
+                    $form->approval_status === 0 
+                    && is_null($form->cancellation_status)
+                    && is_null($form->close_status)
+                ) {
                     $form->approval_by = $request->approver_id;
                     $form->approval_at = now();
                     $form->approval_status = 1;
@@ -114,7 +119,11 @@ class DeliveryOrderApprovalByEmailController extends Controller
             foreach ($deliveryOrders as $deliveryOrder) {
                 $form = $deliveryOrder->form;
 
-                if ($form->approval_status === 0 && $form->cancellation_status === 0) {
+                if (
+                    $form->done === 0 
+                    && $form->cancellation_status === 0
+                    && is_null($form->close_status)
+                ) {
                     $form->cancellation_approval_by = $request->approver_id;
                     $form->cancellation_approval_at = now();
                     $form->cancellation_approval_reason = $request->get('reason');
@@ -126,7 +135,7 @@ class DeliveryOrderApprovalByEmailController extends Controller
                     continue; 
                 } 
                 // approve close form
-                if ($form->approval_status === 0 && $form->close_status === 0) {
+                if ($form->approval_status === 1 && $form->close_status === 0) {
                     $form->close_approval_by = $request->approver_id;
                     $form->close_approval_at = now();
                     $form->close_approval_reason = $request->get('reason');
@@ -137,7 +146,11 @@ class DeliveryOrderApprovalByEmailController extends Controller
                     $this->_storeUserActivity('Close Rejected by Email', $deliveryOrder);
                     continue;    
                 } 
-                if ($form->approval_status === 0) {
+                if (
+                    $form->approval_status === 0 
+                    && is_null($form->cancellation_status)
+                    && is_null($form->close_status)
+                ) {
                     $form->approval_by = $request->approver_id;
                     $form->approval_at = now();
                     $form->approval_reason = $request->get('reason');

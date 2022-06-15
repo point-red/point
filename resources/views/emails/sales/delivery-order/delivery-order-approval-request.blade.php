@@ -82,7 +82,7 @@
                             {{ date('d M Y', strtotime($deliveryOrderForm->date)) }}
                         </td>
                         <td style="padding: .5rem">
-                            {{ $deliveryOrderForm->number }} {{ $deliveryOrderForm->close_status == 1 ? ' - Closed' : '' }}
+                            {{ $deliveryOrderForm->number }} {{ in_array($deliveryOrderForm->close_status, [0, 1]) ? ' - Closed' : '' }}
                         </td>
                         <td style="padding: .5rem">
                             {{ $deliveryOrder->salesOrder->form->number }}

@@ -39,15 +39,10 @@ class DeliveryOrderApprovalByEmailController extends Controller
                 $form = $deliveryOrder->form;
 
                 // approve cancellation form
-                if (
-                    $form->done === 0 
-                    && $form->cancellation_status === 0
-                    && is_null($form->close_status)
-                ) {
+                if ($form->cancellation_status === 0 && is_null($form->close_status)) {
                     $form->cancellation_approval_by = $request->approver_id;
                     $form->cancellation_approval_at = now();
                     $form->cancellation_status = 1;
-                    $form->approval_status = 1;
                     $form->save();
 
                     if ($deliveryOrder->salesOrder) {
@@ -119,11 +114,7 @@ class DeliveryOrderApprovalByEmailController extends Controller
             foreach ($deliveryOrders as $deliveryOrder) {
                 $form = $deliveryOrder->form;
 
-                if (
-                    $form->done === 0 
-                    && $form->cancellation_status === 0
-                    && is_null($form->close_status)
-                ) {
+                if ($form->cancellation_status === 0 && is_null($form->close_status)) {
                     $form->cancellation_approval_by = $request->approver_id;
                     $form->cancellation_approval_at = now();
                     $form->cancellation_approval_reason = $request->get('reason');

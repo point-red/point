@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+
 use App\Model\Token;
+use App\Model\Form;
 use App\Model\UserActivity;
-use App\Model\Master\User;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+
 use App\Mail\Sales\DeliveryOrderApprovalRequestSent;
 
 class DeliveryOrderApprovalController extends Controller
@@ -27,7 +29,18 @@ class DeliveryOrderApprovalController extends Controller
         $deliveryOrders = DeliveryOrder::from(DeliveryOrder::getTableName().' as '.DeliveryOrder::$alias)->eloquentFilter($request);
 
         $deliveryOrders = DeliveryOrder::joins($deliveryOrders, $request->get('join'))
-            ->approvalPending();
+            ->where(Form::$alias . '.close_status', 0)
+            ->orWhere(function ($query) {
+                $query
+                    ->where(Form::$alias . '.cancellation_status', 0)
+                    ->whereNull(Form::$alias . '.close_status');
+            })
+            ->orWhere(function ($query) {
+                $query
+                    ->where(Form::$alias . '.approval_status', 0)
+                    ->whereNull(Form::$alias . '.cancellation_status')
+                    ->whereNull(Form::$alias . '.close_status');
+            });
 
         $userActivity = UserActivity::where(['activity' => 'Request Approval', 'table_type' => 'forms'])
             ->select('table_id')

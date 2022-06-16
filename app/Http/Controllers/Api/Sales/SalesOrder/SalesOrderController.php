@@ -9,6 +9,7 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -27,6 +28,20 @@ class SalesOrderController extends Controller
         $salesOrders = SalesOrder::joins($salesOrders, $request->get('join'));
 
         $salesOrders = pagination($salesOrders, $request->get('limit'));
+
+        /*
+         * anything except 0 is considered true, including string "false"
+         */
+        if ($request->get('remaining_delivery_order_info')) {
+            foreach ((object) $salesOrders as $salesOrder) {
+                foreach ($salesOrder->items as $salesOrderItem) {
+                    $salesOrderItem->convertUnitToSmallest();
+    
+                    // delivery order item unit always in smallest unit. should'nt convert
+                    $salesOrderItem->quantity_remaining -= $salesOrderItem->deliveryOrderItemsOrdered();
+                }
+            }
+        }
 
         return new ApiCollection($salesOrders);
     }

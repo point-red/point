@@ -19,7 +19,9 @@ class DeliveryOrderItem extends TransactionModel
         'sales_order_item_id',
         'item_id',
         'item_name',
-        'quantity',
+        'quantity_requested',
+        'quantity_delivered',
+        'quantity_remaining',
         'price',
         'discount_percent',
         'discount_value',
@@ -34,7 +36,9 @@ class DeliveryOrderItem extends TransactionModel
         'price' => 'double',
         'discount_percent' => 'double',
         'discount_value' => 'double',
-        'quantity' => 'double',
+        'quantity_requested' => 'double',
+        'quantity_delivered' => 'double',
+        'quantity_remaining' => 'double',
         'converter' => 'double',
     ];
 

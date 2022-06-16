@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api\Sales\DeliveryOrder;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
+
 use App\Model\UserActivity;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 
@@ -76,19 +79,27 @@ class DeliveryOrderApprovalByEmailController extends Controller
                     && is_null($form->cancellation_status)
                     && is_null($form->close_status)
                 ) {
-                    $form->approval_by = $request->approver_id;
-                    $form->approval_at = now();
-                    $form->approval_status = 1;
-                    $form->save();
+                    try {
+                        $deliveryOrder->checkQuantityOver($deliveryOrder->items);
 
-                    $deliveryOrder->salesOrder->updateStatus();
+                        $form->approval_by = $request->approver_id;
+                        $form->approval_at = now();
+                        $form->approval_status = 1;
+                        $form->save();
 
-                    $salesOrder = $deliveryOrder->salesOrder;
-                    if ($salesOrder) {
-                        $salesOrder->updateStatus();
+                        $deliveryOrder->salesOrder->updateStatus();
+
+                        $salesOrder = $deliveryOrder->salesOrder;
+                        if ($salesOrder) {
+                            $salesOrder->updateStatus();
+                        }
+
+                        $form->fireEventApprovedByEmail();
+                    } catch (\Throwable $th) {
+                        Log::error($form->number . ': ' . $th->getMessage());
+                        $form->approval_notes = $th->getMessage();
                     }
 
-                    $form->fireEventApprovedByEmail();
                     continue;
                 }
             }

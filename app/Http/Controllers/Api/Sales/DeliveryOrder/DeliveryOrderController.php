@@ -61,12 +61,7 @@ class DeliveryOrderController extends Controller
                 return new ApiResource($deliveryOrder);
             });
         }  catch (\Throwable $th) {
-            $code = $th->getCode();
-            $message = $th->getMessage();
-
-            $httpCode = $code === 0 ? 500 : $code;
-
-            return response (['code' => $code, 'message' => $message], $httpCode);
+            return response_error ($th);
         }
 
         return $result;

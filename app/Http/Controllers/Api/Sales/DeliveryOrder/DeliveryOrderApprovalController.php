@@ -68,18 +68,24 @@ class DeliveryOrderApprovalController extends Controller
         $result = DB::connection('tenant')->transaction(function () use ($id) {
             $deliveryOrder = DeliveryOrder::findOrFail($id);
 
-            $form = $deliveryOrder->form;
-            $form->approval_by = auth()->user()->id;
-            $form->approval_at = now();
-            $form->approval_status = 1;
-            $form->save();
+            try {
+                $deliveryOrder->checkQuantityOver($deliveryOrder->items);
     
-            $salesOrder = $deliveryOrder->salesOrder;
-            if ($salesOrder) {
-                $salesOrder->updateStatus();
+                $form = $deliveryOrder->form;
+                $form->approval_by = auth()->user()->id;
+                $form->approval_at = now();
+                $form->approval_status = 1;
+                $form->save();
+        
+                $salesOrder = $deliveryOrder->salesOrder;
+                if ($salesOrder) {
+                    $salesOrder->updateStatus();
+                }
+    
+                $form->fireEventApproved();
+            } catch (\Throwable $th) {
+                return response_error($th);
             }
-
-            $form->fireEventApproved();
     
             return new ApiResource($deliveryOrder);
         });

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Sales\DeliveryOrder\DeliveryOrder;
 
 use App\Http\Requests\ValidationRule;
+use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDeliveryOrderRequest extends FormRequest
@@ -24,7 +25,10 @@ class UpdateDeliveryOrderRequest extends FormRequest
      */
     public function rules()
     {
+        $deliveryOrder = DeliveryOrder::find($this->id);
+    
         $rulesForm = ValidationRule::form();
+        $rulesForm['date'] = 'required|date|after_or_equal:'.$deliveryOrder->form->date;
 
         $rulesDeliveryOrder = [
             'sales_order_id' => ValidationRule::foreignKey('sales_orders'),
@@ -35,7 +39,9 @@ class UpdateDeliveryOrderRequest extends FormRequest
 
         $rulesDeliveryOrderItems = [
             'items.*.sales_order_item_id' => ValidationRule::foreignKey('sales_order_items'),
-            'items.*.quantity' => ValidationRule::quantity(),
+            'items.*.quantity_requested' => ValidationRule::quantity(),
+            'items.*.quantity_delivered' => ValidationRule::quantity(),
+            'items.*.quantity_remaining' => ValidationRule::quantity(),
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::converter(),
         ];

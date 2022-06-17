@@ -9,6 +9,7 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Master\Warehouse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class WarehouseController extends Controller
 {
@@ -28,6 +29,18 @@ class WarehouseController extends Controller
             $warehouses = $warehouses->whereNotNull('archived_at');
         } else {
             $warehouses = $warehouses->whereNull('archived_at');
+        }
+
+        if($request->get('is_default_only')) {
+            $user = tenant(auth()->user()->id);
+            
+            $defaultWarehouse = Arr::first($user->warehouses, function ($value) {
+                return $value->pivot->is_default;
+            });
+
+            if ($defaultWarehouse) {
+                $warehouses = $warehouses->where('id', $defaultWarehouse->id);
+            }
         }
 
         $warehouses = pagination($warehouses, $request->get('limit'));

@@ -37,6 +37,14 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::post('receive-items/approve', 'TransferItem\\ReceiveItemApprovalByEmailController@approve');
         Route::post('receive-items/reject', 'TransferItem\\ReceiveItemApprovalByEmailController@reject');
     });
+    
+    Route::prefix('sales')
+        ->namespace('Sales')
+        ->middleware('tenant.module-access:sales delivery order')
+        ->group(function () {
+            Route::post('delivery-orders/approve', 'DeliveryOrder\\DeliveryOrderApprovalByEmailController@approve');
+            Route::post('delivery-orders/reject', 'DeliveryOrder\\DeliveryOrderApprovalByEmailController@reject');
+        });
 
     // This routes below require authentication
     Route::middleware('auth:api')->group(function () {

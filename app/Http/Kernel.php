@@ -64,6 +64,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'api-middleware' => \App\Http\Middleware\ApiMiddleware::class,
         'web-middleware' => \App\Http\Middleware\WebMiddleware::class,
+        'tenant.module-access' => \App\Http\Middleware\TenantModuleAccessMiddleware::class,
         'client' => CheckClientCredentials::class,
     ];
 }

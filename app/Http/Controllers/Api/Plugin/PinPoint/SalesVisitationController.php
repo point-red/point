@@ -142,7 +142,7 @@ class SalesVisitationController extends Controller
         }
 
         $latest = SalesVisitation::orderBy('created_at', 'desc')->first();
-        if ($latest) {
+        if ($request->header('Tenant') === 'kopibara' && $latest) {
             $a = CarbonWrapper::create($latest->created_at);
             $b = Carbon::now();
 

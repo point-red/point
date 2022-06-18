@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Api\Sales\DeliveryOrder;
 
-use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ApiResource;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use Illuminate\Http\Request;
 
 class DeliveryOrderCancellationApprovalController extends Controller
 {
@@ -18,34 +16,13 @@ class DeliveryOrderCancellationApprovalController extends Controller
      */
     public function approve(Request $request, $id)
     {
-        $deliveryOrder = DeliveryOrder::findOrFail($id);
-        
-        $result = DB::connection('tenant')->transaction(function () use ($request, $deliveryOrder) {
-            try {
-                $deliveryOrder->isAllowedToUpdate();
-                if($deliveryOrder->form->cancellation_status !== 0) {
-                    throw new Exception("form not in cancellation pending state", 422);
-                }
-    
-                $deliveryOrder->form->cancellation_approval_by = auth()->user()->id;
-                $deliveryOrder->form->cancellation_approval_at = now();
-                $deliveryOrder->form->cancellation_status = 1;
-                $deliveryOrder->form->save();
-    
-                if ($deliveryOrder->salesOrder) {
-                    $deliveryOrder->salesOrder->form->done = false;
-                    $deliveryOrder->salesOrder->form->save();
-                }
-    
-                $deliveryOrder->form->fireEventCancelApproved();
-            } catch (\Throwable $th) {
-                return response_error($th);
-            }
-    
-            return new ApiResource($deliveryOrder);
-        });
+        $salesOrder = DeliveryOrder::findOrFail($id);
+        $salesOrder->form->cancellation_approval_by = auth()->user()->id;
+        $salesOrder->form->cancellation_approval_at = now();
+        $salesOrder->form->cancellation_status = 1;
+        $salesOrder->form->save();
 
-        return $result;
+        return new ApiResource($salesOrder);
     }
 
     /**
@@ -55,31 +32,13 @@ class DeliveryOrderCancellationApprovalController extends Controller
      */
     public function reject(Request $request, $id)
     {
-        $request->validate([ 'reason' => 'required ']);
-        
-        $deliveryOrder = DeliveryOrder::findOrFail($id);
+        $salesOrder = DeliveryOrder::findOrFail($id);
+        $salesOrder->form->cancellation_approval_by = auth()->user()->id;
+        $salesOrder->form->cancellation_approval_at = now();
+        $salesOrder->form->cancellation_approval_reason = $request->get('reason');
+        $salesOrder->form->cancellation_status = -1;
+        $salesOrder->form->save();
 
-        $result = DB::connection('tenant')->transaction(function () use ($request, $deliveryOrder) {
-            try {
-                $deliveryOrder->isAllowedToUpdate();
-                if($deliveryOrder->form->cancellation_status !== 0) {
-                    throw new Exception("form not in cancellation pending state", 422);
-                }
-    
-                $deliveryOrder->form->cancellation_approval_by = auth()->user()->id;
-                $deliveryOrder->form->cancellation_approval_at = now();
-                $deliveryOrder->form->cancellation_approval_reason = $request->get('reason');
-                $deliveryOrder->form->cancellation_status = -1;
-                $deliveryOrder->form->save();
-    
-                $deliveryOrder->form->fireEventCancelRejected();
-            } catch (\Throwable $th) {
-                return response_error($th);
-            }
-    
-            return new ApiResource($deliveryOrder);
-        });
-
-        return $result;
+        return new ApiResource($salesOrder);
     }
 }

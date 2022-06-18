@@ -2,8 +2,8 @@
 
 namespace App\Model;
 
-use App\Observers\FormObserver;
 use App\Exceptions\BranchNullException;
+use App\Exceptions\FormActiveException;
 use App\Model\Accounting\Journal;
 use App\Model\Inventory\Inventory;
 use App\Model\Master\Branch;
@@ -12,12 +12,8 @@ use App\Model\Master\Supplier;
 use App\Model\Master\User;
 use App\Model\FormChecklist;
 
-use App\Traits\Model\FormCustomObserver;
-
 class Form extends PointModel
 {
-    use FormCustomObserver;
-    
     protected $connection = 'tenant';
 
     public static $alias = 'form';
@@ -33,17 +29,6 @@ class Form extends PointModel
     protected $casts = [
         'is_updated' => 'boolean',
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::observe(FormObserver::class);
-    }
-
-    public function __construct() {
-        parent::__construct();
-        $this->bindObservables();
-    }
 
     public function save(array $options = [])
     {
@@ -111,21 +96,6 @@ class Form extends PointModel
         return $this->belongsTo(User::class, 'request_cancellation_by');
     }
 
-    public function requestCloseTo()
-    {
-        return $this->belongsTo(User::class, 'request_close_to');
-    }
-
-    public function requestCloseBy()
-    {
-        return $this->belongsTo(User::class, 'request_close_by');
-    }
-
-    public function closeBy()
-    {
-        return $this->belongsTo(User::class, 'close_by');
-    }
-
     public function cancellationBy()
     {
         return $this->belongsTo(User::class, 'cancellation_by');
@@ -189,10 +159,6 @@ class Form extends PointModel
 
         if (array_key_exists('request_approval_to', $data)) {
             $this->request_approval_to = $data['request_approval_to'];
-        }
-
-        if (array_key_exists('request_approval_at', $data)) {
-            $this->request_approval_at = $data['request_approval_at'];
         }
 
         $this->save();

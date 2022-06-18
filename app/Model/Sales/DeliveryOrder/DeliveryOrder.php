@@ -7,8 +7,6 @@ use App\Model\Form;
 use App\Model\TransactionModel;
 use App\Traits\Model\Sales\DeliveryOrderJoin;
 use App\Traits\Model\Sales\DeliveryOrderRelation;
-use Exception;
-use Illuminate\Support\Arr;
 
 class DeliveryOrder extends TransactionModel
 {
@@ -83,24 +81,9 @@ class DeliveryOrder extends TransactionModel
     }
 
     public function isAllowedToDelete()
-    {       
-        $this->formStateActivePending();
-
-        $this->isNotReferenced();
-    }
-
-    private function formStateActivePending()
     {
-        $formIsActivePending = self::from(DeliveryOrder::getTableName().' as '.DeliveryOrder::$alias)
-            ->where(DeliveryOrder::$alias.'.id', $this->attributes['id']);
-
-        $formIsActivePending = self::joins($formIsActivePending, 'form')
-            ->activePending()
-            ->first();
-
-        if(! $formIsActivePending) {
-            throw new Exception ("Delivery order not active and in pending state");
-        }
+        $this->updatedFormNotArchived();
+        $this->isNotReferenced();
     }
 
     private function isNotReferenced()
@@ -111,33 +94,13 @@ class DeliveryOrder extends TransactionModel
         }
     }
 
-    public function checkQuantityOver($requestDeliveryOrderItems)
-    {
-        foreach ($this->salesOrder->items as $salesOrderItem) {
-            $salesOrderItem->convertUnitToSmallest();
-        
-            $requestDeliveryOrderItem = Arr::first($requestDeliveryOrderItems, function ($item, $key) use ($salesOrderItem) {
-                return $item->item_id === $salesOrderItem->item_id;
-            });
-
-            $deliveredOrderItemQuantity = $salesOrderItem->deliveryOrderItemsOrdered();
-            // delivery order item unit always in smallest unit. should'nt convert
-            if($salesOrderItem->quantity_remaining < ($requestDeliveryOrderItem->quantity_delivered + $deliveredOrderItemQuantity)) {
-                throw new Exception ("Delivery order item can't exceed sales order request", 422);
-            }
-        }
-    }
-
     public static function create($data)
     {
-        $items = self::mapItems($data['items']);
-
         $deliveryOrder = new self;
         $deliveryOrder->fill($data);
-        
-        $deliveryOrder->checkQuantityOver($items);
-        
         $deliveryOrder->save();
+
+        $items = self::mapItems($data['items']);
         $deliveryOrder->items()->saveMany($items);
         
         $form = new Form;

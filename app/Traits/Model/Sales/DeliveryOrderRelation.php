@@ -5,7 +5,6 @@ namespace App\Traits\Model\Sales;
 use App\Model\Form;
 use App\Model\Master\Customer;
 use App\Model\Master\Warehouse;
-use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
 use App\Model\Sales\SalesOrder\SalesOrder;
@@ -14,13 +13,7 @@ trait DeliveryOrderRelation
 {
     public function deliveryNotes()
     {
-        return $this->hasMany(DeliveryNote::class)
-            ->select(DeliveryNote::getTableName() . '.*')
-            ->join(Form::getTableName().' as '.Form::$alias, function ($q) {
-                $q->on(Form::$alias.'.formable_id', '=', DeliveryNote::getTableName().'.id')
-                    ->where(Form::$alias.'.formable_type', DeliveryNote::$morphName);
-            })
-            ->active();
+        return $this->hasMany(DeliveryNote::class)->active();
     }
 
     /* Invoice needs DeliveryOrders that is done and has pendingDeliveryNotes*/

@@ -4,8 +4,6 @@ namespace App\Model\Sales\SalesOrder;
 
 use App\Model\Form;
 use App\Model\Master\Allocation;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use App\Model\Sales\DeliveryOrder\DeliveryOrderItem;
 use App\Model\TransactionModel;
 use App\Traits\Model\Sales\SalesOrderJoin;
 use App\Traits\Model\Sales\SalesOrderRelation;
@@ -76,20 +74,12 @@ class SalesOrder extends TransactionModel
 
         $complete = true;
         foreach ($this->items as $item) {
-            foreach ($item->deliveryOrderItems as $orderItem) 
-            {
-                $form = $orderItem->deliveryOrder->form;
-
-                $formNotCancelled = $form->cancellation_status == null || $form->cancellation_status !== 1;
-
-                if ($formNotCancelled || $form->number !== null) {
-                        // delivery order item unit always in smallest unit, if sales order item unit is'nt, should convert first
-                        $item->convertUnitToSmallest();
-
-                        $quantityRequested = round($item->quantity_remaining, 2);
-                        $quantityOrdered = round($item->deliveryOrderItemsOrdered(), 2);
-                        
-                        if ($quantityRequested > $quantityOrdered) {
+            foreach ($item->deliveryOrderItems as $orderItem) {                
+                if ($orderItem->deliveryOrder->form->cancellation_status == null
+                    || $orderItem->deliveryOrder->form->cancellation_status !== 1
+                    || $orderItem->deliveryOrder->form->number !== null) {
+                        $quantityOrdered = $item->deliveryOrderItems->sum('quantity');
+                        if ($item->quantity > $quantityOrdered) {
                             $complete = false;
                             break;
                         }

@@ -1,7 +1,5 @@
 <?php
 
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-
 Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::apiResource('contracts', 'SalesContract\\SalesContractController');
     Route::post('quotations/{id}/approve', 'SalesQuotation\\SalesQuotationApprovalController@approve');
@@ -19,30 +17,11 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::post('down-payments/{id}/cancellation-approve', 'SalesDownPayment\\SalesDownPaymentCancellationApprovalController@approve');
     Route::post('down-payments/{id}/cancellation-reject', 'SalesDownPayment\\SalesDownPaymentCancellationApprovalController@reject');
     Route::apiResource('down-payments', 'SalesDownPayment\\SalesDownPaymentController');
-
-    Route::namespace('DeliveryOrder')->group(function () {
-        Route::post('delivery-orders/{id}/histories', 'DeliveryOrderHistoryController@store');
-
-        Route::group(['middleware' => ['tenant.module-access:sales delivery order']], function () {
-            Route::post('delivery-orders/{id}/approve', 'DeliveryOrderApprovalController@approve');
-            Route::post('delivery-orders/{id}/reject', 'DeliveryOrderApprovalController@reject');
-            Route::post('delivery-orders/approval/send', 'DeliveryOrderApprovalController@sendApproval');
-            Route::get('delivery-orders/approval', 'DeliveryOrderApprovalController@index');
-
-            Route::post('delivery-orders/{id}/cancellation-approve', 'DeliveryOrderCancellationApprovalController@approve');
-            Route::post('delivery-orders/{id}/cancellation-reject', 'DeliveryOrderCancellationApprovalController@reject');
-
-            Route::post('delivery-orders/{id}/close-approve', 'DeliveryOrderCloseApprovalController@approve');
-            Route::post('delivery-orders/{id}/close-reject', 'DeliveryOrderCloseApprovalController@reject');
-            Route::post('delivery-orders/{id}/close', 'DeliveryOrderCloseApprovalController@close');
-
-            Route::get('delivery-orders/{id}/histories', 'DeliveryOrderHistoryController@index');
-
-            Route::get('delivery-orders/export', 'DeliveryOrderController@export');
-            Route::apiResource('delivery-orders', 'DeliveryOrderController');
-        });
-    });
-
+    Route::post('delivery-orders/{id}/approve', 'DeliveryOrder\\DeliveryOrderApprovalController@approve');
+    Route::post('delivery-orders/{id}/reject', 'DeliveryOrder\\DeliveryOrderApprovalController@reject');
+    Route::post('delivery-orders/{id}/cancellation-approve', 'DeliveryOrder\\DeliveryOrderCancellationApprovalController@approve');
+    Route::post('delivery-orders/{id}/cancellation-reject', 'DeliveryOrder\\DeliveryOrderCancellationApprovalController@reject');
+    Route::apiResource('delivery-orders', 'DeliveryOrder\\DeliveryOrderController');
     Route::apiResource('delivery-notes', 'DeliveryNote\\DeliveryNoteController');
     Route::get('invoices/last-price/{itemId}', 'SalesInvoice\\SalesInvoicePricingController@lastPrice');
     Route::apiResource('invoices', 'SalesInvoice\\SalesInvoiceController');

@@ -35,9 +35,7 @@ class StoreDeliveryOrderRequest extends FormRequest
 
         $rulesDeliveryOrderItems = [
             'items.*.sales_order_item_id' => ValidationRule::foreignKey('sales_order_items'),
-            'items.*.quantity_requested' => ValidationRule::quantity(),
-            'items.*.quantity_delivered' => ValidationRule::quantity(),
-            'items.*.quantity_remaining' => ValidationRule::quantity(),
+            'items.*.quantity' => ValidationRule::quantity(),
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::converter(),
         ];

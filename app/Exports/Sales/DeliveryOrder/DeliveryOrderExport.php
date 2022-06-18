@@ -53,9 +53,12 @@ class DeliveryOrderExport implements WithColumnFormatting, FromQuery, WithHeadin
      */
     public function headings(): array
     {
+        $dateExport = Carbon::now()->timezone(config()->get('project.timezone'));
+        $periodExport = $this->_getPeriodExport();
+        
         return [
-            ['Date Export', ': ' . Carbon::now()->format('d M Y H:i')],
-            ['Period Export', ': ' . ''],
+            ['Date Export', ': ' . $dateExport->format('d M Y H:i')],
+            ['Period Export', ': ' . $periodExport],
             [$this->tenantName],
             ['Sales Delivery Order'],
             [
@@ -128,5 +131,29 @@ class DeliveryOrderExport implements WithColumnFormatting, FromQuery, WithHeadin
             },
 
         ];
-    }     
+    }
+    
+    private function _getPeriodExport()
+    {
+        $dateMin = $this->filters->filter_date_min;
+        $dateMin = !is_null($dateMin) && !is_array($dateMin)
+            ? json_decode($dateMin, true)
+            : [];
+            
+        $dateMax = $this->filters->filter_date_max;
+        $dateMax = !is_null($dateMax) && !is_array($dateMax)
+            ? json_decode($dateMax, true)
+            : [];
+
+        $periodExport = '';
+        if (isset($dateMin['form.date'])) {
+            $periodExport .= Carbon::createFromFormat('Y-m-d H:i:s', $dateMin['form.date'])->format('d M Y');
+        }
+        if (isset($dateMax['form.date'])) {
+            if($periodExport !== '') $periodExport .= ' - ';
+            $periodExport .= Carbon::createFromFormat('Y-m-d H:i:s', $dateMax['form.date'])->format('d M Y');
+        }
+
+        return $periodExport;
+    }
 }

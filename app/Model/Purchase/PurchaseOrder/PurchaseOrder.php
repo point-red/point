@@ -33,6 +33,7 @@ class PurchaseOrder extends TransactionModel implements Transaction
         'warehouse_id',
         'eta',
         'cash_only',
+        'downpayment',
         'need_down_payment',
         'delivery_fee',
         'discount_percent',

@@ -38,6 +38,13 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::post('receive-items/reject', 'TransferItem\\ReceiveItemApprovalByEmailController@reject');
     });
 
+    Route::prefix('sales/delivery-orders')->namespace('Sales\\DeliveryOrder')
+        ->middleware('tenant.module-access:sales delivery order') 
+        ->group(function () {
+            Route::post('/approve', 'DeliveryOrderApprovalByEmailController@approve');
+            Route::post('/reject', 'DeliveryOrderApprovalByEmailController@reject');
+        });
+
     // This routes below require authentication
     Route::middleware('auth:api')->group(function () {
         Route::post('send-email', 'EmailServiceController@send');

@@ -29,6 +29,29 @@ class TransactionModel extends PointModel
         $this->form->request_cancellation_reason = $request->get('reason');
         $this->form->cancellation_status = $canceled;
         $this->form->save();
+
+        $this->form->fireEventCanceled();
+    }
+
+    public function requestClose(Request $request)
+    {
+        $close = false;
+
+        if (tenant(auth()->user()->id)->id === $this->form->created_by) {
+            // If auth user cancel his own form, then no need to approval
+            // Should do any action on form canceled
+            
+            // $close = true;
+        }
+
+        $this->form->request_close_to = $this->form->request_approval_to;
+        $this->form->request_close_by = tenant(auth()->user()->id)->id;
+        $this->form->request_close_at = now();
+        $this->form->request_close_reason = $request->get('reason');
+        $this->form->close_status = $close;
+        $this->form->save();
+
+        $this->form->fireEventClosed();
     }
 
     /**

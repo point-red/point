@@ -71,4 +71,29 @@ class SalesOrderItem extends PointModel
                     });
             });
     }
+
+    public function deliveryOrderItemsOrdered()
+    {
+        return $this->deliveryOrderItems()
+            ->whereHas('deliveryOrder.form', function ($query) {
+                $query->where('approval_status', 1);
+            })
+            ->get()
+            ->sum('quantity_delivered');
+    }
+
+    public function convertUnitToSmallest()
+    {
+        $smallestItemUnit = $this->item->smallest_unit;
+        
+        if($this->attributes['unit'] !== $smallestItemUnit->label) {
+            $this->attributes['unit_smallest'] = $smallestItemUnit->label;
+            $this->attributes['converter_smallest'] = $smallestItemUnit->converter;
+            
+            $this->attributes['quantity_remaining'] = $this->attributes['quantity'] * $this->attributes['converter'];
+            return;
+        }
+
+        $this->attributes['quantity_remaining'] = $this->attributes['quantity'];
+    }
 }

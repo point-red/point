@@ -172,6 +172,7 @@
             text-decoration: underline;
         }
     </style>
+    @yield('css')
 </head>
 <body style="margin:0; padding:0;" bgcolor="#F0F0F0" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 
@@ -186,11 +187,11 @@
             <table border="0" width="600" cellpadding="0" cellspacing="0" class="container">
                 <tr>
                     <td class="container-padding header" align="center">
-                        <a href="#" target="_blank" style="text-decoration:none;"><img src="{{ url('/img/logo.png') }}" height="50" style="display:block; font-size:15px; color:#30373b;  font-weight:bold;" border="0" alt="" /></a>
+                        <a href="#" target="_blank" style="text-decoration:none;"><img src="{{ $logo ?? url('/img/logo.png') }}" height="50" style="display:block; font-size:15px; color:#30373b;  font-weight:bold;" border="0" alt="" /></a>
                     </td>
                 </tr>
                 <tr>
-                    <td class="container-padding content" align="left">
+                    <td class="container-padding content" align="center">
                         @yield('content')
                     </td>
                 </tr>

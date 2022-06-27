@@ -6,6 +6,7 @@ use App\Model\HumanResource\Employee\Employee;
 use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
 use App\Model\HumanResource\Kpi\KpiIndicator;
+use App\Model\HumanResource\Kpi\KpiScore;
 use Tests\TestCase;
 
 class KpiAssessmentTest extends TestCase
@@ -193,7 +194,15 @@ class KpiAssessmentTest extends TestCase
         $kpiIndicator->score_description = 'sangat baik';
         $kpiIndicator->save();
 
+        $kpiScore = new KpiScore();
+        $kpiScore->kpi_indicator_id = $kpiIndicator->id;
+        $kpiScore->description = "sangat kurang";
+        $kpiScore->score = 1;
+        $kpiScore->status = $kpi->status;
+        $kpiScore->save();
+
         $data = [
+            'comment' => "test comment",
             'template' => [
                 'name' => 'test template',
                 'groups' => [
@@ -214,6 +223,13 @@ class KpiAssessmentTest extends TestCase
                                     'comment' => 'comment',
                                     'description' => 'sangat baik',
                                 ],
+                                'scores' => [
+                                    [
+                                        "id" => $kpiScore->id,
+                                        "score" => 1,
+                                        "description" => "sangat kurang"
+                                    ],
+                                ],
                             ]
                         ]
                     ]
@@ -222,19 +238,10 @@ class KpiAssessmentTest extends TestCase
             'date' => date('Y-m-d')
         ];
 
-        $response = $this->json('PUT', '/api/v1/human-resource/employee/employees/' . $employee_id . '/assessment/' . $kpi_id, $data, [$this->headers]);
+        $response = $this->json('PATCH', '/api/v1/human-resource/employee/employees/' . $employee_id . '/assessment/' . $kpi_id, $data, [$this->headers]);
         $response->assertStatus(200);
         $response->assertJsonStructure([
-            'id',
-            'name',
-            'date',
-            'employee',
-            'weight',
-            'target',
-            'score',
-            'score_percentage',
-            'scorer',
-            'groups',
+            'data',
         ]);
     }
 

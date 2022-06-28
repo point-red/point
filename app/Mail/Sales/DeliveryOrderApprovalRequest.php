@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class DeliveryOrderApprovalRequestSent extends Mailable
+class DeliveryOrderApprovalRequest extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -37,7 +37,7 @@ class DeliveryOrderApprovalRequestSent extends Mailable
     {
         $this->approver->token = $this->approverToken;
 
-        $user = tenant(auth()->user()->id);
+        $user = $this->form->send_by;
 
         return $this->subject('Request Approval All')
             ->from($user->email, $user->getFullNameAttribute())

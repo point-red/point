@@ -14,7 +14,7 @@ use App\Model\Form;
 use App\Model\UserActivity;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 
-use App\Mail\Sales\DeliveryOrderApprovalRequestSent;
+use App\Mail\Sales\DeliveryOrderApprovalRequest;
 
 class DeliveryOrderApprovalController extends Controller
 {
@@ -128,6 +128,7 @@ class DeliveryOrderApprovalController extends Controller
         $deliveryOrderByApprovers = [];
 
         DB::connection('tenant')->transaction(function () use ($request, $deliveryOrderByApprovers) {
+            $sendBy = tenant(auth()->user()->id);
             $deliveryOrders = DeliveryOrder::whereIn('id', $request->ids)->get();
 
             // delivery order grouped by approver
@@ -145,6 +146,7 @@ class DeliveryOrderApprovalController extends Controller
                     'number' => $formStart->number,
                     'date' => $formStart->date,
                     'created' => $formStart->created_at,
+                    'send_by' => $sendBy
                 ];
 
                 // loop each delivery order by group approver
@@ -200,7 +202,7 @@ class DeliveryOrderApprovalController extends Controller
                     $form['created'] = $formattedFormStartCreate . ' - ' . $formattedFormEndCreate;
                 }
 
-                $approvalRequest = new DeliveryOrderApprovalRequestSent($deliveryOrdersByApprover, $approver, (object) $form);
+                $approvalRequest = new DeliveryOrderApprovalRequest($deliveryOrdersByApprover, $approver, (object) $form);
                 Mail::to([ $approver->email ])->queue($approvalRequest);
             }
         });

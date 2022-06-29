@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SendEmailRequest;
-use App\Model\Project\Project;
-use App\Model\Setting\SettingLogo;
 use Illuminate\Support\Facades\Mail;
+
+use App\Mail\CustomEmail;
+use App\Model\Project\Project;
 
 class EmailServiceController extends Controller
 {
-    private $tenant;
-
     /**
      * Store a newly created resource in storage.
      *
@@ -21,6 +20,7 @@ class EmailServiceController extends Controller
     public function send(SendEmailRequest $request)
     {   
         $project = Project::where('code', $request->header('Tenant'))->first();
+        $user = tenant(auth()->user()->id);
         // doesn't allow send custom email with default mail ...@point.red
         if (! $project) {
             return response()->json([
@@ -28,85 +28,8 @@ class EmailServiceController extends Controller
             ], 422);
         }
 
-        $this->tenant = $project;
-
-        $viewData = [
-            'logo' => 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/logo.png'))),
-            'draftimg' => 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/draft-watermark.png'))),
-            'tenant' => $this->tenant,
-        ];
-        $attachments = $request->get('attachments');
-        foreach ($attachments[0]['view_data'] as $key => $value) {
-            $viewData[$key] = $value;
-        }
-        Mail::send([], [], function ($message) use ($request) {
-            $user = tenant(auth()->user()->id);
-
-            $message->from($user->email, $user->getFullNameAttribute());
-            $message->to($request->get('to'));
-            if ($request->has('cc')) {
-                $message->cc($request->get('cc'));
-            }
-            if ($request->has('bcc')) {
-                $message->bcc($request->get('bcc'));
-            }
-            if ($request->has('reply_to')) {
-                $message->replyTo($request->get('reply_to'), $request->get('reply_to_name'));
-            }
-            $message->subject($request->get('subject'));
-            $message->setBody($request->get('body'), 'text/plain');
-
-            $attachments = $request->get('attachments') ?? [];
-            foreach ($attachments as $attachment) {
-                if ($attachment['type'] === 'pdf') {
-                    $filename = $attachment['filename'] ?? 'untitled.pdf';
-                    $file = $this->createPDF($attachment);
-
-                    $message->attachData($file, $filename);
-                }
-                // TODO excel attachment
-            }
-        });
+        Mail::queue(new CustomEmail($project, $user, $request->all()));
 
         return response()->json([], 204);
-    }
-
-    private function createPDF($config)
-    {
-        if (!isset($config['html']) && (!isset($config['view']) && !isset($config['view_data']))) {
-            return response()->json([
-                'message' => 'Cannot send custom email, html / view must filled',
-            ], 422);
-        }
-
-        // $pdf = PDF::loadHTML($config['html']) don't know why doesn't work
-        // https://github.com/barryvdh/laravel-dompdf#using
-        $pdf = app()->make('dompdf.wrapper')
-            ->setPaper($config['paper'] ?? 'a4', $config['orientation'] ?? 'portrait')
-            ->setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])
-            ->setWarnings(false);
-        
-        if(isset($config['html'])) $pdf->loadHTML($config['html']);
-
-        if(isset($config['view'])){
-            $settingLogo = SettingLogo::orderBy("id", 'desc')->first();
-            
-            $logo = $settingLogo->public_url 
-                ? $settingLogo->public_url 
-                : 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/logo.png')));
-
-            $viewData = [
-                'logo' => $logo,
-                'draftimg' => 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('/img/draft-watermark.png'))),
-                'tenant' => $this->tenant,
-            ];
-            foreach ($config['view_data'] as $key => $value) {
-                $viewData[$key] = $value;
-            }
-
-            $pdf->loadView('emails.' . $config['view'], $viewData);
-        }
-
-        return $pdf->output();
     }
 }

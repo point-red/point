@@ -62,6 +62,18 @@ class PluginSeeder extends Seeder
         ];
         array_push($plugins, $plugin);
 
+        $plugin = [
+            'name' => 'STUDY SHEET',
+            'description' => 'Document your child learning activities',
+            'price' => 0,
+            'is_monthly_price' => false,
+            'price_per_user' => 0,
+            'is_monthly_price_per_user' => false,
+            'is_active' => true,
+            'app_url' => 'https://study.point.red',
+        ];
+        array_push($plugins, $plugin);
+
         $this->create($plugins);
     }
 

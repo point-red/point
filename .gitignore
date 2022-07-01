@@ -1,6 +1,7 @@
 /node_modules
 /public/hot
 /public/storage
+/public/reports
 /storage/*.key
 /storage/firebase-service-account.json
 /vendor

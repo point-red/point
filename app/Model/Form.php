@@ -17,6 +17,8 @@ use App\Traits\Model\FormCustomObserver;
 class Form extends PointModel
 {
     use FormCustomObserver;
+
+    public static $morphName = 'Form';
     
     protected $connection = 'tenant';
 

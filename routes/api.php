@@ -87,6 +87,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         require base_path('routes/api/plugin/scale-weight.php');
         require base_path('routes/api/plugin/pin-point.php');
         require base_path('routes/api/plugin/play-book.php');
+        require base_path('routes/api/plugin/study.php');
     });
     
     //Approve/reject with token

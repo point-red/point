@@ -1,0 +1,209 @@
+<?php
+
+namespace Tests\Feature\Http\Plugins\Study;
+
+use App\Model\Master\User;
+use App\Model\Plugin\Study\StudySheet;
+use App\Model\Plugin\Study\StudySubject;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+
+class StudySheetControllerTest extends TestCase
+{
+    use WithFaker;
+    
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->signIn();
+        $this->setRole();
+    }
+
+    /**
+     * Test StudySheetController@index should return list of existing data.
+     * Result should be ordered by newest first.
+     *
+     * @return void
+     */
+    public function test_index_order_by()
+    {
+        $sheet = factory(StudySheet::class, 3)->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $route = route('study.sheet.index');
+
+        $this->json('get', $route, [], [$this->headers])->assertJson([
+            'data' => [
+                ['id' => $sheet[2]->id],
+                ['id' => $sheet[1]->id],
+                ['id' => $sheet[0]->id],
+            ],
+        ]);
+    }
+
+    /**
+     * Test StudySheetController@index should return list of existing data.
+     * Result should exclude sheet created by other user.
+     *
+     * @return void
+     */
+    public function test_index_only_own_data()
+    {
+        $sheets = factory(StudySheet::class, 3)->create([
+            'user_id' => $this->user->id,
+        ]);
+        factory(StudySheet::class, 5)->create([
+            'user_id' => factory(User::class),
+        ]);
+
+        $route = route('study.sheet.index');
+
+        $this->json('get', $route, ['sort_by=-id'], [$this->headers])->assertJson([
+            'data' => [
+                ['id' => $sheets[2]->id],
+                ['id' => $sheets[1]->id],
+                ['id' => $sheets[0]->id],
+            ],
+        ]);
+    }
+
+    /**
+     * Test StudySheetController@index should return list of existing data.
+     * Result should be wrapped in attribute `data`
+     * and has these attributes.
+     *
+     * @return void
+     */
+
+    // Order by newest
+    // Exclude sheet created by other user
+    // Filter by date
+    // Filter by subject
+    // Filter by Competency
+    // Filter by Teacher
+    // Filter by Search
+    
+    /**
+     * Test StudySheetController@store should save new data.
+     *
+     * @return void
+     */
+    public function test_store()
+    {
+        $route = route('study.sheet.store');
+
+        $subject = factory(StudySubject::class)->create();
+        
+        $form = [
+            'started_at' => now()->startOfHour(),
+            'ended_at' => now()->addHour()->startOfHour(),
+            'subject_id' => $subject->id,
+            'institution' => $this->faker()->text(),
+            'teacher' => $this->faker()->name(),
+            'competency' => $this->faker()->text(),
+            'learning_goals' => $this->faker()->text(),
+            'activities' => $this->faker()->text(),
+            'grade' => $this->faker()->numberBetween(0,100),
+            'behavior' => 'A',
+            'remarks' => $this->faker()->text(),
+        ];
+        
+        $this->json('post', $route, $form, [$this->headers])->assertCreated();
+
+        $this->assertDatabaseHas('study_sheets', [
+            'started_at' => $form['started_at'],
+            'ended_at' => $form['ended_at'],
+            'subject_id' => $form['subject_id'],
+            'institution' => $form['institution'],
+            'teacher' => $form['teacher'],
+            'competency' => $form['competency'],
+            'learning_goals' => $form['learning_goals'],
+            'activities' => $form['activities'],
+            'grade' => $form['grade'],
+            'behavior' => $form['behavior'],
+            'remarks' => $form['remarks'],
+            'user_id' => $this->user->id,
+        ], 'tenant');
+    }
+    
+    /**
+     * Test StudySheetController@update should update existing data.
+     *
+     * @return void
+     */
+    public function test_update()
+    {
+        $sheet = factory(StudySheet::class)->create([
+            'user_id' => $this->user->id,
+        ]);
+        
+        $route = route('study.sheet.update', ['sheet' => $sheet]);
+
+        $subject = factory(StudySubject::class)->create();
+        
+        $form = [
+            'started_at' => now()->startOfHour(),
+            'ended_at' => now()->addHour()->startOfHour(),
+            'subject_id' => $subject->id,
+            'institution' => $this->faker()->text(),
+            'teacher' => $this->faker()->name(),
+            'competency' => $this->faker()->text(),
+            'learning_goals' => $this->faker()->text(),
+            'activities' => $this->faker()->text(),
+            'grade' => $this->faker()->numberBetween(0,100),
+            'behavior' => 'A',
+            'remarks' => $this->faker()->text(),
+        ];
+        
+        $this->json('put', $route, $form, [$this->headers])->assertSuccessful();
+
+        $this->assertDatabaseHas('study_sheets', [
+            'started_at' => $form['started_at'],
+            'ended_at' => $form['ended_at'],
+            'subject_id' => $form['subject_id'],
+            'institution' => $form['institution'],
+            'teacher' => $form['teacher'],
+            'competency' => $form['competency'],
+            'learning_goals' => $form['learning_goals'],
+            'activities' => $form['activities'],
+            'grade' => $form['grade'],
+            'behavior' => $form['behavior'],
+            'remarks' => $form['remarks'],
+            'user_id' => $this->user->id,
+        ], 'tenant');
+    }
+    
+    /**
+     * Test StudySheetController@destroy should delete existing data.
+     *
+     * @return void
+     */
+    public function test_destroy()
+    {
+        $sheet = factory(StudySheet::class)->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $route = route('study.sheet.update', ['sheet' => $sheet]);
+
+        $this->json('delete', $route, [], [$this->headers])->assertSuccessful();
+
+        $this->assertDeleted('study_sheets', [
+            'id' => $sheet->id,
+        ], 'tenant');
+    }
+
+    // Store photo
+    // Store voice
+    // Store video
+
+    // Update photo
+    // Update voice
+    // Update video
+
+    // Delete photo
+    // Delete voice
+    // Delete video
+}

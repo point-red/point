@@ -2,9 +2,9 @@
 
 namespace App\Model\Plugin\Study;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Model\PointModel;
 
-class StudySubject extends Model
+class StudySubject extends PointModel
 {
     protected $connection = 'tenant';
     

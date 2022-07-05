@@ -63,7 +63,7 @@ class PluginSeeder extends Seeder
         array_push($plugins, $plugin);
 
         $plugin = [
-            'name' => 'STUDY SHEET',
+            'name' => 'STUDY',
             'description' => 'Document your child learning activities',
             'price' => 0,
             'is_monthly_price' => false,

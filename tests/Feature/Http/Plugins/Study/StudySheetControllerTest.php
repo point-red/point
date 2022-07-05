@@ -34,7 +34,7 @@ class StudySheetControllerTest extends TestCase
 
         $route = route('study.sheet.index');
 
-        $this->json('get', $route, [], [$this->headers])->assertJson([
+        $this->json('get', $route, ['sort_by' => '-id'], [$this->headers])->assertJson([
             'data' => [
                 ['id' => $sheet[2]->id],
                 ['id' => $sheet[1]->id],
@@ -60,7 +60,7 @@ class StudySheetControllerTest extends TestCase
 
         $route = route('study.sheet.index');
 
-        $this->json('get', $route, ['sort_by=-id'], [$this->headers])->assertJson([
+        $this->json('get', $route, ['sort_by' => '-id'], [$this->headers])->assertJson([
             'data' => [
                 ['id' => $sheets[2]->id],
                 ['id' => $sheets[1]->id],
@@ -76,6 +76,39 @@ class StudySheetControllerTest extends TestCase
      *
      * @return void
      */
+    public function test_index_attributes()
+    {
+        $sheet = factory(StudySheet::class)->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $route = route('study.sheet.index');
+
+        $this->json('get', $route, [], [$this->headers])->assertJson([
+            'data' => [
+                [
+                    'id' => $sheet->id,
+                    'started_at' => $sheet->started_at,
+                    'ended_at' => $sheet->ended_at,
+                    'subject_id' => $sheet->subject_id,
+                    'subject' => [
+                        'id' => $sheet->subject->id,
+                        'name' => $sheet->subject->name,
+                    ],
+                    'institution' => $sheet->institution,
+                    'teacher' => $sheet->teacher,
+                    'competency' => $sheet->competency,
+                    'activities' => $sheet->activities,
+                    'grade' => $sheet->grade,
+                    'behavior' => $sheet->behavior,
+                    'remarks' => $sheet->remarks,
+                    'is_draft' => $sheet->is_draft,
+                    'created_at' => $sheet->created_at,
+                    'updated_at' => $sheet->updated_at,
+                ],
+            ],
+        ]);
+    }
 
     // Order by newest
     // Exclude sheet created by other user
@@ -147,21 +180,22 @@ class StudySheetControllerTest extends TestCase
             'started_at' => now()->startOfHour(),
             'ended_at' => now()->addHour()->startOfHour(),
             'subject_id' => $subject->id,
-            'institution' => $this->faker()->text(),
+            'institution' => $this->faker()->text(180),
             'teacher' => $this->faker()->name(),
-            'competency' => $this->faker()->text(),
-            'learning_goals' => $this->faker()->text(),
-            'activities' => $this->faker()->text(),
+            'competency' => $this->faker()->text(180),
+            'learning_goals' => $this->faker()->text(180),
+            'activities' => $this->faker()->text(180),
             'grade' => $this->faker()->numberBetween(0,100),
             'behavior' => 'A',
-            'remarks' => $this->faker()->text(),
+            'remarks' => $this->faker()->text(180),
         ];
         
         $this->json('put', $route, $form, [$this->headers])->assertSuccessful();
 
         $this->assertDatabaseHas('study_sheets', [
-            'started_at' => $form['started_at'],
-            'ended_at' => $form['ended_at'],
+            'id' => $sheet->id,
+            'started_at' => $form['started_at']->format('Y-m-d H:i:s'),
+            'ended_at' => $form['ended_at']->format('Y-m-d H:i:s'),
             'subject_id' => $form['subject_id'],
             'institution' => $form['institution'],
             'teacher' => $form['teacher'],

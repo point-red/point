@@ -12,14 +12,14 @@ $factory->define(StudySheet::class, function (Faker $faker) {
         'ended_at' => function (array $attributes) {
             return Carbon\Carbon::make($attributes['started_at'])->addHour();
         },
-        'institution' => $faker->text(),
+        'institution' => $faker->text(180),
         'teacher' => $faker->name(),
-        'competency' => $faker->text(),
-        'learning_goals' => $faker->text(),
-        'activities' => $faker->text(),
+        'competency' => $faker->text(180),
+        'learning_goals' => $faker->text(180),
+        'activities' => $faker->text(180),
         'grade' => $faker->numberBetween(0,100),
         'behavior' => $faker->randomElement(['A', 'B', 'C']),
-        'remarks' => $faker->text(),
+        'remarks' => $faker->text(180),
         'subject_id' => factory(StudySubject::class),
     ];
 });

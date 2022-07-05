@@ -26,4 +26,14 @@ class StudySheet extends PointModel
         'behavior',
         'remarks',
     ];
+
+    /**
+     * Get the study subject that referenced by this model
+     *
+     * @return eloquent
+     */
+    public function subject()
+    {
+        return $this->belongsTo(StudySubject::class, 'subject_id');
+    }
 }

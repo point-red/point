@@ -19,9 +19,9 @@ class CreateStudySheetsTable extends Migration
             $table->unsignedInteger('user_id');
             $table->datetime('started_at');
             $table->datetime('ended_at');
-            $table->string('photo');
-            $table->string('voice_note')->nullable();
-            $table->string('video')->nullable();
+            $table->string('photo_file_id')->nullable();
+            $table->string('voice_note_file_id')->nullable();
+            $table->string('video_file_id')->nullable();
             $table->foreignId('subject_id')->constrained('study_subjects');
             $table->string('institution')->nullable();
             $table->string('teacher')->nullable();

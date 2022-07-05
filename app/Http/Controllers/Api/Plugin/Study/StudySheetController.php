@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Plugin\Study;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Plugin\Study\StudySheetStoreRequest;
+use App\Http\Resources\ApiCollection;
 use App\Model\Master\User;
 use App\Model\Plugin\Study\StudySheet;
 use Illuminate\Http\Request;
@@ -17,11 +19,14 @@ class StudySheetController extends Controller
      */
     public function index(Request  $request)
     {
-        return StudySheet::eloquentFilter($request)
+        $sheets = StudySheet::eloquentFilter($request)
+            ->with(['subject:id,name'])
             ->fields($request->get('fields'))
             ->where('user_id', auth()->id())
             ->paginate();
         
+        return new ApiCollection($sheets);
+
         // search
         // filter
     }
@@ -39,17 +44,17 @@ class StudySheetController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\Plugin\Study\StudySheetStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StudySheetStoreRequest $request)
     {
         // $request->file('video');
         // $request->file('voice');
         // $request->file('photo');
 
-        $validated = $request->all();
-        // $validated = $request->validated();
+        // $validated = $request->all();
+        $validated = $request->validated();
 
         $sheet = new StudySheet();
         $sheet->fill($validated);

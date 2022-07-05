@@ -29,28 +29,32 @@ class DeliveryOrderApprovalController extends Controller
         $deliveryOrders = DeliveryOrder::from(DeliveryOrder::getTableName().' as '.DeliveryOrder::$alias)->eloquentFilter($request);
 
         $deliveryOrders = DeliveryOrder::joins($deliveryOrders, $request->get('join'))
+            ->whereNull(Form::$alias . '.edited_number')
             ->where(Form::$alias . '.close_status', 0)
             ->orWhere(function ($query) {
                 $query
                     ->where(Form::$alias . '.cancellation_status', 0)
-                    ->whereNull(Form::$alias . '.close_status');
+                    ->whereNull(Form::$alias . '.close_status')
+                    ->whereNull(Form::$alias . '.edited_number');
             })
             ->orWhere(function ($query) {
                 $query
                     ->where(Form::$alias . '.approval_status', 0)
                     ->whereNull(Form::$alias . '.cancellation_status')
-                    ->whereNull(Form::$alias . '.close_status');
+                    ->whereNull(Form::$alias . '.close_status')
+                    ->whereNull(Form::$alias . '.edited_number');
             });
 
-        $userActivity = UserActivity::where(['activity' => 'Request Approval', 'table_type' => 'forms'])
+        $userActivity = UserActivity::where(['activity' => 'Request Approval', 'table_type' => DeliveryOrder::$morphName])
             ->select('table_id')
             ->selectRaw('MAX(date) as last_request_date')
             ->groupBy('table_id');
      
-        $deliveryOrders = $deliveryOrders->leftJoinSub($userActivity, 'user_activity', function ($q) {
-            $q->on('form.id', '=', 'user_activity.table_id');
-        })
-        ->addSelect('user_activity.last_request_date');
+        $deliveryOrders = $deliveryOrders
+            ->leftJoinSub($userActivity, 'user_activity', function ($q) {
+                $q->on('form.formable_id', '=', 'user_activity.table_id');
+            })
+            ->addSelect('user_activity.last_request_date');
         
         $deliveryOrders = pagination($deliveryOrders, $request->get('limit'));
 

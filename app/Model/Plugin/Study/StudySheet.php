@@ -26,6 +26,7 @@ class StudySheet extends PointModel
         'grade',
         'behavior',
         'remarks',
+        'is_draft',
     ];
 
     /**

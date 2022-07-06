@@ -3,7 +3,9 @@
 namespace App\Model\Inventory\InventoryAudit;
 
 use App\Helpers\Inventory\InventoryHelper;
+use App\Model\Accounting\Journal;
 use App\Model\Form;
+use App\Model\Master\Item;
 use App\Model\TransactionModel;
 use App\Traits\Model\Inventory\InventoryAuditJoin;
 use App\Traits\Model\Inventory\InventoryAuditRelation;
@@ -90,6 +92,8 @@ class InventoryAudit extends TransactionModel
             }
         }
 
+        $inventoryAudit->updateJournal($inventoryAudit);
+
         return $inventoryAudit;
     }
 
@@ -108,6 +112,39 @@ class InventoryAudit extends TransactionModel
                     'production_number' => $inventoryAuditItem->production_number,
                 ]
             );
+        }
+    }
+
+    public static function updateJournal($audit)
+    {
+        foreach ($audit->items as $auditItem) {
+            $stock = InventoryHelper::getCurrentStock($auditItem->item, $audit->form->date, $audit->warehouse, [
+                'expiry_date' => $auditItem->expiry_date,
+                'production_number' => $auditItem->production_number,
+            ]);
+
+            $diff = $auditItem->quantity - $stock;
+
+            // amount minus = stock minus
+            $amount = $auditItem->item->cogs($auditItem->item_id) * $diff;
+
+            $journal = new Journal;
+            $journal->form_id = $audit->form->id;
+            $journal->journalable_type = Item::$morphName;
+            $journal->journalable_id = $auditItem->item_id;
+            $journal->chart_of_account_id = get_setting_journal('inventory audit', 'difference stock expense');
+            $journal->debit = $amount < 0 ? $amount : 0;
+            $journal->credit = $amount > 0 ? $amount : 0;
+            $journal->save();
+
+            $journal = new Journal;
+            $journal->form_id = $audit->form->id;
+            $journal->journalable_type = Item::$morphName;
+            $journal->journalable_id = $auditItem->item_id;
+            $journal->chart_of_account_id = $auditItem->item->chart_of_account_id;
+            $journal->credit = $amount < 0 ? $amount : 0;
+            $journal->debit = $amount > 0 ? $amount : 0;
+            $journal->save();
         }
     }
 }

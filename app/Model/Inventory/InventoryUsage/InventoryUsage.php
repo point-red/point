@@ -104,9 +104,8 @@ class InventoryUsage extends TransactionModel
             $journal->form_id = $usage->form->id;
             $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $usageItem->item_id;
-            $journal->chart_of_account_id = get_setting_journal('inventory usage', 'difference stock expenses');
-            $journal->debit = $usageItem->quantity < 0 ? $amount : 0;
-            $journal->credit = $usageItem->quantity > 0 ? $amount : 0;
+            $journal->chart_of_account_id = get_setting_journal('inventory usage', 'difference stock expense');
+            $journal->debit = $amount;
             $journal->save();
 
             $journal = new Journal;
@@ -114,8 +113,7 @@ class InventoryUsage extends TransactionModel
             $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $usageItem->item_id;
             $journal->chart_of_account_id = $usageItem->item->chart_of_account_id;
-            $journal->debit = $usageItem->quantity > 0 ? $amount : 0;
-            $journal->credit = $usageItem->quantity < 0 ? $amount : 0;
+            $journal->credit = $amount;
             $journal->save();
         }
     }

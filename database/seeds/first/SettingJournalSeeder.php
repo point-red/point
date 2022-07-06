@@ -174,7 +174,7 @@ class SettingJournalSeeder extends Seeder
     private function stockCorrection()
     {
         $accounts = [
-            'difference stock expenses' => $this->getAccountId('difference stock expenses'),
+            'difference stock expense' => $this->getAccountId('difference stock expense'),
             'other income' => $this->getAccountId('other income'),
         ];
 
@@ -197,7 +197,7 @@ class SettingJournalSeeder extends Seeder
     private function inventoryUsage()
     {
         $accounts = [
-            'difference stock expenses' => $this->getAccountId('difference stock expenses'),
+            'difference stock expense' => $this->getAccountId('difference stock expense'),
         ];
 
         foreach ($accounts as $key => $value) {
@@ -219,19 +219,19 @@ class SettingJournalSeeder extends Seeder
     private function inventoryAudit()
     {
         $accounts = [
-            'difference stock expenses' => $this->getAccountId('difference stock expenses'),
+            'difference stock expense' => $this->getAccountId('difference stock expense'),
         ];
 
         foreach ($accounts as $key => $value) {
-            if (! $this->isExists('inventory usage', $key)) {
+            if (! $this->isExists('inventory audit', $key)) {
                 $settingJournal = new SettingJournal;
-                $settingJournal->feature = 'inventory usage';
+                $settingJournal->feature = 'inventory audit';
                 $settingJournal->name = $key;
                 $settingJournal->description = '';
                 $settingJournal->chart_of_account_id = $value;
                 $settingJournal->save();
             } else {
-                $settingJournal = SettingJournal::where('feature', 'inventory usage')->where('name', $key)->first();
+                $settingJournal = SettingJournal::where('feature', 'inventory audit')->where('name', $key)->first();
                 $settingJournal->chart_of_account_id = $value;
                 $settingJournal->save();
             }

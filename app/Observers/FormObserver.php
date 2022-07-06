@@ -4,10 +4,16 @@ namespace App\Observers;
 
 use App\Model\Form;
 use App\Model\UserActivity;
-use Illuminate\Support\Facades\Log;
 
 class FormObserver
 {
+    protected $modelNotToObserves = [];
+
+    public function __construct()
+    {
+        $this->modelNotToObserves[] = \App\Model\Finance\CashAdvance\CashAdvance::$morphName;
+    }
+
     // Handle custom form event's
     public function requestApproval(Form $form)
     {
@@ -76,7 +82,7 @@ class FormObserver
         $activity = 'Created';
 
         $formNumberExist = Form::where('edited_number', $form->number)->first();
-        if (! $formNumberExist) {
+        if (!$formNumberExist && !in_array($form->formable_type, $this->modelNotToObserves)) {
             $this->_storeActivity($form, $activity);
         }
     }
@@ -91,7 +97,7 @@ class FormObserver
     {
         $activity = 'Update';
 
-        if ($form->edited_number) {
+        if ($form->edited_number && !in_array($form->formable_type, $this->modelNotToObserves)) {
             $userActivity = UserActivity::where('number', $form->edited_number)
                 ->where('activity', 'like', '%' . $activity . '%');
                     
@@ -106,8 +112,8 @@ class FormObserver
     protected function _storeActivity($form, $activity)
     {
         UserActivity::create([
-            'table_type' => 'forms',
-            'table_id' => $form->id,
+            'table_type' => $form->formable_type ?? Form::$morphName,
+            'table_id' => $form->formable_id ?? $form->id,
             'number' => $form->number,
             'date' => now(),
             'user_id' => auth()->user()->id,

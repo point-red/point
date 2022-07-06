@@ -32,6 +32,8 @@ Route::namespace('Web')->middleware('web-middleware')->group(function () {
     Route::get('/oauth/login/callback', 'OAuthController@handleCallback');
     Route::get('/oauth/login/google', 'OAuthController@redirectToGoogle');
     Route::get('/oauth/login/google/callback', 'OAuthController@handleGoogleCallback');
+
+    Route::get('/oauth/login/google/drive', 'OAuthController@requestGoogleDrive');
 });
 
 Route::namespace('Web')->middleware(['web-middleware', 'auth:web'])->group(function () {

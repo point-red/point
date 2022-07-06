@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Model\OauthUserToken;
+use App\Services\Google\Google;
 use App\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -109,5 +111,49 @@ class OAuthController extends WebController
             .'access_token='.$tokenResult->accessToken
             .'&id='.$tokenResult->token->id
             .'&ed='.$tokenResult->token->expires_at);
+    }
+
+    public function requestGoogleDrive()
+    {
+        $client = Google::client();
+
+        if ($client->isAccessTokenExpired()) {
+            return [
+                'authenticated' => false,
+                'auth_url' => $client->createAuthUrl(),
+            ];
+        }
+        return ['authenticated' => true];
+    }
+    public function handleCallbackGoogleDrive(Request $request)
+    {
+        $client = Google::client();
+
+        // authorization code from google.
+        $code = $request->get('code');
+
+        if (empty($code)) {
+            return '';
+        }
+
+        // Exchange authorization code for an access token.
+        $accessToken = $client->fetchAccessTokenWithAuthCode($code);
+        $client->setAccessToken($accessToken);
+        $created = \Carbon\Carbon::createFromTimestamp($accessToken['created']);
+        OauthUserToken::create([
+            'provider' => 'google',
+            'access_token' => $accessToken['access_token'],
+            'refresh_token' => $accessToken['refresh_token'],
+            'expires_at' => $created->addSeconds($accessToken['expires_in']),
+            'scope' => $accessToken['scope'],
+        ]);
+    }
+
+    public function unlinkGoogleDrive()
+    {
+        OauthUserToken::where('user_id', auth()->id())
+            ->where('provider', 'google')
+            ->where('scope', 'https://www.googleapis.com/auth/drive.file')
+            ->delete();
     }
 }

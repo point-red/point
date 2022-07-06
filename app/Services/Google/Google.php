@@ -2,19 +2,20 @@
 
 namespace App\Services\Google;
 
+use App\Model\OauthUserToken;
+
 class Google
 {
     public static function client()
     {
         $oauthClientId = config('services.google.client_id');
         $oauthClientSecret = config('services.google.client_secret');
-        $oauthRedirectUri = config('services.google.redirect');
+        $oauthRedirectUri = route('oauth.login.google.drive.delete');
+        $oauthScope = "https://www.googleapis.com/auth/drive.file";
     
         // $client = new \Google\Client(); // newer version use this
         $client = new \Google_Client();
     
-        // $client->setClientId($oauthClientId);
-        // $client->setClientSecret($oauthClientSecret);
         $client->setRedirectUri($oauthRedirectUri);
         $client->setAuthConfig([
             "auth_uri" => "https://accounts.google.com/o/oauth2/auth",
@@ -24,24 +25,38 @@ class Google
             "client_id" => $oauthClientId,
             "client_secret" => $oauthClientSecret
         ]);
-        $client->setScopes("https://www.googleapis.com/auth/drive.file");
+        $client->setScopes($oauthScope);
 
         // get user access / refresh token
-        // $client->setAccessToken($accessToken);
+        $storedToken = OauthUserToken::where('user_id', auth()->id())
+            ->where('provider', 'google')
+            ->where('scope', $oauthScope)
+            ->first();
+
+        if ($storedToken) {
+            $client->setAccessToken($storedToken);
+        }
 
         if ($client->isAccessTokenExpired()) {
             // Refresh the token if possible, else fetch a new one.
             if ($client->getRefreshToken()) {
-                $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            } else {
-                info('[GOOGLE] should get new refresh token');
-                // Request authorization from the user.
-                // $authUrl = $client->createAuthUrl();
-                // $authCode = trim(fgets(STDIN));
-    
-                // // Exchange authorization code for an access token.
-                // $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
-                // $client->setAccessToken($accessToken);
+                $newToken = $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+
+                $created = \Carbon\Carbon::createFromTimestamp($newToken['created']);
+                if ($storedToken) {
+                    $storedToken->update([
+                        'access_token' => $newToken['access_token'],
+                        'expires_at' => $created->addSeconds($newToken['expires_in']),
+                    ]);
+                } else {
+                    OauthUserToken::create([
+                        'provider' => 'google',
+                        'access_token' => $newToken['access_token'],
+                        'refresh_token' => $newToken['refresh_token'],
+                        'expires_at' => $created->addSeconds($newToken['expires_in']),
+                        'scope' => $newToken['scope'],
+                    ]);
+                }
             }
         }
 

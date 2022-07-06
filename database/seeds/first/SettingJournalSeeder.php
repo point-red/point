@@ -25,6 +25,8 @@ class SettingJournalSeeder extends Seeder
         $this->stockCorrection();
         $this->transferItem();
         $this->manufacture();
+        $this->inventoryUsage();
+        $this->inventoryAudit();
         $this->cutoff();
     }
 
@@ -186,6 +188,50 @@ class SettingJournalSeeder extends Seeder
                 $settingJournal->save();
             } else {
                 $settingJournal = SettingJournal::where('feature', 'stock correction')->where('name', $key)->first();
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
+        }
+    }
+
+    private function inventoryUsage()
+    {
+        $accounts = [
+            'difference stock expenses' => $this->getAccountId('difference stock expenses'),
+        ];
+
+        foreach ($accounts as $key => $value) {
+            if (! $this->isExists('inventory usage', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'inventory usage';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            } else {
+                $settingJournal = SettingJournal::where('feature', 'inventory usage')->where('name', $key)->first();
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            }
+        }
+    }
+
+    private function inventoryAudit()
+    {
+        $accounts = [
+            'difference stock expenses' => $this->getAccountId('difference stock expenses'),
+        ];
+
+        foreach ($accounts as $key => $value) {
+            if (! $this->isExists('inventory usage', $key)) {
+                $settingJournal = new SettingJournal;
+                $settingJournal->feature = 'inventory usage';
+                $settingJournal->name = $key;
+                $settingJournal->description = '';
+                $settingJournal->chart_of_account_id = $value;
+                $settingJournal->save();
+            } else {
+                $settingJournal = SettingJournal::where('feature', 'inventory usage')->where('name', $key)->first();
                 $settingJournal->chart_of_account_id = $value;
                 $settingJournal->save();
             }

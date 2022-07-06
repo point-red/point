@@ -17,6 +17,8 @@ class Google
         $client = new \Google_Client();
     
         $client->setRedirectUri($oauthRedirectUri);
+        $client->setAccessType('offline');
+        $client->setPrompt('select_account consent');
         $client->setAuthConfig([
             "auth_uri" => "https://accounts.google.com/o/oauth2/auth",
             "token_uri" => "https://oauth2.googleapis.com/token",

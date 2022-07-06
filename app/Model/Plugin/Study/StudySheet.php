@@ -3,6 +3,7 @@
 namespace App\Model\Plugin\Study;
 
 use App\Model\PointModel;
+use App\Services\Google\Drive;
 
 class StudySheet extends PointModel
 {
@@ -46,5 +47,47 @@ class StudySheet extends PointModel
     public function subject()
     {
         return $this->belongsTo(StudySubject::class, 'subject_id');
+    }
+
+    /**
+     * Get the preview link of photo.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function getPhotoAttribute()
+    {
+        if ($this->photo_file_id) {
+            return Drive::previewUrl($this->photo_file_id);
+        }
+        return '';
+    }
+
+    /**
+     * Get the preview link of audio.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function getAudioAttribute()
+    {
+        if ($this->audio_file_id) {
+            return Drive::previewUrl($this->audio_file_id);
+        }
+        return '';
+    }
+
+    /**
+     * Get the preview link of video.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function getVideoAttribute()
+    {
+        if ($this->video_file_id) {
+            return Drive::previewUrl($this->video_file_id);
+        }
+        return '';
     }
 }

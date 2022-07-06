@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Services\Google;
+
 class Drive
 {
     private \Google_Client $client;
@@ -24,7 +26,7 @@ class Drive
      * 
      * @param  \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string $file
      * @param  string  $dir
-     * @return array
+     * @return string
      */
     public function store($file, $dir = '')
     {
@@ -52,10 +54,7 @@ class Drive
         ]);
         $this->service->permissions->create($fileId, $newPermission);
         
-        return [
-            'id' => $fileId,
-            'path' => implode('/', [$dir, $filename]),
-        ];
+        return $fileId;
     }
 
     /**
@@ -64,8 +63,19 @@ class Drive
      * @param  string  $fileId
      * @return void
      */
-    public function destroy(string $path)
+    public function destroy(string $fileId)
     {
-        $this->disk->delete($path);
+        $this->service->files->delete($fileId);
+    }
+
+    /**
+     * Get preview link from google drive file id
+     * 
+     * @param  string  $fileId
+     * @return string
+     */
+    public static function previewUrl(string $fileId)
+    {
+        return "https://drive.google.com/file/d/$fileId/preview?usp=drivesdk";
     }
 }

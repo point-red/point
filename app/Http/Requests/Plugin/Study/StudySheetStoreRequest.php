@@ -4,7 +4,7 @@ namespace App\Http\Requests\Plugin\Study;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StudySheetRequest extends FormRequest
+class StudySheetStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

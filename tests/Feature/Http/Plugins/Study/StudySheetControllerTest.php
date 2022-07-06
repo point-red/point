@@ -39,8 +39,8 @@ class StudySheetControllerTest extends TestCase
             'data' => [
                 [
                     'id' => $sheet->id,
-                    'started_at' => $sheet->started_at,
-                    'ended_at' => $sheet->ended_at,
+                    'started_at' => $sheet->started_at->toJson(),
+                    'ended_at' => $sheet->ended_at->toJson(),
                     'subject_id' => $sheet->subject_id,
                     'subject' => [
                         'id' => $sheet->subject->id,
@@ -137,7 +137,12 @@ class StudySheetControllerTest extends TestCase
 
         $route = route('study.sheet.index');
 
-        $this->json('get', $route, ['filter_equal' => '1'], [$this->headers])
+        $param = [
+            'filter_equal' => [
+                'is_draft' => 1,
+            ]
+        ];
+        $this->json('get', $route, $param, [$this->headers])
             ->assertJsonCount(1, 'data')
             ->assertJson([
                 'data' => [
@@ -162,9 +167,12 @@ class StudySheetControllerTest extends TestCase
         ]);
 
         $route = route('study.sheet.index');
-
-        $this->json('get', $route, ['filter_equal' => '0'], [$this->headers])
-            ->assertJsonCount(1, 'data')
+        $param = [
+            'filter_equal' => [
+                'is_draft' => '0',
+            ]
+        ];
+        $this->json('get', $route, $param, [$this->headers])
             ->assertJson([
                 'data' => [
                     ['id' => $sheet->id],
@@ -189,10 +197,37 @@ class StudySheetControllerTest extends TestCase
     {
         $sheet = factory(StudySheet::class)->create([
             'user_id' => $this->user->id,
+            'photo_file_id' => 'qwer',
+            'audio_file_id' => 'asdf',
+            'video_file_id' => 'zxcv',
         ]);
         $route = route('study.sheet.show', ['sheet' => $sheet]);
         $this->json('get', $route, [], [$this->headers])->assertJson([
-            ''
+            'id' => $sheet->id,
+            'started_at' => $sheet->started_at->toJson(),
+            'ended_at' => $sheet->ended_at->toJson(),
+            'subject_id' => $sheet->subject_id,
+            'subject' => [
+                'id' => $sheet->subject->id,
+                'name' => $sheet->subject->name,
+            ],
+            'institution' => $sheet->institution,
+            'teacher' => $sheet->teacher,
+            'competency' => $sheet->competency,
+            'learning_goals' => $sheet->learning_goals,
+            'activities' => $sheet->activities,
+            'grade' => $sheet->grade,
+            'behavior' => $sheet->behavior,
+            'remarks' => $sheet->remarks,
+            'is_draft' => $sheet->is_draft,
+            'created_at' => $sheet->created_at,
+            'updated_at' => $sheet->updated_at,
+            'photo_file_id' => 'qwer',
+            'audio_file_id' => 'asdf',
+            'video_file_id' => 'zxcv',
+            'photo' => "https://drive.google.com/file/d/qwer/preview?usp=drivesdk",
+            'audio' => "https://drive.google.com/file/d/asdf/preview?usp=drivesdk",
+            'video' => "https://drive.google.com/file/d/zxcv/preview?usp=drivesdk",
         ]);
     }
     
@@ -211,14 +246,15 @@ class StudySheetControllerTest extends TestCase
             'started_at' => now()->startOfHour(),
             'ended_at' => now()->addHour()->startOfHour(),
             'subject_id' => $subject->id,
-            'institution' => $this->faker()->text(),
+            'institution' => $this->faker()->text(20),
             'teacher' => $this->faker()->name(),
-            'competency' => $this->faker()->text(),
-            'learning_goals' => $this->faker()->text(),
-            'activities' => $this->faker()->text(),
+            'competency' => $this->faker()->text(20),
+            'learning_goals' => $this->faker()->text(20),
+            'activities' => $this->faker()->text(20),
             'grade' => $this->faker()->numberBetween(0,100),
             'behavior' => 'A',
-            'remarks' => $this->faker()->text(),
+            'remarks' => $this->faker()->text(20),
+            'is_draft' => false,
         ];
         
         $this->json('post', $route, $form, [$this->headers])->assertCreated();
@@ -236,6 +272,7 @@ class StudySheetControllerTest extends TestCase
             'behavior' => $form['behavior'],
             'remarks' => $form['remarks'],
             'user_id' => $this->user->id,
+            'is_draft' => false,
         ], 'tenant');
     }
     
@@ -266,6 +303,7 @@ class StudySheetControllerTest extends TestCase
             'grade' => $this->faker()->numberBetween(0,100),
             'behavior' => 'A',
             'remarks' => $this->faker()->text(180),
+            'is_draft' => false,
         ];
         
         $this->json('put', $route, $form, [$this->headers])->assertSuccessful();
@@ -284,6 +322,7 @@ class StudySheetControllerTest extends TestCase
             'behavior' => $form['behavior'],
             'remarks' => $form['remarks'],
             'user_id' => $this->user->id,
+            'is_draft' => false,
         ], 'tenant');
     }
     
@@ -307,15 +346,5 @@ class StudySheetControllerTest extends TestCase
         ], 'tenant');
     }
 
-    // Store photo
-    // Store voice
-    // Store video
-
-    // Update photo
-    // Update voice
-    // Update video
-
-    // Delete photo
-    // Delete voice
-    // Delete video
+    // TODO store, edit, delete with files
 }

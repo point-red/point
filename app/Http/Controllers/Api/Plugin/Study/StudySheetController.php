@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Api\Plugin\Study;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Plugin\Study\StudySheetRequest;
+use App\Http\Requests\Plugin\Study\StudySheetStoreRequest;
+use App\Http\Requests\Plugin\Study\StudySheetUpdateRequest;
 use App\Http\Resources\ApiCollection;
-use App\Model\Master\User;
 use App\Model\Plugin\Study\StudySheet;
+use App\Services\Google\Drive;
 use Illuminate\Http\Request;
 
 class StudySheetController extends Controller
@@ -44,31 +45,30 @@ class StudySheetController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\Plugin\Study\StudySheetRequest  $request
+     * @param  \App\Http\Requests\Plugin\Study\StudySheetStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StudySheetRequest $request)
+    public function store(StudySheetStoreRequest $request)
     {
-        // $request->file('video');
-        // $request->file('audio');
-        // $request->file('photo');
-
-        // $validated = $request->all();
         $validated = $request->validated();
-
-        if ($request->has('photo')) {
-            
-        }
-        if ($request->has('audio')) {
-
-        }
-        if ($request->has('video')) {
-
-        }
 
         $sheet = new StudySheet();
         $sheet->fill($validated);
         $sheet->user_id = auth()->id();
+
+        // TODO test mock google drive assert called
+        $googleDrive = new Drive();
+
+        if ($request->has('photo')) {
+            $sheet->photo_file_id = $googleDrive->store($request->file('photo'));
+        }
+        if ($request->has('audio')) {
+            $sheet->audio_file_id = $googleDrive->store($request->file('audio'));
+        }
+        if ($request->has('video')) {
+            $sheet->video_file_id = $googleDrive->store($request->file('video'));
+        }
+        
         $sheet->save();
 
         return $sheet;
@@ -82,7 +82,10 @@ class StudySheetController extends Controller
      */
     public function show(StudySheet $sheet)
     {
-        //
+        $sheet->load('subject:id,name');
+        $sheet->append(['photo', 'audio', 'video']);
+
+        return $sheet;
     }
 
     /**
@@ -99,22 +102,41 @@ class StudySheetController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\Plugin\Study\StudySheetRequest  $request
+     * @param  \App\Http\Requests\Plugin\Study\StudySheetUpdateRequest  $request
      * @param  \App\Model\Plugin\Study\StudySheet  $sheet
      * @return \Illuminate\Http\Response
      */
-    public function update(StudySheetRequest $request, StudySheet $sheet)
+    public function update(StudySheetUpdateRequest $request, StudySheet $sheet)
     {
         $validated = $request->validated();
-        $sheet->update($validated);
-        
-        // delete photo from drive
-        // delete audio from drive
-        // delete video from drive
+        $sheet->fill($validated);
 
-        // upload photo to drive
-        // upload audio to drive
-        // upload video to drive
+        // TODO test mock google drive assert called
+        $googleDrive = new Drive();
+
+        // if file existed, but next request dont have the id
+        // means remove / replace the file
+        if ($sheet->photo_file_id && !$request->has('photo_file_id')) {
+            $googleDrive->destroy($sheet->photo_file_id);
+        }
+        if ($sheet->audio_file_id && !$request->has('audio_file_id')) {
+            $googleDrive->destroy($sheet->audio_file_id);
+        }
+        if ($sheet->video_file_id && !$request->has('video_file_id')) {
+            $googleDrive->destroy($sheet->video_file_id);
+        }
+
+        if ($request->has('photo')) {
+            $sheet->photo_file_id = $googleDrive->store($request->file('photo'));
+        }
+        if ($request->has('audio')) {
+            $sheet->audio_file_id = $googleDrive->store($request->file('audio'));
+        }
+        if ($request->has('video')) {
+            $sheet->video_file_id = $googleDrive->store($request->file('video'));
+        }
+
+        $sheet->save();
         
         return $sheet;
     }
@@ -127,6 +149,19 @@ class StudySheetController extends Controller
      */
     public function destroy(StudySheet $sheet)
     {
+        // TODO test mock google drive assert called
+        $googleDrive = new Drive();
+
+        if ($sheet->photo_file_id) {
+            $googleDrive->destroy($sheet->photo_file_id);
+        }
+        if ($sheet->audio_file_id) {
+            $googleDrive->destroy($sheet->audio_file_id);
+        }
+        if ($sheet->video_file_id) {
+            $googleDrive->destroy($sheet->video_file_id);
+        }
+        
         return $sheet->delete();
 
         // delete photo from drive

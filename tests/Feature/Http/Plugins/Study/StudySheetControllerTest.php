@@ -22,23 +22,74 @@ class StudySheetControllerTest extends TestCase
 
     /**
      * Test StudySheetController@index should return list of existing data.
+     * Result should be wrapped in attribute `data`
+     * and has these attributes.
+     *
+     * @return void
+     */
+    public function test_index_attributes()
+    {
+        $sheet = factory(StudySheet::class)->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $route = route('study.sheet.index');
+
+        $this->json('get', $route, [], [$this->headers])->assertJson([
+            'data' => [
+                [
+                    'id' => $sheet->id,
+                    'started_at' => $sheet->started_at,
+                    'ended_at' => $sheet->ended_at,
+                    'subject_id' => $sheet->subject_id,
+                    'subject' => [
+                        'id' => $sheet->subject->id,
+                        'name' => $sheet->subject->name,
+                    ],
+                    'institution' => $sheet->institution,
+                    'teacher' => $sheet->teacher,
+                    'competency' => $sheet->competency,
+                    'learning_goals' => $sheet->learning_goals,
+                    'activities' => $sheet->activities,
+                    'grade' => $sheet->grade,
+                    'behavior' => $sheet->behavior,
+                    'remarks' => $sheet->remarks,
+                    'is_draft' => $sheet->is_draft,
+                    'created_at' => $sheet->created_at,
+                    'updated_at' => $sheet->updated_at,
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * Test StudySheetController@index should return list of existing data.
      * Result should be ordered by newest first.
      *
      * @return void
      */
     public function test_index_order_by()
     {
-        $sheets = factory(StudySheet::class, 3)->create([
+        $sheet1 = factory(StudySheet::class)->create([
             'user_id' => $this->user->id,
+            'started_at' => today(),
+        ]);
+        $sheet2 = factory(StudySheet::class)->create([
+            'user_id' => $this->user->id,
+            'started_at' => today()->addHours(10),
+        ]);
+        $sheet3 = factory(StudySheet::class)->create([
+            'user_id' => $this->user->id,
+            'started_at' => today()->subHours(5),
         ]);
 
         $route = route('study.sheet.index');
 
-        $this->json('get', $route, ['sort_by' => '-id'], [$this->headers])->assertJson([
+        $this->json('get', $route, ['sort_by' => '-started_at'], [$this->headers])->assertJson([
             'data' => [
-                ['id' => $sheets[2]->id],
-                ['id' => $sheets[1]->id],
-                ['id' => $sheets[0]->id],
+                ['id' => $sheet2->id],
+                ['id' => $sheet1->id],
+                ['id' => $sheet3->id],
             ],
         ]);
     }
@@ -70,44 +121,55 @@ class StudySheetControllerTest extends TestCase
     }
 
     /**
-     * Test StudySheetController@index should return list of existing data.
-     * Result should be wrapped in attribute `data`
-     * and has these attributes.
-     *
+     * Test StudySheetController@index to get only sheet with status draft.
+     * 
      * @return void
      */
-    public function test_index_attributes()
+    public function test_index_only_draft()
     {
         $sheet = factory(StudySheet::class)->create([
             'user_id' => $this->user->id,
         ]);
+        $draft = factory(StudySheet::class)->create([
+            'user_id' => $this->user->id,
+            'is_draft' => true,
+        ]);
 
         $route = route('study.sheet.index');
 
-        $this->json('get', $route, [], [$this->headers])->assertJson([
-            'data' => [
-                [
-                    'id' => $sheet->id,
-                    'started_at' => $sheet->started_at,
-                    'ended_at' => $sheet->ended_at,
-                    'subject_id' => $sheet->subject_id,
-                    'subject' => [
-                        'id' => $sheet->subject->id,
-                        'name' => $sheet->subject->name,
-                    ],
-                    'institution' => $sheet->institution,
-                    'teacher' => $sheet->teacher,
-                    'competency' => $sheet->competency,
-                    'activities' => $sheet->activities,
-                    'grade' => $sheet->grade,
-                    'behavior' => $sheet->behavior,
-                    'remarks' => $sheet->remarks,
-                    'is_draft' => $sheet->is_draft,
-                    'created_at' => $sheet->created_at,
-                    'updated_at' => $sheet->updated_at,
+        $this->json('get', $route, ['filter_equal' => '1'], [$this->headers])
+            ->assertJsonCount(1, 'data')
+            ->assertJson([
+                'data' => [
+                    ['id' => $draft->id],
                 ],
-            ],
+            ]);
+    }
+
+    /**
+     * Test StudySheetController@index to get draft except draft.
+     * 
+     * @return void
+     */
+    public function test_index_except_draft()
+    {
+        $sheet = factory(StudySheet::class)->create([
+            'user_id' => $this->user->id,
         ]);
+        $draft = factory(StudySheet::class)->create([
+            'user_id' => $this->user->id,
+            'is_draft' => true,
+        ]);
+
+        $route = route('study.sheet.index');
+
+        $this->json('get', $route, ['filter_equal' => '0'], [$this->headers])
+            ->assertJsonCount(1, 'data')
+            ->assertJson([
+                'data' => [
+                    ['id' => $sheet->id],
+                ],
+            ]);
     }
 
     // Order by newest
@@ -117,6 +179,22 @@ class StudySheetControllerTest extends TestCase
     // Filter by Competency
     // Filter by Teacher
     // Filter by Search
+
+    /**
+     * Test StudySheetController@show should return these attributes.
+     * 
+     * @return void
+     */
+    public function test_show()
+    {
+        $sheet = factory(StudySheet::class)->create([
+            'user_id' => $this->user->id,
+        ]);
+        $route = route('study.sheet.show', ['sheet' => $sheet]);
+        $this->json('get', $route, [], [$this->headers])->assertJson([
+            ''
+        ]);
+    }
     
     /**
      * Test StudySheetController@store should save new data.

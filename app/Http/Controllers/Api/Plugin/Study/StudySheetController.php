@@ -50,11 +50,21 @@ class StudySheetController extends Controller
     public function store(StudySheetRequest $request)
     {
         // $request->file('video');
-        // $request->file('voice');
+        // $request->file('audio');
         // $request->file('photo');
 
         // $validated = $request->all();
         $validated = $request->validated();
+
+        if ($request->has('photo')) {
+            
+        }
+        if ($request->has('audio')) {
+
+        }
+        if ($request->has('video')) {
+
+        }
 
         $sheet = new StudySheet();
         $sheet->fill($validated);

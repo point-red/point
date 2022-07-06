@@ -96,7 +96,7 @@ class StudySheetStoreRequestTest extends TestCase
      *
      * @return void
      */
-    public function testExist()
+    public function test_exist()
     {
         $form = [
             'subject_id' => 0,
@@ -112,7 +112,7 @@ class StudySheetStoreRequestTest extends TestCase
      *
      * @return void
      */
-    public function testString()
+    public function test_string()
     {
         $form = [
             'institution' => ['key' => 'value'],
@@ -140,7 +140,7 @@ class StudySheetStoreRequestTest extends TestCase
      *
      * @return void
      */
-    public function testMaxLength()
+    public function test_max_length()
     {
         $randomString = \Illuminate\Support\Str::random(500);
         $form = [
@@ -170,7 +170,7 @@ class StudySheetStoreRequestTest extends TestCase
      *
      * @return void
      */
-    public function testEnum()
+    public function test_enum()
     {
         $form = [
             'behavior' => 'some text',
@@ -188,7 +188,7 @@ class StudySheetStoreRequestTest extends TestCase
      *
      * @return void
      */
-    public function testInteger()
+    public function test_integer()
     {
         $form = [
             'grade' => 'some string',
@@ -204,7 +204,7 @@ class StudySheetStoreRequestTest extends TestCase
      *
      * @return void
      */
-    public function testMax()
+    public function test_max()
     {
         $form = [
             'grade' => 500,
@@ -223,15 +223,49 @@ class StudySheetStoreRequestTest extends TestCase
      *
      * @return void
      */
-    public function testBoolean()
+    public function test_boolean()
     {
-        $form = [
-            'is_draft' => 'some text',
-        ];
         $errors = [
             'is_draft' => __('validation.boolean', ['attribute' => 'is draft']),
         ];
+
+        $form = [
+            'is_draft' => 'some text',
+        ];
         $this->jsonPost($form)->assertJsonValidationErrors($errors);
+
+        $form = [
+            'is_draft' => 5,
+        ];
+        $this->jsonPost($form)->assertJsonValidationErrors($errors);
+
+        $form = [
+            'is_draft' => 0,
+        ];
+        $this->jsonPost($form)->assertJsonMissingValidationErrors([
+            'is_draft',
+        ]);
+
+        $form = [
+            'is_draft' => 1,
+        ];
+        $this->jsonPost($form)->assertJsonMissingValidationErrors([
+            'is_draft',
+        ]);
+
+        $form = [
+            'is_draft' => '0',
+        ];
+        $this->jsonPost($form)->assertJsonMissingValidationErrors([
+            'is_draft',
+        ]);
+
+        $form = [
+            'is_draft' => '1',
+        ];
+        $this->jsonPost($form)->assertJsonMissingValidationErrors([
+            'is_draft',
+        ]);
     }
 
     /**
@@ -239,7 +273,7 @@ class StudySheetStoreRequestTest extends TestCase
      *
      * @return void
      */
-    public function testFile()
+    public function test_file()
     {
         $form = [
             'photo' => UploadedFile::fake()->create('not image.php', 2, 'php'),
@@ -265,7 +299,7 @@ class StudySheetStoreRequestTest extends TestCase
      *
      * @return void
      */
-    public function testOptional()
+    public function test_optional()
     {
         // not provided
         $form = [];

@@ -28,6 +28,17 @@ class StudySheet extends PointModel
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     * https://laravel.com/docs/master/eloquent-mutators#attribute-casting.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
+    ];
+
+    /**
      * Get the study subject that referenced by this model
      *
      * @return eloquent

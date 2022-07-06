@@ -9,7 +9,7 @@ class OauthUserToken extends Model
     protected $connection = 'mysql';
 
     public static $alias = 'oauth_user_token';
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -21,5 +21,6 @@ class OauthUserToken extends Model
         'refresh_token',
         'expires_at',
         'provider',
+        'scope',
     ];
 }

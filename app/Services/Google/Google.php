@@ -10,7 +10,7 @@ class Google
     {
         $oauthClientId = config('services.google.client_id');
         $oauthClientSecret = config('services.google.client_secret');
-        $oauthRedirectUri = route('oauth.login.google.drive.delete');
+        $oauthRedirectUri = config('app.url') . '/oauth/login/google/drive/callback';
         $oauthScope = "https://www.googleapis.com/auth/drive.file";
     
         // $client = new \Google\Client(); // newer version use this
@@ -28,7 +28,7 @@ class Google
         $client->setScopes($oauthScope);
 
         // get user access / refresh token
-        $storedToken = OauthUserToken::where('user_id', auth()->id())
+        $storedToken = \App\Model\OauthUserToken::where('user_id', auth()->id())
             ->where('provider', 'google')
             ->where('scope', $oauthScope)
             ->first();

@@ -113,18 +113,6 @@ class OAuthController extends WebController
             .'&ed='.$tokenResult->token->expires_at);
     }
 
-    public function requestGoogleDrive()
-    {
-        $client = Google::client();
-
-        if ($client->isAccessTokenExpired()) {
-            return [
-                'authenticated' => false,
-                'auth_url' => $client->createAuthUrl(),
-            ];
-        }
-        return ['authenticated' => true];
-    }
     public function handleCallbackGoogleDrive(Request $request)
     {
         $client = Google::client();

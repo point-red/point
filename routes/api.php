@@ -89,6 +89,8 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         require base_path('routes/api/plugin/play-book.php');
         require base_path('routes/api/plugin/study.php');
     });
+
+    Route::get('oauth/login/google/drive', 'OAuthController@requestGoogleDrive');
     
     //Approve/reject with token
     Route::prefix('approval-with-token')->group(function () {

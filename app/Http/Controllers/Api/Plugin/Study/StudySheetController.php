@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Plugin\Study;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Plugin\Study\StudySheetStoreRequest;
+use App\Http\Requests\Plugin\Study\StudySheetRequest;
 use App\Http\Resources\ApiCollection;
 use App\Model\Master\User;
 use App\Model\Plugin\Study\StudySheet;
@@ -44,10 +44,10 @@ class StudySheetController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\Plugin\Study\StudySheetStoreRequest  $request
+     * @param  \App\Http\Requests\Plugin\Study\StudySheetRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StudySheetStoreRequest $request)
+    public function store(StudySheetRequest $request)
     {
         // $request->file('video');
         // $request->file('voice');
@@ -89,15 +89,23 @@ class StudySheetController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\Plugin\Study\StudySheetRequest  $request
      * @param  \App\Model\Plugin\Study\StudySheet  $sheet
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, StudySheet $sheet)
+    public function update(StudySheetRequest $request, StudySheet $sheet)
     {
-        $validated = $request->all();
-        // $validated = $request->validated();
+        $validated = $request->validated();
         $sheet->update($validated);
+        
+        // delete photo from drive
+        // delete audio from drive
+        // delete video from drive
+
+        // upload photo to drive
+        // upload audio to drive
+        // upload video to drive
+        
         return $sheet;
     }
 

@@ -28,7 +28,7 @@ class StudySheetControllerTest extends TestCase
      */
     public function test_index_order_by()
     {
-        $sheet = factory(StudySheet::class, 3)->create([
+        $sheets = factory(StudySheet::class, 3)->create([
             'user_id' => $this->user->id,
         ]);
 
@@ -36,9 +36,9 @@ class StudySheetControllerTest extends TestCase
 
         $this->json('get', $route, ['sort_by' => '-id'], [$this->headers])->assertJson([
             'data' => [
-                ['id' => $sheet[2]->id],
-                ['id' => $sheet[1]->id],
-                ['id' => $sheet[0]->id],
+                ['id' => $sheets[2]->id],
+                ['id' => $sheets[1]->id],
+                ['id' => $sheets[0]->id],
             ],
         ]);
     }

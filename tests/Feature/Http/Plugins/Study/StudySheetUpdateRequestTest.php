@@ -2,11 +2,12 @@
 
 namespace Tests\Feature\Http\Plugins\Study;
 
+use App\Model\Plugin\Study\StudySheet;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
-class StudySheetStoreRequestTest extends TestCase
+class StudySheetUpdateRequestTest extends TestCase
 {
     use WithFaker;
 
@@ -19,15 +20,19 @@ class StudySheetStoreRequestTest extends TestCase
         $this->signIn();
         $this->setRole();
 
-        $this->route = route('study.sheet.store');
+        $sheet = factory(StudySheet::class)->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $this->route = route('study.sheet.update', ['sheet' => $sheet]);
     }
 
     /**
      * Call the given URI with a JSON POST request.
      */
-    private function jsonPost(array $form)
+    private function jsonPut(array $form)
     {
-        return $this->json('post', $this->route, $form, [$this->headers]);
+        return $this->json('put', $this->route, $form, [$this->headers]);
     }
 
     /**
@@ -42,7 +47,7 @@ class StudySheetStoreRequestTest extends TestCase
             'is_draft' => __('validation.required', ['attribute' => 'is draft']),
         ];
         
-        $this->jsonPost($form)->assertJsonValidationErrors($errors);
+        $this->jsonPut($form)->assertJsonValidationErrors($errors);
     }
 
     /**
@@ -88,7 +93,7 @@ class StudySheetStoreRequestTest extends TestCase
             ]),
         ];
         
-        $this->jsonPost($form)->assertJsonValidationErrors($errors);
+        $this->jsonPut($form)->assertJsonValidationErrors($errors);
     }
 
     /**
@@ -104,7 +109,7 @@ class StudySheetStoreRequestTest extends TestCase
         $errors = [
             'subject_id' => __('validation.exists', ['attribute' => 'subject id']),
         ];
-        $this->jsonPost($form)->assertJsonValidationErrors($errors);
+        $this->jsonPut($form)->assertJsonValidationErrors($errors);
     }
 
     /**
@@ -132,7 +137,7 @@ class StudySheetStoreRequestTest extends TestCase
             'activities' => __('validation.string', ['attribute' => 'activities']),
             'remarks' => __('validation.string', ['attribute' => 'remarks']),
         ];
-        $this->jsonPost($form)->assertJsonValidationErrors($errors);
+        $this->jsonPut($form)->assertJsonValidationErrors($errors);
     }
 
     /**
@@ -162,7 +167,7 @@ class StudySheetStoreRequestTest extends TestCase
             'activities' =>  __('validation.max.string', ['attribute' => 'activities', 'max' => 180]),
             'remarks' =>  __('validation.max.string', ['attribute' => 'remarks', 'max' => 180]),
         ];
-        $this->jsonPost($form)->assertJsonValidationErrors($errors);
+        $this->jsonPut($form)->assertJsonValidationErrors($errors);
     }
 
     /**
@@ -180,7 +185,7 @@ class StudySheetStoreRequestTest extends TestCase
                 'attribute' => 'behavior',
             ]),
         ];
-        $this->jsonPost($form)->assertJsonValidationErrors($errors);
+        $this->jsonPut($form)->assertJsonValidationErrors($errors);
     }
 
     /**
@@ -196,7 +201,7 @@ class StudySheetStoreRequestTest extends TestCase
         $errors = [
             'grade' => __('validation.integer', ['attribute' => 'grade']),
         ];
-        $this->jsonPost($form)->assertJsonValidationErrors($errors);
+        $this->jsonPut($form)->assertJsonValidationErrors($errors);
     }
 
     /**
@@ -215,7 +220,7 @@ class StudySheetStoreRequestTest extends TestCase
                 'max' => 100
             ]),
         ];
-        $this->jsonPost($form)->assertJsonValidationErrors($errors);
+        $this->jsonPut($form)->assertJsonValidationErrors($errors);
     }
 
     /**
@@ -231,7 +236,7 @@ class StudySheetStoreRequestTest extends TestCase
         $errors = [
             'is_draft' => __('validation.boolean', ['attribute' => 'is draft']),
         ];
-        $this->jsonPost($form)->assertJsonValidationErrors($errors);
+        $this->jsonPut($form)->assertJsonValidationErrors($errors);
     }
 
     /**
@@ -257,7 +262,7 @@ class StudySheetStoreRequestTest extends TestCase
                 'values' => 'mp4, mov'
             ]),
         ];
-        $this->jsonPost($form)->assertJsonValidationErrors($errors);
+        $this->jsonPut($form)->assertJsonValidationErrors($errors);
     }
 
     /**
@@ -269,7 +274,7 @@ class StudySheetStoreRequestTest extends TestCase
     {
         // not provided
         $form = [];
-        $this->jsonPost($form)->assertJsonMissingValidationErrors([
+        $this->jsonPut($form)->assertJsonMissingValidationErrors([
             'photo',
             'audio',
             'video',
@@ -291,7 +296,7 @@ class StudySheetStoreRequestTest extends TestCase
             'grade' => null,
             'remarks' => null,
         ];
-        $this->jsonPost($form)->assertJsonMissingValidationErrors([
+        $this->jsonPut($form)->assertJsonMissingValidationErrors([
             'photo',
             'audio',
             'video',
@@ -313,7 +318,7 @@ class StudySheetStoreRequestTest extends TestCase
             'grade' => '',
             'remarks' => '',
         ];
-        $this->jsonPost($form)->assertJsonMissingValidationErrors([
+        $this->jsonPut($form)->assertJsonMissingValidationErrors([
             'photo',
             'audio',
             'video',

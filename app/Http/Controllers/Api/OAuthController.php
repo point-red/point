@@ -17,16 +17,13 @@ class OAuthController extends ApiController
     {
         $client = Google::client();
         
-        if ($client->isAccessTokenExpired()) {
-            $oauthRedirectUri = config('app.url') . '/oauth/google/callback';
-            $client->setRedirectUri($oauthRedirectUri);
+        $oauthRedirectUri = config('app.url') . '/oauth/google/callback';
+        $client->setRedirectUri($oauthRedirectUri);
 
-            return [
-                'authenticated' => false,
-                'auth_url' => $client->createAuthUrl(),
-            ];
-        }
-        return ['authenticated' => true];
+        return [
+            'authenticated' => !$client->isAccessTokenExpired(),
+            'auth_url' => $client->createAuthUrl(),
+        ];
     }
 
     /**

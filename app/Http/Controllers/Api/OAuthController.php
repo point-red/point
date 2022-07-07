@@ -17,7 +17,7 @@ class OAuthController extends ApiController
     {
         $client = Google::client();
         
-        $oauthRedirectUri = config('app.url') . '/oauth/google/callback';
+        $oauthRedirectUri = config('app.url_web') . '/oauth/google/callback';
         $client->setRedirectUri($oauthRedirectUri);
 
         return [

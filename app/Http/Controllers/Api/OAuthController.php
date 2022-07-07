@@ -44,6 +44,7 @@ class OAuthController extends ApiController
         $client->setAccessToken($accessToken);
         $created = \Carbon\Carbon::createFromTimestamp($accessToken['created']);
         OauthUserToken::create([
+            'user_id' => auth()->id(),
             'provider' => 'google',
             'access_token' => $accessToken['access_token'],
             'refresh_token' => $accessToken['refresh_token'],

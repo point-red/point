@@ -91,6 +91,8 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
     });
 
     Route::get('oauth/login/google/drive', 'OAuthController@requestGoogleDrive');
+    Route::post('oauth/login/google/drive', 'OAuthController@storeGoogleAccessToken');
+    Route::delete('oauth/login/google/drive', 'OAuthController@unlinkGoogleDrive');
     
     //Approve/reject with token
     Route::prefix('approval-with-token')->group(function () {

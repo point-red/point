@@ -10,13 +10,11 @@ class Google
     {
         $oauthClientId = config('services.google.client_id');
         $oauthClientSecret = config('services.google.client_secret');
-        $oauthRedirectUri = config('app.url') . '/oauth/login/google/drive/callback';
         $oauthScope = "https://www.googleapis.com/auth/drive.file";
     
         // $client = new \Google\Client(); // newer version use this
         $client = new \Google_Client();
-    
-        $client->setRedirectUri($oauthRedirectUri);
+
         $client->setAccessType('offline');
         $client->setPrompt('select_account consent');
         $client->setAuthConfig([

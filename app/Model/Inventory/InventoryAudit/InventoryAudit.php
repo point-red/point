@@ -133,7 +133,7 @@ class InventoryAudit extends TransactionModel
             $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $auditItem->item_id;
             $journal->chart_of_account_id = get_setting_journal('inventory audit', 'difference stock expense');
-            $journal->debit = $amount < 0 ? $amount : 0;
+            $journal->debit = $amount < 0 ? $amount * -1 : 0;
             $journal->credit = $amount > 0 ? $amount : 0;
             $journal->save();
 
@@ -142,7 +142,7 @@ class InventoryAudit extends TransactionModel
             $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $auditItem->item_id;
             $journal->chart_of_account_id = $auditItem->item->chart_of_account_id;
-            $journal->credit = $amount < 0 ? $amount : 0;
+            $journal->credit = $amount < 0 ? $amount * -1 : 0;
             $journal->debit = $amount > 0 ? $amount : 0;
             $journal->save();
         }

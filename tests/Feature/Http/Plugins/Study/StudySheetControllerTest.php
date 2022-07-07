@@ -169,7 +169,7 @@ class StudySheetControllerTest extends TestCase
         $route = route('study.sheet.index');
         $param = [
             'filter_equal' => [
-                'is_draft' => '0',
+                'is_draft' => 0,
             ]
         ];
         $this->json('get', $route, $param, [$this->headers])

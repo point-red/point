@@ -16,9 +16,6 @@ class OAuthController extends ApiController
     public function requestGoogleDrive(Request $request)
     {
         $client = Google::client();
-        
-        $oauthRedirectUri = config('app.url_web') . '/oauth/google/callback';
-        $client->setRedirectUri($oauthRedirectUri);
 
         return [
             'authenticated' => !$client->isAccessTokenExpired(),

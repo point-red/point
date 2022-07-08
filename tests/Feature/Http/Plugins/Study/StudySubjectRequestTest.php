@@ -3,9 +3,8 @@
 namespace Tests\Feature\Http\Plugins\Study;
 
 use App\Model\Plugin\Study\StudySubject;
-use Tests\TestCase;
 
-class StudySubjectRequestTest extends TestCase
+class StudySubjectRequestTest extends StudyTestCase
 {
     public function setUp(): void
     {

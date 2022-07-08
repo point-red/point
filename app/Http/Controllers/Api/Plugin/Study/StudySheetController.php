@@ -12,6 +12,12 @@ use Illuminate\Http\Request;
 
 class StudySheetController extends Controller
 {
+    public function __construct()
+    {
+        // Authorize controller through Policy.
+        $this->authorizeResource(StudySheet::class, 'sheet');
+    }
+    
     /**
      * Display a listing of the resource.
      *

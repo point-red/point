@@ -6,9 +6,8 @@ use App\Model\Master\User;
 use App\Model\Plugin\Study\StudySheet;
 use App\Model\Plugin\Study\StudySubject;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 
-class StudySheetControllerTest extends TestCase
+class StudySheetControllerTest extends StudyTestCase
 {
     use WithFaker;
     

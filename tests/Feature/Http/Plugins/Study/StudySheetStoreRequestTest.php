@@ -4,9 +4,8 @@ namespace Tests\Feature\Http\Plugins\Study;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
-use Tests\TestCase;
 
-class StudySheetStoreRequestTest extends TestCase
+class StudySheetStoreRequestTest extends StudyTestCase
 {
     use WithFaker;
 

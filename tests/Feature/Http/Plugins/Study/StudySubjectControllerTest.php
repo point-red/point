@@ -3,18 +3,9 @@
 namespace Tests\Feature\Http\Plugins\Study;
 
 use App\Model\Plugin\Study\StudySubject;
-use Tests\TestCase;
 
-class StudySubjectControllerTest extends TestCase
-{
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->signIn();
-        $this->setRole();
-    }
-    
+class StudySubjectControllerTest extends StudyTestCase
+{    
     /**
      * Test StudySubjectController@store should return list of existing data.
      * Result should be ordered by name ascending

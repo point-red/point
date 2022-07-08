@@ -5,9 +5,8 @@ namespace Tests\Feature\Http\Plugins\Study;
 use App\Model\Plugin\Study\StudySheet;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
-use Tests\TestCase;
 
-class StudySheetUpdateRequestTest extends TestCase
+class StudySheetUpdateRequestTest extends StudyTestCase
 {
     use WithFaker;
 

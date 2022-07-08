@@ -6,10 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Plugin\Study\StudySubjectRequest;
 use App\Http\Resources\ApiCollection;
 use App\Model\Plugin\Study\StudySubject;
-use Illuminate\Http\Request;
 
 class StudySubjectController extends Controller
 {
+    public function __construct()
+    {
+        // Authorize controller through Policy.
+        $this->authorizeResource(StudySubject::class, 'subject');
+    }
+    
     /**
      * Display a listing of the resource.
      *

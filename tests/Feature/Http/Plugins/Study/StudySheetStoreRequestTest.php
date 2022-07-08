@@ -283,11 +283,11 @@ class StudySheetStoreRequestTest extends StudyTestCase
             'photo' => __('validation.image', ['attribute' => 'photo']),
             'audio' => __('validation.mimetypes', [
                 'attribute' => 'audio',
-                'values' => 'mp3, m4a'
+                'values' => 'audio/*'
             ]),
             'video' => __('validation.mimetypes', [
                 'attribute' => 'video',
-                'values' => 'mp4, mov'
+                'values' => 'video/*'
             ]),
         ];
         $this->jsonPost($form)->assertJsonValidationErrors($errors);

@@ -79,34 +79,38 @@ class FormObserver
      */
     public function created(Form $form)
     {
-        $activity = 'Created';
+        if (in_array($form->formable_type, $this->modelNotToObserves)) return;
 
+        // log update form
         $formNumberExist = Form::where('edited_number', $form->number)->first();
-        if (!$formNumberExist && !in_array($form->formable_type, $this->modelNotToObserves)) {
-            $this->_storeActivity($form, $activity);
+        if ($formNumberExist) {
+            $form->edited_number = $formNumberExist->edited_number;
+            $this->_updated($form);
+            return;
         }
+
+        $activity = 'Created';
+        $this->_storeActivity($form, $activity);
     }
 
     /**
-     * Handle the form "updated" event.
+     * Handle the form "updated" logic not triggered in event.
      *
      * @param  \App\Model\Form  $form
      * @return void
      */
-    public function updated(Form $form)
+    public function _updated(Form $form)
     {
         $activity = 'Update';
 
-        if ($form->edited_number && !in_array($form->formable_type, $this->modelNotToObserves)) {
-            $userActivity = UserActivity::where('number', $form->edited_number)
-                ->where('activity', 'like', '%' . $activity . '%');
-                    
-            $updatedTo = $userActivity->count() + 1;
-            
-            $form->number = $form->edited_number;
-            $activity = $activity . ' - ' . $updatedTo;
-            $this->_storeActivity($form, $activity);
-        }
+        $userActivity = UserActivity::where('number', $form->edited_number)
+            ->where('activity', 'like', '%' . $activity . '%');
+                
+        $updatedTo = $userActivity->count() + 1;
+        
+        $form->number = $form->edited_number;
+        $activity = $activity . ' - ' . $updatedTo;
+        $this->_storeActivity($form, $activity);
     }
 
     protected function _storeActivity($form, $activity)

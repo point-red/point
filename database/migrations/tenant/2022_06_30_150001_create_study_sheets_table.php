@@ -22,7 +22,9 @@ class CreateStudySheetsTable extends Migration
             $table->string('photo_file_id')->nullable();
             $table->string('audio_file_id')->nullable();
             $table->string('video_file_id')->nullable();
-            $table->foreignId('subject_id')->nullable()->constrained('study_subjects');
+            $table->foreignId('subject_id')->nullable()
+                ->constrained('study_subjects')
+                ->nullOnDelete();
             $table->string('institution')->nullable();
             $table->string('teacher')->nullable();
             $table->string('competency')->nullable();

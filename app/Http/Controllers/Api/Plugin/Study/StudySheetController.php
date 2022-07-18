@@ -33,9 +33,6 @@ class StudySheetController extends Controller
             ->paginate();
         
         return new ApiCollection($sheets);
-
-        // search
-        // filter
     }
 
     /**
@@ -120,8 +117,8 @@ class StudySheetController extends Controller
         // TODO test mock google drive assert called
         $googleDrive = new Drive();
 
-        // if file existed, but next request dont have the id
-        // means remove / replace the file
+        // if file existed, but request body doesn't have the file id
+        // remove the file from drive
         if ($sheet->photo_file_id && !$request->has('photo_file_id')) {
             $googleDrive->destroy($sheet->photo_file_id);
         }
@@ -132,12 +129,15 @@ class StudySheetController extends Controller
             $googleDrive->destroy($sheet->video_file_id);
         }
 
+        // store photo to drive
         if ($request->has('photo')) {
             $sheet->photo_file_id = $googleDrive->store($request->file('photo'));
         }
+        // store voice to drive
         if ($request->has('audio')) {
             $sheet->audio_file_id = $googleDrive->store($request->file('audio'));
         }
+        // store video to drive
         if ($request->has('video')) {
             $sheet->video_file_id = $googleDrive->store($request->file('video'));
         }
@@ -158,21 +158,20 @@ class StudySheetController extends Controller
         // TODO test mock google drive assert called
         $googleDrive = new Drive();
 
+        // delete photo from drive
         if ($sheet->photo_file_id) {
             $googleDrive->destroy($sheet->photo_file_id);
         }
+        // delete voice from drive
         if ($sheet->audio_file_id) {
             $googleDrive->destroy($sheet->audio_file_id);
         }
+        // delete video from drive
         if ($sheet->video_file_id) {
             $googleDrive->destroy($sheet->video_file_id);
         }
         
-        return $sheet->delete();
-
-        // delete photo from drive
-        // delete voice from drive
-        // delete video from drive
         // delete from database
+        return $sheet->delete();
     }
 }

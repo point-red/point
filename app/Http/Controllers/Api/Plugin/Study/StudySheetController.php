@@ -28,7 +28,6 @@ class StudySheetController extends Controller
     {
         $sheets = StudySheet::eloquentFilter($request)
             ->with(['subject:id,name'])
-            ->fields($request->get('fields'))
             ->where('user_id', auth()->id())
             ->paginate();
         

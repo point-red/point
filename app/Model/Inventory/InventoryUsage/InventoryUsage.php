@@ -3,6 +3,7 @@
 namespace App\Model\Inventory\InventoryUsage;
 
 use App\Helpers\Inventory\InventoryHelper;
+use App\Model\Accounting\Journal;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
@@ -62,6 +63,7 @@ class InventoryUsage extends TransactionModel
         $form->saveData($data, $inventoryUsage);
 
         $inventoryUsage->updateInventory($form, $inventoryUsage);
+        $inventoryUsage->updateJournal($inventoryUsage);
 
         return $inventoryUsage;
     }
@@ -90,6 +92,29 @@ class InventoryUsage extends TransactionModel
                 $options['converter_reference'] = $item->converter;
                 InventoryHelper::decrease($form, $item->inventoryUsage->warehouse, $item->item, $item->quantity, $item->unit, $item->converter, $options);
             }
+        }
+    }
+
+    public static function updateJournal($usage)
+    {
+        foreach ($usage->items as $usageItem) {
+            $amount = $usageItem->item->cogs($usageItem->item_id) * $usageItem->quantity;
+
+            $journal = new Journal;
+            $journal->form_id = $usage->form->id;
+            $journal->journalable_type = Item::$morphName;
+            $journal->journalable_id = $usageItem->item_id;
+            $journal->chart_of_account_id = get_setting_journal('inventory usage', 'difference stock expense');
+            $journal->debit = $amount;
+            $journal->save();
+
+            $journal = new Journal;
+            $journal->form_id = $usage->form->id;
+            $journal->journalable_type = Item::$morphName;
+            $journal->journalable_id = $usageItem->item_id;
+            $journal->chart_of_account_id = $usageItem->item->chart_of_account_id;
+            $journal->credit = $amount;
+            $journal->save();
         }
     }
 

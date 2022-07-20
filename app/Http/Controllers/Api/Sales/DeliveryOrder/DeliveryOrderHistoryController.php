@@ -27,6 +27,7 @@ class DeliveryOrderHistoryController extends Controller
             ->eloquentFilter($request)
             ->join(Form::getTableName().' as '.Form::$alias, function ($query) {
                 $query->on(Form::$alias.'.formable_id', '=', UserActivity::getTableName().'.table_id');
+                $query->on(Form::$alias.'.formable_type', '=', UserActivity::getTableName().'.table_type');
             })
             ->where(UserActivity::getTableName().'.number', $formNumber);
 

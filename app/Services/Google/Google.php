@@ -6,12 +6,39 @@ use App\Model\OauthUserToken;
 
 class Google
 {
+    private static string $oauthScope = 'https://www.googleapis.com/auth/drive.file';
+    
+    /**
+     * Setup google client
+     *
+     * @return \Google_Client
+     */
     public static function client()
+    {
+        $client = self::initClient();
+
+        self::setAccessToken($client);
+        
+        if ($client->isAccessTokenExpired()) {
+            $refreshToken = $client->getRefreshToken();
+            if ($refreshToken) {
+                self::refreshAccessToken($client);
+            }
+        }
+
+        return $client;
+    }
+
+    /**
+     * Setup google client
+     *
+     * @return \Google_Client
+     */
+    private static function initClient()
     {
         $oauthClientId = config('services.google.client_id');
         $oauthClientSecret = config('services.google.client_secret');
         $oauthRedirectUri = config('app.url_web') . '/oauth/google/callback';
-        $oauthScope = "https://www.googleapis.com/auth/drive.file";
     
         // $client = new \Google\Client(); // newer version use this
         $client = new \Google_Client();
@@ -27,41 +54,97 @@ class Google
             "client_id" => $oauthClientId,
             "client_secret" => $oauthClientSecret
         ]);
-        $client->setScopes($oauthScope);
+        $client->setScopes(self::$oauthScope);
 
-        // get user access / refresh token
-        $storedToken = \App\Model\OauthUserToken::where('user_id', auth()->id())
+        return $client;
+    }
+
+    /**
+     * Get user access / refresh token
+     *
+     * @return \App\Model\OauthUserToken|null
+     */
+    private static function getStoredToken()
+    {
+        return \App\Model\OauthUserToken::where('user_id', auth()->id())
             ->where('provider', 'google')
-            ->where('scope', $oauthScope)
+            ->where('scope', self::$oauthScope)
             ->first();
+    }
+
+    /**
+     * Get stored access token and set to google client.
+     *
+     * @return void
+     */
+    private static function setAccessToken(\Google_Client $client)
+    {
+        $storedToken = self::getStoredToken();
 
         if ($storedToken) {
             $client->setAccessToken($storedToken);
         }
+    }
 
-        if ($client->isAccessTokenExpired()) {
-            // Refresh the token if possible, else fetch a new one.
-            if ($client->getRefreshToken()) {
-                $newToken = $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+    /**
+     * Get new access token from refresh token if possible.
+     * Save or replace existing access token if new access token generated.
+     * Delete existing refresh token if failed to get new access token.
+     *
+     * @return void
+     */
+    private static function refreshAccessToken(\Google_Client $client)
+    {
+        // Refresh the token if possible, else fetch a new one.
+        $newToken = $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
 
-                $created = \Carbon\Carbon::createFromTimestamp($newToken['created']);
-                if ($storedToken) {
-                    $storedToken->update([
-                        'access_token' => $newToken['access_token'],
-                        'expires_at' => $created->addSeconds($newToken['expires_in']),
-                    ]);
-                } else {
-                    OauthUserToken::create([
-                        'provider' => 'google',
-                        'access_token' => $newToken['access_token'],
-                        'refresh_token' => $newToken['refresh_token'],
-                        'expires_at' => $created->addSeconds($newToken['expires_in']),
-                        'scope' => $newToken['scope'],
-                    ]);
-                }
-            }
+        // Unable to get new access token. Refresh token is invalid or expired.
+        if (isset($newToken['error']) || ! isset($newToken['created'])) {
+            self::deleteUnusedToken();
+            return;
         }
 
-        return $client;
+        self::updateOrCreateUserToken($newToken);
+    }
+
+    /**
+     * Update existing user token or create a new one.
+     *
+     * @return void
+     */
+    private static function updateOrCreateUserToken(array $newToken)
+    {
+        $created = \Carbon\Carbon::createFromTimestamp($newToken['created']);
+        if ($storedToken = self::getStoredToken()) {
+            // refresh token exist, update access token
+            $storedToken->update([
+                'access_token' => $newToken['access_token'],
+                'expires_at' => $created->addSeconds($newToken['expires_in']),
+            ]);
+
+            return;
+        }
+
+        // refresh token doesnt exist, save access and refresh token
+        OauthUserToken::create([
+            'provider' => 'google',
+            'access_token' => $newToken['access_token'],
+            'refresh_token' => $newToken['refresh_token'],
+            'expires_at' => $created->addSeconds($newToken['expires_in']),
+            'scope' => $newToken['scope'],
+        ]);
+    }
+
+    /**
+     * Delete expired refresh token. Make sure only ony token per user per scope.
+     *
+     * @return void
+     */
+    private static function deleteUnusedToken()
+    {
+        \App\Model\OauthUserToken::where('user_id', auth()->id())
+            ->where('provider', 'google')
+            ->where('scope', self::$oauthScope)
+            ->delete();
     }
 }

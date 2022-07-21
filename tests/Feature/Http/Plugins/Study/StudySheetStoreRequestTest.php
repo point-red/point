@@ -52,39 +52,15 @@ class StudySheetStoreRequestTest extends StudyTestCase
     public function test_required_if_not_draft()
     {
         $form = [
-            'is_draft' => false,
+            'is_draft' => 0,
         ];
         $errors = [
-            'started_at' => __('validation.required_if', [
-                'attribute' => 'started at',
-                'other' => 'is draft',
-                'value' => 'false'
-            ]),
-            'ended_at' => __('validation.required_if', [
-                'attribute' => 'ended at',
-                'other' => 'is draft',
-                'value' => 'false'
-            ]),
-            'subject_id' => __('validation.required_if', [
-                'attribute' => 'subject id',
-                'other' => 'is draft',
-                'value' => 'false'
-            ]),
-            'competency' => __('validation.required_if', [
-                'attribute' => 'competency',
-                'other' => 'is draft',
-                'value' => 'false'
-            ]),
-            'learning_goals' => __('validation.required_if', [
-                'attribute' => 'learning goals',
-                'other' => 'is draft',
-                'value' => 'false'
-            ]),
-            'behavior' => __('validation.required_if', [
-                'attribute' => 'behavior',
-                'other' => 'is draft',
-                'value' => 'false'
-            ]),
+            'started_at' => __('validation.required', ['attribute' => 'started at']),
+            'ended_at' => __('validation.required', ['attribute' => 'ended at']),
+            'subject_id' => __('validation.required', ['attribute' => 'subject id']),
+            'competency' => __('validation.required', ['attribute' => 'competency']),
+            'learning_goals' => __('validation.required', ['attribute' => 'learning goals']),
+            'behavior' => __('validation.required', ['attribute' => 'behavior']),
         ];
         
         $this->jsonPost($form)->assertJsonValidationErrors($errors);

@@ -11,7 +11,7 @@ class Drive
     private \Illuminate\Filesystem\FilesystemAdapter $disk;
     
     public function __construct()
-    {    
+    {
         $this->client = Google::client();
 
         // https://github.com/masbug/flysystem-google-drive-ext#using-with-laravel-framework
@@ -20,16 +20,20 @@ class Drive
         $this->driver = new \League\Flysystem\Filesystem($this->adapter);
         $this->disk = new \Illuminate\Filesystem\FilesystemAdapter($this->driver, $this->adapter);
     }
-    
+
     /**
      * Upload file to user's Google Drive account, set permission, get file id and path.
-     * 
+     *
      * @param  \Illuminate\Http\File|\Illuminate\Http\UploadedFile|string $file
      * @param  string  $dir
-     * @return string
+     * @return string|null
      */
-    public function store($file, $dir = '')
+    public function store($file, string $dir = '')
     {
+        if (! $this->isClientReady()) {
+            return null;
+        }
+        
         if (empty($dir)) {
             $dir = config('services.google.drive.root');
         }
@@ -50,7 +54,7 @@ class Drive
             'role' => 'reader',
             'additionalRoles' => [],
             'withLink' => true,
-            'value' => '' 
+            'value' => ''
         ]);
         $this->service->permissions->create($fileId, $newPermission);
         
@@ -59,18 +63,33 @@ class Drive
 
     /**
      * Delete existing file from user's Google Drive account.
-     * 
+     *
      * @param  string  $fileId
-     * @return void
+     * @return bool
      */
     public function destroy(string $fileId)
     {
+        if (! $this->isClientReady()) {
+            return false;
+        }
+        
         $this->service->files->delete($fileId);
+        return true;
+    }
+
+    /**
+     * Check if client ready to store / delete file.
+     *
+     * @return bool
+     */
+    public function isClientReady()
+    {
+        return ! $this->client->isAccessTokenExpired();
     }
 
     /**
      * Get preview link from google drive file id
-     * 
+     *
      * @param  string  $fileId
      * @return string
      */

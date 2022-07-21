@@ -14,7 +14,6 @@ Route::prefix('master')->namespace('Master')->group(function () {
     Route::apiResource('user-roles', 'UserRoleController');
 
     // Master
-    Route::apiResource('groups', 'GroupController');
     Route::apiResource('warehouses', 'WarehouseController');
     Route::patch('branch-users/update-default', 'BranchUserController@updateDefault');
     Route::post('branch-users/attach', 'BranchUserController@attach');

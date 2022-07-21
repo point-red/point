@@ -216,7 +216,7 @@ class TransferItem extends TransactionModel
             $journal->form_id = $transferItem->form->id;
             $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $item['item_id'];
-            $journal->chart_of_account_id = get_setting_journal('transfer item', 'difference stock expenses');
+            $journal->chart_of_account_id = get_setting_journal('transfer item', 'difference stock expense');
             $journal->debit = $itemAmount;
             $journal->save();
         }

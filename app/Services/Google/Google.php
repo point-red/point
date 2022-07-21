@@ -38,7 +38,7 @@ class Google
     {
         $oauthClientId = config('services.google.client_id');
         $oauthClientSecret = config('services.google.client_secret');
-        $oauthRedirectUri = config('app.url_web') . '/oauth/google/callback';
+        $oauthRedirectUri = 'https://' . config('app.tenant_domain') . '/oauth/google/callback';
     
         // $client = new \Google\Client(); // newer version use this
         $client = new \Google_Client();
@@ -50,7 +50,7 @@ class Google
             "auth_uri" => "https://accounts.google.com/o/oauth2/auth",
             "token_uri" => "https://oauth2.googleapis.com/token",
             "auth_provider_x509_cert_url" => "https://www.googleapis.com/oauth2/v1/certs",
-            "project_id" => "point-test-gdrive",
+            "project_id" => config('services.google.project_id'),
             "client_id" => $oauthClientId,
             "client_secret" => $oauthClientSecret
         ]);

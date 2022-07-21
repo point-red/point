@@ -18,7 +18,7 @@ class SettingJournalTransferItemSeeder extends Seeder
         $this->chartOfAccounts = ChartOfAccount::all();
 
         $accounts = [
-            'difference stock expenses' => $this->getAccountId('FACTORY DIFFERENCE STOCK EXPENSE'),
+            'difference stock expense' => $this->getAccountId('FACTORY DIFFERENCE STOCK EXPENSE'),
         ];
 
         foreach ($accounts as $key => $value) {

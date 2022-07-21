@@ -267,6 +267,7 @@ class PermissionSeeder extends Seeder
         $this->setScaleWeightPermission();
         $this->setPinPointPermission();
         $this->setPlayBookPermission();
+        $this->setStudyPermission();
     }
 
     private function setScaleWeightPermission()
@@ -318,6 +319,23 @@ class PermissionSeeder extends Seeder
             'play book glossary',
             'play book procedure',
             'play book instruction',
+        ];
+
+        foreach ($allPermission as $permission) {
+            Permission::createIfNotExists('create '.$permission);
+            Permission::createIfNotExists('read '.$permission);
+            Permission::createIfNotExists('update '.$permission);
+            Permission::createIfNotExists('delete '.$permission);
+        }
+    }
+
+    private function setStudyPermission()
+    {
+        Permission::createIfNotExists('menu study');
+
+        $allPermission = [
+            'study sheets',
+            'study subjects',
         ];
 
         foreach ($allPermission as $permission) {

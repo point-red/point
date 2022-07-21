@@ -10,7 +10,7 @@ class Google
     {
         $oauthClientId = config('services.google.client_id');
         $oauthClientSecret = config('services.google.client_secret');
-        $oauthRedirectUri = config('app.tenant_domain') . '/oauth/google/callback';
+        $oauthRedirectUri = 'https://' . config('app.tenant_domain') . '/oauth/google/callback';
         $oauthScope = "https://www.googleapis.com/auth/drive.file";
     
         // $client = new \Google\Client(); // newer version use this

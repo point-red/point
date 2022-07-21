@@ -11,12 +11,6 @@ Route::prefix('accounting')->namespace('Accounting')->group(function () {
     Route::get('cut-offs/account/{id}', 'CutOffController@showByAccount');
     Route::get('cut-offs/total', 'CutOffController@totalCutoff');
     Route::apiResource('cut-offs', 'CutOffController');
-    Route::apiResource('cut-off-accounts', 'CutOffAccountController');
-    Route::apiResource('cut-off-inventories', 'CutOffInventoryController');
-    Route::apiResource('cut-off-account-payables', 'CutOffAccountPayableController');
-    Route::apiResource('cut-off-account-receivables', 'CutOffAccountReceivableController');
-    Route::apiResource('cut-off-purchase-down-payments', 'CutOffPurchaseDownPaymentController');
-    Route::apiResource('cut-off-sales-down-payments', 'CutOffSalesDownPaymentController');
     Route::apiResource('balance-sheets', 'BalanceSheetController');
     Route::apiResource('journals', 'JournalController');
     // Route::apiResource('memo-journals', 'MemoJournalController');

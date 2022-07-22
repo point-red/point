@@ -6,7 +6,7 @@ use App\Model\OauthUserToken;
 
 class Google
 {
-    private static string $oauthScope = 'https://www.googleapis.com/auth/drive.file';
+    private static $oauthScope = 'https://www.googleapis.com/auth/drive.file';
     
     /**
      * Setup google client

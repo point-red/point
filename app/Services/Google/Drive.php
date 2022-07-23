@@ -4,11 +4,11 @@ namespace App\Services\Google;
 
 class Drive
 {
-    private \Google_Client $client;
-    private \Google\Service\Drive $service;
-    private \Masbug\Flysystem\GoogleDriveAdapter $adapter;
-    private \League\Flysystem\Filesystem $driver;
-    private \Illuminate\Filesystem\FilesystemAdapter $disk;
+    private $client;
+    private $service;
+    private $adapter;
+    private $driver;
+    private $disk;
     
     public function __construct()
     {

@@ -99,7 +99,7 @@ class DeliveryOrder extends TransactionModel
             ->first();
 
         if (! $formIsActivePending) {
-            throw new Exception ('Delivery order not active and in pending state');
+            throw new Exception('Delivery order not active and in pending state');
         }
     }
 

@@ -54,7 +54,7 @@ class DeliveryOrder extends TransactionModel
                     || $orderItem->deliveryNote->form->cancellation_status !== 1
                     || $orderItem->deliveryNote->form->number !== null) {
                         $quantityNote = $item->deliveryNoteItems->sum('quantity');
-                        if ($item->quantity > $quantityNote) {
+                        if ($item->quantity_delivered > $quantityNote) {
                             $complete = false;
                             break;
                         }

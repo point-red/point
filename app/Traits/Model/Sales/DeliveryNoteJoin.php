@@ -33,7 +33,7 @@ trait DeliveryNoteJoin
 
         if (in_array('items', $joins)) {
             $query = $query->leftjoin(DeliveryNoteItem::getTableName().' as '.DeliveryNoteItem::$alias,
-                DeliveryNoteItem::$alias.'.delivery_order_id', '=', DeliveryNote::$alias.'.id');
+                DeliveryNoteItem::$alias.'.delivery_note_id', '=', DeliveryNote::$alias.'.id');
             if (in_array('item', $joins)) {
                 $query = $query->leftjoin(Item::getTableName().' as '.Item::$alias,
                     Item::$alias.'.id', '=', DeliveryNoteItem::$alias.'.item_id');

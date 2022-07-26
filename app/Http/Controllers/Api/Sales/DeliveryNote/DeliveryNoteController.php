@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers\Api\Sales\DeliveryNote;
 
+use App\Exports\Sales\DeliveryNote\DeliveryNoteExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Sales\DeliveryNote\DeliveryNote\StoreDeliveryNoteRequest;
 use App\Http\Requests\Sales\DeliveryNote\DeliveryNote\UpdateDeliveryNoteRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
-use App\Model\Form;
-use App\Model\Master\Customer;
+use App\Model\CloudStorage;
+use App\Model\Project\Project;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
 class DeliveryNoteController extends Controller
@@ -118,5 +122,43 @@ class DeliveryNoteController extends Controller
         }
 
         return response()->json([], 204);
+    }
+    
+    /**
+     * export
+     *
+     * @param  Request $request
+     * @return Response
+     */
+    public function export(Request $request)
+    {
+        try {
+            $tenant = strtolower($request->header('Tenant'));
+            $key = Str::random(16);
+            $fileName = strtoupper($tenant).' - Sales Delivery Note';
+            $fileExt = 'xlsx';
+            $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
+
+            Excel::store(new DeliveryNoteExport($tenant, $request), $path, env('STORAGE_DISK'));
+
+            $cloudStorage = new CloudStorage();
+            $cloudStorage->file_name = $fileName;
+            $cloudStorage->file_ext = $fileExt;
+            $cloudStorage->feature = 'Sales Delivery Note Export';
+            $cloudStorage->key = $key;
+            $cloudStorage->path = $path;
+            $cloudStorage->disk = env('STORAGE_DISK');
+            $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
+            $cloudStorage->owner_id = auth()->user()->id;
+            $cloudStorage->expired_at = Carbon::now()->addDay(1);
+            $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
+            $cloudStorage->save();
+
+            return response()->json([
+                'data' => [ 'url' => env('API_URL').'/download?key='.$key ],
+            ], 200);
+        } catch (\Throwable $th) {
+            return response_error($th);
+        }
     }
 }

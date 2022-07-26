@@ -20,6 +20,7 @@ class DeliveryNoteItem extends TransactionModel
         'tare_weight',
         'net_weight',
         'quantity',
+        'quantity_remaining',
         'expiry_date',
         'production_number',
         'unit',
@@ -29,6 +30,7 @@ class DeliveryNoteItem extends TransactionModel
 
     protected $casts = [
         'quantity' => 'double',
+        'quantity_remaining' => 'double',
         'converter' => 'double',
         'price' => 'double',
         'discount_percent' => 'double',

@@ -18,7 +18,7 @@ class DeliveryNoteTest extends TestCase
         $response->assertStatus(422)
             ->assertJson([
                 'code' => 422,
-                'message' => 'The given data was invalid.'
+                'message' => 'The given data was invalid.',
             ]);
     }
 

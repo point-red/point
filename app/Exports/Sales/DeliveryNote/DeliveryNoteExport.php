@@ -155,7 +155,7 @@ class DeliveryNoteExport implements WithColumnFormatting, FromQuery, WithHeading
         $dateMin = ! is_null($dateMin) && ! is_array($dateMin)
             ? json_decode($dateMin, true)
             : [];
-            
+
         $dateMax = $this->filters->filter_date_max;
         $dateMax = ! is_null($dateMax) && ! is_array($dateMax)
             ? json_decode($dateMax, true)

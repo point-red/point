@@ -107,8 +107,8 @@ class DeliveryNoteController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
-     * @param  int $id
+     * @param  Request  $request
+     * @param  int  $id
      * @return Response
      */
     public function destroy(Request $request, $id)

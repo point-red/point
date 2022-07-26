@@ -119,7 +119,7 @@ trait DeliveryNoteSetup
             $type->save();
 
             $this->coa = new ChartOfAccount;
-            $this->coa->type_id = $type->id; 
+            $this->coa->type_id = $type->id;
             $this->coa->position = 'DEBIT';
             $this->coa->is_locked = 1;
             $this->coa->number = 41200;

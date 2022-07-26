@@ -40,8 +40,9 @@ class DeliveryNoteController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreDeliveryNoteRequest $request
+     * @param  StoreDeliveryNoteRequest  $request
      * @return Response
+     *
      * @throws Throwable
      */
     public function store(StoreDeliveryNoteRequest $request)
@@ -63,8 +64,8 @@ class DeliveryNoteController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Request $request
-     * @param  int $id
+     * @param  Request  $request
+     * @param  int  $id
      * @return ApiResource
      */
     public function show(Request $request, $id)
@@ -77,9 +78,10 @@ class DeliveryNoteController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateDeliveryNoteRequest $request
-     * @param int $id
+     * @param  UpdateDeliveryNoteRequest  $request
+     * @param  int  $id
      * @return ApiResource
+     *
      * @throws Throwable
      */
     public function update(UpdateDeliveryNoteRequest $request, $id)
@@ -123,11 +125,11 @@ class DeliveryNoteController extends Controller
 
         return response()->json([], 204);
     }
-    
+
     /**
-     * export
+     * export.
      *
-     * @param  Request $request
+     * @param  Request  $request
      * @return Response
      */
     public function export(Request $request)
@@ -155,7 +157,7 @@ class DeliveryNoteController extends Controller
             $cloudStorage->save();
 
             return response()->json([
-                'data' => [ 'url' => env('API_URL').'/download?key='.$key ],
+                'data' => ['url' => env('API_URL').'/download?key='.$key],
             ], 200);
         } catch (\Throwable $th) {
             return response_error($th);

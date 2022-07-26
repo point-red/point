@@ -17,8 +17,8 @@ class DeliveryNoteTest extends TestCase
 
         $response->assertStatus(422)
             ->assertJson([
-                "code" => 422,
-                "message" => "The given data was invalid."
+                'code' => 422,
+                'message' => 'The given data was invalid.'
             ]);
     }
 
@@ -38,9 +38,9 @@ class DeliveryNoteTest extends TestCase
     public function createDeliveryNote()
     {
         $this->generateChartOfAccount();
-        
+
         $this->setStock(300);
-        
+
         $data = $this->getDummyData();
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
@@ -62,7 +62,7 @@ class DeliveryNoteTest extends TestCase
             'filter_date_max' => '{"form.date":"2022-05-08 23:59:59"}',
             'limit' => 10,
             'includes' => 'form;customer;warehouse;items.item;items.allocation',
-            'page' => 1
+            'page' => 1,
         ];
 
         $response = $this->json('GET', self::$path, $data, $this->headers);
@@ -84,12 +84,12 @@ class DeliveryNoteTest extends TestCase
             'filter_date_max' => '{"form.date":"2022-05-08 23:59:59"}',
             'limit' => 1,
             'includes' => 'form;customer;warehouse;items.item;items.allocation',
-            'page' => 1
+            'page' => 1,
         ];
 
-        $response = $this->json('GET', self::$path . '/export', $data, $this->headers);
+        $response = $this->json('GET', self::$path.'/export', $data, $this->headers);
 
-        $response->assertStatus(200)->assertJsonStructure([ 'data' => ['url'] ]);
+        $response->assertStatus(200)->assertJsonStructure(['data' => ['url']]);
     }
 
     /** @test */
@@ -109,10 +109,10 @@ class DeliveryNoteTest extends TestCase
             'filter_date_max' => '{"form.date":"2022-05-08 23:59:59"}',
             'limit' => 10,
             'includes' => 'form;customer;warehouse;items.item;items.allocation',
-            'page' => 1
+            'page' => 1,
         ];
 
-        $response = $this->json('GET', self::$path . '/export', $data, $headers);
+        $response = $this->json('GET', self::$path.'/export', $data, $headers);
         $response->assertStatus(500);
     }
 }

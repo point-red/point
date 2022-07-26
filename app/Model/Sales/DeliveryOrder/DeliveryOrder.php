@@ -49,15 +49,15 @@ class DeliveryOrder extends TransactionModel
 
         $complete = true;
         foreach ($this->items as $item) {
-            foreach ($item->deliveryNoteItems as $orderItem) {                
+            foreach ($item->deliveryNoteItems as $orderItem) {
                 if ($orderItem->deliveryNote->form->cancellation_status == null
                     || $orderItem->deliveryNote->form->cancellation_status !== 1
                     || $orderItem->deliveryNote->form->number !== null) {
-                        $quantityNote = $item->deliveryNoteItems->sum('quantity');
-                        if ($item->quantity_delivered > $quantityNote) {
-                            $complete = false;
-                            break;
-                        }
+                    $quantityNote = $item->deliveryNoteItems->sum('quantity');
+                    if ($item->quantity_delivered > $quantityNote) {
+                        $complete = false;
+                        break;
+                    }
                 }
             }
         }
@@ -83,7 +83,7 @@ class DeliveryOrder extends TransactionModel
     }
 
     public function isAllowedToDelete()
-    {       
+    {
         $this->formStateActivePending();
 
         $this->isNotReferenced();
@@ -98,7 +98,7 @@ class DeliveryOrder extends TransactionModel
             ->activePending()
             ->first();
 
-        if(! $formIsActivePending) {
+        if (! $formIsActivePending) {
             throw new Exception ("Delivery order not active and in pending state");
         }
     }
@@ -115,15 +115,15 @@ class DeliveryOrder extends TransactionModel
     {
         foreach ($this->salesOrder->items as $salesOrderItem) {
             $salesOrderItem->convertUnitToSmallest();
-        
+
             $requestDeliveryOrderItem = Arr::first($requestDeliveryOrderItems, function ($item, $key) use ($salesOrderItem) {
                 return $item->item_id === $salesOrderItem->item_id;
             });
 
             $deliveredOrderItemQuantity = $salesOrderItem->deliveryOrderItemsOrdered();
             // delivery order item unit always in smallest unit. should'nt convert
-            if($salesOrderItem->quantity_remaining < ($requestDeliveryOrderItem->quantity_delivered + $deliveredOrderItemQuantity)) {
-                throw new Exception ("Delivery order item can't exceed sales order request", 422);
+            if ($salesOrderItem->quantity_remaining < ($requestDeliveryOrderItem->quantity_delivered + $deliveredOrderItemQuantity)) {
+                throw new Exception("Delivery order item can't exceed sales order request", 422);
             }
         }
     }
@@ -134,15 +134,15 @@ class DeliveryOrder extends TransactionModel
 
         $deliveryOrder = new self;
         $deliveryOrder->fill($data);
-        
+
         $deliveryOrder->checkQuantityOver($items);
-        
+
         $deliveryOrder->save();
         $deliveryOrder->items()->saveMany($items);
-        
+
         $form = new Form;
         $form->saveData($data, $deliveryOrder);
-        
+
         $salesOrder = $deliveryOrder->salesOrder;
         if ($salesOrder) {
             $salesOrder->updateStatus();

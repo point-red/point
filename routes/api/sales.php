@@ -1,7 +1,5 @@
 <?php
 
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-
 Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::apiResource('contracts', 'SalesContract\\SalesContractController');
     Route::post('quotations/{id}/approve', 'SalesQuotation\\SalesQuotationApprovalController@approve');

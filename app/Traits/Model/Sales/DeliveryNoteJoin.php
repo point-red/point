@@ -3,8 +3,8 @@
 namespace App\Traits\Model\Sales;
 
 use App\Model\Form;
-use App\Model\Master\Item;
 use App\Model\Master\Customer;
+use App\Model\Master\Item;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
 

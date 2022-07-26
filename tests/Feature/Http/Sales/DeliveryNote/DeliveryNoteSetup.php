@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Tests\Feature\Http\Sales\DeliveryNote;
 
@@ -16,7 +16,8 @@ use App\Model\Sales\DeliveryOrder\DeliveryOrder;
 use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\SettingJournal;
 
-trait DeliveryNoteSetup {
+trait DeliveryNoteSetup
+{
     private $tenantUser;
     private $branchDefault;
     private $warehouseSelected;
@@ -25,7 +26,7 @@ trait DeliveryNoteSetup {
     private $customer;
     private $approver;
     private $coa;
-    
+
     /**
      * @return void
      */
@@ -75,7 +76,8 @@ trait DeliveryNoteSetup {
         return $warehouse;
     }
 
-    private function createCustomerUnitItem() {
+    private function createCustomerUnitItem()
+    {
         $this->customer = factory(Customer::class)->create();
         $this->unit = factory(ItemUnit::class)->make();
         $this->item = factory(Item::class)->create();
@@ -86,7 +88,8 @@ trait DeliveryNoteSetup {
         $this->item->save();
     }
 
-    private function setApprover() {
+    private function setApprover()
+    {
         $role = Role::createIfNotExists('super admin');
         $this->approver = factory(TenantUser::class)->create();
         $this->approver->assignRole($role);
@@ -94,8 +97,8 @@ trait DeliveryNoteSetup {
 
     private function setStock($quantity = 100)
     {
-        $form             = new Form();
-        $form->date       = date('Y-m-d H:i:s', time() - 3600);
+        $form = new Form();
+        $form->date = date('Y-m-d H:i:s', time() - 3600);
         $form->created_by = $this->user->id;
         $form->updated_by = $this->user->id;
         $form->save();
@@ -109,28 +112,28 @@ trait DeliveryNoteSetup {
         if ($coa) {
             $this->coa = $coa;
         } else {
-        $type = new ChartOfAccountType;
-        $type->name = 'COST OF SALES';
-        $type->alias = 'BEBAN POKOK PENJUALAN';
-        $type->is_debit = 1;
-        $type->save();
+            $type = new ChartOfAccountType;
+            $type->name = 'COST OF SALES';
+            $type->alias = 'BEBAN POKOK PENJUALAN';
+            $type->is_debit = 1;
+            $type->save();
 
-        $this->coa = new ChartOfAccount;
-        $this->coa->type_id = $type->id; 
-        $this->coa->position = 'DEBIT';
-        $this->coa->is_locked = 1;
-        $this->coa->number = 41200;
-        $this->coa->name = 'COST OF SALES';
-        $this->coa->alias = 'BEBAN POKOK PENJUALAN';
-        $this->coa->created_by = $this->user->id;
-        $this->coa->updated_by = $this->user->id;
-        $this->coa->save();
+            $this->coa = new ChartOfAccount;
+            $this->coa->type_id = $type->id; 
+            $this->coa->position = 'DEBIT';
+            $this->coa->is_locked = 1;
+            $this->coa->number = 41200;
+            $this->coa->name = 'COST OF SALES';
+            $this->coa->alias = 'BEBAN POKOK PENJUALAN';
+            $this->coa->created_by = $this->user->id;
+            $this->coa->updated_by = $this->user->id;
+            $this->coa->save();
 
-        $setting = new SettingJournal;
-        $setting->feature = 'sales';
-        $setting->name = 'cost of sales';
-        $setting->chart_of_account_id = $this->coa->id;
-        $setting->save();
+            $setting = new SettingJournal;
+            $setting->feature = 'sales';
+            $setting->name = 'cost of sales';
+            $setting->chart_of_account_id = $this->coa->id;
+            $setting->save();
         }
     }
 
@@ -189,18 +192,18 @@ trait DeliveryNoteSetup {
                         'expiry_date' => '2022-05-13 10:38:42',
                         'stock' => $quantityRemaining,
                         'balance' => $quantityRemaining - $quantityDelivered,
-                    ]
-                ]
+                    ],
+                ],
             ],
             'request_approval_to' => $this->approver->id,
             'approver_name' => $this->approver->name,
-            'approver_email' => $this->approver->email
+            'approver_email' => $this->approver->email,
         ];
     }
 
     private function createDeliveryOrder()
     {
-        $order = $this->createSalesOrder();        
+        $order = $this->createSalesOrder();
         $orderItem = $order->items()->first();
 
         $quantityRequested = $orderItem->quantity;
@@ -208,8 +211,8 @@ trait DeliveryNoteSetup {
         $quantityRemaining = $quantityRequested - $quantityDelivered;
 
         $params = [
-            'increment_group' => date("Ym"),
-            'date' => date("Y-m-d H:i:s"),
+            'increment_group' => date('Ym'),
+            'date' => date('Y-m-d H:i:s'),
             'sales_order_id' => $order->id,
             'customer_id' => $this->customer->id,
             'customer_name' => $this->customer->name,
@@ -246,8 +249,8 @@ trait DeliveryNoteSetup {
                     'allocation_id' => null,
                     'notes' => null,
                     'warehouse_id' => $this->warehouseSelected->id,
-                    'warehouse_name' => $this->warehouseSelected->name
-                ]
+                    'warehouse_name' => $this->warehouseSelected->name,
+                ],
             ],
         ];
 
@@ -287,12 +290,12 @@ trait DeliveryNoteSetup {
                     'more' => false,
                     'unit' => $this->unit->label,
                     'converter' => 1,
-                    'quantity' => "220",
+                    'quantity' => '220',
                     'price' => 5000,
                     'discount_percent' => 0,
                     'discount_value' => 0,
                     'allocation_id' => null,
-                    'allocation_name' => "",
+                    'allocation_name' => '',
                     'notes' => null,
                     'item_label' => "[{$this->item->code}] - {$this->item->name}",
                     'units' => [
@@ -307,17 +310,17 @@ trait DeliveryNoteSetup {
                             'updated_by' => 1,
                             'created_at' => '2022-05-13 10:38:42',
                             'updated_at' => '2022-05-13 10:38:42',
-                            'prices' => []
-                        ]
-                    ]
-                ]
+                            'prices' => [],
+                        ],
+                    ],
+                ],
             ],
             'request_approval_to' => $this->approver->id,
             'approver_name' => $this->approver->getFullNameAttribute(),
             'approver_email' => $this->approver->email,
             'sales_quotation_id' => null,
             'subtotal' => 1100000,
-            'total' => 1210000
+            'total' => 1210000,
         ];
 
         $salesOrder = SalesOrder::create($params);

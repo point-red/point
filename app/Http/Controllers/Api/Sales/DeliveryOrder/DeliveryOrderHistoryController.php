@@ -52,8 +52,8 @@ class DeliveryOrderHistoryController extends Controller
 
             // Insert User Activity
             $userActivity = new UserActivity;
-            $userActivity->table_type = 'forms';
-            $userActivity->table_id = $deliveryOrder->form->id;
+            $userActivity->table_type = $deliveryOrder::$morphName;
+            $userActivity->table_id = $deliveryOrder->id;
             $userActivity->number = $number;
             $userActivity->date = now();
             $userActivity->user_id = auth()->user()->id;

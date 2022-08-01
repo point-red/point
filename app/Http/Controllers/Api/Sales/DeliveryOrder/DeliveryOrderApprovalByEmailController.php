@@ -18,8 +18,8 @@ class DeliveryOrderApprovalByEmailController extends Controller
 
     protected function _storeUserActivity($activity, $deliveryOrder) {
         $userActivity = new UserActivity;
-        $userActivity->table_type = 'forms';
-        $userActivity->table_id = $deliveryOrder->form->id;
+        $userActivity->table_type = $deliveryOrder::$morphName;
+        $userActivity->table_id = $deliveryOrder->id;
         $userActivity->number = $deliveryOrder->form->number;
         $userActivity->date = now();
         $userActivity->user_id = $this->request->approver_id;
@@ -62,6 +62,7 @@ class DeliveryOrderApprovalByEmailController extends Controller
                     $form->close_approval_by = $request->approver_id;
                     $form->close_approval_at = now();
                     $form->close_status = 1;
+                    $form->done = 1;
                     $form->save();
 
                     if ($deliveryOrder->salesOrder) {

@@ -27,6 +27,12 @@ class DeliveryOrderApprovalTest extends TestCase
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
         $response->assertStatus(201);
+        $this->assertDatabaseHas('forms', [
+            'id' => $response->json('data.form.id'),
+            'number' => $response->json('data.form.number'),
+            'approval_status' => 0,
+            'done' => 0,
+        ], 'tenant');
     }
 
     /** @test */
@@ -55,8 +61,23 @@ class DeliveryOrderApprovalTest extends TestCase
         $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
 
         $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/approve', [], $this->headers);
-
         $response->assertStatus(200);
+        $this->assertDatabaseHas('forms', [
+            'id' => $response->json('data.form.id'),
+            'number' => $response->json('data.form.number'),
+            'approval_status' => 1
+        ], 'tenant');
+        $this->assertDatabaseHas('forms', [
+            'id' => $response->json('data.sales_order.form.id'),
+            'number' => $response->json('data.sales_order.form.number'),
+            'done' => 1,
+        ], 'tenant');
+        $this->assertDatabaseHas('user_activities', [
+            'number' => $response->json('data.form.number'),
+            'table_id' => $response->json('data.id'),
+            'table_type' => 'SalesDeliveryOrder',
+            'activity' => 'Approved'
+        ], 'tenant');
     }
 
     /** @test */
@@ -100,6 +121,18 @@ class DeliveryOrderApprovalTest extends TestCase
         $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/reject', $data, $this->headers);
 
         $response->assertStatus(200);
+        $this->assertDatabaseHas('forms', [
+            'id' => $response->json('data.form.id'),
+            'number' => $response->json('data.form.number'),
+            'approval_status' => -1,
+            'done' => 0,
+        ], 'tenant');
+        $this->assertDatabaseHas('user_activities', [
+            'number' => $response->json('data.form.number'),
+            'table_id' => $response->json('data.id'),
+            'table_type' => 'SalesDeliveryOrder',
+            'activity' => 'Rejected'
+        ], 'tenant');
     }
     
     /** @test */

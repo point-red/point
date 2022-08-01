@@ -95,6 +95,7 @@ class PermissionSeeder extends Seeder
             'sales invoice',
             'sales down payment',
             'sales return',
+            'sales payment collection'
         ];
 
         foreach ($allPermission as $permission) {

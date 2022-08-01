@@ -47,6 +47,11 @@ class SalesReturn extends TransactionModel
         return $this->hasMany(SalesReturnService::class);
     }
 
+    public function form()
+    {
+        return $this->morphOne(Form::class, 'formable');
+    }
+
     public static function create($data)
     {
         $salesReturn = new self;

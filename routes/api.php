@@ -38,6 +38,11 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::post('receive-items/reject', 'TransferItem\\ReceiveItemApprovalByEmailController@reject');
     });
 
+    Route::prefix('sales')->namespace('Sales')->group(function () {
+        Route::post('payment-collection/approve', 'PaymentCollection\\PaymentCollectionApprovalByEmailController@approve');
+        Route::post('payment-collection/reject', 'PaymentCollection\\PaymentCollectionApprovalByEmailController@reject');
+    });
+
     Route::prefix('sales/delivery-orders')->namespace('Sales\\DeliveryOrder')
         ->middleware('tenant.module-access:sales delivery order') 
         ->group(function () {

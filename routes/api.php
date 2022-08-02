@@ -44,6 +44,11 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
             Route::post('/approve', 'DeliveryOrderApprovalByEmailController@approve');
             Route::post('/reject', 'DeliveryOrderApprovalByEmailController@reject');
         });
+    
+    Route::prefix('accounting/memo-journals')->namespace('Accounting')->group(function () {
+        Route::post('/approve', 'MemoJournalApprovalByEmailController@approve');
+        Route::post('/reject', 'MemoJournalApprovalByEmailController@reject');
+    });
 
     // This routes below require authentication
     Route::middleware('auth:api')->group(function () {

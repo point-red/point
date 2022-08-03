@@ -6,10 +6,10 @@ use Tests\TestCase;
 
 class StudyTestCase extends TestCase
 {
-    protected \App\User $admin;
-    protected \App\User $parent;
-    private \App\Model\Auth\Role $roleParent;
-    private \App\Model\Project\Project $project;
+    protected  $admin;
+    protected  $parent;
+    private $roleParent;
+    private $project;
 
     private array $permissions = [];
 
@@ -31,7 +31,7 @@ class StudyTestCase extends TestCase
         $this->parent = $this->createParent();
     }
 
-    private function setPluginAndProject(): void
+    private function setPluginAndProject()
     {
         $this->setProject();
         $this->project = \App\Model\Project\Project::first();
@@ -42,7 +42,7 @@ class StudyTestCase extends TestCase
         ]);
     }
 
-    private function seedStudyPermissions(): void
+    private function seedStudyPermissions()
     {
         $this->permissions = [
             'menu study',
@@ -60,19 +60,19 @@ class StudyTestCase extends TestCase
         }
     }
 
-    private function createRoleParent(): void
+    private function createRoleParent()
     {
         $this->roleParent = \App\Model\Auth\Role::createIfNotExists('parent');
         $this->roleParent->givePermissionTo(array_slice($this->permissions, 0, 5));
     }
 
-    private function giveSuperadminStudyPermission(): void
+    private function giveSuperadminStudyPermission()
     {
         $roleSuperadmin = \App\Model\Auth\Role::findByName('super admin', 'api');
         $roleSuperadmin->givePermissionTo($this->permissions);
     }
     
-    private function createParent(): \App\User
+    private function createParent()
     {
         // create parent
        $parent = factory(\App\User::class)->create();
@@ -105,12 +105,12 @@ class StudyTestCase extends TestCase
         return $parent;
     }
     
-    protected function actingAsAdmin(): void
+    protected function actingAsAdmin()
     {
         $this->actingAs($this->admin, 'api');
     }
 
-    protected function actingAsParent(): void
+    protected function actingAsParent()
     {
         $this->actingAs($this->parent, 'api');
     }

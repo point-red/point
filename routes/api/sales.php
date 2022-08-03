@@ -42,8 +42,10 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     });
 
     Route::namespace('DeliveryNote')->group(function () {
-        Route::get('delivery-notes/export', 'DeliveryNoteController@export');
-        Route::apiResource('delivery-notes', 'DeliveryNoteController');
+        Route::group(['middleware' => ['tenant.module-access:sales delivery note']], function () {
+            Route::get('delivery-notes/export', 'DeliveryNoteController@export');
+            Route::apiResource('delivery-notes', 'DeliveryNoteController');
+        });
     });
 
     Route::get('invoices/last-price/{itemId}', 'SalesInvoice\\SalesInvoicePricingController@lastPrice');

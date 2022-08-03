@@ -186,7 +186,7 @@ class TenantModuleAccessMiddleware
 
         //$request->ids to check is action send approval by email
         if(!$request->ids && ($defaultWarehouse->id !== $request->warehouse_id)) {
-            throw new Exception("Warehose " . $request->warehouse_name . " not set as default", 422);     
+            throw new Exception('Warehouse ' . $request->warehouse_name . ' not set as default', 422);     
         }
     }
 

@@ -54,9 +54,9 @@ trait DeliveryNoteSetup
         parent::tearDown();
     }
 
-    private function setUserWarehouse()
+    private function setUserWarehouse($branch = null)
     {
-        $warehouse = $this->createWarehouse();
+        $warehouse = $this->createWarehouse($branch);
         $this->tenantUser->warehouses()->syncWithoutDetaching($warehouse->id);
         foreach ($this->tenantUser->warehouses as $warehouse) {
             $warehouse->pivot->is_default = true;
@@ -66,11 +66,13 @@ trait DeliveryNoteSetup
         }
     }
 
-    private function createWarehouse()
+    private function createWarehouse($branch = null)
     {
         $warehouse = new Warehouse();
         $warehouse->name = 'Test warehouse';
-        $warehouse->branch_id = $this->branchDefault->id;
+        if ($branch) {
+            $warehouse->branch_id = $branch->id;
+        }
         $warehouse->save();
 
         return $warehouse;

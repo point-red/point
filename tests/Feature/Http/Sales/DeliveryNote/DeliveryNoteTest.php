@@ -11,9 +11,28 @@ class DeliveryNoteTest extends TestCase
     public static $path = '/api/v1/sales/delivery-notes';
 
     /** @test */
+    public function createDeliveryNoteWarehouseNotDefault()
+    {
+        $this->setRole();
+
+        $response = $this->json('POST', self::$path, [], $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'code' => 422,
+                'message' => 'Warehouse  not set as default',
+            ]);
+    }
+
+    /** @test */
     public function createDeliveryNoteFailed()
     {
-        $response = $this->json('POST', self::$path, [], $this->headers);
+        $this->setRole();
+
+        $dummy = $this->getDummyData();
+        $data = ['warehouse_id' => $dummy['warehouse_id']];
+
+        $response = $this->json('POST', self::$path, $data, $this->headers);
 
         $response->assertStatus(422)
             ->assertJson([
@@ -25,6 +44,7 @@ class DeliveryNoteTest extends TestCase
     /** @test */
     public function createDeliveryNoteStockNotEnough()
     {
+        $this->setRole();
         $this->setStock(10);
 
         $data = $this->getDummyData();
@@ -37,8 +57,8 @@ class DeliveryNoteTest extends TestCase
     /** @test */
     public function createDeliveryNote()
     {
+        $this->setRole();
         $this->generateChartOfAccount();
-
         $this->setStock(300);
 
         $data = $this->getDummyData();
@@ -51,6 +71,8 @@ class DeliveryNoteTest extends TestCase
     /** @test */
     public function getListDeliveryOrder()
     {
+        $this->setRole();
+
         $data = [
             'join' => 'form,customer,items,item',
             'fields' => 'sales_delivery_note.*',
@@ -73,6 +95,8 @@ class DeliveryNoteTest extends TestCase
     /** @test */
     public function exportDeliveryNote()
     {
+        $this->setRole();
+
         $data = [
             'join' => 'form,customer,items,item',
             'fields' => 'sales_delivery_note.*',
@@ -95,6 +119,8 @@ class DeliveryNoteTest extends TestCase
     /** @test */
     public function exportDeliveryNoteFailed()
     {
+        $this->setRole();
+
         $headers = $this->headers;
         unset($headers['Tenant']);
 

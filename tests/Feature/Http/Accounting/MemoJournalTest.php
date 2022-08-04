@@ -8,6 +8,7 @@ use App\Model\Accounting\MemoJournal;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Master\Supplier;
 use App\Model\Form;
+use App\Model\Accounting\Journal;
 use Maatwebsite\Excel\Facades\Excel;
 use Tests\TestCase;
 
@@ -174,6 +175,94 @@ class MemoJournalTest extends TestCase
         ];
 
         $response = $this->json('POST', self::$path.'/export', $data, $this->headers);
+        
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function form_references()
+    {
+        $form = new Form;
+        $form->date = now()->toDateTimeString();
+        $form->created_by = $this->user->id;
+        $form->updated_by = $this->user->id;
+        $form->number = 'FORM001';
+        $form->save();
+
+        $coa = ChartOfAccount::orderBy('id', 'asc')->first();
+
+        $journal = new Journal;
+        $journal->form_id = $form->id;
+        $journal->journalable_type = 'Supplier';
+        $journal->journalable_id = 1;
+        $journal->chart_of_account_id = $coa->id;
+        $journal->debit = 10000;
+        $journal->credit = 0;
+        $journal->save();
+
+        $response = $this->json('GET', self::$path.'/form-references', [
+            'coa_id' => $coa->id,
+            'masterable_id' => 1,
+            'masterable_type' => 'Supplier',
+            'filter_like' => $form->number,
+        ], $this->headers);
+        
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function data_form_references()
+    {
+        $form = new Form;
+        $form->date = now()->toDateTimeString();
+        $form->created_by = $this->user->id;
+        $form->updated_by = $this->user->id;
+        $form->save();
+
+        $coa = ChartOfAccount::orderBy('id', 'asc')->first();
+
+        $journal = new Journal;
+        $journal->form_id = $form->id;
+        $journal->journalable_type = 'Supplier';
+        $journal->journalable_id = 1;
+        $journal->chart_of_account_id = $coa->id;
+        $journal->debit = 10000;
+        $journal->credit = 0;
+        $journal->save();
+
+        $response = $this->json('GET', self::$path.'/data-form-references', [
+            'coa_id' => $coa->id,
+            'form_id' => $form->id,
+            'master_id' => 1,
+        ], $this->headers);
+        
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function data_form_references_without_master()
+    {
+        $form = new Form;
+        $form->date = now()->toDateTimeString();
+        $form->created_by = $this->user->id;
+        $form->updated_by = $this->user->id;
+        $form->save();
+
+        $coa = ChartOfAccount::orderBy('id', 'asc')->first();
+
+        $journal = new Journal;
+        $journal->form_id = $form->id;
+        $journal->journalable_type = 'Supplier';
+        $journal->journalable_id = 1;
+        $journal->chart_of_account_id = $coa->id;
+        $journal->debit = 10000;
+        $journal->credit = 0;
+        $journal->save();
+
+        $response = $this->json('GET', self::$path.'/data-form-references', [
+            'coa_id' => $coa->id,
+            'form_id' => $form->id,
+        ], $this->headers);
         
         $response->assertStatus(200);
     }

@@ -10,7 +10,7 @@ class StudySheetUpdateRequestTest extends StudyTestCase
 {
     use WithFaker;
 
-    private string $route;
+    private $route;
     
     public function setUp(): void
     {

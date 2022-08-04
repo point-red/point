@@ -11,7 +11,7 @@ class StudyTestCase extends TestCase
     private $roleParent;
     private $project;
 
-    private array $permissions = [];
+    private $permissions = [];
 
     public function setUp(): void
     {

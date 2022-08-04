@@ -53,6 +53,8 @@ return [
     */
 
     'url' => env('API_URL', 'http://localhost'),
+    'url_web' => env('WEBSITE_URL', 'http://localhost'),
+    'tenant_domain' => env('TENANT_DOMAIN', 'http://localhost'),
 
     /*
     |--------------------------------------------------------------------------

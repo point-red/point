@@ -15,6 +15,10 @@ $app = new Illuminate\Foundation\Application(
     realpath(__DIR__.'/../')
 );
 
+if(env('APP_ENV') == 'testing') {
+    ini_set('memory_limit', '2G');
+}
+
 /*
 |--------------------------------------------------------------------------
 | Bind Important Interfaces

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Model\OauthUserToken;
+use App\Services\Google\Google;
 use App\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

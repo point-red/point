@@ -91,6 +91,10 @@ class DeliveryNoteExport implements WithColumnFormatting, FromQuery, WithHeading
             ->where('formable_type', DeliveryNote::$morphName)
             ->first();
 
+        if (empty($form)) {
+            return [];
+        }
+
         return [
             $form->number,
             date('d F Y', strtotime($form->date)),

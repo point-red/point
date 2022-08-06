@@ -9,6 +9,7 @@ use App\Model\Master\Customer;
 use App\Model\TransactionModel;
 use App\Traits\Model\Sales\PaymentCollectionJoin;
 use App\Traits\Model\Sales\PaymentCollectionRelation;
+use App\Model\Accounting\ChartOfAccount;
 use Illuminate\Support\Facades\Log;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\Sales\SalesReturn\SalesReturn;
@@ -84,7 +85,7 @@ class PaymentCollection extends TransactionModel
         $paymentCollection->fill($data);
         $paymentCollectionDetails = self::mapDetails($data['details'] ?? []);
         
-        //$paymentCollection->amount = self::calculateAmount($paymentCollectionDetails);
+        $paymentCollection->amount = self::calculateAmount($paymentCollectionDetails);
         $paymentCollection->save();
         
         $paymentCollection->details()->saveMany($paymentCollectionDetails);
@@ -101,9 +102,48 @@ class PaymentCollection extends TransactionModel
         return array_map(function ($detail) {
             $paymentCollectionDetail = new PaymentCollectionDetail;
             $paymentCollectionDetail->fill($detail);
+            if ($paymentCollectionDetail->referenceable_type) {
+                if ($paymentCollectionDetail->referenceable_type === 'SalesInvoice') {
+                    $reference = SalesInvoice::findOrFail($paymentCollectionDetail->referenceable_id);
+                }
+                if ($paymentCollectionDetail->referenceable_type === 'SalesDownPayment') {
+                    $reference = SalesDownPayment::findOrFail($paymentCollectionDetail->referenceable_id);
+                }
+                if ($paymentCollectionDetail->referenceable_type === 'SalesReturn') {
+                    $reference = SalesReturn::findOrFail($paymentCollectionDetail->referenceable_id);
+                }
+            }
 
             return $paymentCollectionDetail;
         }, $details);
+    }
+
+    private static function calculateAmount($paymentCollectionDetails) {
+        $amount = 0;
+
+        foreach ($paymentCollectionDetails as $detail) {
+            if ($detail->chart_of_account_id) {
+
+                $coa = ChartOfAccount::findOrFail($detail->chart_of_account_id);
+
+                if($coa->type->is_debit === 0) {
+                    $amount += $detail->amount;
+                } else {
+                    $amount -= $detail->amount;
+                }
+            } else {
+                if ($detail->referenceable_type === 'SalesInvoice') {
+                    $amount += $detail->amount;
+                }
+                if ($detail->referenceable_type === 'SalesDownPayment') {
+                    $amount -= $detail->amount;
+                }
+                if ($detail->referenceable_type === 'SalesReturn') {
+                    $amount -= $detail->amount;
+                }
+            }
+        }
+        return $amount;
     }
 
     public function isAllowedToUpdate()

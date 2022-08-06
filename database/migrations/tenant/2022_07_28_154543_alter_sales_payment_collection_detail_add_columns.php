@@ -16,7 +16,7 @@ class AlterSalesPaymentCollectionDetailAddColumns extends Migration
         Schema::table('sales_payment_collection_details', function (Blueprint $table) {
             $table->unsignedInteger('chart_of_account_id')->nullable()->change();
             $table->unsignedDecimal('available', 65, 30);
-            $table->timestamp('referenceable_form_date')->useCurrent();
+            $table->datetime('referenceable_form_date')->nullable();
             $table->string('referenceable_form_number')->nullable();
             $table->text('referenceable_form_notes')->nullable();
         });

@@ -158,9 +158,8 @@ class PaymentCollectionApprovalByEmailController extends Controller
                 $userActivity->activity = 'Rejected by Email';
                 $userActivity->save();
             }
-        }
 
-        DB::connection('tenant')->commit();
+        }
 
         return new ApiResource($paymentCollections);
     }

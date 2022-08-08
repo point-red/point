@@ -169,6 +169,12 @@ class DeliveryOrderTest extends TestCase
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
         $response->assertStatus(201);
+        $this->assertDatabaseHas('forms', [
+            'id' => $response->json('data.form.id'),
+            'number' => $response->json('data.form.number'),
+            'approval_status' => 0,
+            'done' => 0,
+        ], 'tenant');
     }
     /** @test */
     public function success_approve_delivery_order()
@@ -180,6 +186,12 @@ class DeliveryOrderTest extends TestCase
         $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/approve', [], $this->headers);
 
         $response->assertStatus(200);
+        $this->assertDatabaseHas('forms', [
+            'id' => $response->json('data.form.id'),
+            'number' => $response->json('data.form.number'),
+            'approval_by' => $response->json('data.form.approval_by'),
+            'approval_status' => 1,
+        ], 'tenant');
     }
     /** @test */
     public function read_all_delivery_order()
@@ -289,6 +301,13 @@ class DeliveryOrderTest extends TestCase
         $response = $this->json('PATCH', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
 
         $response->assertStatus(201);
+        $this->assertDatabaseHas('forms', [ 'edited_number' => $response->json('data.form.number') ], 'tenant');
+        $this->assertDatabaseHas('user_activities', [
+            'number' => $response->json('data.form.number'),
+            'table_id' => $response->json('data.id'),
+            'table_type' => 'SalesDeliveryOrder',
+            'activity' => 'Update - 1'
+        ], 'tenant');
     }
     /** @test */
     public function unauthorized_delete_delivery_order()
@@ -319,6 +338,11 @@ class DeliveryOrderTest extends TestCase
         $response = $this->json('DELETE', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
 
         $response->assertStatus(204);
+        $this->assertDatabaseHas('forms', [
+            'number' => $deliveryOrder->form->number,
+            'request_cancellation_reason' => $data['reason'],
+            'cancellation_status' => 0,
+        ], 'tenant');
     }
     /** @test */
     public function failed_export_delivery_order()

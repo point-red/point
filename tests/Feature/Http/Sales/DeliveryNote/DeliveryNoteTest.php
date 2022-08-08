@@ -51,7 +51,11 @@ class DeliveryNoteTest extends TestCase
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
-        $response->assertStatus(500);
+        $response->assertStatus(422)
+            ->assertJson([
+                'code' => 422,
+                'message' => 'Stock '.$data['items'][0]['item_name'].' not enough',
+            ]);
     }
 
     /** @test */
@@ -66,6 +70,12 @@ class DeliveryNoteTest extends TestCase
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
         $response->assertStatus(201);
+        $this->assertDatabaseHas('forms', [
+            'id' => $response->json('data.form.id'),
+            'number' => $response->json('data.form.number'),
+            'approval_status' => 0,
+            'done' => 0,
+        ], 'tenant');
     }
 
     /** @test */

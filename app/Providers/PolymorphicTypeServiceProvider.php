@@ -40,6 +40,7 @@ use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\Purchase\PurchaseReturn\PurchaseReturn;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\PaymentCollection\PaymentCollection;
 use App\Model\Sales\SalesContract\SalesContract;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
@@ -96,6 +97,7 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             DeliveryNote::$morphName => DeliveryNote::class,
             SalesInvoice::$morphName => SalesInvoice::class,
             SalesReturn::$morphName => SalesReturn::class,
+            PaymentCollection::$morphName => PaymentCollection::class,
             // Manufacture
             ManufactureFormula::$morphName => ManufactureFormula::class,
             ManufactureInput::$morphName => ManufactureInput::class,

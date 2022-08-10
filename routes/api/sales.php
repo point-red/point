@@ -47,4 +47,20 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::get('invoices/last-price/{itemId}', 'SalesInvoice\\SalesInvoicePricingController@lastPrice');
     Route::apiResource('invoices', 'SalesInvoice\\SalesInvoiceController');
     Route::apiResource('return', 'SalesReturn\\SalesReturnController');
+
+    Route::apiResource('payment-collection', 'PaymentCollection\\PaymentCollectionController');
+    Route::get('payment-collection/{customerId}/references', 'PaymentCollection\\PaymentCollectionReferenceController@customerSalesForms');
+    Route::post('payment-collection/{id}/approve', 'PaymentCollection\\PaymentCollectionApprovalController@approve');
+    Route::post('payment-collection/{id}/reject', 'PaymentCollection\\PaymentCollectionApprovalController@reject');
+    Route::post('payment-collection/histories', 'PaymentCollection\\PaymentCollectionHistoryController@store');
+    Route::get('payment-collection/{id}/histories', 'PaymentCollection\\PaymentCollectionHistoryController@index');
+    Route::get('approval/payment-collection', 'PaymentCollection\\PaymentCollectionApprovalController@index');
+    Route::post('approval/payment-collection', 'PaymentCollection\\PaymentCollectionApprovalController@sendApproval');
+    Route::post('approval/payment-collection/send', 'PaymentCollection\\PaymentCollectionApprovalController@sendApproval');
+    Route::post('approval/payment-collection/{id}/send', 'PaymentCollection\\PaymentCollectionApprovalController@sendApprovalSingle');
+    Route::post('approval/payment-collection/cancellation/{id}/send', 'PaymentCollection\\PaymentCollectionApprovalController@sendCancellationApprovalSingle');
+    Route::post('payment-collection/{id}/cancellation-approve', 'PaymentCollection\\PaymentCollectionCancellationApprovalController@approve');
+    Route::post('payment-collection/{id}/cancellation-reject', 'PaymentCollection\\PaymentCollectionCancellationApprovalController@reject');
+    Route::post('payment-collection/export', 'PaymentCollection\\PaymentCollectionController@export');
+    Route::post('payment-collection/generate-number', 'PaymentCollection\\PaymentCollectionController@generateFormNumber');
 });

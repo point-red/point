@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Sales\PaymentCollection\PaymentCollection;
 
+use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class UpdatePaymentCollectionRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class UpdatePaymentCollectionRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,8 +25,10 @@ class UpdatePaymentCollectionRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
+        $rulesForm = ValidationRule::form();
+        $rulesPaymentCollection = [
+            'payment_type' => 'required|string'
         ];
+        return array_merge($rulesForm, $rulesPaymentCollection);
     }
 }

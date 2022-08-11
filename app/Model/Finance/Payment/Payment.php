@@ -9,6 +9,8 @@ use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Finance\CashAdvance\CashAdvance;
 use App\Model\Form;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
+use App\Model\Sales\PaymentCollection\PaymentCollection;
+use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Model\TransactionModel;
 use App\Traits\Model\Finance\PaymentJoin;
 use App\Traits\Model\Finance\PaymentRelation;
@@ -56,9 +58,6 @@ class Payment extends TransactionModel
         $payment->paymentable_name = $data['paymentable_name'] ?? $payment->paymentable->name;
 
         $paymentDetails = self::mapPaymentDetails($data);
-        $payment->amount = self::calculateAmount($paymentDetails);
-        $payment->save();
-
         
         // Reference Payment Order
         if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'PaymentOrder') {
@@ -84,6 +83,43 @@ class Payment extends TransactionModel
             $purchaseDownPayment->form->save();
             $purchaseDownPayment->save();
         }
+
+        // Reference Sales Down Payment
+        if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'SalesDownPayment') {
+            $salesDownPayment = SalesDownPayment::find($data['referenceable_id']);
+            if ($salesDownPayment->paid_by != null) {
+                throw new PointException();
+            }
+            $salesDownPayment->remaining = $salesDownPayment->amount;
+            $salesDownPayment->paid_by = $payment->id;
+            $salesDownPayment->form->done = 1;
+            $salesDownPayment->form->save();
+            $salesDownPayment->save();
+        }
+
+        // Reference Payment Collection
+        $isPaymentCollection = false;
+        $journalsPaymentCollection = [];
+        if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'PaymentCollection') {
+            $paymentCollection = PaymentCollection::find($data['referenceable_id']);
+            if ($paymentCollection->payment_id != null) {
+                throw new PointException();
+            }
+            $paymentCollection->payment_id = $payment->id;
+            $paymentCollection->form->done = 1;
+            $paymentCollection->form->save();
+            $paymentCollection->save();
+            $isPaymentCollection = true;
+            $journalsPaymentCollection = self::mapPaymentCollectionJournals($payment, $data);
+        }
+
+        if ($isPaymentCollection) {
+            $payment->amount = $data['amount'] ?? $payment->amount;
+        } else {
+            $payment->amount = self::calculateAmount($paymentDetails);
+        }
+
+        $payment->save();
 
         $payment->details()->saveMany($paymentDetails);
 
@@ -134,7 +170,12 @@ class Payment extends TransactionModel
         }
 
         self::updateReferenceDone($paymentDetails);
-        self::updateJournal($payment);
+        if ($isPaymentCollection) {
+            self::updateJournalPaymentCollection($payment, $journalsPaymentCollection);
+        } else {
+            error_log('false');
+            self::updateJournal($payment);
+        }
 
         return $payment;
     }
@@ -156,6 +197,43 @@ class Payment extends TransactionModel
         return array_reduce($paymentDetails, function ($carry, $detail) {
             return $carry + $detail['amount'];
         }, 0);
+    }
+
+    private static function mapPaymentCollectionJournals($payment, $data)
+    {
+        $journals = [];
+        $journals['debit'] = array();
+        $journals['credit'] = array();
+        foreach ($data['details'] as $detail) {
+            $paymentDetail = new PaymentDetail;
+            $paymentDetail->fill($detail);
+            $paymentDetail->referenceable_type = $data['referenceable_type'] ?? null;
+            $paymentDetail->referenceable_id = $data['referenceable_id'] ?? null;
+            
+            $journal = new Journal;
+            $journal->form_id_reference = optional(optional($paymentDetail->referenceable)->form)->id;
+            $journal->notes = $paymentDetail->notes;
+            $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
+            
+            if ($detail['payment_collection_type'] === 'SalesDownPayment') {
+                $journal->debit = $paymentDetail->amount;
+                $journals['debit'][] = $journal;
+            } else if ($detail['payment_collection_type'] === 'SalesReturn') {
+                $journal->debit = $paymentDetail->amount;
+                $journals['debit'][] = $journal;
+            } else if ($detail['payment_collection_type'] === 'Cost') {
+                $journal->debit = $paymentDetail->amount;
+                $journals['debit'][] = $journal;
+            } else if ($detail['payment_collection_type'] === 'Income') {
+                $journal->credit = $paymentDetail->amount;
+                $journals['credit'][] = $journal;
+            } else {
+                $journal->credit = $paymentDetail->amount;
+                $journals['credit'][] = $journal;
+            }
+        }
+        error_log(json_encode($payment->amount));
+        return $journals;
     }
 
     private static function generateFormNumber($payment, $number, $increment)
@@ -253,5 +331,30 @@ class Payment extends TransactionModel
             }
             $journal->save();
         }
+    }
+
+    private static function updateJournalPaymentCollection($payment, $journalsPaymentCollection)
+    {
+        $journal = new Journal;
+        $journal->form_id = $payment->form->id;
+        $journal->journalable_type = $payment->paymentable_type;
+        $journal->journalable_id = $payment->paymentable_id;
+        $journal->chart_of_account_id = $payment->payment_account_id;
+        $journal->debit = $payment->amount;
+        $journal->save();
+
+        foreach ($journalsPaymentCollection['debit'] as $journal) {
+            $journal->form_id = $payment->form->id;
+            $journal->journalable_type = $payment->paymentable_type;
+            $journal->journalable_id = $payment->paymentable_id;
+            $journal->save();
+        }
+
+        foreach ($journalsPaymentCollection['credit'] as $journal) {
+            $journal->form_id = $payment->form->id;
+            $journal->journalable_type = $payment->paymentable_type;
+            $journal->journalable_id = $payment->paymentable_id;
+            $journal->save();
+        }        
     }
 }

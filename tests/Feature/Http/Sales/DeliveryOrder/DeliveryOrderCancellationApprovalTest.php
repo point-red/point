@@ -22,6 +22,12 @@ class DeliveryOrderCancellationApprovalTest extends TestCase
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
         $response->assertStatus(201);
+        $this->assertDatabaseHas('forms', [
+            'id' => $response->json('data.form.id'),
+            'number' => $response->json('data.form.number'),
+            'approval_status' => 0,
+            'done' => 0,
+        ], 'tenant');
     }
 
     /** @test */
@@ -35,6 +41,11 @@ class DeliveryOrderCancellationApprovalTest extends TestCase
         $response = $this->json('DELETE', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
 
         $response->assertStatus(204);
+        $this->assertDatabaseHas('forms', [
+            'number' => $deliveryOrder->form->number,
+            'request_cancellation_reason' => $data['reason'],
+            'cancellation_status' => 0,
+        ], 'tenant');
     }
 
     /** @test */
@@ -77,6 +88,20 @@ class DeliveryOrderCancellationApprovalTest extends TestCase
         $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/cancellation-approve', [], $this->headers);
 
         $response->assertStatus(200);
+        $this->assertDatabaseHas('forms', [
+            'number' => $deliveryOrder->form->number,
+            'cancellation_status' => 1,
+        ], 'tenant');
+        $this->assertDatabaseHas('forms', [
+            'number' => $deliveryOrder->salesOrder->form->number,
+            'done' => 0,
+        ], 'tenant');
+        $this->assertDatabaseHas('user_activities', [
+            'number' => $response->json('data.form.number'),
+            'table_id' => $response->json('data.id'),
+            'table_type' => 'SalesDeliveryOrder',
+            'activity' => 'Cancel Approved'
+        ], 'tenant');
     }
 
     /** @test */
@@ -134,5 +159,20 @@ class DeliveryOrderCancellationApprovalTest extends TestCase
         $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/cancellation-reject', $data, $this->headers);
 
         $response->assertStatus(200);
+        $this->assertDatabaseHas('forms', [
+            'number' => $deliveryOrder->form->number,
+            'cancellation_status' => -1,
+            'done' => 0
+        ], 'tenant');
+        $this->assertDatabaseHas('forms', [
+            'number' => $deliveryOrder->salesOrder->form->number,
+            'done' => 0,
+        ], 'tenant');
+        $this->assertDatabaseHas('user_activities', [
+            'number' => $response->json('data.form.number'),
+            'table_id' => $response->json('data.id'),
+            'table_type' => 'SalesDeliveryOrder',
+            'activity' => 'Cancel Rejected'
+        ], 'tenant');
     }
 }

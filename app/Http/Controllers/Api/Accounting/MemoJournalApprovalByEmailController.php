@@ -5,22 +5,21 @@ namespace App\Http\Controllers\Api\Accounting;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\ApiResource;
+use App\Http\Requests\Accounting\MemoJournal\ApproveMemoJournalRequest;
 use App\Model\Accounting\MemoJournal;
 use App\Model\UserActivity;
 use App\Model\Token;
-use App\Helpers\Inventory\InventoryHelper;
 use App\Helpers\Journal\JournalHelper;
 use Illuminate\Support\Facades\DB;
-use App\Model\Master\Item;
 
 class MemoJournalApprovalByEmailController extends Controller
 {
     /**
-     * @param Request $request
+     * @param ApproveMemoJournalRequest $request
      * @param $id
      * @return ApiResource
      */
-    public function approve(Request $request)
+    public function approve(ApproveMemoJournalRequest $request)
     {
         DB::connection('tenant')->beginTransaction();
         
@@ -83,11 +82,11 @@ class MemoJournalApprovalByEmailController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param ApproveMemoJournalRequest $request
      * @param $id
      * @return ApiResource
      */
-    public function reject(Request $request)
+    public function reject(ApproveMemoJournalRequest $request)
     {
         $token = Token::where('user_id', $request->approver_id)->where('token', $request->token)->first();
 

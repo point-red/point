@@ -5,37 +5,22 @@ namespace Tests\Feature\Http\Accounting;
 use App\Model\Accounting\MemoJournal;
 use Tests\TestCase;
 
-class MemoJournalApprovalTest extends TestCase
+class MemoJournalCancellationApprovalTest extends TestCase
 {
     use MemoJournalSetup;
     
-    public static $path = '/api/v1/accounting/approval/memo-journals';
+    public static $path = '/api/v1/accounting/memo-journals';
 
     /**
      * @test 
      */
-    public function read_all_memo_journal_approval()
-    {
-        $this->createMemoJournal();
-        
-        $response = $this->json('GET', self::$path, [
-            'limit' => '10',
-            'page' => '1',
-        ], $this->headers);
-
-        $response->assertStatus(200);
-    }
-
-    /**
-     * @test 
-     */
-    public function unauthorized_approve_memo_journal()
+    public function unauthorized_cancellation_approve_memo_journal()
     {
         $this->createMemoJournal();
 
         $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
 
-        $response = $this->json('POST', '/api/v1/accounting/memo-journals/'.$memoJournal->id.'/approve', [
+        $response = $this->json('POST', self::$path . '/' . $memoJournal->id.'/cancellation-approve', [
             'id' => $memoJournal->id
         ], $this->headers);
         
@@ -49,7 +34,7 @@ class MemoJournalApprovalTest extends TestCase
     /**
      * @test 
      */
-    public function success_approve_memo_journal()
+    public function success_cancellation_approve_memo_journal()
     {
         $this->setApprovePermission();
 
@@ -57,7 +42,7 @@ class MemoJournalApprovalTest extends TestCase
 
         $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
 
-        $response = $this->json('POST', '/api/v1/accounting/memo-journals/'.$memoJournal->id.'/approve', [
+        $response = $this->json('POST', self::$path . '/' .$memoJournal->id.'/cancellation-approve', [
             'id' => $memoJournal->id
         ], $this->headers);
         
@@ -67,13 +52,13 @@ class MemoJournalApprovalTest extends TestCase
     /**
      * @test 
      */
-    public function unauthorized_reject_memo_journal()
+    public function unauthorized_cancellation_reject_memo_journal()
     {
         $this->createMemoJournal();
 
         $memoJournal = MemoJournal::orderBy('id', 'desc')->first();
 
-        $response = $this->json('POST', '/api/v1/accounting/memo-journals/'.$memoJournal->id.'/reject', [
+        $response = $this->json('POST', self::$path . '/' .$memoJournal->id.'/cancellation-reject', [
             'id' => $memoJournal->id,
             'reason' => 'some reason'
         ], $this->headers);
@@ -88,7 +73,7 @@ class MemoJournalApprovalTest extends TestCase
     /**
      * @test 
      */
-    public function invalid_reject_memo_journal()
+    public function invalid_cancellation_reject_memo_journal()
     {
         $this->setApprovePermission();
 
@@ -96,7 +81,7 @@ class MemoJournalApprovalTest extends TestCase
 
         $memoJournal = MemoJournal::orderBy('id', 'desc')->first();
 
-        $response = $this->json('POST', '/api/v1/accounting/memo-journals/'.$memoJournal->id.'/reject', [], $this->headers);
+        $response = $this->json('POST', self::$path . '/' .$memoJournal->id.'/cancellation-reject', [], $this->headers);
         
         $response->assertStatus(422);
     }
@@ -104,7 +89,7 @@ class MemoJournalApprovalTest extends TestCase
     /**
      * @test 
      */
-    public function success_reject_memo_journal()
+    public function success_cancellation_reject_memo_journal()
     {
         $this->setApprovePermission();
 
@@ -112,28 +97,10 @@ class MemoJournalApprovalTest extends TestCase
 
         $memoJournal = MemoJournal::orderBy('id', 'desc')->first();
 
-        $response = $this->json('POST', '/api/v1/accounting/memo-journals/'.$memoJournal->id.'/reject', [
+        $response = $this->json('POST', self::$path . '/' .$memoJournal->id.'/cancellation-reject', [
             'id' => $memoJournal->id,
             'reason' => 'some reason'
         ], $this->headers);
-        
-        $response->assertStatus(200);
-    }
-
-    /** @test */
-    public function send_memo_journal_approval()
-    {
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'desc')->first();
-
-        $data = [
-            "ids" => [
-                "id" => $memoJournal->id,
-            ],
-        ];
-
-        $response = $this->json('POST', self::$path.'/send', $data, $this->headers);
         
         $response->assertStatus(200);
     }

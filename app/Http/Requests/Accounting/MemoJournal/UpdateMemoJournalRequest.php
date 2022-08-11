@@ -14,6 +14,10 @@ class UpdateMemoJournalRequest extends FormRequest
      */
     public function authorize()
     {
+        if (! tenant(auth()->user()->id)->hasPermissionTo('update memo journal')) {
+            return false;
+        }
+        
         return true;
     }
 

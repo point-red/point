@@ -14,6 +14,10 @@ class StoreMemoJournalRequest extends FormRequest
      */
     public function authorize()
     {
+        if (! tenant(auth()->user()->id)->hasPermissionTo('create memo journal')) {
+            return false;
+        }
+
         return true;
     }
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\Accounting;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Accounting\MemoJournal\StoreMemoJournalRequest;
 use App\Http\Requests\Accounting\MemoJournal\UpdateMemoJournalRequest;
+use App\Http\Requests\Accounting\MemoJournal\DeleteMemoJournalRequest;
+use App\Http\Requests\Accounting\MemoJournal\ReadMemoJournalRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Form;
@@ -12,10 +14,11 @@ use App\Model\Accounting\Journal;
 use App\Exports\Accounting\MemoJournalExport;
 use App\Model\Accounting\MemoJournal;
 use App\Model\CloudStorage;
+use App\Model\Project\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
 class MemoJournalController extends Controller
@@ -23,10 +26,10 @@ class MemoJournalController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
+     * @param ReadMemoJournalRequest $request
      * @return ApiCollection
      */
-    public function index(Request $request)
+    public function index(ReadMemoJournalRequest $request)
     {
         $memoJournals = MemoJournal::from(MemoJournal::getTableName().' as '.MemoJournal::$alias)->eloquentFilter($request);
         
@@ -75,11 +78,11 @@ class MemoJournalController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param Request $request
+     * @param ReadMemoJournalRequest $request
      * @param $id
      * @return ApiResource
      */
-    public function show(Request $request, $id)
+    public function show(ReadMemoJournalRequest $request, $id)
     {
         $memoJournals = MemoJournal::eloquentFilter($request)->findOrFail($id);
 
@@ -117,11 +120,11 @@ class MemoJournalController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param Request $request
+     * @param DeleteMemoJournalRequest $request
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(DeleteMemoJournalRequest $request, $id)
     {
         DB::connection('tenant')->beginTransaction();
 
@@ -136,39 +139,43 @@ class MemoJournalController extends Controller
 
     public function export(Request $request)
     {
+        try {
+            $request->validate([
+                'data' => 'required',
+            ]);
+            
+            $tenant = strtolower($request->header('Tenant'));
 
-        $request->validate([
-            'data' => 'required',
-        ]);
-        
-        $tenant = strtolower($request->header('Tenant'));
+            $dateForm = date('d F Y', strtotime($request->data['date_start']));
+            $dateTo = date('d F Y', strtotime($request->data['date_end']));
+            
+            $key = Str::random(16);
+            $fileName = 'Memo Jurnal_'.$dateForm.'-'.$dateTo;
+            $fileExt = 'xlsx';
+            $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
 
-        $dateForm = date('d F Y', strtotime($request->data['date_start']));
-        $dateTo = date('d F Y', strtotime($request->data['date_end']));
-        
-        $key = Str::random(16);
-        $fileName = 'Memo Jurnal_'.$dateForm.'-'.$dateTo;
-        $fileExt = 'xlsx';
-        $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
+            Excel::store(new MemoJournalExport($request->data['date_start'], $request->data['date_end'], $request->data['ids'], $request->data['tenant_name']), $path, env('STORAGE_DISK'));
 
-        Excel::store(new MemoJournalExport($request->data['date_start'], $request->data['date_end'], $request->data['ids'], $request->data['tenant_name']), $path, env('STORAGE_DISK'));
+            $cloudStorage = new CloudStorage();
+            $cloudStorage->file_name = $fileName;
+            $cloudStorage->file_ext = $fileExt;
+            $cloudStorage->feature = 'memo journal';
+            $cloudStorage->key = $key;
+            $cloudStorage->path = $path;
+            $cloudStorage->disk = env('STORAGE_DISK');
+            $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
+            $cloudStorage->owner_id = auth()->user()->id;
+            $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
+            $cloudStorage->save();
 
-        $cloudStorage = new CloudStorage();
-        $cloudStorage->file_name = $fileName;
-        $cloudStorage->file_ext = $fileExt;
-        $cloudStorage->feature = 'memo journal';
-        $cloudStorage->key = $key;
-        $cloudStorage->path = $path;
-        $cloudStorage->disk = env('STORAGE_DISK');
-        $cloudStorage->owner_id = auth()->user()->id;
-        $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
-        $cloudStorage->save();
-
-        return response()->json([
-            'data' => [
-                'url' => $cloudStorage->download_url,
-            ],
-        ], 200);
+            return response()->json([
+                'data' => [
+                    'url' => $cloudStorage->download_url,
+                ],
+            ], 200);
+        } catch (\Throwable $th) {
+            return response_error($th);
+        }
     }
 
     public function formReferences(Request $request)

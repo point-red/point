@@ -3,12 +3,11 @@
 namespace App\Model\Accounting;
 
 use App\Model\Form;
-use App\Exceptions\IsReferencedException;
 use App\Model\TransactionModel;
 use App\Model\Accounting\Journal;
-use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\MemoJournalItem;
 use App\Traits\Model\Accounting\MemoJournalJoin;
+use Exception;
 
 class MemoJournal extends TransactionModel
 {
@@ -36,19 +35,19 @@ class MemoJournal extends TransactionModel
         return $this->hasMany(MemoJournalItem::class);
     }
 
-    // public function isAllowedToUpdate()
-    // {
-    //     if ($this->receiveItem != null) {
-    //         throw new IsReferencedException('Cannot edit form because referenced by transfer receive', $this->receiveItem);
-    //     }
-    // }
+    public function checkAmountBalance($requestMemoJournalItems)
+    {
+        $totalDebit = $totalCredit = 0;
 
-    // public function isAllowedToDelete()
-    // {
-    //     if ($this->receiveItem != null) {
-    //         throw new IsReferencedException('Cannot edit form because referenced by transfer receive', $this->receiveItem);
-    //     }
-    // }
+        foreach ($requestMemoJournalItems as $memoJournalItem) {
+            $totalDebit += $memoJournalItem['debit'];
+            $totalCredit += $memoJournalItem['credit'];
+        }
+
+        if($totalDebit != $totalCredit) {
+            throw new Exception ("Total debit and credit not balance.", 422);
+        }
+    }
 
     public static function create($data)
     {
@@ -56,6 +55,7 @@ class MemoJournal extends TransactionModel
         $memoJournal->fill($data);
         
         $items = self::mapItems($data['items'] ?? []);
+        $memoJournal->checkAmountBalance($items);
         
         $memoJournal->save();
         

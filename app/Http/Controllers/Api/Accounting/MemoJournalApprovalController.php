@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\ApiResource;
 use App\Http\Resources\ApiCollection;
+use App\Http\Requests\Accounting\MemoJournal\ApproveMemoJournalRequest;
 use App\Model\Accounting\MemoJournal;
 use App\Model\Accounting\MemoJournalItem;
 use App\Model\UserActivity;
@@ -56,11 +57,11 @@ class MemoJournalApprovalController extends Controller
     }
     
     /**
-     * @param Request $request
+     * @param ApproveMemoJournalRequest $request
      * @param $id
      * @return ApiResource
      */
-    public function approve(Request $request, $id)
+    public function approve(ApproveMemoJournalRequest $request, $id)
     {
         DB::connection('tenant')->beginTransaction();
     
@@ -80,12 +81,14 @@ class MemoJournalApprovalController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param ApproveMemoJournalRequest $request
      * @param $id
      * @return ApiResource
      */
-    public function reject(Request $request, $id)
+    public function reject(ApproveMemoJournalRequest $request, $id)
     {
+        $request->validate([ 'reason' => 'required' ]);
+
         $memoJournal = MemoJournal::findOrFail($id);
         $memoJournal->form->approval_by = auth()->user()->id;
         $memoJournal->form->approval_at = now();

@@ -1,7 +1,5 @@
 <?php
 
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-
 Route::prefix('sales')->namespace('Sales')->group(function () {
     Route::apiResource('contracts', 'SalesContract\\SalesContractController');
     Route::post('quotations/{id}/approve', 'SalesQuotation\\SalesQuotationApprovalController@approve');
@@ -43,7 +41,13 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
         });
     });
 
-    Route::apiResource('delivery-notes', 'DeliveryNote\\DeliveryNoteController');
+    Route::namespace('DeliveryNote')->group(function () {
+        Route::group(['middleware' => ['tenant.module-access:sales delivery note']], function () {
+            Route::get('delivery-notes/export', 'DeliveryNoteController@export');
+            Route::apiResource('delivery-notes', 'DeliveryNoteController');
+        });
+    });
+
     Route::get('invoices/last-price/{itemId}', 'SalesInvoice\\SalesInvoicePricingController@lastPrice');
     Route::apiResource('invoices', 'SalesInvoice\\SalesInvoiceController');
     Route::apiResource('return', 'SalesReturn\\SalesReturnController');

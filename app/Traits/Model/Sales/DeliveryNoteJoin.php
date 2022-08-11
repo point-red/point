@@ -3,8 +3,8 @@
 namespace App\Traits\Model\Sales;
 
 use App\Model\Form;
-use App\Model\Master\Item;
 use App\Model\Master\Customer;
+use App\Model\Master\Item;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
 
@@ -33,7 +33,7 @@ trait DeliveryNoteJoin
 
         if (in_array('items', $joins)) {
             $query = $query->leftjoin(DeliveryNoteItem::getTableName().' as '.DeliveryNoteItem::$alias,
-                DeliveryNoteItem::$alias.'.delivery_order_id', '=', DeliveryNote::$alias.'.id');
+                DeliveryNoteItem::$alias.'.delivery_note_id', '=', DeliveryNote::$alias.'.id');
             if (in_array('item', $joins)) {
                 $query = $query->leftjoin(Item::getTableName().' as '.Item::$alias,
                     Item::$alias.'.id', '=', DeliveryNoteItem::$alias.'.item_id');

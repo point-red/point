@@ -21,10 +21,10 @@ class MemoJournalTest extends TestCase
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
-        $response->assertStatus(500)
+        $response->assertStatus(403)
             ->assertJson([
-                "code" => 500,
-                "message" => "Internal Server Error"
+                "code" => 403,
+                "message" => "This action is unauthorized."
             ]);
     }
 
@@ -105,6 +105,15 @@ class MemoJournalTest extends TestCase
             'approval_status' => 0,
             'done' => 0,
         ], 'tenant');
+
+        $this->assertDatabaseHas('memo_journals', [
+            'id' => $response->json('data.id')
+        ], 'tenant');
+
+        foreach ($data['items'] as $item) {
+            $this->assertDatabaseHas('memo_journal_items', $item, 'tenant');
+        }
+
     }
 
     /**
@@ -119,10 +128,10 @@ class MemoJournalTest extends TestCase
             'sort_by' => '-form.number',
         ], $this->headers);
 
-        $response->assertStatus(500)
+        $response->assertStatus(403)
             ->assertJson([
-                "code" => 500,
-                "message" => "Internal Server Error"
+                "code" => 403,
+                "message" => "This action is unauthorized."
             ]);
     }
     
@@ -135,7 +144,10 @@ class MemoJournalTest extends TestCase
 
         $this->createMemoJournal();
 
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournals = MemoJournal::get();
+        $memoJournals = $memoJournals->sortByDesc(function($q){
+            return $q->form->number;
+        });
         
         $response = $this->json('GET', self::$path, [
             'join' => 'form,items',
@@ -145,17 +157,39 @@ class MemoJournalTest extends TestCase
             'includes' => 'items.chart_of_account;items.form;items.masterable;form.createdBy;form.requestApprovalTo;form.branch'
         ], $this->headers);
 
+        $data = [];
+        foreach ($memoJournals as $memoJournal) {
+            $items = [];
+            foreach ($memoJournal->items as $item) {
+                array_push($items, [
+                    "id" => $item->id,
+                    "memo_journal_id" => $item->memo_journal_id,
+                    "chart_of_account_id" => $item->chart_of_account_id,
+                    "chart_of_account_name" => $item->chart_of_account_name,
+                    "form_id" => $item->form_id,
+                    "masterable_id" => $item->masterable_id,
+                    "masterable_type" => $item->masterable_type,
+                    "debit" => $item->debit,
+                    "credit" => $item->credit,
+                    "notes" => $item->notes,
+                ]);
+            }
+            array_push($data, [
+                "id" => $memoJournal->id,
+                "form" => [
+                    "id" => $memoJournal->form->id,
+                    "date" => $memoJournal->form->date,
+                    "number" => $memoJournal->form->number,
+                    "id" => $memoJournal->form->id,
+                    "notes" => $memoJournal->form->notes,
+                ],
+                "items" => $items
+            ]);
+        };
+
         $response->assertStatus(200)
             ->assertJson([
-                "data" => [
-                    [
-                        "id" => $memoJournal->id,
-                        "form" => [
-                            "id" => $memoJournal->form->id,
-                            "number" => $memoJournal->form->number
-                        ],
-                    ]
-                ]
+                "data" => $data
             ]);
     }
 
@@ -164,18 +198,16 @@ class MemoJournalTest extends TestCase
      */
     public function unauthorized_read_single_memo_journal()
     {   
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $response = $this->json('GET', self::$path.'/'.$memoJournal->id, [
             'includes' => 'items.chart_of_account;items.form;items.masterable;form.createdBy;form.requestApprovalTo;form.branch'
         ], $this->headers);
         
-        $response->assertStatus(500)
+        $response->assertStatus(403)
             ->assertJson([
-                "code" => 500,
-                "message" => "Internal Server Error"
+                "code" => 403,
+                "message" => "This action is unauthorized."
             ]);
     }
 
@@ -184,9 +216,9 @@ class MemoJournalTest extends TestCase
      */
     public function invalid_id_read_single_memo_journal()
     {   
-        $this->createMemoJournal();
+        $this->setReadPermission();
 
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $random_id = $memoJournal->id + 1000;
 
@@ -194,10 +226,10 @@ class MemoJournalTest extends TestCase
             'includes' => 'items.chart_of_account;items.form;items.masterable;form.createdBy;form.requestApprovalTo;form.branch'
         ], $this->headers);
         
-        $response->assertStatus(500)
+        $response->assertStatus(404)
             ->assertJson([
-                "code" => 500,
-                "message" => "Internal Server Error"
+                "code" => 404,
+                "message" => "Model not found."
             ]);
     }
     
@@ -208,13 +240,27 @@ class MemoJournalTest extends TestCase
     {
         $this->setReadPermission();
         
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $response = $this->json('GET', self::$path.'/'.$memoJournal->id, [
             'includes' => 'items.chart_of_account;items.form;items.masterable;form.createdBy;form.requestApprovalTo;form.branch'
         ], $this->headers);
+
+        $items = [];
+        foreach ($memoJournal->items as $item) {
+            array_push($items, [
+                "id" => $item->id,
+                "memo_journal_id" => $item->memo_journal_id,
+                "chart_of_account_id" => $item->chart_of_account_id,
+                "chart_of_account_name" => $item->chart_of_account_name,
+                "form_id" => $item->form_id,
+                "masterable_id" => $item->masterable_id,
+                "masterable_type" => $item->masterable_type,
+                "debit" => $item->debit,
+                "credit" => $item->credit,
+                "notes" => $item->notes,
+            ]);
+        }
         
         $response->assertStatus(200)
             ->assertJson([
@@ -222,8 +268,12 @@ class MemoJournalTest extends TestCase
                     "id" => $memoJournal->id,
                     "form" => [
                         "id" => $memoJournal->form->id,
-                        "number" => $memoJournal->form->number
+                        "date" => $memoJournal->form->date,
+                        "number" => $memoJournal->form->number,
+                        "id" => $memoJournal->form->id,
+                        "notes" => $memoJournal->form->notes,
                     ],
+                    "items" => $items
                 ]
             ]);
     }
@@ -231,9 +281,7 @@ class MemoJournalTest extends TestCase
     /** @test */
     public function unauthorized_update_memo_journal()
     {   
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $data = $this->dummyData();
 
@@ -241,19 +289,19 @@ class MemoJournalTest extends TestCase
 
         $response = $this->json('PATCH', self::$path.'/'.$memoJournal->id, $data, [$this->headers]);
         
-        $response->assertStatus(500)
+        $response->assertStatus(403)
             ->assertJson([
-                "code" => 500,
-                "message" => "Internal Server Error"
+                "code" => 403,
+                "message" => "This action is unauthorized."
             ]);
     }
 
     /** @test */
     public function invalid_id_update_memo_journal()
     {   
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $this->setUpdatePermission();
+        
+        $memoJournal = $this->createMemoJournal();
 
         $random_id = $memoJournal->id + 1000;
 
@@ -263,10 +311,10 @@ class MemoJournalTest extends TestCase
 
         $response = $this->json('PATCH', self::$path.'/'.$random_id, $data, [$this->headers]);
         
-        $response->assertStatus(500)
+        $response->assertStatus(404)
             ->assertJson([
-                "code" => 500,
-                "message" => "Internal Server Error"
+                "code" => 404,
+                "message" => "Model not found."
             ]);
     }
 
@@ -275,9 +323,7 @@ class MemoJournalTest extends TestCase
     {
         $this->setUpdatePermission();
         
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $data = $this->dummyData();
 
@@ -300,9 +346,7 @@ class MemoJournalTest extends TestCase
     {
         $this->setUpdatePermission();
         
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $data = $this->dummyData();
 
@@ -325,9 +369,7 @@ class MemoJournalTest extends TestCase
     {
         $this->setUpdatePermission();
         
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $data = $this->dummyData();
 
@@ -354,9 +396,7 @@ class MemoJournalTest extends TestCase
     {
         $this->setUpdatePermission();
         
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $data = $this->dummyData();
 
@@ -365,12 +405,49 @@ class MemoJournalTest extends TestCase
 
         $response = $this->json('PATCH', self::$path.'/'.$memoJournal->id, $data, [$this->headers]);
         
-        $response->assertStatus(201);
+        $items = [];
+        foreach ($data['items'] as $item) {
+            array_push($items, [
+                "memo_journal_id" => $response->json('data.id'),
+                "chart_of_account_id" => $item['chart_of_account_id'],
+                "chart_of_account_name" => $item['chart_of_account_name'],
+                "form_id" => $item['form_id'],
+                "masterable_id" => $item['masterable_id'],
+                "masterable_type" => $item['masterable_type'],
+                "debit" => $item['debit'],
+                "credit" => $item['credit'],
+                "notes" => $item['notes'],
+            ]);
+        }
+        
+        $response->assertStatus(201)
+            ->assertJson([
+                "data" => [
+                    "id" => $response->json('data.id'),
+                    "form" => [
+                        "id" => $response->json('data.form.id'),
+                        "date" => $data["date"],
+                        "number" => $response->json('data.form.number'),
+                        "notes" => $data["notes"],
+                    ],
+                    "items" => $items
+                ]
+            ]);
+        
+        $this->assertDatabaseHas('forms', [
+            'id' => $memoJournal->form->id,
+            'number' => null,
+            'edited_number' => $response->json('data.form.number'),
+            'notes' => $memoJournal->form->notes,
+            'approval_status' => 0,
+            'done' => 0,
+        ], 'tenant');
 
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
-            'notes' => "Edit notes",
+            'edited_number' => null,
+            'notes' => $data["notes"],
             'approval_status' => 0,
             'done' => 0,
         ], 'tenant');
@@ -379,16 +456,14 @@ class MemoJournalTest extends TestCase
     /** @test */
     public function unauthorized_delete_memo_journal()
     {
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $response = $this->json('DELETE', self::$path.'/'.$memoJournal->id, [], [$this->headers]);
 
-        $response->assertStatus(500)
+        $response->assertStatus(403)
             ->assertJson([
-                "code" => 500,
-                "message" => "Internal Server Error"
+                "code" => 403,
+                "message" => "This action is unauthorized."
             ]);
     }
 
@@ -397,9 +472,7 @@ class MemoJournalTest extends TestCase
     {        
         $this->setDeletePermission();
         
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $random_id = $memoJournal->id + 1000;
 
@@ -417,21 +490,29 @@ class MemoJournalTest extends TestCase
     {        
         $this->setDeletePermission();
         
-        $this->createMemoJournal();
+        $memoJournal = $this->createMemoJournal();
 
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $reason = $this->faker->text(200);
 
-        $response = $this->json('DELETE', self::$path.'/'.$memoJournal->id, [], [$this->headers]);
+        $response = $this->json('DELETE', self::$path.'/'.$memoJournal->id, ['reason' => $reason], [$this->headers]);
 
         $response->assertStatus(204);
+
+        $this->assertDatabaseHas('forms', [
+            'id' => $memoJournal->form->id,
+            'number' => $memoJournal->form->number,
+            'request_cancellation_to' => $memoJournal->form->request_approval_to,
+            'request_cancellation_by' => $this->user->id,
+            'request_cancellation_reason' => $reason,
+            'cancellation_status' => 0,
+        ], 'tenant');
+        
     }
 
     /** @test */
-    public function failed_export_delivery_order()
+    public function failed_export_memo_journal()
     {
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $headers = $this->headers;
         unset($headers['Tenant']);
@@ -453,9 +534,7 @@ class MemoJournalTest extends TestCase
     /** @test */
     public function success_export_memo_journal()
     {
-        $this->createMemoJournal();
-
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $memoJournal = $this->createMemoJournal();
 
         $data = [
             "data" => [

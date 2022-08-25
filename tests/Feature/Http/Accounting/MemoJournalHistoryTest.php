@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Accounting;
 
-use App\Model\Accounting\MemoJournal;
 use Tests\TestCase;
 
 class MemoJournalHistoryTest extends TestCase
@@ -14,9 +13,14 @@ class MemoJournalHistoryTest extends TestCase
     /** @test */
     public function read_memo_journal_histories()
     {
-        $this->createMemoJournal();
+        $memoJournal = $this->createMemoJournal();
 
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
+        $data_history = [
+            "id" => $memoJournal->id,
+            "activity" => "Created"
+        ];
+
+        $response = $this->json('POST', self::$path . '/histories', $data_history, $this->headers);
 
         $data = [
             'sort_by' => '-user_activity.date',
@@ -26,16 +30,26 @@ class MemoJournalHistoryTest extends TestCase
         ];
 
         $response = $this->json('GET', self::$path . '/' . $memoJournal->id . '/histories', $data, $this->headers);
-
-        $response->assertStatus(200);
+        
+        $response->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    [
+                        "table_type" => "forms",
+                        "table_id" => $memoJournal->form->id,
+                        "number" => $memoJournal->form->number,
+                        "user_id" => $this->user->id,
+                        "activity" => "Created",
+                    ]
+                ]
+            ]);
     }
 
     /** @test */
     public function success_create_memo_journal_history()
     {
-        $this->createMemoJournal();
+        $memoJournal = $this->createMemoJournal();
 
-        $memoJournal = MemoJournal::orderBy('id', 'asc')->first();
         $data = [
             "id" => $memoJournal->id,
             "activity" => "Printed"
@@ -43,6 +57,24 @@ class MemoJournalHistoryTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/histories', $data, $this->headers);
         
-        $response->assertStatus(201);
+        $response->assertStatus(201)
+        ->assertJson([
+            "data" => [
+                "table_type" => "forms",
+                "table_id" => $memoJournal->form->id,
+                "number" => $memoJournal->form->number,
+                "user_id" => $this->user->id,
+                "activity" => "Printed",
+            ]
+            
+        ]);
+
+        $this->assertDatabaseHas('user_activities', [
+            'number' => $memoJournal->form->number,
+            'table_id' => $memoJournal->form->id,
+            'table_type' => "forms",
+            "user_id" => $this->user->id,
+            'activity' => 'Printed'
+        ], 'tenant');
     }
 }

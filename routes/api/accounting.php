@@ -13,7 +13,18 @@ Route::prefix('accounting')->namespace('Accounting')->group(function () {
     Route::apiResource('cut-offs', 'CutOffController');
     Route::apiResource('balance-sheets', 'BalanceSheetController');
     Route::apiResource('journals', 'JournalController');
-    // Route::apiResource('memo-journals', 'MemoJournalController');
+    Route::get('memo-journals/form-references', 'MemoJournalController@formReferences');
+    Route::get('memo-journals/data-form-references', 'MemoJournalController@dataFormReferences');
+    Route::post('memo-journals/export', 'MemoJournalController@export');
+    Route::apiResource('memo-journals', 'MemoJournalController');
+    Route::post('memo-journals/{id}/approve', 'MemoJournalApprovalController@approve');
+    Route::post('memo-journals/{id}/reject', 'MemoJournalApprovalController@reject');
+    Route::post('memo-journals/{id}/cancellation-approve', 'MemoJournalCancellationApprovalController@approve');
+    Route::post('memo-journals/{id}/cancellation-reject', 'MemoJournalCancellationApprovalController@reject');
+    Route::get('memo-journals/{id}/histories', 'MemoJournalHistoryController@index');
+    Route::post('memo-journals/histories', 'MemoJournalHistoryController@store');
+    Route::get('approval/memo-journals', 'MemoJournalApprovalController@index');
+    Route::post('approval/memo-journals/send', 'MemoJournalApprovalController@sendApproval');
     Route::prefix('ratio-report')->namespace('RatioReport')->group(function () {
         // Liquidity Ratio
         Route::get('current-ratios', 'CurrentRatioController@index');

@@ -8,6 +8,7 @@ use App\Model\Accounting\CutOffAsset;
 use App\Model\Accounting\CutOffDownPayment;
 use App\Model\Accounting\CutOffInventory;
 use App\Model\Accounting\CutOffPayment;
+use App\Model\Accounting\MemoJournal;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Finance\CashAdvance\CashAdvance;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
@@ -113,6 +114,7 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             CutOffDownPayment::$morphName => CutOffDownPayment::class,
             CutOffAsset::$morphName => CutOffAsset::class,
             CutOffInventory::$morphName => CutOffInventory::class,
+            MemoJournal::$morphName => MemoJournal::class,
         ]);
     }
 

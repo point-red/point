@@ -43,6 +43,13 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::post('payment-collection/reject', 'PaymentCollection\\PaymentCollectionApprovalByEmailController@reject');
     });
 
+    Route::prefix('sales/return')->namespace('Sales\\SalesReturn')
+        ->middleware('tenant.module-access:sales return') 
+        ->group(function () {
+            Route::post('/approve', 'SalesReturnApprovalByEmailController@approve');
+            Route::post('/reject', 'SalesReturnApprovalByEmailController@reject');
+        });
+
     Route::prefix('sales/delivery-orders')->namespace('Sales\\DeliveryOrder')
         ->middleware('tenant.module-access:sales delivery order') 
         ->group(function () {

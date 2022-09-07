@@ -15,6 +15,9 @@ class AlterSalesReturnAddColumns extends Migration
     {
         Schema::table('sales_returns', function (Blueprint $table) {
            $table->unsignedDecimal('amount', 65, 30);
+           $table->unsignedInteger('warehouse_id')->index();
+
+            $table->foreign('warehouse_id')->references('id')->on('warehouses')->onDelete('restrict');
         });
     }
 
@@ -26,7 +29,8 @@ class AlterSalesReturnAddColumns extends Migration
     public function down()
     {
         Schema::table('sales_returns', function (Blueprint $table) {
-            $table->dropColumn(['amount']);
+            $table->dropForeign(['warehouse_id']);
+            $table->dropColumn(['amount', 'warehouse_id']);
         });
     }
 }

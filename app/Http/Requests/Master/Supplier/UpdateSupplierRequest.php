@@ -26,6 +26,13 @@ class UpdateSupplierRequest extends FormRequest
         return [
             'code' => 'unique:tenant.suppliers,code,'.$this->id,
             'name' => 'required',
+            'email' => 'required,email',
+            'address' => 'required',
+            'phone' => 'required',
+            'bank_branch' => 'required',
+            'bank_name' => 'required',
+            'bank_account_name' => 'required',
+            'bank_account_number' => 'required',
         ];
     }
 }

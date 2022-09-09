@@ -26,6 +26,13 @@ class StoreSupplierRequest extends FormRequest
         return [
             'code' => 'unique:tenant.suppliers',
             'name' => 'required',
+            'email' => 'required,email',
+            'address' => 'required',
+            'phone' => 'required',
+            'bank_branch' => 'required',
+            'bank_name' => 'required',
+            'bank_account_name' => 'required',
+            'bank_account_number' => 'required',
         ];
     }
 }

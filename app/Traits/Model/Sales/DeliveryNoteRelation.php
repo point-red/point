@@ -8,6 +8,7 @@ use App\Model\Master\Warehouse;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\SalesInvoice\SalesInvoice;
 
 trait DeliveryNoteRelation
 {
@@ -44,12 +45,17 @@ trait DeliveryNoteRelation
 
     public function salesInvoices()
     {
-        return $this->belongsToMany(SalesInvoice::class, 'sales_invoice_items')->active();
+        return $this->hasMany(SalesInvoice::class, 'referenceable_id')
+            ->select(SalesInvoice::getTableName().'.*')
+            ->join(Form::getTableName().' as '.Form::$alias, function ($q) {
+                $q->on(Form::$alias.'.formable_id', '=', SalesInvoice::getTableName().'.id')
+                    ->where(Form::$alias.'.formable_type', SalesInvoice::$morphName);
+            })
+            ->active();
     }
 
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
     }
-
 }

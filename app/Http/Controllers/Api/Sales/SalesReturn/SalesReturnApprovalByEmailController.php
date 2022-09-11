@@ -58,21 +58,18 @@ class SalesReturnApprovalByEmailController extends Controller
                     && is_null($form->cancellation_status)
                     && is_null($form->close_status)
                 ) {
-                    try {
-                        $salesReturn->checkQuantity($salesReturn->items);
+                    $salesReturn->checkQuantity($salesReturn->items);
 
-                        $form->approval_by = $request->approver_id;
-                        $form->approval_at = now();
-                        $form->approval_status = 1;
-                        $form->save();
+                    $form->approval_by = $request->approver_id;
+                    $form->approval_at = now();
+                    $form->approval_status = 1;
+                    $form->save();
 
-                        SalesReturn::updateInventory($salesReturn->form, $salesReturn);
+                    SalesReturn::updateJournal($salesReturn);
+                    SalesReturn::updateInventory($salesReturn->form, $salesReturn);
+                    SalesReturn::updateInvoiceQuantity($salesReturn);
 
-                        $form->fireEventApprovedByEmail();
-                    } catch (\Throwable $th) {
-                        Log::error($form->number . ': ' . $th->getMessage());
-                        $form->approval_notes = $th->getMessage();
-                    }
+                    $form->fireEventApprovedByEmail();
 
                     continue;
                 }

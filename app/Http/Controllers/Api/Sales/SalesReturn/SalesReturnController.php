@@ -50,7 +50,6 @@ class SalesReturnController extends Controller
                 return new ApiResource($salesReturn);
             });
         }  catch (\Throwable $th) {
-            error_log(json_encode($th));
             return response_error ($th);
         }        
 

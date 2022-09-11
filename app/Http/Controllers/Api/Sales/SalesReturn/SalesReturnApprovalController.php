@@ -70,27 +70,21 @@ class SalesReturnApprovalController extends Controller
     {
         
         $result = DB::connection('tenant')->transaction(function () use ($id) {
-            $salesReturn = SalesReturn::findOrFail($id);
+        $salesReturn = SalesReturn::findOrFail($id);
+        $salesReturn->checkQuantity($salesReturn->items);
 
-            try {
-                $salesReturn->checkQuantity($salesReturn->items);
-    
-                $form = $salesReturn->form;
-                $form->approval_by = auth()->user()->id;
-                $form->approval_at = now();
-                $form->approval_status = 1;
-                $form->save();
+        $form = $salesReturn->form;
+        $form->approval_by = auth()->user()->id;
+        $form->approval_at = now();
+        $form->approval_status = 1;
+        $form->save();
+
+        SalesReturn::updateJournal($salesReturn);
+        SalesReturn::updateInventory($salesReturn->form, $salesReturn);
+        SalesReturn::updateInvoiceQuantity($salesReturn);                
         
-                SalesReturn::updateJournal($salesReturn);
-                SalesReturn::updateInventory($salesReturn->form, $salesReturn);
-                SalesReturn::updateInvoiceQuantity($salesReturn);                
-                
 
-                $form->fireEventApproved();
-            } catch (\Throwable $th) {
-                error_log(json_encode($th));
-                return response_error($th);
-            }
+        $form->fireEventApproved();
     
             return new ApiResource($salesReturn);
         });

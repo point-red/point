@@ -22,6 +22,12 @@ class DeliveryOrderCloseApprovalTest extends TestCase
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
         $response->assertStatus(201);
+        $this->assertDatabaseHas('forms', [
+            'id' => $response->json('data.form.id'),
+            'number' => $response->json('data.form.number'),
+            'approval_status' => 0,
+            'done' => 0,
+        ], 'tenant');
     }
 
     /** @test */
@@ -51,6 +57,12 @@ class DeliveryOrderCloseApprovalTest extends TestCase
         $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/close', $data, $this->headers);
 
         $response->assertStatus(204);
+        $this->assertDatabaseHas('forms', [
+            'number' => $deliveryOrder->form->number,
+            'request_close_reason' => $data['reason'],
+            'close_status' => 0,
+            'done' => 0,
+        ], 'tenant');
     }
 
     /** @test */
@@ -93,6 +105,15 @@ class DeliveryOrderCloseApprovalTest extends TestCase
         $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/close-approve', [], $this->headers);
 
         $response->assertStatus(200);
+        $this->assertDatabaseHas('forms', [
+            'number' => $deliveryOrder->form->number,
+            'close_status' => 1,
+            'done' => 1,
+        ], 'tenant');
+        $this->assertDatabaseHas('forms', [
+            'number' => $deliveryOrder->salesOrder->form->number,
+            'done' => 1,
+        ], 'tenant');
     }
 
     /** @test */
@@ -150,5 +171,10 @@ class DeliveryOrderCloseApprovalTest extends TestCase
         $response = $this->json('POST', self::$path . '/' . $deliveryOrder->id . '/close-reject', $data, $this->headers);
 
         $response->assertStatus(200);
+        $this->assertDatabaseHas('forms', [
+            'number' => $deliveryOrder->form->number,
+            'close_status' => -1,
+            'close_approval_reason' => $data['reason']
+        ], 'tenant');
     }
 }

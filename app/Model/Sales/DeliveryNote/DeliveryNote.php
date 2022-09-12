@@ -3,11 +3,10 @@
 namespace App\Model\Sales\DeliveryNote;
 
 use App\Helpers\Inventory\InventoryHelper;
+use App\Model\Accounting\Journal;
 use App\Model\Form;
-use App\Model\Master\Customer;
-use App\Model\Master\Warehouse;
+use App\Model\Master\Item;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use App\Model\Sales\SalesInvoice\SalesInvoice;
 use App\Model\TransactionModel;
 use App\Traits\Model\Sales\DeliveryNoteJoin;
 use App\Traits\Model\Sales\DeliveryNoteRelation;
@@ -108,12 +107,38 @@ class DeliveryNote extends TransactionModel
             InventoryHelper::decrease($form, $deliveryNote->warehouse, $item->item, $item->quantity, $item->unit, $item->converter, $options);
         }
 
+        self::updateJournal($deliveryNote);
+
         return $deliveryNote;
     }
 
     private static function mapItems($items, $deliveryOrder)
     {
         $deliveryOrderItems = $deliveryOrder->items;
+
+        $array = [];
+        foreach ($items as $item) {
+            $itemModel = Item::find($item['item_id']);
+            if ($itemModel->require_production_number || $itemModel->require_expiry_date) {
+                if (isset($item['dna'])) {
+                    foreach ($item['dna'] as $dna) {
+                        if ($dna['quantity'] > 0) {
+                            $dnaItem = $item;
+                            $dnaItem['quantity'] = $dna['quantity'];
+                            $dnaItem['production_number'] = $dna['production_number'];
+                            $dnaItem['expiry_date'] = $dna['expiry_date'];
+                            $dnaItem['stock'] = $dna['remaining'];
+                            $dnaItem['balance'] = $dna['remaining'] - $dna['quantity'];
+
+                            unset($dnaItem['dna']);
+                            array_push($array, $dnaItem);
+                        }
+                    }
+                }
+            } else {
+                array_push($array, $item);
+            }
+        }
 
         return array_map(function ($item) use ($deliveryOrderItems) {
             $deliveryOrderItem = $deliveryOrderItems->firstWhere('id', $item['delivery_order_item_id']);
@@ -123,7 +148,7 @@ class DeliveryNote extends TransactionModel
             $deliveryNoteItem = self::setDeliveryNoteItem($deliveryNoteItem, $deliveryOrderItem);
 
             return $deliveryNoteItem;
-        }, $items);
+        }, $array);
     }
 
     private static function setDeliveryNoteItem($deliveryNoteItem, $deliveryOrderItem)
@@ -137,5 +162,33 @@ class DeliveryNote extends TransactionModel
         $deliveryNoteItem->allocation_id = $deliveryOrderItem->allocation_id;
 
         return $deliveryNoteItem;
+    }
+
+    public static function updateJournal($deliveryNote)
+    {
+        $amounts = 0;
+        $journal = new Journal;
+        $journal->form_id = $deliveryNote->form->id;
+        $journal->journalable_type = Item::$morphName;
+        $journal->journalable_id = $deliveryNote->delivery_order_id;
+        $journal->chart_of_account_id = get_setting_journal('sales', 'cost of sales');
+        $journal->debit = $amounts;
+        $journal->save();
+
+        foreach ($deliveryNote->items as $item) {
+            $amount = $item->item->cogs($item->item_id) * $item->quantity;
+            $amounts += $amount;
+
+            $journalCredit = new Journal;
+            $journalCredit->form_id = $deliveryNote->form->id;
+            $journalCredit->journalable_type = Item::$morphName;
+            $journalCredit->journalable_id = $item->item_id;
+            $journalCredit->chart_of_account_id = $item->item->chart_of_account_id;
+            $journalCredit->credit = $amount;
+            $journalCredit->save();
+        }
+
+        $journal->debit = $amounts;
+        $journal->save();
     }
 }

@@ -83,7 +83,7 @@ trait ApiExceptionHandler
         if ($exception instanceof StockNotEnoughException || $exception instanceof ItemQuantityInvalidException) {
             return response()->json([
                 'code' => 422,
-                'message' => $this->getMessage(),
+                'message' => $exception->getMessage(),
             ], 422);
         }
 
@@ -109,10 +109,12 @@ trait ApiExceptionHandler
         ], $exception->getCode());
     }
 
-    private function queryExceptionMessage($exception) {
+    private function queryExceptionMessage($exception)
+    {
         if (strpos($exception->getMessage(), 'Integrity constraint violation') !== false) {
-            return "Duplicate data entry";
+            return 'Duplicate data entry';
         }
-        return "Invalid data";
+
+        return 'Invalid data';
     }
 }

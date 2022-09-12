@@ -8,6 +8,7 @@ use App\Model\Accounting\CutOffAsset;
 use App\Model\Accounting\CutOffDownPayment;
 use App\Model\Accounting\CutOffInventory;
 use App\Model\Accounting\CutOffPayment;
+use App\Model\Accounting\MemoJournal;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Finance\CashAdvance\CashAdvance;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
@@ -40,6 +41,7 @@ use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\Purchase\PurchaseReturn\PurchaseReturn;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\Sales\DeliveryOrder\DeliveryOrder;
+use App\Model\Sales\PaymentCollection\PaymentCollection;
 use App\Model\Sales\SalesContract\SalesContract;
 use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
@@ -96,6 +98,7 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             DeliveryNote::$morphName => DeliveryNote::class,
             SalesInvoice::$morphName => SalesInvoice::class,
             SalesReturn::$morphName => SalesReturn::class,
+            PaymentCollection::$morphName => PaymentCollection::class,
             // Manufacture
             ManufactureFormula::$morphName => ManufactureFormula::class,
             ManufactureInput::$morphName => ManufactureInput::class,
@@ -111,6 +114,7 @@ class PolymorphicTypeServiceProvider extends ServiceProvider
             CutOffDownPayment::$morphName => CutOffDownPayment::class,
             CutOffAsset::$morphName => CutOffAsset::class,
             CutOffInventory::$morphName => CutOffInventory::class,
+            MemoJournal::$morphName => MemoJournal::class,
         ]);
     }
 

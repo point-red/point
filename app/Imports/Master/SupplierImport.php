@@ -34,22 +34,6 @@ class SupplierImport implements ToModel, SkipsOnError, SkipsOnFailure, WithValid
         return new Supplier($item);
     }
 
-    // public function collection(Collection $rows)
-    // {
-    //     foreach ($rows as $row) {
-    //         $item = $this->generateItem($row); 
-    //         if (Supplier::where('code', $item['code'])->first()) {
-    //             $this->fail += 1;
-    //             continue;
-    //         }
-    //         if (Supplier::create($item)) {
-    //             $this->success += 1;
-    //         }else {
-    //             $this->fail += 1;
-    //         }
-    //     }
-    // }
-
     public function startRow(): int
     {
         return request()->get("start_row");
@@ -76,12 +60,6 @@ class SupplierImport implements ToModel, SkipsOnError, SkipsOnFailure, WithValid
             request()->get("code") => 'unique:tenant.suppliers,code',
             '*.' .request()->get("email") => 'required|email',
             request()->get("email") => 'required|email',
-            // 'name' => ['required'],
-            // 'email' => ['email'],
-            // 'bank_branch' => ['required'],
-            // 'bank_name' => ['required'],
-            // 'bank_account_name' => ['required'],
-            // 'bank_account_number' => ['required'],
         ];
     }
 

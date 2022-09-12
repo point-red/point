@@ -25,11 +25,10 @@ class SupplierExport implements FromQuery, WithHeadings, WithMapping, WithEvents
 
     public function query()
     {
-        // $suppliers = Supplier::from(Supplier::getTableName().' as '.Supplier::$alias)->eloquentFilter($this->filters);
+        $suppliers = Supplier::from(Supplier::getTableName().' as '.Supplier::$alias)->eloquentFilter($this->filters);
 
-        // // $suppliers = Supplier::joins($suppliers, $this->filters->get('join'));
+        $suppliers = Supplier::joins($suppliers, $this->filters->get('join'));
 
-        // return $suppliers;
         return Supplier::query();
     }
 

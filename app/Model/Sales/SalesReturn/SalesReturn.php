@@ -133,6 +133,12 @@ class SalesReturn extends TransactionModel
         foreach ($salesReturn->items as $item) {
             if ($item->quantity > 0) {
                 $options = [];
+                if ($item->item->require_expiry_date) {
+                    $options['expiry_date'] = $item->expiry_date;
+                }
+                if ($item->item->require_production_number) {
+                    $options['production_number'] = $item->production_number;
+                }
 
                 $options['quantity_reference'] = $item->quantity;
                 $options['unit_reference'] = $item->unit;

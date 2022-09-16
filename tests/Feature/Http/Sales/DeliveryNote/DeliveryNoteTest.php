@@ -41,6 +41,22 @@ class DeliveryNoteTest extends TestCase
     }
 
     /** @test */
+    public function createDeliveryNoteWarehouseNoPermission()
+    {
+        $this->setStock(300);
+
+        $data = $this->getDummyData();
+
+        $response = $this->json('POST', self::$path, $data, $this->headers);
+
+        $response->assertStatus(500)
+            ->assertJson([
+                'code' => 0,
+                'message' => 'There is no permission named `create sales delivery note` for guard `api`.',
+            ]);
+    }
+
+    /** @test */
     public function createDeliveryNoteStockNotEnough()
     {
         $this->setRole();

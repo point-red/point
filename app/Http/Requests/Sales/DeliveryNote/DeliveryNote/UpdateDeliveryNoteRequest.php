@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Sales\DeliveryNote\DeliveryNote;
 
 use App\Http\Requests\ValidationRule;
+use App\Model\Sales\DeliveryNote\DeliveryNote;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDeliveryNoteRequest extends FormRequest
@@ -24,7 +25,10 @@ class UpdateDeliveryNoteRequest extends FormRequest
      */
     public function rules()
     {
+        $deliveryNote = DeliveryNote::find($this->id);
+
         $rulesForm = ValidationRule::form();
+        $rulesForm['date'] = 'required|date|after_or_equal:'.$deliveryNote->form->date;
 
         $rulesDeliveryNote = [
             'delivery_order_id' => ValidationRule::foreignKey('delivery_orders'),

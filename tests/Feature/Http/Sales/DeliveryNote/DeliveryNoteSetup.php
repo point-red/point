@@ -67,6 +67,14 @@ trait DeliveryNoteSetup
             ->delete();
     }
 
+    protected function unsetDefaultBranch()
+    {
+        $this->branchDefault->pivot->is_default = false;
+        $this->branchDefault->save();
+
+        $this->tenantUser->branches()->detach($this->branchDefault->pivot->branch_id);
+    }
+
     private function setUserWarehouse($branch = null)
     {
         $warehouse = $this->createWarehouse($branch);

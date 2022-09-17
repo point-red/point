@@ -2,12 +2,32 @@
 
 namespace Tests\Feature\Http\Sales\DeliveryNote;
 
+use App\Model\Auth\Permission;
 use App\Model\Sales\DeliveryNote\DeliveryNote;
 use Tests\TestCase;
 
 class DeliveryNoteTest extends TestCase
 {
     use DeliveryNoteSetup;
+
+    /** @test */
+    public function createDeliveryNoteBranchNotDefault()
+    {
+        $this->setStock(300);
+        $this->setRole();
+
+        $data = $this->getDummyData();
+        
+        $this->unsetDefaultBranch();
+
+        $response = $this->json('POST', self::$path, $data, $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'code' => 422,
+                'message' => 'please set default branch to create this form',
+            ]);
+    }
 
     /** @test */
     public function createDeliveryNoteWarehouseNotDefault()
@@ -41,18 +61,20 @@ class DeliveryNoteTest extends TestCase
     }
 
     /** @test */
-    public function createDeliveryNoteWarehouseNoPermission()
+    public function createDeliveryNoteNoPermission()
     {
+        Permission::createIfNotExists('create sales delivery note');
+
         $this->setStock(300);
 
         $data = $this->getDummyData();
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
-        $response->assertStatus(500)
+        $response->assertStatus(422)
             ->assertJson([
-                'code' => 0,
-                'message' => 'There is no permission named `create sales delivery note` for guard `api`.',
+                'code' => 422,
+                'message' => 'Unauthorized',
             ]);
     }
 
@@ -254,6 +276,7 @@ class DeliveryNoteTest extends TestCase
         $deliveryNote = DeliveryNote::orderBy('id', 'asc')->first();
 
         $data = $this->getDummyData($deliveryNote);
+        $data = data_set($data, 'id', $deliveryNote->id, false);
         $data['items'][0] = data_set($data['items'][0], 'quantity', 1000);
         $data['items'][0]['dna'] = data_set($data['items'][0]['dna'], 'quantity', 1000);
 
@@ -274,6 +297,7 @@ class DeliveryNoteTest extends TestCase
         $deliveryNote = DeliveryNote::orderBy('id', 'asc')->first();
 
         $data = $this->getDummyData($deliveryNote);
+        $data = data_set($data, 'id', $deliveryNote->id, false);
         $data['items'][0] = data_set($data['items'][0], 'quantity', -1000);
         $data['items'][0]['dna'] = data_set($data['items'][0]['dna'], 'quantity', -1000);
 
@@ -299,6 +323,7 @@ class DeliveryNoteTest extends TestCase
         $deliveryNote = DeliveryNote::orderBy('id', 'asc')->first();
 
         $data = $this->getDummyData($deliveryNote);
+        $data = data_set($data, 'id', $deliveryNote->id, false);
         $data['items'][0] = data_set($data['items'][0], 'quantity', 0);
         $data['items'][0]['dna'] = data_set($data['items'][0]['dna'], 'quantity', 0);
 
@@ -324,6 +349,7 @@ class DeliveryNoteTest extends TestCase
         $deliveryNote = DeliveryNote::orderBy('id', 'asc')->first();
 
         $data = $this->getDummyData($deliveryNote);
+        $data = data_set($data, 'id', $deliveryNote->id, false);
 
         $response = $this->json('PATCH', self::$path.'/'.($deliveryNote->id + 1), $data, $this->headers);
 
@@ -333,6 +359,8 @@ class DeliveryNoteTest extends TestCase
     /** @test */
     public function updateDeliveryNoteUnauthorized()
     {
+        Permission::createIfNotExists('update sales delivery note');
+
         $this->createDeliveryNote();
         $this->unsetUserRole();
 
@@ -341,10 +369,39 @@ class DeliveryNoteTest extends TestCase
 
         $response = $this->json('PATCH', self::$path.'/'.$deliveryNote->id, $data, $this->headers);
 
-        $response->assertStatus(500)
+        $response->assertStatus(422)
             ->assertJson([
-                'code' => 0,
-                'message' => 'There is no permission named `update sales delivery note` for guard `api`.',
+                'code' => 422,
+                'message' => 'Unauthorized',
+            ]);
+    }
+
+    /** @test */
+    public function updateDeliveryNoteInvalidDate()
+    {
+        $this->createDeliveryNote();
+
+        $deliveryNote = DeliveryNote::orderBy('id', 'asc')->first();
+
+        $data = $this->getDummyData($deliveryNote);
+
+        $actualDate = $data['date'];
+        $modifyDate = date('Y-m-d', strtotime("-1 day"));
+
+        $data = data_set($data, 'id', $deliveryNote->id, false);
+        $data = data_set($data, 'date', $modifyDate);
+
+        $response = $this->json('PATCH', self::$path.'/'.$deliveryNote->id, $data, $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'code' => 422,
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'date' => [
+                        'The date must be a date after or equal to '.$actualDate.'.',
+                    ],
+                ],
             ]);
     }
 

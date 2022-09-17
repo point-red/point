@@ -17,7 +17,7 @@ class DeliveryNoteTest extends TestCase
         $this->setRole();
 
         $data = $this->getDummyData();
-        
+
         $this->unsetDefaultBranch();
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
@@ -386,7 +386,7 @@ class DeliveryNoteTest extends TestCase
         $data = $this->getDummyData($deliveryNote);
 
         $actualDate = $data['date'];
-        $modifyDate = date('Y-m-d', strtotime("-1 day"));
+        $modifyDate = date('Y-m-d', strtotime('-1 day'));
 
         $data = data_set($data, 'id', $deliveryNote->id, false);
         $data = data_set($data, 'date', $modifyDate);

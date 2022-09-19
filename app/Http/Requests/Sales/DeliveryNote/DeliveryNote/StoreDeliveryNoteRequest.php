@@ -35,7 +35,7 @@ class StoreDeliveryNoteRequest extends FormRequest
 
         $rulesDeliveryNoteItems = [
             'items.*.delivery_order_item_id' => ValidationRule::foreignKey('delivery_order_items'),
-            'items.*.quantity' => ValidationRule::quantity(),
+            'items.*.quantity' => 'required|numeric|min:1',
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::converter(),
         ];

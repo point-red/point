@@ -5,6 +5,7 @@ namespace Tests\Feature\Http\Sales\DeliveryNote;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
+use App\Model\Auth\ModelHasRole;
 use App\Model\Auth\Role;
 use App\Model\Form;
 use App\Model\Master\Customer;
@@ -26,6 +27,8 @@ trait DeliveryNoteSetup
     private $customer;
     private $approver;
     private $coa;
+
+    public static $path = '/api/v1/sales/delivery-notes';
 
     /**
      * @return void
@@ -52,6 +55,24 @@ trait DeliveryNoteSetup
     public function tearDown(): void
     {
         parent::tearDown();
+    }
+
+    protected function unsetUserRole()
+    {
+        $role = Role::createIfNotExists('super admin');
+
+        ModelHasRole::where('role_id', $role->id)
+            ->where('model_type', 'App\Model\Master\User')
+            ->where('model_id', $this->user->id)
+            ->delete();
+    }
+
+    protected function unsetDefaultBranch()
+    {
+        $this->branchDefault->pivot->is_default = false;
+        $this->branchDefault->save();
+
+        $this->tenantUser->branches()->detach($this->branchDefault->pivot->branch_id);
     }
 
     private function setUserWarehouse($branch = null)
@@ -139,9 +160,9 @@ trait DeliveryNoteSetup
         }
     }
 
-    private function getDummyData()
+    private function getDummyData($deliveryNote = null)
     {
-        $note = $this->createDeliveryOrder();
+        $note = $deliveryNote->deliveryOrder ?? $this->createDeliveryOrder();
         $noteItem = $note->items()->first();
 
         $quantityDelivered = $noteItem->quantity_delivered;
@@ -197,9 +218,6 @@ trait DeliveryNoteSetup
                     ],
                 ],
             ],
-            'request_approval_to' => $this->approver->id,
-            'approver_name' => $this->approver->name,
-            'approver_email' => $this->approver->email,
         ];
     }
 

@@ -43,6 +43,9 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
 
     Route::namespace('DeliveryNote')->group(function () {
         Route::group(['middleware' => ['tenant.module-access:sales delivery note']], function () {
+            Route::post('delivery-notes/{id}/approve', 'DeliveryNoteApprovalController@approve');
+            Route::post('delivery-notes/{id}/reject', 'DeliveryNoteApprovalController@reject');
+
             Route::get('delivery-notes/export', 'DeliveryNoteController@export');
             Route::apiResource('delivery-notes', 'DeliveryNoteController');
         });

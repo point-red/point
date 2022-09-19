@@ -4,6 +4,7 @@ namespace App\Model\Sales\DeliveryOrder;
 
 use App\Exceptions\IsReferencedException;
 use App\Model\Form;
+use App\Model\Sales\DeliveryNote\DeliveryNote;
 use App\Model\TransactionModel;
 use App\Traits\Model\Sales\DeliveryOrderJoin;
 use App\Traits\Model\Sales\DeliveryOrderRelation;
@@ -47,22 +48,41 @@ class DeliveryOrder extends TransactionModel
             return false;
         }
 
-        $complete = true;
+        $quantity = [];
         foreach ($this->items as $item) {
+            $quantityNote = 0;
+            $quantityOrder = 0;
+            $deliveryNoteId = 0;
             foreach ($item->deliveryNoteItems as $orderItem) {
-                if ($orderItem->deliveryNote->form->cancellation_status == null
-                    || $orderItem->deliveryNote->form->cancellation_status !== 1
-                    || $orderItem->deliveryNote->form->number !== null) {
-                    $quantityNote = $item->deliveryNoteItems->sum('quantity');
-                    if ($item->quantity_delivered > $quantityNote) {
-                        $complete = false;
-                        break;
+                if (($orderItem->deliveryNote->form->cancellation_status == null
+                    || $orderItem->deliveryNote->form->cancellation_status !== 1)
+                    && $orderItem->deliveryNote->form->number !== null
+                    && $deliveryNoteId != $orderItem->deliveryNote->id) {
+                    $deliveryNoteId = $orderItem->deliveryNote->id;
+                    if (! DeliveryNote::isFormApproved($orderItem->deliveryNote->form)) {
+                        return false;
                     }
+                    if ($quantityOrder == 0) {
+                        $quantityOrder = (int) $item->quantity_delivered;
+                    }
+                    $quantityNote += (int) $item->deliveryNoteItems
+                        ->where('delivery_note_id', $orderItem->deliveryNote->id)
+                        ->sum('quantity');
                 }
+            }
+            $quantity[] = [
+                'dn_total' => $quantityNote,
+                'do_total' => $quantityOrder,
+            ];
+        }
+
+        foreach ($quantity as $delivery) {
+            if ($delivery['do_total'] > $delivery['dn_total']) {
+                return false;
             }
         }
 
-        return $complete;
+        return true;
     }
 
     public function updateStatus()

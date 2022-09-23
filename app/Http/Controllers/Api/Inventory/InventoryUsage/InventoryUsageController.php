@@ -7,10 +7,12 @@ use App\Http\Requests\Inventory\Usage\StoreRequest;
 use App\Http\Requests\Inventory\Usage\UpdateRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Mail\Inventory\InventoryUsageApprovalMail;
 use App\Model\Form;
 use App\Model\Inventory\InventoryUsage\InventoryUsage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class InventoryUsageController extends Controller
 {
@@ -55,6 +57,12 @@ class InventoryUsageController extends Controller
                 ->load('form')
                 ->load('items.item')
                 ->load('items.allocation');
+
+            $approver = $inventoryUsage->form->requestApprovalTo;
+            Mail::to($approver->email)->queue(new InventoryUsageApprovalMail(
+                $inventoryUsage, 
+                $approver,
+            ));
 
             return new ApiResource($inventoryUsage);
         });

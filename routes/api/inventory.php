@@ -8,7 +8,25 @@ Route::prefix('inventory')->namespace('Inventory')->group(function () {
     Route::get('inventory-dna/{itemId}/all', 'InventoryDnaController@allDna');
     Route::get('inventory-warehouse-currentstock', 'InventoryWarehouseCurrentStockController@index');
     Route::apiResource('audits', 'InventoryAudit\\InventoryAuditController');
-    Route::apiResource('usages', 'InventoryUsage\\InventoryUsageController');
+
+    Route::namespace('InventoryUsage')->group(function () {
+        Route::post('usages/{id}/histories', 'InventoryUsageHistoryController@store');
+
+        Route::group(['middleware' => ['tenant.module-access:inventory usage']], function () {
+            Route::post('usages/{id}/approve', 'InventoryUsageApprovalController@approve');
+            Route::post('usages/{id}/reject', 'InventoryUsageApprovalController@reject');
+            Route::post('usages/approval/send', 'InventoryUsageApprovalController@sendApproval');
+            Route::get('usages/approval', 'InventoryUsageApprovalController@index');
+
+            Route::post('usages/{id}/cancellation-approve', 'InventoryUsageCancellationApprovalController@approve');
+            Route::post('usages/{id}/cancellation-reject', 'InventoryUsageCancellationApprovalController@reject');
+
+            Route::get('usages/{id}/histories', 'InventoryUsageHistoryController@index');
+
+            Route::apiResource('usages', 'InventoryUsageController');
+        });
+    });
+
     // Route::apiResource('inventory-corrections', 'InventoryCorrectionController');
     Route::apiResource('transfer-items', 'TransferItem\\TransferItemController');
     Route::post('transfer-items/{id}/close', 'TransferItem\\TransferItemController@close');

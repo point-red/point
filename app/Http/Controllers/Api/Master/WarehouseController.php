@@ -33,14 +33,10 @@ class WarehouseController extends Controller
 
         if($request->get('is_default_only')) {
             $user = tenant(auth()->user()->id);
-            
-            $defaultWarehouse = Arr::first($user->warehouses, function ($value) {
-                return $value->pivot->is_default;
-            });
 
-            if ($defaultWarehouse) {
-                $warehouses = $warehouses->where('id', $defaultWarehouse->id);
-            }
+            $warehouses->join('user_warehouse', 'user_warehouse.warehouse_id', '=', Warehouse::$alias.'.id')
+                ->where('user_warehouse.user_id', $user->id)
+                ->where('user_warehouse.is_default', true);
         }
 
         $warehouses = pagination($warehouses, $request->get('limit'));

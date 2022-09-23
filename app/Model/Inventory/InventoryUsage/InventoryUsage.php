@@ -5,6 +5,7 @@ namespace App\Model\Inventory\InventoryUsage;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Accounting\Journal;
 use App\Model\Form;
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
 use App\Model\TransactionModel;
@@ -21,6 +22,7 @@ class InventoryUsage extends TransactionModel
 
     protected $fillable = [
         'warehouse_id',
+        'employee_id'
     ];
 
     public $defaultNumberPrefix = 'IU';
@@ -38,6 +40,11 @@ class InventoryUsage extends TransactionModel
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
     }
 
     public function isAllowedToUpdate()
@@ -61,9 +68,6 @@ class InventoryUsage extends TransactionModel
 
         $form = new Form;
         $form->saveData($data, $inventoryUsage);
-
-        $inventoryUsage->updateInventory($form, $inventoryUsage);
-        $inventoryUsage->updateJournal($inventoryUsage);
 
         return $inventoryUsage;
     }
@@ -95,6 +99,19 @@ class InventoryUsage extends TransactionModel
         }
     }
 
+    public static function checkIsJournalBalance($usage)
+    {
+        $valueDebit = Journal::where("form_id", $usage->form->id)
+            ->where("journalable_type", Item::$morphName)
+            ->sum("debit");
+        $valueCredit = Journal::where("form_id", $usage->form->id)
+            ->where("journalable_type", Item::$morphName)
+            ->sum("credit");
+        if ($valueDebit - $valueCredit !== 0) {
+            throw new Exception('journal entry is not balanced', 422);
+        }
+    }
+
     public static function updateJournal($usage)
     {
         foreach ($usage->items as $usageItem) {
@@ -104,7 +121,7 @@ class InventoryUsage extends TransactionModel
             $journal->form_id = $usage->form->id;
             $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $usageItem->item_id;
-            $journal->chart_of_account_id = get_setting_journal('inventory usage', 'difference stock expense');
+            $journal->chart_of_account_id = $usageItem->item->chart_of_account_id;
             $journal->debit = $amount;
             $journal->save();
 
@@ -112,10 +129,12 @@ class InventoryUsage extends TransactionModel
             $journal->form_id = $usage->form->id;
             $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $usageItem->item_id;
-            $journal->chart_of_account_id = $usageItem->item->chart_of_account_id;
+            $journal->chart_of_account_id = get_setting_journal('inventory usage', 'difference stock expense');
             $journal->credit = $amount;
             $journal->save();
         }
+
+        self::checkIsJournalBalance($usage);
     }
 
     private static function mapItems($items)

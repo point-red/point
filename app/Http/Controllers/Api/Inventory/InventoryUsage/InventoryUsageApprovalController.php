@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api\Inventory\InventoryUsage;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+use App\Model\Inventory\InventoryUsage\InventoryUsage;
 
 class InventoryUsageApprovalController extends Controller
 {
@@ -18,47 +21,72 @@ class InventoryUsageApprovalController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $id
+     * @return ApiResource
      */
-    public function store(Request $request)
+    public function approve(Request $request, $id)
     {
-        //
+        
+        $result = DB::connection('tenant')->transaction(function () use ($id) {
+            $inventoryUsage = InventoryUsage::findOrFail($id);
+            
+            try {
+                $form = $inventoryUsage->form;
+
+                if ($form->approval_status !== 0) {
+                    throw new \App\Exceptions\ApprovalNotFoundException();
+                }
+
+                $form->approval_by = auth()->user()->id;
+                $form->approval_at = now();
+                $form->approval_status = 1;
+                $form->save();
+        
+                $inventoryUsage->updateInventory($form, $inventoryUsage);
+                $inventoryUsage->updateJournal($inventoryUsage);
+    
+                $form->fireEventApproved();
+            } catch (\Throwable $th) {
+                return response_error($th);
+            }
+    
+            return new ApiResource($inventoryUsage);
+        });
+        
+
+        return $result;
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $id
+     * @return ApiResource
      */
-    public function show($id)
+    public function reject(Request $request, $id)
     {
-        //
-    }
+        $validated = $request->validate([ 'reason' => 'required' ]);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        $result = DB::connection('tenant')->transaction(function () use ($request, $validated, $id) {
+            $inventoryUsage = InventoryUsage::findOrFail($id);
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+            $form = $inventoryUsage->form;
+            
+            if ($form->approval_status !== 0) {
+                throw new \App\Exceptions\ApprovalNotFoundException();
+            }
+
+            $form->approval_by = auth()->user()->id;
+            $form->approval_at = now();
+            $form->approval_reason = $validated['reason'];
+            $form->approval_status = -1;
+            $form->save();
+    
+            $form->fireEventRejected();
+    
+            return new ApiResource($inventoryUsage);
+        });
+
+        return $result;
     }
 }

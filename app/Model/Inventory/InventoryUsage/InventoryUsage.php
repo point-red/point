@@ -2,6 +2,7 @@
 
 namespace App\Model\Inventory\InventoryUsage;
 
+use Exception;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Accounting\Journal;
 use App\Model\Form;

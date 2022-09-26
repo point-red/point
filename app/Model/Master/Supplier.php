@@ -33,6 +33,10 @@ class Supplier extends MasterModel
         'email',
         'notes',
         'disabled',
+        'bank_branch',
+        'bank_name',
+        'bank_account_name',
+        'bank_account_number',
     ];
 
     public static $alias = 'supplier';

@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Api\Master;
 
+use App\Exports\Master\SupplierExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Supplier\StoreSupplierRequest;
 use App\Http\Requests\Master\Supplier\UpdateSupplierRequest;
+use App\Http\Requests\Master\Supplier\ImportSupplierRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Imports\Master\SupplierImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Model\Master\Address;
 use App\Model\Master\Bank;
 use App\Model\Master\ContactPerson;
@@ -18,6 +22,11 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Model\CloudStorage;
+use App\Model\Project\Project;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class SupplierController extends Controller
 {
@@ -87,7 +96,7 @@ class SupplierController extends Controller
         Phone::saveFromRelation($supplier, $request->get('phones'));
         Email::saveFromRelation($supplier, $request->get('emails'));
         ContactPerson::saveFromRelation($supplier, $request->get('contacts'));
-        Bank::saveFromRelation($supplier, $request->get('banks'));
+        // Bank::saveFromRelation($supplier, $request->get('banks'));
 
         DB::connection('tenant')->commit();
 
@@ -180,5 +189,62 @@ class SupplierController extends Controller
         }
 
         return response()->json([], 204);
+    }
+
+    public function import(ImportSupplierRequest $request)
+    {
+        try {
+            $result = new SupplierImport;
+            Excel::import($result, request()->file('file'));
+
+            return response()->json([
+                'message' => 'success',
+                'data' => [ 
+                    "success" =>$result->getResult(),
+                    "errors" => $result->errors(),
+                    "failures" => $result->failures()
+                ]
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage(),
+            ],200);
+        }
+        
+    }
+
+    public function export(Request $request)
+    {
+        try {
+            $tenant = strtolower($request->header('Tenant'));
+            $key = Str::random(16);
+            $fileName = strtoupper($tenant).' - Supplier';
+            $fileExt = 'xlsx';
+            $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
+
+            Excel::store(new SupplierExport($tenant, $request), $path, env('STORAGE_DISK'));
+
+            $cloudStorage = new CloudStorage;
+            $cloudStorage->file_name = $fileName;
+            $cloudStorage->file_ext = $fileExt;
+            $cloudStorage->feature = 'Supplier Export';
+            $cloudStorage->key = $key;
+            $cloudStorage->path = $path;
+            $cloudStorage->disk = env('STORAGE_DISK');
+            $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
+            $cloudStorage->owner_id = auth()->user()->id;
+            $cloudStorage->expired_at = Carbon::now()->addDay(1);
+            $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
+            $cloudStorage->save();
+
+            return response()->json([
+                'data' => [ 'url' => $cloudStorage->download_url ],
+            ], 200);
+            
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage(),
+            ],200);
+        }
     }
 }

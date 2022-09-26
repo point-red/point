@@ -4,7 +4,7 @@ namespace App\Http\Requests\Master\Supplier;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateSupplierRequest extends FormRequest
+class ImportSupplierRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,15 +24,17 @@ class UpdateSupplierRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'unique:tenant.suppliers,code,'.$this->id,
+            'code' => 'required',
             'name' => 'required',
-            'email' => 'required,email',
+            'email' => 'required',
             'address' => 'required',
             'phone' => 'required',
             'bank_branch' => 'required',
             'bank_name' => 'required',
             'bank_account_name' => 'required',
             'bank_account_number' => 'required',
+            'start_row' => 'required',
+            'file' => 'required|mimes:xlsx,xls,csv|max:1024'
         ];
     }
 }

@@ -107,13 +107,17 @@ class SalesReturn extends TransactionModel
         }
     }
     
-    public static function updateInvoiceQuantity($salesReturn)
+    public static function updateInvoiceQuantity($salesReturn, $type)
     {
         foreach ($salesReturn->salesInvoice->items as $salesInvoiceItem) {
             foreach ($salesReturn->items as $item) {
                 if ($salesInvoiceItem->id === $item->sales_invoice_item_id) {
+                    $quantity = $item->quantity;
+                    if ($type === 'revert') {
+                        $quantity = $item->quantity * -1;
+                    }
                     $salesInvoiceItem->quantity_returned 
-                        = $salesInvoiceItem->quantity_returned + $item->quantity;
+                        = $salesInvoiceItem->quantity_returned + $quantity;
                     $salesInvoiceItem->quantity_remaining
                         = $salesInvoiceItem->quantity - $salesInvoiceItem->quantity_returned;
                     $salesInvoiceItem->save();

@@ -81,7 +81,7 @@ class SalesReturnApprovalController extends Controller
 
         SalesReturn::updateJournal($salesReturn);
         SalesReturn::updateInventory($salesReturn->form, $salesReturn);
-        SalesReturn::updateInvoiceQuantity($salesReturn);                
+        SalesReturn::updateInvoiceQuantity($salesReturn, 'update');
         
 
         $form->fireEventApproved();

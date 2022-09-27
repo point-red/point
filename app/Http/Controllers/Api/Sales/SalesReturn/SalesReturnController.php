@@ -92,6 +92,7 @@ class SalesReturnController extends Controller
 
             $result = DB::connection('tenant')->transaction(function () use ($request, $salesReturn) {
                 $salesReturn->form->archive($request->notes);
+                SalesReturn::updateInvoiceQuantity($salesReturn, 'revert');
                 $request['number'] = $salesReturn->form->edited_number;
                 $request['old_increment'] = $salesReturn->form->increment;
 

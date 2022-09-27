@@ -108,7 +108,7 @@ class InventoryUsage extends TransactionModel
         $valueCredit = Journal::where("form_id", $usage->form->id)
             ->where("journalable_type", Item::$morphName)
             ->sum("credit");
-        if ($valueDebit - $valueCredit !== 0) {
+        if ($valueDebit - $valueCredit != 0) {
             throw new Exception('journal entry is not balanced', 422);
         }
     }

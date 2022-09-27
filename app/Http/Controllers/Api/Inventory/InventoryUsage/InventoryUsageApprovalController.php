@@ -28,17 +28,16 @@ class InventoryUsageApprovalController extends Controller
      */
     public function approve(Request $request, $id)
     {
-        
-        $result = DB::connection('tenant')->transaction(function () use ($id) {
-            $inventoryUsage = InventoryUsage::findOrFail($id);
-            
-            try {
+        try {
+            $result = DB::connection('tenant')->transaction(function () use ($id) {
+                $inventoryUsage = InventoryUsage::findOrFail($id);
+                
                 $form = $inventoryUsage->form;
-
+    
                 if ($form->approval_status !== 0) {
                     throw new \App\Exceptions\ApprovalNotFoundException();
                 }
-
+    
                 $form->approval_by = auth()->user()->id;
                 $form->approval_at = now();
                 $form->approval_status = 1;
@@ -48,15 +47,14 @@ class InventoryUsageApprovalController extends Controller
                 $inventoryUsage->updateJournal($inventoryUsage);
     
                 $form->fireEventApproved();
-            } catch (\Throwable $th) {
-                return response_error($th);
-            }
-    
-            return new ApiResource($inventoryUsage);
-        });
         
-
-        return $result;
+                return $inventoryUsage;
+            });
+        } catch (\Throwable $th) {
+            return response_error($th);
+        }
+        
+        return new ApiResource($result);
     }
 
     /**

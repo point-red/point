@@ -4,15 +4,18 @@ namespace App\Model\Inventory\InventoryUsage;
 
 use Exception;
 use App\Helpers\Inventory\InventoryHelper;
-use App\Model\Accounting\Journal;
+use App\Model\TransactionModel;
 use App\Model\Form;
-use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
-use App\Model\TransactionModel;
+use App\Model\Accounting\Journal;
+use App\Model\HumanResource\Employee\Employee;
+use App\Traits\Model\Inventory\InventoryUsageJoin;
 
 class InventoryUsage extends TransactionModel
 {
+    use InventoryUsageJoin;
+
     public static $morphName = 'InventoryUsage';
 
     protected $connection = 'tenant';
@@ -142,6 +145,10 @@ class InventoryUsage extends TransactionModel
     {
         $array = [];
         foreach ($items as $item) {
+            if (strtolower($item['unit']) !== 'pcs') {
+                throw new Exception('there are some item not in \'pcs\' unit', 422);
+            }
+
             $itemModel = Item::find($item['item_id']);
             if ($itemModel->require_production_number || $itemModel->require_expiry_date) {
                 if ($item['dna']) {

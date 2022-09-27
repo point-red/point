@@ -24,18 +24,9 @@ class InventoryUsageController extends Controller
      */
     public function index(Request $request)
     {
-        $inventoryUsages = InventoryUsage::eloquentFilter($request);
+        $inventoryUsages = InventoryUsage::from(InventoryUsage::getTableName().' as '.InventoryUsage::$alias)->eloquentFilter($request);
 
-        if ($request->get('join')) {
-            $fields = explode(',', $request->get('join'));
-
-            if (in_array('form', $fields)) {
-                $inventoryUsages = $inventoryUsages->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', InventoryUsage::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), InventoryUsage::$morphName);
-                });
-            }
-        }
+        $inventoryUsages = InventoryUsage::joins($inventoryUsages, $request->get('join'));
 
         $inventoryUsages = pagination($inventoryUsages, $request->get('limit'));
 
@@ -51,22 +42,26 @@ class InventoryUsageController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        $result = DB::connection('tenant')->transaction(function () use ($request) {
-            $inventoryUsage = InventoryUsage::create($request->all());
-            $inventoryUsage
-                ->load('form')
-                ->load('items.item')
-                ->load('items.allocation');
-
-            $approver = $inventoryUsage->form->requestApprovalTo;
-            Mail::to($approver->email)->queue(new InventoryUsageApprovalMail(
-                $inventoryUsage, 
-                $approver,
-            ));
-
-            return new ApiResource($inventoryUsage);
-        });
-
+        try {
+            $result = DB::connection('tenant')->transaction(function () use ($request) {
+                $inventoryUsage = InventoryUsage::create($request->all());
+                $inventoryUsage
+                    ->load('form')
+                    ->load('items.item')
+                    ->load('items.allocation');
+    
+                $approver = $inventoryUsage->form->requestApprovalTo;
+                Mail::to($approver->email)->queue(new InventoryUsageApprovalMail(
+                    $inventoryUsage, 
+                    $approver,
+                ));
+    
+                return new ApiResource($inventoryUsage);
+            });
+        } catch (\Throwable $th) {
+            return response_error($th);
+        }
+        
         return $result;
     }
 

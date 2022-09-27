@@ -160,6 +160,12 @@ trait EloquentFilters
 
         $query->where(function ($query) use ($values) {
             foreach ($values as $key => $value) {
+                if (is_array($value)) {
+                    foreach ($value as $val) {
+                        $query->orWhere($key, $val);
+                    }
+                    return;
+                }
                 $query->orWhere($key, $value);
             }
         });

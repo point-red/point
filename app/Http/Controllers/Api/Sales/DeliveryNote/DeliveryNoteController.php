@@ -113,15 +113,11 @@ class DeliveryNoteController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        $request->validate(['reason' => 'required']);
+
         $deliveryNote = DeliveryNote::findOrFail($id);
         $deliveryNote->isAllowedToDelete();
-
-        $response = $deliveryNote->requestCancel($request);
-
-        if (! $response) {
-            $deliveryNote->deliveryOrder->form->done = false;
-            $deliveryNote->deliveryOrder->form->save();
-        }
+        $deliveryNote->requestCancel($request);
 
         return response()->json([], 204);
     }

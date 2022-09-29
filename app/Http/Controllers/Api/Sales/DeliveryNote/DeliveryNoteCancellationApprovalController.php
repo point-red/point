@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 class DeliveryNoteCancellationApprovalController extends Controller
 {
     /**
-     * @param Request $request
+     * @param  Request  $request
      * @param $id
      * @return ApiResource
      */
@@ -20,11 +20,11 @@ class DeliveryNoteCancellationApprovalController extends Controller
     {
         $deliveryNote = DeliveryNote::findOrFail($id);
 
-        $result = DB::connection('tenant')->transaction(function () use ($request, $deliveryNote) {
+        $result = DB::connection('tenant')->transaction(function () use ($deliveryNote) {
             try {
                 $deliveryNote->isAllowedToUpdate();
                 if ($deliveryNote->form->cancellation_status !== 0) {
-                    throw new Exception("form not in cancellation pending state", 422);
+                    throw new Exception('form not in cancellation pending state', 422);
                 }
 
                 $deliveryNote->form->cancellation_approval_by = auth()->user()->id;
@@ -49,7 +49,7 @@ class DeliveryNoteCancellationApprovalController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param  Request  $request
      * @param $id
      * @return ApiResource
      */
@@ -63,7 +63,7 @@ class DeliveryNoteCancellationApprovalController extends Controller
             try {
                 $deliveryNote->isAllowedToUpdate();
                 if ($deliveryNote->form->cancellation_status !== 0) {
-                    throw new Exception("form not in cancellation pending state", 422);
+                    throw new Exception('form not in cancellation pending state', 422);
                 }
 
                 $deliveryNote->form->cancellation_approval_by = auth()->user()->id;

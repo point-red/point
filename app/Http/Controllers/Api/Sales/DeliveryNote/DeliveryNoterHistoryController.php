@@ -13,14 +13,14 @@ use Illuminate\Http\Request;
 class DeliveryNoterHistoryController extends Controller
 {
     /**
-     * @param Request $request
+     * @param  Request  $request
      * @return ApiCollection
      */
     public function index(Request $request, $id)
     {
         $deliveryNote = DeliveryNote::findOrFail($id);
         $formNumber = $deliveryNote->form->number;
-        
+
         $histories = UserActivity::select(UserActivity::getTableName().'.*', Form::$alias.'.formable_id')
             ->eloquentFilter($request)
             ->join(Form::getTableName().' as '.Form::$alias, function ($query) {
@@ -54,7 +54,7 @@ class DeliveryNoterHistoryController extends Controller
             $userActivity->user_id = auth()->user()->id;
             $userActivity->activity = $activity;
             $userActivity->save();
-        };
+        }
 
         return new ApiResource($userActivity);
     }

@@ -159,7 +159,7 @@ class DeliveryNoteHistoryTest extends TestCase
             'activity' => 'Printed',
         ];
 
-        $response = $this->json('POST', self::$path.'/'.$deliveryOrder->id . '/histories', $data, $this->headers);
+        $response = $this->json('POST', self::$path.'/'.$deliveryOrder->id.'/histories', $data, $this->headers);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('user_activities', [
@@ -186,14 +186,14 @@ class DeliveryNoteHistoryTest extends TestCase
             'page' => 1
         ];
 
-        $response = $this->json('GET', self::$path . '/' . $deliveryNote->id . '/histories', $data, $this->headers);
+        $response = $this->json('GET', self::$path.'/'.$deliveryNote->id.'/histories', $data, $this->headers);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('user_activities', [
             'number' => $deliveryNote->form->number,
             'table_id' => $deliveryNote->id,
             'table_type' => $deliveryNote::$morphName,
-            'activity' => 'Created'
+            'activity' => 'Created',
         ], 'tenant');
     }
 }

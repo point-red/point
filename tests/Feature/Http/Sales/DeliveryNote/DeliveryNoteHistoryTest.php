@@ -183,7 +183,7 @@ class DeliveryNoteHistoryTest extends TestCase
             'filter_like' => '{}',
             'or_filter_where_has_like[]' => '{"user":{}}',
             'limit' => 10,
-            'page' => 1
+            'page' => 1,
         ];
 
         $response = $this->json('GET', self::$path.'/'.$deliveryNote->id.'/histories', $data, $this->headers);

@@ -32,6 +32,8 @@ class SalesInvoice extends TransactionModel
         'customer_name',
         'customer_address',
         'customer_phone',
+        'referenceable_id',
+        'referenceable_type',
         'due_date',
         'delivery_fee',
         'discount_percent',
@@ -82,6 +84,11 @@ class SalesInvoice extends TransactionModel
         return $this->belongsTo(Customer::class);
     }
 
+    public function referenceable()
+    {
+        return $this->morphTo();
+    }
+
     public function downPayments()
     {
         return $this->belongsToMany(SalesDownPayment::class, 'sales_down_payment_invoice', 'invoice_id', 'down_payment_id');
@@ -130,6 +137,11 @@ class SalesInvoice extends TransactionModel
         }
     }
 
+    public function deliveryNotes()
+    {
+        return $this->morphToMany(DeliveryNote::class, 'referenceable', 'sales_invoices', null,'referenceable_id');
+    }
+
     public static function create($data)
     {
         $salesInvoice = new self;
@@ -155,11 +167,11 @@ class SalesInvoice extends TransactionModel
         // updated to done if the amount is 0 because of down payment
         $salesInvoice->updateStatus();
 
-        self::setDeliveryNotesDone($salesInvoice);
-        self::setSalesOrdersDone($salesInvoice);
-        self::setDownPaymentsDone($data['down_payments'] ?? []);
-        self::updateJournal($salesInvoice);
-        self::setAllocationReport($salesInvoice);
+        // self::setDeliveryNotesDone($salesInvoice);
+        // self::setSalesOrdersDone($salesInvoice);
+        // self::setDownPaymentsDone($data['down_payments'] ?? []);
+        // self::updateJournal($salesInvoice);
+        // self::setAllocationReport($salesInvoice);
 
         return $salesInvoice;
     }

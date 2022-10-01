@@ -50,6 +50,11 @@ class PaymentCollection extends TransactionModel
         'amount' => 'double'
     ];
 
+    public function referenceable()
+    {
+        return $this->morphTo();
+    }
+
     public function form()
     {
         return $this->morphOne(Form::class, 'formable');

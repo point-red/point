@@ -34,7 +34,7 @@ class WarehouseController extends Controller
         if($request->get('is_default_only')) {
             $user = tenant(auth()->user()->id);
 
-            $warehouses->join('user_warehouse', 'user_warehouse.warehouse_id', '=', Warehouse::$alias.'.id')
+            $warehouses
                 ->where('user_warehouse.user_id', $user->id)
                 ->where('user_warehouse.is_default', true);
         }

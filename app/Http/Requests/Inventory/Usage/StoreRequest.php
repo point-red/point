@@ -35,6 +35,7 @@ class StoreRequest extends FormRequest
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::converter(),
             'items.*.chart_of_account_id' => ValidationRule::foreignKey('chart_of_accounts'),
+            'items.*.allocation_id' => ValidationRule::foreignKey('allocations'),
         ];
     }
 }

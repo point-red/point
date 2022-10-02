@@ -3,6 +3,7 @@
 namespace App\Model\Inventory\InventoryUsage;
 
 use Exception;
+use App\Exceptions\StockNotEnoughException;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\TransactionModel;
 use App\Model\Form;
@@ -67,7 +68,7 @@ class InventoryUsage extends TransactionModel
         $inventoryUsage->fill($data);
         $inventoryUsage->save();
 
-        $items = self::mapItems($data['items'] ?? []);
+        $items = self::mapItems($data['items'] ?? [], $inventoryUsage);
         $inventoryUsage->items()->saveMany($items);
 
         $form = new Form;
@@ -125,7 +126,7 @@ class InventoryUsage extends TransactionModel
             $journal->form_id = $usage->form->id;
             $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $usageItem->item_id;
-            $journal->chart_of_account_id = $usageItem->item->chart_of_account_id;
+            $journal->chart_of_account_id = $usageItem->chart_of_account_id;
             $journal->debit = $amount;
             $journal->save();
 
@@ -141,7 +142,20 @@ class InventoryUsage extends TransactionModel
         self::checkIsJournalBalance($usage);
     }
 
-    private static function mapItems($items)
+    private static function checkIsItemQuantityOver($item, $itemModel, $inventoryUsage)
+    {
+        $options = [
+            'expiry_date' => 0,
+            'production_number' => 0,
+        ];
+
+        $stock = InventoryHelper::getCurrentStock($itemModel, $inventoryUsage->created_at, $inventoryUsage->warehouse, $options);
+        if (abs($item['quantity']) > $stock) {
+            throw new StockNotEnoughException($itemModel);
+        }
+    }
+
+    private static function mapItems($items, $inventoryUsage)
     {
         $array = [];
         foreach ($items as $item) {
@@ -150,6 +164,9 @@ class InventoryUsage extends TransactionModel
             }
 
             $itemModel = Item::find($item['item_id']);
+            
+            self::checkIsItemQuantityOver($item, $itemModel, $inventoryUsage);
+
             if ($itemModel->require_production_number || $itemModel->require_expiry_date) {
                 if ($item['dna']) {
                     foreach ($item['dna'] as $dna) {

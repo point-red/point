@@ -28,7 +28,7 @@ class InventoryUsageApprovalController extends Controller
      */
     public function approve(Request $request, $id)
     {
-        try {
+        // try {
             $result = DB::connection('tenant')->transaction(function () use ($id) {
                 $inventoryUsage = InventoryUsage::findOrFail($id);
                 
@@ -50,9 +50,9 @@ class InventoryUsageApprovalController extends Controller
         
                 return $inventoryUsage;
             });
-        } catch (\Throwable $th) {
-            return response_error($th);
-        }
+        // } catch (\Throwable $th) {
+        //     return response_error($th);
+        // }
         
         return new ApiResource($result);
     }

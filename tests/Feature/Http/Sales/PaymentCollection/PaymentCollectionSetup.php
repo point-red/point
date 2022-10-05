@@ -184,6 +184,7 @@ trait PaymentCollectionSetup {
 
         $salesReturn = new SalesReturn;
         $salesReturn->sales_invoice_id = $salesInvoice->id;
+        $salesReturn->warehouse_id = $this->warehouseSelected->id;
         $salesReturn->customer_id = $this->customer->id;
         $salesReturn->customer_name = $this->customer->name;
         $salesReturn->amount = 200000;

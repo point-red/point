@@ -20,6 +20,7 @@ use App\Model\Sales\SalesOrder\SalesOrder;
 use App\Model\Sales\SalesReturn\SalesReturn;
 use App\Model\Sales\PaymentCollection\PaymentCollection;
 use App\Model\SettingJournal;
+use App\Model\Accounting\Journal;
 
 trait SalesReturnSetup {
   private $tenantUser;
@@ -107,7 +108,7 @@ trait SalesReturnSetup {
 
   private function generateChartOfAccount()
   {
-        $coa = ChartOfAccount::where('name', 'COST OF SALES')->first();
+        $coa = ChartOfAccount::where('name', 'FINISHED GOOD INVENTORY')->first();
         if ($coa) {
             $this->coa = $coa;
         } else {
@@ -129,8 +130,9 @@ trait SalesReturnSetup {
             $this->coa->save();
         }
 
-      $arCoa = ChartOfAccount::where('name', 'ACCOUNT RECEIVABLE')->first();
-      if ($arCoa) {
+      $arCoaId = get_setting_journal('sales', 'account receivable');
+      if ($arCoaId) {
+          $arCoa = ChartOfAccount::where('id', $arCoaId)->first();
           $this->arCoa = $arCoa;
       } else {
           $type = new ChartOfAccountType;
@@ -157,9 +159,10 @@ trait SalesReturnSetup {
           $setting->save();
       }
 
-      $salesIncomeCoa = ChartOfAccount::where('name', 'SALES')->first();
-      if ($salesIncomeCoa) {
-          $this->$salesIncomeCoa = $salesIncomeCoa;
+      $salesIncomeId = get_setting_journal('sales', 'sales income');
+      if ($salesIncomeId) {
+        $salesIncomeCoa = ChartOfAccount::where('id', $salesIncomeId)->first();
+          $this->salesIncomeCoa = $salesIncomeCoa;
       } else {
           $type = new ChartOfAccountType;
           $type->name = 'SALES INCOME';
@@ -172,7 +175,7 @@ trait SalesReturnSetup {
           $this->salesIncomeCoa->position = 'CREDIT';
           $this->salesIncomeCoa->is_locked = 1;
           $this->salesIncomeCoa->number = 41101;
-          $this->salesIncomeCoa->name = 'SALES';
+          $this->salesIncomeCoa->name = 'SALES INCOME';
           $this->salesIncomeCoa->alias = 'PENJUALAN';
           $this->salesIncomeCoa->created_by = $this->user->id;
           $this->salesIncomeCoa->updated_by = $this->user->id;
@@ -185,9 +188,10 @@ trait SalesReturnSetup {
           $setting->save();
       }
 
-      $salesCostCoa = ChartOfAccount::where('name', 'COST OF SALES')->first();
-      if ($salesCostCoa) {
-          $this->$salesCostCoa = $salesCostCoa;
+      $salesCostCoaId = get_setting_journal('sales', 'cost of sales');
+      if ($salesCostCoaId) {
+          $salesCostCoa = ChartOfAccount::where('id', $salesCostCoaId)->first();
+          $this->salesCostCoa = $salesCostCoa;
       } else {
           $type = new ChartOfAccountType;
           $type->name = 'COST OF SALES';
@@ -213,9 +217,10 @@ trait SalesReturnSetup {
           $setting->save();
       }
 
-      $taxCoa = ChartOfAccount::where('name', 'INCOME TAX PAYABLE')->first();
-      if ($taxCoa) {
-          $this->$taxCoa = $taxCoa;
+      $taxCoaId = get_setting_journal('sales', 'income tax payable');
+      if ($taxCoaId) {
+          $taxCoa = ChartOfAccount::where('id', $taxCoaId)->first();
+          $this->taxCoa = $taxCoa;
       } else {
           $type = new ChartOfAccountType;
           $type->name = 'OTHER ACCOUNT PAYABLE ';

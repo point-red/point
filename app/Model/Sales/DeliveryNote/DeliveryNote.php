@@ -53,6 +53,7 @@ class DeliveryNote extends TransactionModel
 
     public function isAllowedToDelete()
     {
+        $this->setApproval();
         $this->updatedFormNotArchived();
         $this->isNotReferenced();
     }
@@ -62,6 +63,18 @@ class DeliveryNote extends TransactionModel
         // Check if not referenced by sales invoice
         if ($this->salesInvoices->count()) {
             throw new IsReferencedException('Cannot edit form because referenced by sales invoice(s)', $this->salesInvoices);
+        }
+    }
+
+    private function setApproval()
+    {
+        if (empty($this->form->request_approval_to)) {
+            $approver = $this->deliveryOrder->form->request_approval_to;
+
+            $this->form->request_approval_to = $approver;
+            $this->form->approval_by = $approver;
+            $this->form->approval_at = $this->form->created_at;
+            $this->form->save();
         }
     }
 

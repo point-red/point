@@ -42,9 +42,16 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     });
 
     Route::namespace('DeliveryNote')->group(function () {
+        Route::post('delivery-notes/{id}/histories', 'DeliveryNoterHistoryController@store');
+
         Route::group(['middleware' => ['tenant.module-access:sales delivery note']], function () {
             Route::post('delivery-notes/{id}/approve', 'DeliveryNoteApprovalController@approve');
             Route::post('delivery-notes/{id}/reject', 'DeliveryNoteApprovalController@reject');
+
+            Route::post('delivery-notes/{id}/cancellation-approve', 'DeliveryNoteCancellationApprovalController@approve');
+            Route::post('delivery-notes/{id}/cancellation-reject', 'DeliveryNoteCancellationApprovalController@reject');
+
+            Route::get('delivery-notes/{id}/histories', 'DeliveryNoterHistoryController@index');
 
             Route::get('delivery-notes/export', 'DeliveryNoteController@export');
             Route::apiResource('delivery-notes', 'DeliveryNoteController');

@@ -446,4 +446,62 @@ class DeliveryNoteTest extends TestCase
             'activity' => 'Update - 1',
         ], 'tenant');
     }
+
+    /** @test */
+    public function deleteDeliveryNoteUnauthorized()
+    {
+        $this->createDeliveryNote();
+
+        $this->unsetUserRole();
+
+        $deliveryNote = DeliveryNote::orderBy('id', 'asc')->first();
+        $data['reason'] = $this->faker->text(200);
+
+        $response = $this->json('DELETE', self::$path.'/'.$deliveryNote->id, $data, $this->headers);
+
+        $response->assertStatus(500)
+            ->assertJson([
+                'code' => 0,
+                'message' => 'There is no permission named `delete sales delivery note` for guard `api`.',
+            ]);
+    }
+
+    /** @test */
+    public function deleteDeliveryNoteNoReason()
+    {
+        $this->createDeliveryNote();
+
+        $deliveryNote = DeliveryNote::orderBy('id', 'asc')->first();
+
+        $response = $this->json('DELETE', self::$path.'/'.$deliveryNote->id, [], $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'code' => 422,
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'reason' => [
+                        'The reason field is required.',
+                    ],
+                ],
+            ]);
+    }
+
+    /** @test */
+    public function deleteDeliveryNote()
+    {
+        $this->createDeliveryNote();
+
+        $deliveryNote = DeliveryNote::orderBy('id', 'asc')->first();
+        $data['reason'] = $this->faker->text(200);
+
+        $response = $this->json('DELETE', self::$path.'/'.$deliveryNote->id, $data, $this->headers);
+
+        $response->assertStatus(204);
+        $this->assertDatabaseHas('forms', [
+            'number' => $deliveryNote->form->number,
+            'request_cancellation_reason' => $data['reason'],
+            'cancellation_status' => 0,
+        ], 'tenant');
+    }
 }

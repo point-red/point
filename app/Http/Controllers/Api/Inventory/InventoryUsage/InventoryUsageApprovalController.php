@@ -37,7 +37,7 @@ class InventoryUsageApprovalController extends Controller
                     throw new \App\Exceptions\ApprovalNotFoundException();
                 }
 
-                if ($form->request_approval_to !== tenant(auth()->user()->id)) {
+                if ($form->request_approval_to !== tenant(auth()->user()->id)->id) {
                     throw new \App\Exceptions\UnauthorizedException();
                 }
     
@@ -78,7 +78,7 @@ class InventoryUsageApprovalController extends Controller
                 throw new \App\Exceptions\ApprovalNotFoundException();
             }
 
-            if ($form->request_approval_to !== tenant(auth()->user()->id)) {
+            if ($form->request_approval_to !== tenant(auth()->user()->id)->id) {
                 throw new \App\Exceptions\UnauthorizedException();
             }
 

@@ -5,6 +5,7 @@ namespace App\Model\Inventory\InventoryUsage;
 use Exception;
 use App\Exceptions\StockNotEnoughException;
 use App\Helpers\Inventory\InventoryHelper;
+use App\Mail\Inventory\InventoryUsageApprovalMail;
 use App\Model\TransactionModel;
 use App\Model\Form;
 use App\Model\Master\Item;
@@ -12,6 +13,7 @@ use App\Model\Master\Warehouse;
 use App\Model\Accounting\Journal;
 use App\Model\HumanResource\Employee\Employee;
 use App\Traits\Model\Inventory\InventoryUsageJoin;
+use Illuminate\Support\Facades\Mail;
 
 class InventoryUsage extends TransactionModel
 {
@@ -73,6 +75,12 @@ class InventoryUsage extends TransactionModel
 
         $form = new Form;
         $form->saveData($data, $inventoryUsage);
+
+        $approver = $inventoryUsage->form->requestApprovalTo;
+        Mail::to($approver->email)->queue(new InventoryUsageApprovalMail(
+            $inventoryUsage, 
+            $approver,
+        ));
 
         return $inventoryUsage;
     }

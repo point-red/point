@@ -94,7 +94,11 @@ class InventoryUsageTest extends TestCase
 
         $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
 
+        $approver = $inventoryUsage->form->requestApprovalTo;
+        $this->changeActingAs($approver, $inventoryUsage);
+
         $response = $this->json('POST', self::$path . '/' . $inventoryUsage->id . '/approve', [], $this->headers);
+
         $response->assertStatus(200);
         $this->assertDatabaseHas('forms', [
                 'id' => $response->json('data.form.id'),
@@ -115,8 +119,8 @@ class InventoryUsageTest extends TestCase
             'group_by' => 'form.id',
             'filter_form' => 'notArchived;null',
             'filter_like' => '{}',
-            'filter_date_min' => '{"form.date":"2022-09-01 00:00:00"}',
-            'filter_date_max' => '{"form.date":"2022-09-30 23:59:59"}',
+            'filter_date_min' => '{"form.date":"' . date('Y-m-01') . ' 00:00:00"}',
+            'filter_date_max' => '{"form.date":"' . date('Y-m-30') . ' 23:59:59"}',
             'limit' => 10,
             'includes' => 'form',
             'page' => 1
@@ -127,96 +131,109 @@ class InventoryUsageTest extends TestCase
         $response->assertStatus(200);
     }
     /** @test */
-    // public function read_delivery_order()
-    // {
-    //     $this->success_approve_delivery_order();
+    public function read_inventory_usage()
+    {
+        $this->success_approve_inventory_usage();
 
-    //     $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
 
-    //     $data = [
-    //         'with_archives' => 'true',
-    //         'with_origin' => 'true',
-    //         'remaining_info' => 'true',
-    //         'includes' => 'customer;warehouse;items.item;items.allocation;salesOrder.form;form.createdBy;form.requestApprovalTo;form.branch'
-    //     ];
+        $data = [
+            'with_archives' => 'true',
+            'with_origin' => 'true',
+            'includes' => 'form'
+        ];
 
-    //     $response = $this->json('GET', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
+        $response = $this->json('GET', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-    //     $response->assertStatus(200);
-    // }
+        $response->assertStatus(200);
+    }
     /** @test */
-    // public function unauthorized_update_delivery_order()
-    // {
-    //     $this->success_create_delivery_order();
+    public function unauthorized_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
 
-    //     $this->unsetUserRole();
+        $this->unsetUserRole();
 
-    //     $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
-    //     $data = $this->getDummyData($deliveryOrder);
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        $data = $this->getDummyData($inventoryUsage);
 
-    //     $response = $this->json('PATCH', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-    //     $response->assertStatus(500)
-    //         ->assertJson([
-    //             "code" => 0,
-    //             "message" => "There is no permission named `update sales delivery order` for guard `api`."
-    //         ]);
-    // }
+        $response->assertStatus(500)
+            ->assertJson([
+                "code" => 0,
+                "message" => "There is no permission named `update inventory usage` for guard `api`."
+            ]);
+    }
     /** @test */
-    // public function overquantity_update_delivery_order()
-    // {
-    //     $this->success_create_delivery_order();
+    public function overquantity_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
 
-    //     $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
         
-    //     $data = $this->getDummyData($deliveryOrder);
-    //     $data = data_set($data, 'id', $deliveryOrder->id, false);
-    //     $data = data_set($data, 'items.0.quantity_delivered', 1000);
+        $data = $this->getDummyData($inventoryUsage);
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = data_set($data, 'items.0.quantity', 2000);
 
-    //     $response = $this->json('PATCH', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-    //     $response->assertStatus(422)
-    //         ->assertJson([
-    //             "code" => 422,
-    //             "message" => "Delivery order item can't exceed sales order request"
-    //         ]);
-    // }
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "Stock {$data['items'][0]['item_name']} not enough"
+            ]);
+    }
     /** @test */
-    // public function invalid_update_delivery_order()
-    // {
-    //     $this->success_create_delivery_order();
+    public function invalid_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
 
-    //     $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
         
-    //     $data = $this->getDummyData($deliveryOrder);
-    //     $data = data_set($data, 'id', $deliveryOrder->id, false);
-    //     $data = data_set($data, 'sales_order_id', null);
+        $data = $this->getDummyData($inventoryUsage);
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = data_set($data, 'request_approval_to', null);
 
-    //     $response = $this->json('PATCH', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-    //     $response->assertStatus(422);
-    // }
+        $response->assertStatus(422);
+    }
     /** @test */
-    // public function success_update_delivery_order()
-    // {
-    //     $this->success_create_delivery_order();
+    public function invalid_unit_update_inventory_usage()
+    {
+        $this->setRole();
 
-    //     $deliveryOrder = DeliveryOrder::orderBy('id', 'asc')->first();
+        $data = $this->getDummyData($itemUnit = 'box');
+
+        $response = $this->json('POST', self::$path, $data, $this->headers);
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "there are some item not in 'pcs' unit"
+            ]);
+    }
+    /** @test */
+    public function success_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
         
-    //     $data = $this->getDummyData($deliveryOrder);
-    //     $data = data_set($data, 'id', $deliveryOrder->id, false);
+        $data = $this->getDummyData($inventoryUsage);
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
 
-    //     $response = $this->json('PATCH', self::$path . '/' . $deliveryOrder->id, $data, $this->headers);
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-    //     $response->assertStatus(201);
-    //     $this->assertDatabaseHas('forms', [ 'edited_number' => $response->json('data.form.number') ], 'tenant');
-    //     $this->assertDatabaseHas('user_activities', [
-    //         'number' => $response->json('data.form.number'),
-    //         'table_id' => $response->json('data.id'),
-    //         'table_type' => 'SalesDeliveryOrder',
-    //         'activity' => 'Update - 1'
-    //     ], 'tenant');
-    // }
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('forms', [ 'edited_number' => $response->json('data.form.number') ], 'tenant');
+        $this->assertDatabaseHas('user_activities', [
+            'number' => $response->json('data.form.number'),
+            'table_id' => $response->json('data.id'),
+            'table_type' => 'InventoryUsage',
+            'activity' => 'Update - 1'
+        ], 'tenant');
+    }
     /** @test */
     // public function unauthorized_delete_delivery_order()
     // {

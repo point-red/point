@@ -16,6 +16,7 @@ use App\Model\Form;
 use App\Model\SettingJournal;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\HumanResource\Employee\Employee;
+use App\User;
 
 trait InventoryUsageSetup {
   private $tenantUser;
@@ -82,8 +83,9 @@ trait InventoryUsageSetup {
           '--force' => true,
       ]);
 
+      $chartOfAccount = ChartOfAccount::where('name', 'FACTORY DIFFERENCE STOCK EXPENSE')->first();
       $settingJournal = SettingJournal::where('feature', 'inventory usage')->where('name', 'difference stock expense')->first();
-      $settingJournal->chart_of_account_id = 116;
+      $settingJournal->chart_of_account_id = $chartOfAccount->id;
       $settingJournal->save();
   }
   
@@ -113,6 +115,26 @@ trait InventoryUsageSetup {
     InventoryHelper::increase($form, $this->warehouseSelected, $item, 500, $unit->label, 1, $options);
 
     return $item;
+  }
+
+  private function changeActingAs($tenantUser, $inventoryUsage)
+  {
+      $tenantUser->branches()->syncWithoutDetaching($inventoryUsage->form->branch_id);
+      foreach ($tenantUser->branches as $branch) {
+          $branch->pivot->is_default = true;
+          $branch->pivot->save();
+      }
+      $tenantUser->warehouses()->syncWithoutDetaching($inventoryUsage->warehouse_id);
+      foreach ($tenantUser->warehouses as $warehouse) {
+          $warehouse->pivot->is_default = true;
+          $warehouse->pivot->save();
+      }
+      $user = new User();
+      $user->id = $tenantUser->id;
+      $user->name = $tenantUser->name;
+      $user->email = $tenantUser->email;
+      $user->save();
+      $this->actingAs($user, 'api');
   }
   
   private function getDummyData($itemUnit = 'pcs')

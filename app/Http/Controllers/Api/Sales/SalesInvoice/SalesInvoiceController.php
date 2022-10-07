@@ -25,21 +25,21 @@ class SalesInvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $salesInvoices = SalesInvoice::eloquentFilter($request);
+        $salesInvoices = SalesInvoice::from(SalesInvoice::getTableName().' as '.SalesInvoice::$alias)->eloquentFilter($request);
 
         if ($request->get('join')) {
             $fields = explode(',', $request->get('join'));
 
             if (in_array('customer', $fields)) {
-                $salesInvoices->join(Customer::getTableName(), function ($q) {
-                    $q->on(Customer::getTableName('id'), '=', SalesInvoice::getTableName('customer_id'));
+                $salesInvoices = $salesInvoices->join(Customer::getTableName().' as '.Customer::$alias, function ($q) {
+                    $q->on(SalesInvoice::$alias.'.customer_id', '=', Customer::$alias.'.id');
                 });
             }
-
+    
             if (in_array('form', $fields)) {
-                $salesInvoices->join(Form::getTableName(), function ($q) {
-                    $q->on(Form::getTableName('formable_id'), '=', SalesInvoice::getTableName('id'))
-                        ->where(Form::getTableName('formable_type'), SalesInvoice::$morphName);
+                $salesInvoices = $salesInvoices->join(Form::getTableName().' as '.Form::$alias, function ($q) {
+                    $q->on(Form::$alias.'.formable_id', '=', SalesInvoice::$alias.'.id')
+                        ->where(Form::$alias.'.formable_type', SalesInvoice::$morphName);
                 });
             }
         }

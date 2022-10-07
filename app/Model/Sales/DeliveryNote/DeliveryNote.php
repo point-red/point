@@ -2,6 +2,7 @@
 
 namespace App\Model\Sales\DeliveryNote;
 
+use App\Exceptions\IsReferencedException;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Model\Accounting\Journal;
 use App\Model\Form;
@@ -52,6 +53,7 @@ class DeliveryNote extends TransactionModel
 
     public function isAllowedToDelete()
     {
+        $this->setApproval();
         $this->updatedFormNotArchived();
         $this->isNotReferenced();
     }
@@ -61,6 +63,18 @@ class DeliveryNote extends TransactionModel
         // Check if not referenced by sales invoice
         if ($this->salesInvoices->count()) {
             throw new IsReferencedException('Cannot edit form because referenced by sales invoice(s)', $this->salesInvoices);
+        }
+    }
+
+    private function setApproval()
+    {
+        if (empty($this->form->request_approval_to)) {
+            $approver = $this->deliveryOrder->form->request_approval_to;
+
+            $this->form->request_approval_to = $approver;
+            $this->form->approval_by = $approver;
+            $this->form->approval_at = $this->form->created_at;
+            $this->form->save();
         }
     }
 
@@ -92,21 +106,11 @@ class DeliveryNote extends TransactionModel
 
         $deliveryOrder->updateStatus();
 
-        foreach ($items as $item) {
-            $options = [];
-            if ($item->expiry_date) {
-                $options['expiry_date'] = $item->expiry_date;
-            }
-            if ($item->production_number) {
-                $options['production_number'] = $item->production_number;
-            }
-
-            $options['quantity_reference'] = $item->quantity;
-            $options['unit_reference'] = $item->unit;
-            $options['converter_reference'] = $item->converter;
-            InventoryHelper::decrease($form, $deliveryNote->warehouse, $item->item, $item->quantity, $item->unit, $item->converter, $options);
+        if (! DeliveryNote::isFormApproved($form)) {
+            return $deliveryNote;
         }
 
+        self::updateInventory($deliveryNote);
         self::updateJournal($deliveryNote);
 
         return $deliveryNote;
@@ -164,6 +168,23 @@ class DeliveryNote extends TransactionModel
         return $deliveryNoteItem;
     }
 
+    public static function updateInventory($deliveryNote)
+    {
+        foreach ($deliveryNote->items as $item) {
+            $options = [];
+            if ($item->expiry_date) {
+                $options['expiry_date'] = $item->expiry_date;
+            }
+            if ($item->production_number) {
+                $options['production_number'] = $item->production_number;
+            }
+            $options['quantity_reference'] = $item->quantity;
+            $options['unit_reference'] = $item->unit;
+            $options['converter_reference'] = $item->converter;
+            InventoryHelper::decrease($deliveryNote->form, $deliveryNote->warehouse, $item->item, $item->quantity, $item->unit, $item->converter, $options);
+        }
+    }
+
     public static function updateJournal($deliveryNote)
     {
         $amounts = 0;
@@ -190,5 +211,10 @@ class DeliveryNote extends TransactionModel
 
         $journal->debit = $amounts;
         $journal->save();
+    }
+
+    public static function isFormApproved(Form $form)
+    {
+        return $form->request_approval_to == $form->approval_by;
     }
 }

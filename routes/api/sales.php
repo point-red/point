@@ -42,7 +42,17 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
     });
 
     Route::namespace('DeliveryNote')->group(function () {
+        Route::post('delivery-notes/{id}/histories', 'DeliveryNoterHistoryController@store');
+
         Route::group(['middleware' => ['tenant.module-access:sales delivery note']], function () {
+            Route::post('delivery-notes/{id}/approve', 'DeliveryNoteApprovalController@approve');
+            Route::post('delivery-notes/{id}/reject', 'DeliveryNoteApprovalController@reject');
+
+            Route::post('delivery-notes/{id}/cancellation-approve', 'DeliveryNoteCancellationApprovalController@approve');
+            Route::post('delivery-notes/{id}/cancellation-reject', 'DeliveryNoteCancellationApprovalController@reject');
+
+            Route::get('delivery-notes/{id}/histories', 'DeliveryNoterHistoryController@index');
+
             Route::get('delivery-notes/export', 'DeliveryNoteController@export');
             Route::apiResource('delivery-notes', 'DeliveryNoteController');
         });
@@ -50,7 +60,24 @@ Route::prefix('sales')->namespace('Sales')->group(function () {
 
     Route::get('invoices/last-price/{itemId}', 'SalesInvoice\\SalesInvoicePricingController@lastPrice');
     Route::apiResource('invoices', 'SalesInvoice\\SalesInvoiceController');
-    Route::apiResource('return', 'SalesReturn\\SalesReturnController');
+
+    Route::namespace('SalesReturn')->group(function () {
+        Route::post('return/{id}/histories', 'SalesReturnHistoryController@store');
+        Route::group(['middleware' => ['tenant.module-access:sales return']], function () {
+            Route::post('return/{id}/approve', 'SalesReturnApprovalController@approve');
+            Route::post('return/{id}/approve', 'SalesReturnApprovalController@approve');
+            Route::post('return/{id}/reject', 'SalesReturnApprovalController@reject');
+            Route::post('return/approval/send', 'SalesReturnApprovalController@sendApproval');
+            Route::get('return/approval', 'SalesReturnApprovalController@index');
+
+            Route::post('return/{id}/cancellation-approve', 'SalesReturnCancellationApprovalController@approve');
+            Route::post('return/{id}/cancellation-reject', 'SalesReturnCancellationApprovalController@reject');
+
+            Route::get('return/{id}/histories', 'SalesReturnHistoryController@index');
+
+            Route::apiResource('return', 'SalesReturnController');
+        });
+    });
 
     Route::apiResource('payment-collection', 'PaymentCollection\\PaymentCollectionController');
     Route::get('payment-collection/{customerId}/references', 'PaymentCollection\\PaymentCollectionReferenceController@customerSalesForms');

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Sales\DeliveryNote\DeliveryNote;
+namespace App\Http\Requests\Sales\SalesReturn\SalesReturn;
 
 use App\Http\Requests\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreDeliveryNoteRequest extends FormRequest
+class StoreSalesReturnRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,20 +26,20 @@ class StoreDeliveryNoteRequest extends FormRequest
     {
         $rulesForm = ValidationRule::form();
 
-        $rulesDeliveryNote = [
-            'delivery_order_id' => ValidationRule::foreignKey('delivery_orders'),
-            'warehouse_id' => ValidationRule::foreignKey('warehouses'),
+        $rulesSalesReturn = [
+            'sales_invoice_id' => ValidationRule::foreignKey('sales_invoices'),
 
             'items' => 'required|array',
         ];
 
-        $rulesDeliveryNoteItems = [
-            'items.*.delivery_order_item_id' => ValidationRule::foreignKey('delivery_order_items'),
-            'items.*.quantity' => 'required|numeric|min:1',
+        $rulesSalesReturnItems = [
+            'items.*.sales_invoice_item_id' => ValidationRule::foreignKey('sales_invoice_items'),
+            'items.*.quantity' => ValidationRule::quantity(),
+            'items.*.quantity_sales' => ValidationRule::quantity(),
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::converter(),
         ];
 
-        return array_merge($rulesForm, $rulesDeliveryNote, $rulesDeliveryNoteItems);
+        return array_merge($rulesForm, $rulesSalesReturn, $rulesSalesReturnItems);
     }
 }

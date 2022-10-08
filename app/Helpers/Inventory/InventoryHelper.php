@@ -144,7 +144,7 @@ class InventoryHelper
             ->groupBy(['item_id', 'production_number', 'expiry_date'])
             ->where('item_id', $item->id)
             ->where('warehouse_id', $warehouse->id)
-            ->where('forms.date', '<', $date)
+            ->where('forms.date', '<=', $date)
             ->having('remaining', '>', 0);
 
         if ($item->require_expiry_date) {

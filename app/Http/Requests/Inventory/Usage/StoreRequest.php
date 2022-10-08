@@ -25,14 +25,17 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'warehouse_id' => 'required',
+            'warehouse_id' => ValidationRule::foreignKey('warehouses'),
+            'employee_id' => ValidationRule::foreignKey('employees'),
             'request_approval_to' => 'required',
+            'notes' => 'nullable|string|max:255',
 
             'items.*.item_id' => ValidationRule::foreignKey('items'),
             'items.*.quantity' => ValidationRule::quantity(),
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::converter(),
-            'items.*.chart_of_account_id' => 'required',
+            'items.*.chart_of_account_id' => ValidationRule::foreignKey('chart_of_accounts'),
+            'items.*.allocation_id' => ValidationRule::foreignKey('allocations'),
         ];
     }
 }

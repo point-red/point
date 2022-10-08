@@ -2,15 +2,23 @@
 
 namespace App\Model\Inventory\InventoryUsage;
 
+use Exception;
+use App\Exceptions\StockNotEnoughException;
 use App\Helpers\Inventory\InventoryHelper;
-use App\Model\Accounting\Journal;
+use App\Mail\Inventory\InventoryUsageApprovalMail;
+use App\Model\TransactionModel;
 use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Warehouse;
-use App\Model\TransactionModel;
+use App\Model\Accounting\Journal;
+use App\Model\HumanResource\Employee\Employee;
+use App\Traits\Model\Inventory\InventoryUsageJoin;
+use Illuminate\Support\Facades\Mail;
 
 class InventoryUsage extends TransactionModel
 {
+    use InventoryUsageJoin;
+
     public static $morphName = 'InventoryUsage';
 
     protected $connection = 'tenant';
@@ -21,6 +29,7 @@ class InventoryUsage extends TransactionModel
 
     protected $fillable = [
         'warehouse_id',
+        'employee_id'
     ];
 
     public $defaultNumberPrefix = 'IU';
@@ -40,6 +49,11 @@ class InventoryUsage extends TransactionModel
         return $this->belongsTo(Warehouse::class);
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
     public function isAllowedToUpdate()
     {
         $this->updatedFormNotArchived();
@@ -56,14 +70,17 @@ class InventoryUsage extends TransactionModel
         $inventoryUsage->fill($data);
         $inventoryUsage->save();
 
-        $items = self::mapItems($data['items'] ?? []);
+        $items = self::mapItems($data['items'] ?? [], $inventoryUsage);
         $inventoryUsage->items()->saveMany($items);
 
         $form = new Form;
         $form->saveData($data, $inventoryUsage);
 
-        $inventoryUsage->updateInventory($form, $inventoryUsage);
-        $inventoryUsage->updateJournal($inventoryUsage);
+        $approver = $inventoryUsage->form->requestApprovalTo;
+        Mail::to($approver->email)->queue(new InventoryUsageApprovalMail(
+            $inventoryUsage, 
+            $approver,
+        ));
 
         return $inventoryUsage;
     }
@@ -95,6 +112,19 @@ class InventoryUsage extends TransactionModel
         }
     }
 
+    public static function checkIsJournalBalance($usage)
+    {
+        $valueDebit = Journal::where("form_id", $usage->form->id)
+            ->where("journalable_type", Item::$morphName)
+            ->sum("debit");
+        $valueCredit = Journal::where("form_id", $usage->form->id)
+            ->where("journalable_type", Item::$morphName)
+            ->sum("credit");
+        if ($valueDebit - $valueCredit != 0) {
+            throw new Exception('journal entry is not balanced', 422);
+        }
+    }
+
     public static function updateJournal($usage)
     {
         foreach ($usage->items as $usageItem) {
@@ -104,7 +134,7 @@ class InventoryUsage extends TransactionModel
             $journal->form_id = $usage->form->id;
             $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $usageItem->item_id;
-            $journal->chart_of_account_id = get_setting_journal('inventory usage', 'difference stock expense');
+            $journal->chart_of_account_id = $usageItem->chart_of_account_id;
             $journal->debit = $amount;
             $journal->save();
 
@@ -112,17 +142,39 @@ class InventoryUsage extends TransactionModel
             $journal->form_id = $usage->form->id;
             $journal->journalable_type = Item::$morphName;
             $journal->journalable_id = $usageItem->item_id;
-            $journal->chart_of_account_id = $usageItem->item->chart_of_account_id;
+            $journal->chart_of_account_id = get_setting_journal('inventory usage', 'difference stock expense');
             $journal->credit = $amount;
             $journal->save();
         }
+
+        self::checkIsJournalBalance($usage);
     }
 
-    private static function mapItems($items)
+    private static function checkIsItemQuantityOver($item, $itemModel, $inventoryUsage)
+    {
+        $options = [
+            'expiry_date' => 0,
+            'production_number' => 0,
+        ];
+
+        $stock = InventoryHelper::getCurrentStock($itemModel, $inventoryUsage->created_at, $inventoryUsage->warehouse, $options);
+        if (abs($item['quantity']) > $stock) {
+            throw new StockNotEnoughException($itemModel);
+        }
+    }
+
+    private static function mapItems($items, $inventoryUsage)
     {
         $array = [];
         foreach ($items as $item) {
+            if (strtolower($item['unit']) !== 'pcs') {
+                throw new Exception('there are some item not in \'pcs\' unit', 422);
+            }
+
             $itemModel = Item::find($item['item_id']);
+            
+            self::checkIsItemQuantityOver($item, $itemModel, $inventoryUsage);
+
             if ($itemModel->require_production_number || $itemModel->require_expiry_date) {
                 if ($item['dna']) {
                     foreach ($item['dna'] as $dna) {

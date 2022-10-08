@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Sales\SalesReturn\SalesReturn\StoreSalesReturnRequest;
 use App\Http\Requests\Sales\SalesReturn\SalesReturn\UpdateSalesReturnRequest;
+use Exception;
 
 class SalesReturnController extends Controller
 {
@@ -50,7 +51,7 @@ class SalesReturnController extends Controller
                 return new ApiResource($salesReturn);
             });
         }  catch (\Throwable $th) {
-            return response_error ($th);
+            throw new Exception($th->getMessage(), 422);
         }        
 
         return $result;
@@ -102,7 +103,7 @@ class SalesReturnController extends Controller
                 return new ApiResource($salesReturn);
             });
         } catch (\Throwable $th) {
-            return response_error($th);
+            throw new Exception($th->getMessage(), 422);
         }
 
         return $result;

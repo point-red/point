@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Sales\SalesReturn\SalesReturn\StoreSalesReturnRequest;
 use App\Http\Requests\Sales\SalesReturn\SalesReturn\UpdateSalesReturnRequest;
+use Exception;
 
 class SalesReturnController extends Controller
 {
@@ -50,7 +51,7 @@ class SalesReturnController extends Controller
                 return new ApiResource($salesReturn);
             });
         }  catch (\Throwable $th) {
-            return response_error ($th);
+            throw new Exception($th->getMessage(), 422);
         }        
 
         return $result;
@@ -92,7 +93,9 @@ class SalesReturnController extends Controller
 
             $result = DB::connection('tenant')->transaction(function () use ($request, $salesReturn) {
                 $salesReturn->form->archive($request->notes);
-                SalesReturn::updateInvoiceQuantity($salesReturn, 'revert');
+                if ($salesReturn->form->approval_status === 1) {
+                    SalesReturn::updateInvoiceQuantity($salesReturn, 'revert');
+                }                
                 $request['number'] = $salesReturn->form->edited_number;
                 $request['old_increment'] = $salesReturn->form->increment;
 
@@ -102,7 +105,7 @@ class SalesReturnController extends Controller
                 return new ApiResource($salesReturn);
             });
         } catch (\Throwable $th) {
-            return response_error($th);
+            throw new Exception($th->getMessage(), 422);
         }
 
         return $result;

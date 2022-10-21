@@ -148,7 +148,7 @@ class SalesReturnApprovalController extends Controller
                     'send_by' => $sendBy
                 ];
 
-                // loop each sales return by group approver
+                // loop each delivery order by group approver
                 foreach ($salesReturnByApprover as $salesReturn) {
                     $salesReturn->action = 'create';
                     
@@ -201,7 +201,7 @@ class SalesReturnApprovalController extends Controller
                     $form['created'] = $formattedFormStartCreate . ' - ' . $formattedFormEndCreate;
                 }
 
-                $approvalRequest = new SalesReturnApprovalRequest($salesReturnByApprover, $approver, (object) $form, $_SERVER['HTTP_REFERER']);
+                $approvalRequest = new SalesReturnApprovalRequest($salesReturnByApprover, $approver, (object) $form);
                 Mail::to([ $approver->email ])->queue($approvalRequest);
             }
         });

@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ApiResource;
 use App\Http\Controllers\Controller;
 use App\Model\Sales\SalesReturn\SalesReturn;
+use App\Model\Accounting\Journal;
+use App\Model\Inventory\Inventory;
 
 class SalesReturnCancellationApprovalController extends Controller
 {
@@ -25,6 +27,11 @@ class SalesReturnCancellationApprovalController extends Controller
                 $salesReturn->isAllowedToUpdate();
                 if($salesReturn->form->cancellation_status !== 0) {
                     throw new Exception("form not in cancellation pending state", 422);
+                }
+                if($salesReturn->form->approval_status === 1) {
+                    SalesReturn::updateInvoiceQuantity($salesReturn, 'revert');
+                    Inventory::where('form_id', $salesReturn->form->id)->delete();
+                    Journal::where('form_id', $salesReturn->form->id)->orWhere('form_id_reference', $salesReturn->form->id)->delete();
                 }
     
                 $salesReturn->form->cancellation_approval_by = auth()->user()->id;

@@ -3,6 +3,7 @@
 namespace App\Model\Finance\Payment;
 
 use App\Exceptions\BranchNullException;
+use App\Exceptions\IsReferencedException;
 use App\Exceptions\PointException;
 use App\Model\Accounting\Journal;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
@@ -47,7 +48,10 @@ class Payment extends TransactionModel
 
     public function isAllowedToDelete()
     {
-        // TODO isAllowed to delete?
+        // Check if not referenced by another form
+        if (optional($this->payment)->count()) {
+            throw new IsReferencedException('Cannot delete form because it is already paid', $this->payment);
+        }
     }
 
     public static function create($data)

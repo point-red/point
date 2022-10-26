@@ -1,6 +1,8 @@
 <?php
 
 Route::prefix('finance')->namespace('Finance')->group(function () {
+    Route::post('payments/{id}/cancellation-approve', 'Payment\\PaymentCancellationApprovalController@approve');
+    Route::post('payments/{id}/cancellation-reject', 'Payment\\PaymentCancellationApprovalController@reject');
     Route::apiResource('payments', 'Payment\\PaymentController');
     Route::post('payment-orders/{id}/approve', 'Payment\\PaymentOrderApprovalController@approve');
     Route::post('payment-orders/{id}/reject', 'Payment\\PaymentOrderApprovalController@reject');

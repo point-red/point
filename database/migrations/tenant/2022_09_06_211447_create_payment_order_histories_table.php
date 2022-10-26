@@ -18,6 +18,7 @@ class CreatePaymentOrderHistoriesTable extends Migration
             $table->unsignedInteger('payment_order_id')->index();
             $table->unsignedInteger('user_id')->index();
             $table->string('activity')->nullable();
+            $table->json('archive')->nullable();
             $table->timestamps();
 
             $table->foreign('payment_order_id')

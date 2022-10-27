@@ -48,10 +48,7 @@ class Payment extends TransactionModel
 
     public function isAllowedToDelete()
     {
-        // Check if not referenced by another form
-        if (optional($this->payment)->count()) {
-            throw new IsReferencedException('Cannot delete form because it is already paid', $this->payment);
-        }
+        // TODO isAllowed to delete?
     }
 
     public static function create($data)
@@ -155,7 +152,9 @@ class Payment extends TransactionModel
         );
         $form->save();
 
-        self::mapCashAdvances($data, $payment, $form);
+        if (isset($data['cashAdvances'])) {
+            self::mapCashAdvances($data, $payment, $form);
+        }
 
         // Reference Cash Advance
         if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'CashAdvance') {

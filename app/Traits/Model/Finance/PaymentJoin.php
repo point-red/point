@@ -59,6 +59,10 @@ trait PaymentJoin
             });
         }
 
+        if (in_array('cashAdvances', $joins)) {
+            $query = $query->with(['cashAdvances']);
+        }
+
         return $query;
     }
 }

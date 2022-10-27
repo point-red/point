@@ -62,7 +62,7 @@ class Payment extends TransactionModel
         $payment->paymentable_name = $data['paymentable_name'] ?? $payment->paymentable->name;
 
         $paymentDetails = self::mapPaymentDetails($data);
-        
+
         // Reference Payment Order
         if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'PaymentOrder') {
             $paymentOrder = PaymentOrder::find($data['referenceable_id']);
@@ -155,6 +155,8 @@ class Payment extends TransactionModel
         );
         $form->save();
 
+        self::mapCashAdvances($data, $payment, $form);
+
         // Reference Cash Advance
         if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'CashAdvance') {
             $cashAdvance = CashAdvance::find($data['referenceable_id']);
@@ -163,13 +165,13 @@ class Payment extends TransactionModel
             }
             $cashAdvance->payments()->attach($payment->id);
             $cashAdvance->amount_remaining = $cashAdvance->amount_remaining - $payment->amount;
-            if($cashAdvance->amount_remaining == 0) {
+            if ($cashAdvance->amount_remaining == 0) {
                 $cashAdvance->form->done = 1;
                 $cashAdvance->form->save();
             }
             $cashAdvance->save();
 
-            $data['activity'] = ucfirst(strtolower($cashAdvance->payment_type)).' Out Withdrawal ('.$form->number.')';
+            $data['activity'] = ucfirst(strtolower($cashAdvance->payment_type)) . ' Out Withdrawal (' . $form->number . ')';
             CashAdvance::mapHistory($cashAdvance, $data);
         }
 
@@ -196,6 +198,31 @@ class Payment extends TransactionModel
         }, $data['details']);
     }
 
+    private static function mapCashAdvances($data, $payment, $form)
+    {
+        return array_map(function ($detail) use ($data, $payment, $form) {
+            if ($payment->amount == 0) {
+                return;
+            }
+            // Adjusted & copied from payment::create where referenceable_type = 'CashAdvance'
+            $cashAdvance = CashAdvance::find($detail['cash_advance_id']);
+            if ($cashAdvance->amount_remaining < $detail['amount']) {
+                throw new PointException('Amount is over pay');
+            }
+            $payment->amount = $payment->amount - $detail['amount'];
+            $cashAdvance->payments()->attach($payment->id);
+            $cashAdvance->amount_remaining = $cashAdvance->amount_remaining - $detail['amount'];
+            if ($cashAdvance->amount_remaining == 0) {
+                $cashAdvance->form->done = 1;
+                $cashAdvance->form->save();
+            }
+            $cashAdvance->save();
+
+            $data['activity'] = ucfirst(strtolower($cashAdvance->payment_type)) . ' Out Withdrawal (' . $form->number . ')';
+            CashAdvance::mapHistory($cashAdvance, $data);
+        }, $data['cashAdvances']);
+    }
+
     private static function calculateAmount($paymentDetails)
     {
         return array_reduce($paymentDetails, function ($carry, $detail) {
@@ -213,12 +240,12 @@ class Payment extends TransactionModel
             $paymentDetail->fill($detail);
             $paymentDetail->referenceable_type = $data['referenceable_type'] ?? null;
             $paymentDetail->referenceable_id = $data['referenceable_id'] ?? null;
-            
+
             $journal = new Journal;
             $journal->form_id_reference = optional(optional($paymentDetail->referenceable)->form)->id;
             $journal->notes = $paymentDetail->notes;
             $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
-            
+
             if ($detail['payment_collection_type'] === 'SalesDownPayment') {
                 $journal->debit = $paymentDetail->amount;
                 $journals['debit'][] = $journal;
@@ -275,19 +302,19 @@ class Payment extends TransactionModel
      */
     private static function getLastPaymentIncrement($payment, $incrementGroup)
     {
-        $lastPayment = self::from(self::getTableName().' as '.self::$alias)
+        $lastPayment = self::from(self::getTableName() . ' as ' . self::$alias)
             ->joinForm()
             ->where('form.increment_group', $incrementGroup)
             ->whereNotNull('form.number')
-            ->where(self::$alias.'.payment_type', $payment->payment_type)
-            ->where(self::$alias.'.disbursed', $payment->disbursed)
+            ->where(self::$alias . '.payment_type', $payment->payment_type)
+            ->where(self::$alias . '.disbursed', $payment->disbursed)
             ->with('form')
             ->orderBy('form.increment', 'desc')
-            ->select(self::$alias.'.*')
+            ->select(self::$alias . '.*')
             ->first();
 
         $increment = 1;
-        if (! empty($lastPayment)) {
+        if (!empty($lastPayment)) {
             $increment += $lastPayment->form->increment;
         }
 
@@ -313,7 +340,7 @@ class Payment extends TransactionModel
         $journal->journalable_type = $payment->paymentable_type;
         $journal->journalable_id = $payment->paymentable_id;
         $journal->chart_of_account_id = $payment->payment_account_id;
-        if (! $payment->disbursed) {
+        if (!$payment->disbursed) {
             $journal->debit = $payment->amount;
         } else {
             $journal->credit = $payment->amount;
@@ -328,7 +355,7 @@ class Payment extends TransactionModel
             $journal->journalable_id = $payment->paymentable_id;
             $journal->notes = $paymentDetail->notes;
             $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
-            if (! $payment->disbursed) {
+            if (!$payment->disbursed) {
                 $journal->credit = $paymentDetail->amount;
             } else {
                 $journal->debit = $paymentDetail->amount;
@@ -359,6 +386,6 @@ class Payment extends TransactionModel
             $journal->journalable_type = $payment->paymentable_type;
             $journal->journalable_id = $payment->paymentable_id;
             $journal->save();
-        }        
+        }
     }
 }

@@ -42,25 +42,25 @@ class InventoryUsageHistoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return ApiResource
      */
-    // public function store(Request $request)
-    // {
-    //     if ($request->id) {
-    //         $inventoryUsage = InventoryUsage::findOrFail($request->id);
+    public function store(Request $request)
+    {
+        if ($request->id) {
+            $inventoryUsage = InventoryUsage::findOrFail($request->id);
 
-    //         $activity = $request->activity;
-    //         $number = $inventoryUsage->form->number;
+            $activity = $request->activity;
+            $number = $inventoryUsage->form->number;
 
-    //         // Insert User Activity
-    //         $userActivity = new UserActivity;
-    //         $userActivity->table_type = $inventoryUsage::$morphName;
-    //         $userActivity->table_id = $inventoryUsage->id;
-    //         $userActivity->number = $number;
-    //         $userActivity->date = now();
-    //         $userActivity->user_id = auth()->user()->id;
-    //         $userActivity->activity = $activity;
-    //         $userActivity->save();
-    //     };
+            // Insert User Activity
+            $userActivity = new UserActivity;
+            $userActivity->table_type = $inventoryUsage::$morphName;
+            $userActivity->table_id = $inventoryUsage->id;
+            $userActivity->number = $number;
+            $userActivity->date = now();
+            $userActivity->user_id = auth()->user()->id;
+            $userActivity->activity = $activity;
+            $userActivity->save();
+        };
 
-    //     return new ApiResource($userActivity);
-    // }
+        return new ApiResource($userActivity);
+    }
 }

@@ -8,8 +8,13 @@ use App\Http\Requests\Finance\Payment\Payment\UpdatePaymentRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Finance\Payment\Payment;
+use App\Model\Finance\PaymentOrder\PaymentOrder;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -23,7 +28,7 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $payment = Payment::from(Payment::getTableName().' as '.Payment::$alias)->eloquentFilter($request);
+        $payment = Payment::from(Payment::getTableName() . ' as ' . Payment::$alias)->eloquentFilter($request);
 
         $payment = Payment::joins($payment, $request->get('join'));
 
@@ -83,7 +88,7 @@ class PaymentController extends Controller
             $payment->form->archive();
 
             foreach ($payment->details as $paymentDetail) {
-                if (! $paymentDetail->isDownPayment()) {
+                if (!$paymentDetail->isDownPayment()) {
                     $reference = $paymentDetail->referenceable;
                     $reference->remaining += $paymentDetail->amount;
                     $reference->save();
@@ -119,9 +124,9 @@ class PaymentController extends Controller
 
         $response = $payment->requestCancel($request);
 
-        if (! $response) {
+        if (!$response) {
             foreach ($payment->details as $paymentDetail) {
-                if (! $paymentDetail->isDownPayment()) {
+                if (!$paymentDetail->isDownPayment()) {
                     $reference = $paymentDetail->referenceable;
                     $reference->remaining += $payment->amount;
                     $reference->save();
@@ -132,5 +137,53 @@ class PaymentController extends Controller
         }
 
         return response()->json([], 204);
+    }
+
+    public function getReferences(Request $request)
+    {
+        // TO DO
+        // Split request filter for each reference type
+
+        $references = new Collection();
+
+        $request['join'] = 'form;details;account';
+        $request['group_by'] = 'payment_order.id';
+        $request['fields'] = 'payment_order.*';
+        $request['filter_null'] = 'payment_order.payment_id';
+        $request['filter_equal'] = [
+            'payment_order.payment_type' => 'cash'
+        ];
+        $request['includes'] = 'form;paymentable;details.account;details.allocation';
+        $paymentOrders = PaymentOrder::from(PaymentOrder::getTableName() . ' as ' . PaymentOrder::$alias)->eloquentFilter($request);
+        $paymentOrders = PaymentOrder::joins($paymentOrders, $request->get('join'))->get();
+        $references = $references->concat($paymentOrders);
+        
+        $request['join'] = 'form';
+        $request['group_by'] = 'purchase_down_payment.id';
+        $request['fields'] = 'purchase_down_payment.*';
+        unset($request['filter_equal']);
+        unset($request['filter_null']);
+        $request['includes'] = 'form;supplier';
+        $request['filter_date_min'] = [
+            'form.date' => date('Y-m-01')
+        ];
+        $request['filter_date_max'] = [
+            'form.date' => date('Y-m-t')
+        ];
+        $downPayments = PurchaseDownPayment::from(PurchaseDownPayment::getTableName() . ' as ' . PurchaseDownPayment::$alias)->eloquentFilter($request);
+        $downPayments = PurchaseDownPayment::joins($downPayments, $request->get('join'))->get();
+        $references = $references->concat($downPayments);
+
+        $paginatedReferences = $this->paginate($references, $request->get('limit'));
+
+        return new ApiCollection($paginatedReferences);
+    }
+
+    public function paginate($items, $perPage = 5, $page = null, $options = [])
+    {
+        // TO DO, make this function reusable
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }

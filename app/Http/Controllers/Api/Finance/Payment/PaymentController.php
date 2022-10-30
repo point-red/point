@@ -179,6 +179,14 @@ class PaymentController extends Controller
         return new ApiCollection($paginatedReferences);
     }
 
+    public function getPaymentables(Request $request)
+    {
+        $paymentables = Payment::groupBy('paymentable_type')->groupBy('paymentable_name')->select(['paymentable_type', 'paymentable_name']);
+        $paymentables = pagination($paymentables, $request->get('limit'));
+
+        return new ApiCollection($paymentables);
+    }
+
     public function paginate($items, $perPage = 5, $page = null, $options = [])
     {
         // TO DO, make this function reusable

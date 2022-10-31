@@ -182,11 +182,11 @@ class PaymentController extends Controller
         $references = new Collection();
 
         $paymentOrders = PaymentOrder::from(PaymentOrder::getTableName() . ' as ' . PaymentOrder::$alias)->eloquentFilter($paymentOrderRequest);
-        $paymentOrders = PaymentOrder::joins($paymentOrders, $request->get('join'))->get();
+        $paymentOrders = PaymentOrder::joins($paymentOrders, $paymentOrderRequest->get('join'))->get();
         $references = $references->concat($paymentOrders);
 
-        $downPayments = PurchaseDownPayment::from(PurchaseDownPayment::getTableName() . ' as ' . PurchaseDownPayment::$alias)->eloquentFilter($request);
-        $downPayments = PurchaseDownPayment::joins($downPayments, $request->get('join'))->get();
+        $downPayments = PurchaseDownPayment::from(PurchaseDownPayment::getTableName() . ' as ' . PurchaseDownPayment::$alias)->eloquentFilter($downPaymentRequest);
+        $downPayments = PurchaseDownPayment::joins($downPayments, $downPaymentRequest->get('join'))->get();
         $references = $references->concat($downPayments);
 
         $paginatedReferences = paginate_collection($references, $request->get('limit'), $request->get('page'));

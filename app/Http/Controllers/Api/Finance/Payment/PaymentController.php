@@ -141,40 +141,55 @@ class PaymentController extends Controller
 
     public function getReferences(Request $request)
     {
-        // TO DO
         // Split request filter for each reference type
+        $paymentOrderRequest = new Request();
+        $downPaymentRequest = new Request();
+        $paymentOrderString = 'paymentorder';
+        $downPaymentString = 'downpayment';
+        foreach ($request->all() as $key => $value) {
+            if (in_array($key, ['limit', 'page'])) {
+                $paymentOrderRequest->merge([
+                    $key => $value
+                ]);
+                $downPaymentRequest->merge([
+                    $key => $value
+                ]);
+                continue;
+            }
+            $explodedKey = explode('_', $key);
+
+            switch ($explodedKey[0]) {
+                case $paymentOrderString:
+                    $keyAttribute = substr($key, strlen($paymentOrderString) + 1); //+1 for _
+                    $paymentOrderRequest->merge([
+                        $keyAttribute => $value
+                    ]);
+                    break;
+
+                case $downPaymentString:
+                    $keyAttribute = substr($key, strlen($downPaymentString) + 1); //+1 for _
+                    $downPaymentRequest->merge([
+                        $keyAttribute => $value
+                    ]);
+                    break;
+
+                default:
+                    # code...
+                    break;
+            }
+        }
 
         $references = new Collection();
 
-        $request['join'] = 'form;details;account';
-        $request['group_by'] = 'payment_order.id';
-        $request['fields'] = 'payment_order.*';
-        $request['filter_null'] = 'payment_order.payment_id';
-        $request['filter_equal'] = [
-            'payment_order.payment_type' => 'cash'
-        ];
-        $request['includes'] = 'form;paymentable;details.account;details.allocation';
-        $paymentOrders = PaymentOrder::from(PaymentOrder::getTableName() . ' as ' . PaymentOrder::$alias)->eloquentFilter($request);
+        $paymentOrders = PaymentOrder::from(PaymentOrder::getTableName() . ' as ' . PaymentOrder::$alias)->eloquentFilter($paymentOrderRequest);
         $paymentOrders = PaymentOrder::joins($paymentOrders, $request->get('join'))->get();
         $references = $references->concat($paymentOrders);
-        
-        $request['join'] = 'form';
-        $request['group_by'] = 'purchase_down_payment.id';
-        $request['fields'] = 'purchase_down_payment.*';
-        unset($request['filter_equal']);
-        unset($request['filter_null']);
-        $request['includes'] = 'form;supplier';
-        $request['filter_date_min'] = [
-            'form.date' => date('Y-m-01')
-        ];
-        $request['filter_date_max'] = [
-            'form.date' => date('Y-m-t')
-        ];
+
         $downPayments = PurchaseDownPayment::from(PurchaseDownPayment::getTableName() . ' as ' . PurchaseDownPayment::$alias)->eloquentFilter($request);
         $downPayments = PurchaseDownPayment::joins($downPayments, $request->get('join'))->get();
         $references = $references->concat($downPayments);
 
-        $paginatedReferences = $this->paginate($references, $request->get('limit'));
+        $paginatedReferences = paginate_collection($references, $request->get('limit'), $request->get('page'));
 
         return new ApiCollection($paginatedReferences);
     }
@@ -185,13 +200,5 @@ class PaymentController extends Controller
         $paymentables = pagination($paymentables, $request->get('limit'));
 
         return new ApiCollection($paymentables);
-    }
-
-    public function paginate($items, $perPage = 5, $page = null, $options = [])
-    {
-        // TO DO, make this function reusable
-        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
-        $items = $items instanceof Collection ? $items : Collection::make($items);
-        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }

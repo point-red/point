@@ -185,32 +185,36 @@ class PaymentController extends Controller
         $paymentOrders = PaymentOrder::from(PaymentOrder::getTableName() . ' as ' . PaymentOrder::$alias)->eloquentFilter($paymentOrderRequest);
         $paymentOrders = PaymentOrder::joins($paymentOrders, $paymentOrderRequest->get('join'))->get();
         $paymentOrders->transform(function ($paymentOrder) {
-            $transformData = new PaymentOrder();
-            $transformData->referenceable_id = $paymentOrder->id;
-            $transformData->referenceable_type = $transformData::$morphName;
-            $transformData->date = $paymentOrder->form->date;
-            $transformData->number = $paymentOrder->form->number;
-            $transformData->person = $paymentOrder->paymentable_name;
-            $transformData->amount = $paymentOrder->amount;
-            $transformData->notes = $paymentOrder->form->notes;
-            $transformData->created_by = $paymentOrder->form->createdBy->full_name;
-            return $transformData;
+            $paymentOrder->referenceable_type = $paymentOrder::$morphName;
+            return $paymentOrder;
+            // $transformData = new PaymentOrder();
+            // $transformData->referenceable_id = $paymentOrder->id;
+            // $transformData->referenceable_type = $transformData::$morphName;
+            // $transformData->date = $paymentOrder->form->date;
+            // $transformData->number = $paymentOrder->form->number;
+            // $transformData->person = $paymentOrder->paymentable_name;
+            // $transformData->amount = $paymentOrder->amount;
+            // $transformData->notes = $paymentOrder->form->notes;
+            // $transformData->created_by = $paymentOrder->form->createdBy->full_name;
+            // return $transformData;
         });
         $references = $references->concat($paymentOrders);
 
         $downPayments = PurchaseDownPayment::from(PurchaseDownPayment::getTableName() . ' as ' . PurchaseDownPayment::$alias)->eloquentFilter($downPaymentRequest);
         $downPayments = PurchaseDownPayment::joins($downPayments, $downPaymentRequest->get('join'))->get();
         $downPayments->transform(function ($downPayment) {
-            $transformData = new PurchaseDownPayment();
-            $transformData->referenceable_id = $downPayment->id;
-            $transformData->referenceable_type = $transformData::$morphName;
-            $transformData->date = $downPayment->form->date;
-            $transformData->number = $downPayment->form->number;
-            $transformData->person = $downPayment->supplier_name;
-            $transformData->amount = $downPayment->amount;
-            $transformData->notes = $downPayment->form->notes;
-            $transformData->created_by = $downPayment->form->createdBy->full_name;
-            return $transformData;
+            $downPayment->referenceable_type = $downPayment::$morphName;
+            return $downPayment;
+            // $transformData = new PurchaseDownPayment();
+            // $transformData->referenceable_id = $downPayment->id;
+            // $transformData->referenceable_type = $transformData::$morphName;
+            // $transformData->date = $downPayment->form->date;
+            // $transformData->number = $downPayment->form->number;
+            // $transformData->person = $downPayment->supplier_name;
+            // $transformData->amount = $downPayment->amount;
+            // $transformData->notes = $downPayment->form->notes;
+            // $transformData->created_by = $downPayment->form->createdBy->full_name;
+            // return $transformData;
         });
         $references = $references->concat($downPayments);
 

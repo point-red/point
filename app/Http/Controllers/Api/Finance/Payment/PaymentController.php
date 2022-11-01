@@ -16,6 +16,7 @@ use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 use Throwable;
 
 class PaymentController extends Controller
@@ -183,12 +184,37 @@ class PaymentController extends Controller
 
         $paymentOrders = PaymentOrder::from(PaymentOrder::getTableName() . ' as ' . PaymentOrder::$alias)->eloquentFilter($paymentOrderRequest);
         $paymentOrders = PaymentOrder::joins($paymentOrders, $paymentOrderRequest->get('join'))->get();
+        $paymentOrders->transform(function ($paymentOrder) {
+            $transformData = new PaymentOrder();
+            $transformData->referenceable_id = $paymentOrder->id;
+            $transformData->referenceable_type = $transformData::$morphName;
+            $transformData->date = $paymentOrder->form->date;
+            $transformData->number = $paymentOrder->form->number;
+            $transformData->person = $paymentOrder->paymentable_name;
+            $transformData->amount = $paymentOrder->amount;
+            $transformData->notes = $paymentOrder->form->notes;
+            $transformData->created_by = $paymentOrder->form->createdBy->full_name;
+            return $transformData;
+        });
         $references = $references->concat($paymentOrders);
 
         $downPayments = PurchaseDownPayment::from(PurchaseDownPayment::getTableName() . ' as ' . PurchaseDownPayment::$alias)->eloquentFilter($downPaymentRequest);
         $downPayments = PurchaseDownPayment::joins($downPayments, $downPaymentRequest->get('join'))->get();
+        $downPayments->transform(function ($downPayment) {
+            $transformData = new PurchaseDownPayment();
+            $transformData->referenceable_id = $downPayment->id;
+            $transformData->referenceable_type = $transformData::$morphName;
+            $transformData->date = $downPayment->form->date;
+            $transformData->number = $downPayment->form->number;
+            $transformData->person = $downPayment->supplier_name;
+            $transformData->amount = $downPayment->amount;
+            $transformData->notes = $downPayment->form->notes;
+            $transformData->created_by = $downPayment->form->createdBy->full_name;
+            return $transformData;
+        });
         $references = $references->concat($downPayments);
 
+        $references = $references->sortBy('date');
         $paginatedReferences = paginate_collection($references, $request->get('limit'), $request->get('page'));
 
         return new ApiCollection($paginatedReferences);
@@ -196,7 +222,9 @@ class PaymentController extends Controller
 
     public function getPaymentables(Request $request)
     {
-        $paymentables = Payment::groupBy('paymentable_type')->groupBy('paymentable_name')->select(['paymentable_type', 'paymentable_name']);
+        $paymentables = Payment::from(Payment::getTableName() . ' as ' . Payment::$alias)
+            ->select(['paymentable_type', 'paymentable_name'])
+            ->eloquentFilter($request);
         $paymentables = pagination($paymentables, $request->get('limit'));
 
         return new ApiCollection($paymentables);

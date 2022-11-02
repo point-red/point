@@ -199,7 +199,7 @@ class PaymentController extends Controller
     public function getPaymentables(Request $request)
     {
         $paymentables = Payment::from(Payment::getTableName() . ' as ' . Payment::$alias)
-            ->select(['paymentable_type', 'paymentable_name'])
+            ->select(['paymentable_id', 'paymentable_type', 'paymentable_name'])
             ->eloquentFilter($request);
         $paymentables = pagination($paymentables, $request->get('limit'));
 

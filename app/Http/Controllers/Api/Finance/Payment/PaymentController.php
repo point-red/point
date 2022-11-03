@@ -7,16 +7,19 @@ use App\Http\Requests\Finance\Payment\Payment\StorePaymentRequest;
 use App\Http\Requests\Finance\Payment\Payment\UpdatePaymentRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Mail\Finance\Payment\PaymentCancellationApprovalRequest;
+use App\Model\Auth\Role;
 use App\Model\Finance\Payment\Payment;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
+use App\Model\Master\User;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
+use App\Model\Token;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
-use stdClass;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class PaymentController extends Controller
@@ -120,22 +123,62 @@ class PaymentController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        $request->validate([
+            'reason' => 'required'
+        ]);
+
         $payment = Payment::findOrFail($id);
         $payment->isAllowedToDelete();
 
-        $response = $payment->requestCancel($request);
+        DB::connection('tenant')->transaction(function () use ($payment, $request) {
+            $payment->requestCancel($request);
 
-        if (!$response) {
-            foreach ($payment->details as $paymentDetail) {
-                if (!$paymentDetail->isDownPayment()) {
-                    $reference = $paymentDetail->referenceable;
-                    $reference->remaining += $payment->amount;
-                    $reference->save();
-                    $reference->form->done = false;
-                    $reference->form->save();
+            // Status form cash out jadi pending
+            $payment->form->done = 0;
+            $payment->form->save();
+
+            // Kirim notifikasi by program & email
+            $superAdminRole = Role::where('name', 'super admin')->first();
+            $emailUsers = User::whereHas('roles', function (Builder $query) use ($superAdminRole) {
+                $query->where('role_id', '=', $superAdminRole->id);
+            })->get();
+
+            foreach ($emailUsers as $recipient) {
+                // create token based on request_approval_to
+                $token = Token::where('user_id', $recipient->id)->first();
+
+                if (!$token) {
+                    $token = new Token([
+                        'user_id' => $recipient->id,
+                        'token' => md5($recipient->email . '' . now()),
+                    ]);
+                    $token->save();
                 }
+
+                Mail::to([
+                    $recipient->email,
+                ])->queue(new PaymentCancellationApprovalRequest(
+                    $payment,
+                    $recipient,
+                    $payment->form,
+                    $token->token
+                ));
             }
-        }
+
+            // if (!$response) {
+            //     foreach ($payment->details as $paymentDetail) {
+            //         if (!$paymentDetail->isDownPayment()) {
+            //             $reference = $paymentDetail->referenceable;
+            //             $reference->remaining += $payment->amount;
+            //             $reference->save();
+            //             $reference->form->done = false;
+            //             $reference->form->save();
+            //         }
+            //     }
+            // }
+
+
+        });
 
         return response()->json([], 204);
     }

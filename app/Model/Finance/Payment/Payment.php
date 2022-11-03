@@ -3,8 +3,8 @@
 namespace App\Model\Finance\Payment;
 
 use App\Exceptions\BranchNullException;
-use App\Exceptions\IsReferencedException;
 use App\Exceptions\PointException;
+use App\Exceptions\UnauthorizedException;
 use App\Model\Accounting\Journal;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Finance\CashAdvance\CashAdvance;
@@ -15,7 +15,7 @@ use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Model\TransactionModel;
 use App\Traits\Model\Finance\PaymentJoin;
 use App\Traits\Model\Finance\PaymentRelation;
-use DB;
+use Carbon\Carbon;
 
 class Payment extends TransactionModel
 {
@@ -49,6 +49,35 @@ class Payment extends TransactionModel
     public function isAllowedToDelete()
     {
         // TODO isAllowed to delete?
+        $form = $this->form;
+        
+        // Forbidden to delete,
+        // - Jika tidak memiliki permission
+        $this->isHaveAccessToDelete();
+
+        // - Jika form sudah di-request to delete
+        if ($form->request_cancellation_by != null) {
+            throw new PointException("Form already request to delete");
+        }
+
+        // - Jika pada periode yang akan didelete sudah dilakukan close book maka akan mengirimkan pesan eror
+        $now = Carbon::now();
+        $formDate = Carbon::parse($form->date);
+        if ($now->month != $formDate->month) {
+            throw new PointException("Cannot delete form because the book period is closed");
+        }
+    }
+
+    // Check if auth user have access to delete payment
+    public function isHaveAccessToDelete()
+    {
+        $authUserId = auth()->user()->id;
+        // Only super admin & approver referenceable can delete
+        $isSuperAdmin = tenant($authUserId)->hasRole('super admin');
+        $isApproverReferenceable = $this->details()->first()->referenceable->form->approval_by;
+        if ((!$isSuperAdmin) && ($authUserId != $isApproverReferenceable)) {
+            throw new UnauthorizedException();
+        }
     }
 
     public static function create($data)

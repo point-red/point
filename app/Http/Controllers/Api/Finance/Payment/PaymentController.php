@@ -56,7 +56,8 @@ class PaymentController extends Controller
                 ->load('form')
                 ->load('paymentable')
                 ->load('details.allocation')
-                ->load('details.referenceable.form');
+                ->load('details.referenceable.form')
+                ->load('cashAdvances');
 
             return new ApiResource($payment);
         });
@@ -233,7 +234,7 @@ class PaymentController extends Controller
         $downPayments = PurchaseDownPayment::joins($downPayments, $downPaymentRequest->get('join'))->get();
         $references = $references->concat($downPayments);
 
-        $references = $references->sortBy('date');
+        $references = $references->sortBy($request->get('sort_by'));
         $paginatedReferences = paginate_collection($references, $request->get('limit'), $request->get('page'));
 
         return new ApiCollection($paginatedReferences);

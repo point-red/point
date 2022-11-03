@@ -6,6 +6,7 @@ use App\Exceptions\BranchNullException;
 use App\Exceptions\PointException;
 use App\Exceptions\UnauthorizedException;
 use App\Model\Accounting\Journal;
+use App\Model\AllocationReport;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Finance\CashAdvance\CashAdvance;
 use App\Model\Form;
@@ -50,7 +51,7 @@ class Payment extends TransactionModel
     {
         // TODO isAllowed to delete?
         $form = $this->form;
-        
+
         // Forbidden to delete,
         // - Jika tidak memiliki permission
         $this->isHaveAccessToDelete();
@@ -185,6 +186,9 @@ class Payment extends TransactionModel
             self::mapCashAdvances($data, $payment, $form);
         }
 
+        // Save allocation reports
+        self::mapAllocationReports($data, $payment);
+
         // Reference Cash Advance
         if (isset($data['referenceable_type']) && $data['referenceable_type'] == 'CashAdvance') {
             $cashAdvance = CashAdvance::find($data['referenceable_id']);
@@ -249,6 +253,22 @@ class Payment extends TransactionModel
             $data['activity'] = ucfirst(strtolower($cashAdvance->payment_type)) . ' Out Withdrawal (' . $form->number . ')';
             CashAdvance::mapHistory($cashAdvance, $data);
         }, $data['cashAdvances']);
+    }
+
+    private static function mapAllocationReports($data, $payment)
+    {
+        return array_map(function ($detail) use ($data, $payment) {
+            if ($detail['allocation_id']) {
+                $allocationReport = new AllocationReport;
+                $allocationReport->allocation_id = $detail['allocation_id'];
+                $allocationReport->allocationable_id = $payment->id;
+                $allocationReport->allocationable_type = $payment::$morphName;
+                $allocationReport->form_id = $payment->form->id;
+                $allocationReport->notes = $detail['notes'];
+
+                $allocationReport->save();
+            }
+        }, $data['details']);
     }
 
     private static function calculateAmount($paymentDetails)

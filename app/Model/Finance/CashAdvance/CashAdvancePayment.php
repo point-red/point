@@ -21,6 +21,11 @@ class CashAdvancePayment extends TransactionModel
     protected $fillable = [
         'payment_id',
         'cash_advance_id',
+        'amount'
+    ];
+
+    protected $casts = [
+        'amount' => 'double'
     ];
 
     public function cashAdvance()

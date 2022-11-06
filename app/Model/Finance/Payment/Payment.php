@@ -190,7 +190,7 @@ class Payment extends TransactionModel
 
             if ($cashAdvance->amount_remaining > $payment->amount) {
                 $payByCashAdvance = $payment->amount;
-                $cashAdvance->amount_remaining = $cashAdvance->amountRemaining - $payment->amount;
+                $cashAdvance->amount_remaining = $cashAdvance->amount_remaining - $payment->amount;
             }
 
             CashAdvancePayment::create([

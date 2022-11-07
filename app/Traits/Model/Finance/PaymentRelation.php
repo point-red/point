@@ -4,6 +4,7 @@ namespace App\Traits\Model\Finance;
 
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Finance\CashAdvance\CashAdvance;
+use App\Model\Finance\CashAdvance\CashAdvancePayment;
 use App\Model\Finance\Payment\PaymentDetail;
 use App\Model\Form;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
@@ -53,5 +54,10 @@ trait PaymentRelation
     public function cashAdvances()
     {
         return $this->belongsToMany(CashAdvance::class, 'cash_advance_payment', 'payment_id', 'cash_advance_id');
+    }
+
+    public function cashAdvance()
+    {
+        return $this->hasOne(CashAdvancePayment::class);
     }
 }

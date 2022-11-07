@@ -9,6 +9,7 @@ use App\Model\Accounting\Journal;
 use App\Model\AllocationReport;
 use App\Model\Finance\PaymentOrder\PaymentOrder;
 use App\Model\Finance\CashAdvance\CashAdvance;
+use App\Model\Finance\CashAdvance\CashAdvancePayment;
 use App\Model\Form;
 use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
 use App\Model\Sales\PaymentCollection\PaymentCollection;
@@ -182,8 +183,31 @@ class Payment extends TransactionModel
         );
         $form->save();
 
-        if (isset($data['cashAdvances'])) {
-            self::mapCashAdvances($data, $payment, $form);
+        if (isset($data['cash_advance']['id']) && $data['cash_advance']['id'] != null) {
+            $cashAdvance = CashAdvance::find($data['cash_advance']['id']);
+
+            $payByCashAdvance = $cashAdvance->amount_remaining;
+
+            if ($cashAdvance->amount_remaining > $payment->amount) {
+                $payByCashAdvance = $payment->amount;
+                $cashAdvance->amount_remaining = $cashAdvance->amount_remaining - $payment->amount;
+            }
+
+            CashAdvancePayment::create([
+                'cash_advance_id' => $cashAdvance->id,
+                'payment_id' => $payment->id,
+                'amount' => $payByCashAdvance
+            ]);
+
+            if ($cashAdvance->amount_remaining == 0 || $data['cash_advance']['close'] == true) {
+                $cashAdvance->amount_remaining = 0;
+                $cashAdvance->form->done = 1;
+                $cashAdvance->form->save();
+            }
+            $cashAdvance->save();
+
+            $data['activity'] = ucfirst(strtolower($cashAdvance->payment_type)) . ' Out Withdrawal (' . $form->number . ')';
+            CashAdvance::mapHistory($cashAdvance, $data);
         }
 
         // Save allocation reports

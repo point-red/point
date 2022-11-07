@@ -211,7 +211,7 @@ class Payment extends TransactionModel
         if ($isPaymentCollection) {
             self::updateJournalPaymentCollection($payment, $journalsPaymentCollection);
         } else {
-            error_log('false');
+            // error_log('false');
             self::updateJournal($payment);
         }
 

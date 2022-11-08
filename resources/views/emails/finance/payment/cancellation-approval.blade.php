@@ -25,15 +25,13 @@
                     <td style="width: 25%">Form Reference</td>
                     <td>: {{ $payment->details()->first()->referenceable->form->number ?: '-' }}</td>
                 </tr>
-                @foreach ($payment->cashAdvances as $cashAdvance)
                 <tr>
                     <td style="width: 25%">Cash Advance</td>
-                    <td>: {{ $payment->form->number ?: '-' }}</td>
+                    <td>: {{ $cashAdvancePayment ? $cashAdvancePayment->cashAdvance->form->number : '-' }}</td>
                 </tr>
-                @endforeach
                 <tr>
                     <td style="width: 25%">Amount Cash Advance</td>
-                    <td>: {{ $payment->amount - $payment->details()->sum('amount') }}</td>
+                    <td>: {{ $cashAdvancePayment ? $cashAdvancePayment->amount : '-' }}</td>
                 </tr>
                 <tr>
                     <td style="width: 25%">Cash Account</td>
@@ -79,7 +77,7 @@
                         {{ $detail->amount }}
                     </td>
                     <td style="padding: .5rem">
-                        {{ $detail->allocation->name }}
+                        {{ $detail->allocation ? $detail->allocation->name : '-' }}
                     </td>
                 </tr>
                 @php ($i++)

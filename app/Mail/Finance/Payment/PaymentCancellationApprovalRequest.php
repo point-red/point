@@ -42,7 +42,8 @@ class PaymentCancellationApprovalRequest extends Mailable
                 'approverId' => $this->approver->id,
                 'fullName' => $this->approver->getFullNameAttribute(),
                 'form' => $this->form,
-                'token' => $this->token
+                'token' => $this->token,
+                'cashAdvancePayment' => $this->payment->cashAdvance
             ]);
     }
 }

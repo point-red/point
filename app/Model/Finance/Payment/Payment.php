@@ -282,7 +282,7 @@ class Payment extends TransactionModel
     private static function mapAllocationReports($data, $payment)
     {
         return array_map(function ($detail) use ($data, $payment) {
-            if ($detail['allocation_id']) {
+            if (isset($detail['allocation_id'])) {
                 $allocationReport = new AllocationReport;
                 $allocationReport->allocation_id = $detail['allocation_id'];
                 $allocationReport->allocationable_id = $payment->id;

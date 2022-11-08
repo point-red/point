@@ -8,7 +8,9 @@ use App\Exceptions\UnauthorizedException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
 use App\Model\Accounting\Journal;
+use App\Model\Finance\CashAdvance\CashAdvance;
 use App\Model\Finance\Payment\Payment;
+use App\Model\UserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -26,15 +28,15 @@ class PaymentCancellationApprovalController extends Controller
         $payment = Payment::findOrFail($id);
 
         // ### Approve fail if
-        // Jika Role Bukan Super Admin dan tidak memiliki akses approval maka mengirimkan pesan eror
+        $this->isCancellationRequestStillValid($payment);
         if ($request->has('token')) {
             // approve from email
             $approvalBy = $request->get('approver_id');
         } else {
+            // Jika Role Bukan Super Admin dan tidak memiliki akses approval maka mengirimkan pesan eror
             $payment->isHaveAccessToDelete();
             $approvalBy = auth()->user()->id;
         }
-        $this->isCancellationRequestStillValid($payment);
 
         DB::connection('tenant')->transaction(function () use ($payment, $approvalBy) {
             // ### If approve success then
@@ -42,29 +44,75 @@ class PaymentCancellationApprovalController extends Controller
             $payment->form->cancellation_approval_by = $approvalBy;
             $payment->form->cancellation_approval_at = now();
             $payment->form->cancellation_status = 1;
+            $payment->form->save();
 
-            // Status form payment order & cash advance jadi pending
+            // Jumlah saldo cash account / cash advance/ biaya yang dipilih akan bertambah sebesar data yang dihapus
+            // Pengembalian dana cash advance & status formnya menjadi pending
+            $amountPaidByCashAdvance = 0;
+            if ($payment->cashAdvance) {
+                $cashAdvancePayment = $payment->cashAdvance;
+                $cashAdvance = $cashAdvancePayment->cashAdvance;
+                $amountPaidByCashAdvance = $payment->cashAdvance->amount;
+
+                $cashAdvance->amount_remaining += $amountPaidByCashAdvance;
+                $cashAdvance->save();
+
+                $cashAdvance->form->done = 0;
+                $cashAdvance->form->save();
+
+                $history = new UserActivity;
+
+                $history->table_type = $cashAdvance::$morphName;
+                $history->table_id = $cashAdvance->id;
+                $history->number = $cashAdvance->form->number;
+                $history->user_id = $approvalBy;
+                $history->date = convert_to_local_timezone(date('Y-m-d H:i:s'));
+                $history->activity = 'Cash Out Refund (' . $cashAdvance->form->number . ')';
+
+                $history->save();
+            }
+
+            // Pengembalian dana account
+            $amountPaidByAccount = $payment->amount - $amountPaidByCashAdvance;
+            $journal = new Journal;
+            $journal->form_id = $payment->form->id;
+            $journal->journalable_type = $payment->paymentable_type;
+            $journal->journalable_id = $payment->paymentable_id;
+            $journal->chart_of_account_id = $payment->payment_account_id;
+            if ($payment->disbursed) {
+                $journal->debit = $amountPaidByAccount;
+            } else {
+                $journal->credit = $amountPaidByAccount;
+            }
+            $journal->save();
+
             foreach ($payment->details as $paymentDetail) {
+                $journal = new Journal;
+                $journal->form_id = $payment->form->id;
+                $journal->form_id_reference = optional(optional($paymentDetail->referenceable)->form)->id;
+                $journal->journalable_type = $payment->paymentable_type;
+                $journal->journalable_id = $payment->paymentable_id;
+                $journal->notes = $paymentDetail->notes;
+                $journal->chart_of_account_id = $paymentDetail->chart_of_account_id;
+                if (!$payment->disbursed) {
+                    $journal->credit = $paymentDetail->amount;
+                } else {
+                    $journal->debit = $paymentDetail->amount;
+                }
+                $journal->save();
+
+                // Status form payment order jadi pending
                 $paymentDetail->referenceable->form->done = 0;
                 $paymentDetail->referenceable->form->save();
             }
 
-            $cashAdvanceAmount = $payment->details()->sum('amount') - $payment->amount;
-            // Jumlah saldo cash account / cash advance/ biaya yang dipilih akan bertambah sebesar data yang dihapus (?)
-            foreach ($payment->cashAdvances as $cashAdvance) {
-                $cashAdvance->form->done = 0;
-                $cashAdvance->form->save();
-            }
-            // $payment->disbursed = !$payment->disbursed;
             // Data jurnal cash out dari cash report / journal / general ledger/ subledger akan berkurang sebesar data yang dihapus (?)
-            // $payment::updateJournal($payment);
 
-            // Delete data allocation pada allocation report (?)
-
-            $payment->form->save();
+            // Delete data allocation pada allocation report
+            $payment->allocationReports()->delete();
         });
 
-        $payment->form = $payment->form;
+        $payment->load('form');
         return new ApiResource($payment);
     }
 
@@ -84,17 +132,16 @@ class PaymentCancellationApprovalController extends Controller
         $payment = Payment::findOrFail($id);
 
         // ### Reject fail if
-        // Jika Role Bukan Super Admin / Pihak yang dipilih utk approval maka akan mengirimkan pesan eror 
-        // Jika tidak memiliki akses approval pada payment order maka akan mengirimkan pesan eror
+        $this->isCancellationRequestStillValid($payment);
         if ($request->has('token')) {
             // reject from email
             $approvalBy = $request->get('approver_id');
         } else {
+            // Jika Role Bukan Super Admin / Pihak yang dipilih utk approval maka akan mengirimkan pesan eror 
+            // Jika tidak memiliki akses approval pada payment order maka akan mengirimkan pesan eror
             $payment->isHaveAccessToDelete();
             $approvalBy = auth()->user()->id;
         }
-
-        $this->isCancellationRequestStillValid($payment);
 
         DB::connection('tenant')->transaction(function () use ($payment, $request, $approvalBy) {
             // ### If reject success then

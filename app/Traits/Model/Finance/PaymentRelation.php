@@ -3,6 +3,7 @@
 namespace App\Traits\Model\Finance;
 
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\AllocationReport;
 use App\Model\Finance\CashAdvance\CashAdvance;
 use App\Model\Finance\CashAdvance\CashAdvancePayment;
 use App\Model\Finance\Payment\PaymentDetail;
@@ -59,5 +60,10 @@ trait PaymentRelation
     public function cashAdvance()
     {
         return $this->hasOne(CashAdvancePayment::class);
+    }
+
+    public function allocationReports()
+    {
+        return $this->morphMany(AllocationReport::class, 'allocationable');
     }
 }

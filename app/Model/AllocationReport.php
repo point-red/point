@@ -20,4 +20,12 @@ class AllocationReport extends Model
     {
         return $this->belongsTo(Form::class);
     }
+
+    /**
+     * Get all of the owning formable models.
+     */
+    public function allocationable()
+    {
+        return $this->morphTo();
+    }
 }

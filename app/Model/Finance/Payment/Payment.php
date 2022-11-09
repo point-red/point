@@ -58,16 +58,16 @@ class Payment extends TransactionModel
         $this->isHaveAccessToDelete();
 
         // - Jika form sudah di-request to delete
-        if ($form->request_cancellation_by != null) {
-            throw new PointException("Form already request to delete");
-        }
+        // if ($form->request_cancellation_by != null) {
+        //     throw new PointException("Form already request to delete");
+        // }
 
         // - Jika pada periode yang akan didelete sudah dilakukan close book maka akan mengirimkan pesan eror
-        $now = Carbon::now();
-        $formDate = Carbon::parse($form->date);
-        if ($now->month != $formDate->month) {
-            throw new PointException("Cannot delete form because the book period is closed");
-        }
+        // $now = Carbon::now();
+        // $formDate = Carbon::parse($form->date);
+        // if ($now->month != $formDate->month) {
+        //     throw new PointException("Cannot delete form because the book period is closed");
+        // }
     }
 
     // Check if auth user have access to delete payment

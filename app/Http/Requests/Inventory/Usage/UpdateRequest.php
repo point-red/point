@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Inventory\Usage;
 
 use App\Http\Requests\ValidationRule;
+use App\Model\Inventory\InventoryUsage\InventoryUsage;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends FormRequest
@@ -24,7 +25,12 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $inventoryUsage = InventoryUsage::find($this->id);
+
+        $rulesForm = ValidationRule::form();
+        $rulesForm['date'] = 'required|date|after_or_equal:'.$inventoryUsage->form->date;
+
+        $rulesUpdate = [
             'warehouse_id' => 'required',
             'request_approval_to' => 'required',
 
@@ -34,5 +40,7 @@ class UpdateRequest extends FormRequest
             'items.*.converter' => ValidationRule::converter(),
             'items.*.chart_of_account_id' => 'required',
         ];
+
+        return array_merge($rulesForm, $rulesUpdate);
     }
 }

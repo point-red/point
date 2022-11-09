@@ -125,10 +125,6 @@ class PaymentCancellationApprovalController extends Controller
      */
     public function reject(Request $request, $id)
     {
-        $request->validate([
-            'reason' => 'required'
-        ]);
-
         $payment = Payment::findOrFail($id);
 
         // ### Reject fail if
@@ -136,7 +132,11 @@ class PaymentCancellationApprovalController extends Controller
         if ($request->has('token')) {
             // reject from email
             $approvalBy = $request->get('approver_id');
+            $request->merge(['reason' => 'Rejected by email']);
         } else {
+            $request->validate([
+                'reason' => 'required'
+            ]);
             // Jika Role Bukan Super Admin / Pihak yang dipilih utk approval maka akan mengirimkan pesan eror 
             // Jika tidak memiliki akses approval pada payment order maka akan mengirimkan pesan eror
             $payment->isHaveAccessToDelete();

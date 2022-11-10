@@ -60,16 +60,8 @@ class PaymentCancellationApprovalController extends Controller
                 $cashAdvance->form->done = 0;
                 $cashAdvance->form->save();
 
-                $history = new UserActivity;
-
-                $history->table_type = $cashAdvance::$morphName;
-                $history->table_id = $cashAdvance->id;
-                $history->number = $cashAdvance->form->number;
-                $history->user_id = $approvalBy;
-                $history->date = convert_to_local_timezone(date('Y-m-d H:i:s'));
-                $history->activity = 'Cash Out Refund (' . $cashAdvance->form->number . ')';
-
-                $history->save();
+                $activity = 'Payment Refund (' . $payment->form->number . ')';
+                $this->writeHistory($cashAdvance, $approvalBy, $activity);
             }
 
             // Pengembalian dana account
@@ -101,12 +93,10 @@ class PaymentCancellationApprovalController extends Controller
                 }
                 $journal->save();
 
-                // Status form payment order jadi pending
+                // Status form reference jadi pending
                 $paymentDetail->referenceable->form->done = 0;
                 $paymentDetail->referenceable->form->save();
             }
-
-            // Data jurnal cash out dari cash report / journal / general ledger/ subledger akan berkurang sebesar data yang dihapus (?)
 
             // Delete data allocation pada allocation report
             $payment->allocationReports()->delete();
@@ -165,13 +155,29 @@ class PaymentCancellationApprovalController extends Controller
 
     public function isCancellationRequestStillValid($payment)
     {
-        // is cancellation request already approved / rejected?
+        // is cancellation request already approved?
         $cancellationStatus = $payment->form->cancellation_status;
         if ($cancellationStatus == 1) {
             throw new PointException('Form cancellation already approved');
         }
-        if ($cancellationStatus == -1) {
-            throw new PointException('Form cancellation already rejected');
-        }
+        // is cancellation request already rejected?
+        // if ($cancellationStatus == -1) {
+        //     throw new PointException('Form cancellation already rejected');
+        // }
+    }
+
+    // $reference = cash advance,
+    public function writeHistory($reference, int $userId, string $activity)
+    {
+        $history = new UserActivity;
+
+        $history->table_type = $reference::$morphName;
+        $history->table_id = $reference->id;
+        $history->number = $reference->form->number;
+        $history->user_id = $userId;
+        $history->date = convert_to_local_timezone(date('Y-m-d H:i:s'));
+        $history->activity = $activity;
+
+        $history->save();
     }
 }

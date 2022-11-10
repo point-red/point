@@ -17,7 +17,6 @@ use App\Model\Sales\SalesDownPayment\SalesDownPayment;
 use App\Model\TransactionModel;
 use App\Traits\Model\Finance\PaymentJoin;
 use App\Traits\Model\Finance\PaymentRelation;
-use Carbon\Carbon;
 
 class Payment extends TransactionModel
 {
@@ -51,23 +50,13 @@ class Payment extends TransactionModel
     public function isAllowedToDelete()
     {
         // TODO isAllowed to delete?
-        $form = $this->form;
 
         // Forbidden to delete,
-        // - Jika tidak memiliki permission
+        // Jika memiliki permission
         $this->isHaveAccessToDelete();
 
-        // - Jika form sudah di-request to delete
-        // if ($form->request_cancellation_by != null) {
-        //     throw new PointException("Form already request to delete");
-        // }
-
-        // - Jika pada periode yang akan didelete sudah dilakukan close book maka akan mengirimkan pesan eror
-        // $now = Carbon::now();
-        // $formDate = Carbon::parse($form->date);
-        // if ($now->month != $formDate->month) {
-        //     throw new PointException("Cannot delete form because the book period is closed");
-        // }
+        // Jika pada periode yang akan didelete sudah dilakukan close book maka akan mengirimkan pesan eror
+        // Wait for next release feature
     }
 
     // Check if auth user have access to delete payment
@@ -183,6 +172,8 @@ class Payment extends TransactionModel
         );
         $form->save();
 
+        $payByCashAdvance = 0;
+        // If user select cash advance
         if (isset($data['cash_advance']['id']) && $data['cash_advance']['id'] != null) {
             $cashAdvance = CashAdvance::find($data['cash_advance']['id']);
 
@@ -252,31 +243,6 @@ class Payment extends TransactionModel
 
             return $paymentDetail;
         }, $data['details']);
-    }
-
-    private static function mapCashAdvances($data, $payment, $form)
-    {
-        return array_map(function ($detail) use ($data, $payment, $form) {
-            if ($payment->amount == 0) {
-                return;
-            }
-            // Adjusted & copied from payment::create where referenceable_type = 'CashAdvance'
-            $cashAdvance = CashAdvance::find($detail['cash_advance_id']);
-            if ($cashAdvance->amount_remaining < $detail['amount']) {
-                throw new PointException('Amount is over pay');
-            }
-            $payment->amount = $payment->amount - $detail['amount'];
-            $cashAdvance->payments()->attach($payment->id);
-            $cashAdvance->amount_remaining = $cashAdvance->amount_remaining - $detail['amount'];
-            if ($cashAdvance->amount_remaining == 0) {
-                $cashAdvance->form->done = 1;
-                $cashAdvance->form->save();
-            }
-            $cashAdvance->save();
-
-            $data['activity'] = ucfirst(strtolower($cashAdvance->payment_type)) . ' Out Withdrawal (' . $form->number . ')';
-            CashAdvance::mapHistory($cashAdvance, $data);
-        }, $data['cashAdvances']);
     }
 
     private static function mapAllocationReports($data, $payment)

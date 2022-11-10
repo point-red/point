@@ -57,7 +57,7 @@ class PaymentController extends Controller
                 ->load('paymentable')
                 ->load('details.allocation')
                 ->load('details.referenceable.form')
-                ->load('cashAdvances');
+                ->load('cashAdvance.cashAdvance.form');
 
             return new ApiResource($payment);
         });
@@ -134,10 +134,6 @@ class PaymentController extends Controller
         DB::connection('tenant')->transaction(function () use ($payment, $request) {
             $payment->requestCancel($request);
 
-            // Status form cash out jadi pending
-            $payment->form->done = 0;
-            $payment->form->save();
-
             // Kirim notifikasi by program & email
             $superAdminRole = Role::where('name', 'super admin')->first();
             $emailUsers = User::whereHas('roles', function (Builder $query) use ($superAdminRole) {
@@ -177,8 +173,6 @@ class PaymentController extends Controller
             //         }
             //     }
             // }
-
-
         });
 
         return response()->json([], 204);

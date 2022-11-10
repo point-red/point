@@ -37,6 +37,7 @@ class StorePaymentRequest extends FormRequest
             'paymentable_id' => 'required|integer|min:0',
             'paymentable_type' => 'required|string',
             'details' => 'required|array',
+            'notes' => 'nullable|max:255'
         ];
 
         $rulesPaymentDetail = [
@@ -66,13 +67,20 @@ class StorePaymentRequest extends FormRequest
                 if ((request()->filled('cash_advance.id'))) {
                     $cashAdvance = CashAdvance::find(request()->get('cash_advance')['id']);
                     $amountCashAdvance = $cashAdvance->amount_remaining;
-                    $needToPayFromAccount = request()->get('amount') - $amountCashAdvance;
+                    if ($amountCashAdvance > $needToPayFromAccount) {
+                        // All covered by cash advance
+                        $needToPayFromAccount = 0;
+                    } else {
+                        $needToPayFromAccount = request()->get('amount') - $amountCashAdvance;
+                    }
                 }
 
-                // Check balance payment account
-                $balancePaymentAccount = ChartOfAccount::find(request()->get('payment_account_id'))->total(date('Y-m-d 23:59:59'));
-                if ($balancePaymentAccount < $needToPayFromAccount) {
-                    throw new PointException('Balance is not enough');
+                if ($needToPayFromAccount > 0) {
+                    // Check balance payment account
+                    $balancePaymentAccount = ChartOfAccount::find(request()->get('payment_account_id'))->total(date('Y-m-d 23:59:59'));
+                    if ($balancePaymentAccount < $needToPayFromAccount) {
+                        throw new PointException('Balance is not enough');
+                    }
                 }
             }
         });

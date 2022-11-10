@@ -2,14 +2,10 @@
 
 namespace Tests\Feature\Http\Purchase;
 
-use App\Model\Form;
 use App\Model\Master\Item;
 use App\Model\Master\Supplier;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
-use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 class PurchaseOrderTest extends TestCase
@@ -399,8 +395,10 @@ class PurchaseOrderTest extends TestCase
     /** @test **/
     public function create_purchase_request()
     {
-        $item1 = Item::find(1);
-        $item2 = Item::find(2);
+        $items = $this->getItems();
+
+        $item1 = $items[0];
+        $item2 = $items[1];
 
         $data = [
             "approver_email" => $this->user->email,
@@ -471,7 +469,7 @@ class PurchaseOrderTest extends TestCase
     /** @test **/
     public function create_purchase_order()
     {
-        $supplier = Supplier::find(1);
+        $supplier = Supplier::first();
         $purchaseRequest = $this->getPurchaseRequest();
         $purchaseRequestItems = PurchaseRequestItem::limit(2)->get();
 
@@ -593,7 +591,7 @@ class PurchaseOrderTest extends TestCase
     /** @test **/
     public function edit_purchase_order()
     {
-        $supplier = Supplier::find(1);
+        $supplier = Supplier::first();
         $purchaseOrder = $this->getPurchaseOrder();
         $purchaseOrderItems = PurchaseOrderItem::where('purchase_order_id', $purchaseOrder->id)->limit(2)->get();
 

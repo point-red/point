@@ -4,13 +4,9 @@ namespace Tests\Feature\Http\Purchase;
 
 use App\Model\Form;
 use App\Model\Master\Item;
-use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
-use App\Model\Purchase\PurchaseOrder\PurchaseOrderItem;
 use App\Model\Purchase\PurchaseRequest\PurchaseRequest;
-use App\Model\Purchase\PurchaseRequest\PurchaseRequestItem;
 use Illuminate\Support\Facades\Artisan;
-use Tests\TestCase;
 
 trait PurchaseOrderSetup
 {
@@ -58,6 +54,11 @@ trait PurchaseOrderSetup
         $hasRole->model_type = 'App\Model\Master\User';
         $hasRole->model_id = $this->user->id;
         $hasRole->save();
+    }
+
+    private function getItems()
+    {
+        return Item::limit(2)->get();
     }
 
     protected function getPurchaseRequest()

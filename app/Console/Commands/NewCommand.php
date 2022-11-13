@@ -46,6 +46,9 @@ class NewCommand extends Command
             return;
         }
 
+        ini_set('memory_limit', '4095M');
+        ini_set('max_execution_time', '0');
+
         $dbName = $this->argument('database_name') ?? env('DB_DATABASE');
 
         $this->line('create '.$dbName.' database');
@@ -100,5 +103,6 @@ class NewCommand extends Command
         $projectUser->save();
 
         Artisan::call('tenant:database:reset', ['project_code' => 'dev']);
+        $this->line('process completed');
     }
 }

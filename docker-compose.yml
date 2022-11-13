@@ -28,6 +28,17 @@ services:
       - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    networks:
+      - point_network
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: 'phpmyadmin'
+    restart: unless-stopped
+    links:
+      - db
+    ports:
+      - '80:80'
     networks:
       - point_network
 networks:

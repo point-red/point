@@ -27,6 +27,8 @@ class PurchaseOrderCancellationApprovalController extends Controller
 
         $purchaseOrder->updateReference();
 
+        $purchaseOrder->form->fireEventCancelApproved();
+
         DB::connection('tenant')->commit();
 
         return new ApiResource($purchaseOrder);
@@ -45,6 +47,8 @@ class PurchaseOrderCancellationApprovalController extends Controller
         $purchaseOrder->form->cancellation_approval_reason = $request->get('reason');
         $purchaseOrder->form->cancellation_status = -1;
         $purchaseOrder->form->save();
+
+        $purchaseOrder->form->fireEventCancelRejected();
 
         return new ApiResource($purchaseOrder);
     }

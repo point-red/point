@@ -15,6 +15,7 @@ Route::prefix('purchase')->namespace('Purchase')->group(function () {
     Route::post('orders/{id}/reject', 'PurchaseOrder\\PurchaseOrderApprovalController@reject');
     Route::post('orders/{id}/cancellation-approve', 'PurchaseOrder\\PurchaseOrderCancellationApprovalController@approve');
     Route::post('orders/{id}/cancellation-reject', 'PurchaseOrder\\PurchaseOrderCancellationApprovalController@reject');
+    Route::get('orders/history', 'PurchaseOrder\\PurchaseOrderController@history');
     Route::apiResource('orders', 'PurchaseOrder\\PurchaseOrderController');
     Route::post('down-payments/{id}/approve', 'PurchaseDownPayment\\PurchaseDownPaymentApprovalController@approve');
     Route::post('down-payments/{id}/reject', 'PurchaseDownPayment\\PurchaseDownPaymentApprovalController@reject');

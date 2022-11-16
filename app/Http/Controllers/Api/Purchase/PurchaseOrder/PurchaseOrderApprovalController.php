@@ -22,6 +22,8 @@ class PurchaseOrderApprovalController extends Controller
         $purchaseOrder->form->approval_status = 1;
         $purchaseOrder->form->save();
 
+        $purchaseOrder->form->fireEventApproved();
+
         return new ApiResource($purchaseOrder);
     }
 
@@ -38,6 +40,8 @@ class PurchaseOrderApprovalController extends Controller
         $purchaseOrder->form->approval_reason = $request->get('reason');
         $purchaseOrder->form->approval_status = -1;
         $purchaseOrder->form->save();
+
+        $purchaseOrder->form->fireEventRejected();
 
         return new ApiResource($purchaseOrder);
     }

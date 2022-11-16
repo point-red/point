@@ -137,27 +137,43 @@ trait InventoryUsageSetup {
       $this->actingAs($user, 'api');
   }
   
-  private function getDummyData($itemUnit = 'pcs')
+  private function getDummyData($inventoryUsage = null, $itemUnit = 'pcs')
   {
     $warehouse = $this->warehouseSelected;
-
-    $allocation = factory(Allocation::class)->create();
-    $employee = factory(Employee::class)->create();
-    
-    $chartOfAccount = ChartOfAccount::whereHas('type', function ($query) {
-      return $query->whereIn('alias', ['BEBAN OPERASIONAL', 'BEBAN NON OPERASIONAL']);
-    })->first();
-
     $unit = new ItemUnit([
       'label' => $itemUnit,
       'name' => $itemUnit,
       'converter' => 1,
     ]);
-    $item = $this->createItemWithStocks($unit);
+    $quantity = 5;
 
-    $role = Role::createIfNotExists('super admin');
-    $approver = factory(TenantUser::class)->create();
-    $approver->assignRole($role);
+    if ($inventoryUsage) {
+      $inventoryUsageItem = $inventoryUsage->items()->first();
+
+      $employee = $inventoryUsage->employee;
+
+      $allocation = $inventoryUsageItem->allocation;
+      $chartOfAccount = $inventoryUsageItem->account;
+      $item = $inventoryUsageItem->item;
+      $unit = $inventoryUsageItem->item->unit;
+      $quantity = $inventoryUsageItem->quantity;
+
+      $approver = $inventoryUsage->form->requestApprovalTo;
+    } else {
+      $allocation = factory(Allocation::class)->create();
+      $employee = factory(Employee::class)->create();
+      
+      $chartOfAccount = ChartOfAccount::whereHas('type', function ($query) {
+        return $query->whereIn('alias', ['BEBAN OPERASIONAL', 'BEBAN NON OPERASIONAL']);
+      })->first();
+  
+      $item = $this->createItemWithStocks($unit);
+  
+      $role = Role::createIfNotExists('super admin');
+      $approver = factory(TenantUser::class)->create();
+      $approver->assignRole($role);
+    }
+
 
     return [
       "increment_group" => date("Ym"),
@@ -181,7 +197,7 @@ trait InventoryUsageSetup {
           "require_production_number" => 0,
           "unit" => $unit->name,
           "converter" => $unit->converter,
-          "quantity" => 5,
+          "quantity" => $quantity,
           "allocation_id" => $allocation->id,
           "allocation_name" => $allocation->name,
           "notes" => null,

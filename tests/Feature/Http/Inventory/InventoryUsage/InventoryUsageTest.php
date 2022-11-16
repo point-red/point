@@ -61,7 +61,7 @@ class InventoryUsageTest extends TestCase
     {
         $this->setRole();
 
-        $data = $this->getDummyData($itemUnit = 'box');
+        $data = $this->getDummyData(null, $itemUnit = 'box');
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
         $response->assertStatus(422)
@@ -148,23 +148,23 @@ class InventoryUsageTest extends TestCase
         $response->assertStatus(200);
     }
     /** @test */
-    // public function unauthorized_update_inventory_usage()
-    // {
-    //     $this->success_create_inventory_usage();
+    public function unauthorized_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
 
-    //     $this->unsetUserRole();
+        $this->unsetUserRole();
 
-    //     $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
-    //     $data = $this->getDummyData($inventoryUsage);
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        $data = $this->getDummyData($inventoryUsage);
 
-    //     $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-    //     $response->assertStatus(500)
-    //         ->assertJson([
-    //             "code" => 0,
-    //             "message" => "There is no permission named `update inventory usage` for guard `api`."
-    //         ]);
-    // }
+        $response->assertStatus(500)
+            ->assertJson([
+                "code" => 0,
+                "message" => "There is no permission named `update inventory usage` for guard `api`."
+            ]);
+    }
     /** @test */
     // public function overquantity_update_inventory_usage()
     // {

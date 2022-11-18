@@ -115,7 +115,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
     Route::prefix('approval-with-token')->group(function () {
         Route::post('finance/cash-advances', 'Finance\\CashAdvance\\CashAdvanceApprovalController@approvalWithToken');
         Route::post('finance/cash-advances/bulk', 'Finance\\CashAdvance\\CashAdvanceApprovalController@bulkApprovalWithToken');
-        Route::post('purchase/orders', 'PurchaseOrder\\PurchaseOrderApprovalController@approvalWithToken');
-        Route::post('purchase/orders/bulk', 'PurchaseOrder\\PurchaseOrderApprovalController@bulkApprovalWithToken');
+        Route::post('purchase/orders', 'Purchase\\PurchaseOrder\\PurchaseOrderApprovalController@approvalWithToken');
+        Route::post('purchase/orders/bulk', 'Purchase\\PurchaseOrder\\PurchaseOrderApprovalController@bulkApprovalWithToken');
     });
 });

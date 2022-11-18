@@ -44,19 +44,19 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
     });
 
     Route::prefix('sales/return')->namespace('Sales\\SalesReturn')
-        ->middleware('tenant.module-access:sales return') 
+        ->middleware('tenant.module-access:sales return')
         ->group(function () {
             Route::post('/approve', 'SalesReturnApprovalByEmailController@approve');
             Route::post('/reject', 'SalesReturnApprovalByEmailController@reject');
         });
 
     Route::prefix('sales/delivery-orders')->namespace('Sales\\DeliveryOrder')
-        ->middleware('tenant.module-access:sales delivery order') 
+        ->middleware('tenant.module-access:sales delivery order')
         ->group(function () {
             Route::post('/approve', 'DeliveryOrderApprovalByEmailController@approve');
             Route::post('/reject', 'DeliveryOrderApprovalByEmailController@reject');
         });
-    
+
     Route::prefix('accounting/memo-journals')->namespace('Accounting')->group(function () {
         Route::post('/approve', 'MemoJournalApprovalByEmailController@approve');
         Route::post('/reject', 'MemoJournalApprovalByEmailController@reject');
@@ -110,10 +110,12 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
     Route::get('oauth/login/google/drive', 'OAuthController@requestGoogleDrive');
     Route::post('oauth/login/google/drive', 'OAuthController@storeGoogleAccessToken');
     Route::delete('oauth/login/google/drive', 'OAuthController@unlinkGoogleDrive');
-    
+
     //Approve/reject with token
     Route::prefix('approval-with-token')->group(function () {
         Route::post('finance/cash-advances', 'Finance\\CashAdvance\\CashAdvanceApprovalController@approvalWithToken');
         Route::post('finance/cash-advances/bulk', 'Finance\\CashAdvance\\CashAdvanceApprovalController@bulkApprovalWithToken');
+        Route::post('purchase/orders', 'PurchaseOrder\\PurchaseOrderApprovalController@approvalWithToken');
+        Route::post('purchase/orders/bulk', 'PurchaseOrder\\PurchaseOrderApprovalController@bulkApprovalWithToken');
     });
 });

@@ -13,6 +13,7 @@ Route::prefix('purchase')->namespace('Purchase')->group(function () {
     Route::apiResource('requests', 'PurchaseRequest\\PurchaseRequestController');
     Route::post('orders/{id}/approve', 'PurchaseOrder\\PurchaseOrderApprovalController@approve');
     Route::post('orders/{id}/reject', 'PurchaseOrder\\PurchaseOrderApprovalController@reject');
+    Route::post('orders/send-bulk-request-approval', 'PurchaseOrder\\PurchaseOrderApprovalController@sendBulkRequestApproval');
     Route::post('orders/{id}/cancellation-approve', 'PurchaseOrder\\PurchaseOrderCancellationApprovalController@approve');
     Route::post('orders/{id}/cancellation-reject', 'PurchaseOrder\\PurchaseOrderCancellationApprovalController@reject');
     Route::get('orders/history', 'PurchaseOrder\\PurchaseOrderController@history');

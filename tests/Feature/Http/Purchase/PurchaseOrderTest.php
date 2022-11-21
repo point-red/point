@@ -10,390 +10,14 @@ use Tests\TestCase;
 
 class PurchaseOrderTest extends TestCase
 {
-    use PurchaseOrderSetup;
+    use PurchaseOrderSetup, PurchaseOrderTestData;
 
-    private $jsonShowPurchaseOrder = [
-        "data" => [
-            "id",
-            "purchase_request_id",
-            "purchase_contract_id",
-            "supplier_id",
-            "supplier_name",
-            "supplier_address",
-            "supplier_phone",
-            "billing_address",
-            "billing_phone",
-            "billing_email",
-            "shipping_address",
-            "shipping_phone",
-            "shipping_email",
-            "warehouse_id",
-            "eta",
-            "cash_only",
-            "need_down_payment",
-            "delivery_fee",
-            "discount_percent",
-            "discount_value",
-            "type_of_tax",
-            "tax",
-            "amount",
-            "supplier" => [
-                "id",
-                "code",
-                "tax_identification_number",
-                "name",
-                "address",
-                "city",
-                "state",
-                "country",
-                "zip_code",
-                "latitude",
-                "longitude",
-                "phone",
-                "phone_cc",
-                "email",
-                "notes",
-                "branch_id",
-                "created_by",
-                "updated_by",
-                "archived_by",
-                "created_at",
-                "updated_at",
-                "archived_at",
-                "label",
-            ],
-            "items" => [
-                "*" => [
-                    "id",
-                    "purchase_order_id",
-                    "purchase_request_item_id",
-                    "item_id",
-                    "item_name",
-                    "quantity",
-                    "price",
-                    "discount_percent",
-                    "discount_value",
-                    "taxable",
-                    "unit",
-                    "converter",
-                    "notes",
-                    "allocation_id",
-                    "item" => [
-                        "id",
-                        "chart_of_account_id",
-                        "code",
-                        "barcode",
-                        "name",
-                        "size",
-                        "color",
-                        "weight",
-                        "notes",
-                        "taxable",
-                        "require_production_number",
-                        "require_expiry_date",
-                        "stock",
-                        "stock_reminder",
-                        "unit_default",
-                        "unit_default_purchase",
-                        "unit_default_sales",
-                        "created_by",
-                        "updated_by",
-                        "archived_by",
-                        "created_at",
-                        "updated_at",
-                        "archived_at",
-                        "label",
-                    ],
-                    "allocation",
-                ],
-            ],
-            "purchase_request" => [
-                "id",
-                "required_date",
-                "supplier_id",
-                "supplier_name",
-                "supplier_address",
-                "supplier_phone",
-                "amount",
-                "form" => [
-                    "id",
-                    "branch_id",
-                    "date",
-                    "number",
-                    "edited_number",
-                    "edited_notes",
-                    "notes",
-                    "created_by",
-                    "updated_by",
-                    "done",
-                    "increment",
-                    "increment_group",
-                    "formable_id",
-                    "formable_type",
-                    "request_approval_to",
-                    "approval_by",
-                    "approval_at",
-                    "approval_reason",
-                    "approval_status",
-                    "request_cancellation_to",
-                    "request_cancellation_by",
-                    "request_cancellation_at",
-                    "request_cancellation_reason",
-                    "cancellation_approval_at",
-                    "cancellation_approval_by",
-                    "cancellation_approval_reason",
-                    "cancellation_status",
-                    "created_at",
-                    "updated_at",
-                    "request_close_to",
-                    "request_close_by",
-                    "request_close_at",
-                    "request_close_reason",
-                    "close_approval_at",
-                    "close_approval_by",
-                    "close_status",
-                    "request_approval_at",
-                    "close_approval_reason",
-                ],
-            ],
-            "form" => [
-                "id",
-                "branch_id",
-                "date",
-                "number",
-                "edited_number",
-                "edited_notes",
-                "notes",
-                "created_by" => [
-                    "id",
-                    "name",
-                    "first_name",
-                    "last_name",
-                    "address",
-                    "phone",
-                    "email",
-                    "created_at",
-                    "updated_at",
-                    "branch_id",
-                    "warehouse_id",
-                    "full_name",
-                ],
-                "updated_by",
-                "done",
-                "increment",
-                "increment_group",
-                "formable_id",
-                "formable_type",
-                "request_approval_to" => [
-                    "id",
-                    "name",
-                    "first_name",
-                    "last_name",
-                    "address",
-                    "phone",
-                    "email",
-                    "created_at",
-                    "updated_at",
-                    "branch_id",
-                    "warehouse_id",
-                    "full_name",
-                ],
-                "approval_by",
-                "approval_at",
-                "approval_reason",
-                "approval_status",
-                "request_cancellation_to",
-                "request_cancellation_by",
-                "request_cancellation_at",
-                "request_cancellation_reason",
-                "cancellation_approval_at",
-                "cancellation_approval_by",
-                "cancellation_approval_reason",
-                "cancellation_status",
-                "created_at",
-                "updated_at",
-                "request_close_to",
-                "request_close_by",
-                "request_close_at",
-                "request_close_reason",
-                "close_approval_at",
-                "close_approval_by",
-                "close_status",
-                "request_approval_at",
-                "close_approval_reason",
-                "branch" => [
-                    "id",
-                    "name",
-                    "address",
-                    "phone",
-                    "created_by",
-                    "updated_by",
-                    "archived_by",
-                    "created_at",
-                    "updated_at",
-                    "archived_at",
-                ]
-            ]
-        ]
-    ];
-
-    private $jsonIndexPurchaseOrder = [
-        'data' => [
-            "*" => [
-                "id",
-                "purchase_request_id",
-                "purchase_contract_id",
-                "supplier_id",
-                "supplier_name",
-                "supplier_address",
-                "supplier_phone",
-                "billing_address",
-                "billing_phone",
-                "billing_email",
-                "shipping_address",
-                "shipping_phone",
-                "shipping_email",
-                "warehouse_id",
-                "eta",
-                "cash_only",
-                "need_down_payment",
-                "delivery_fee",
-                "discount_percent",
-                "discount_value",
-                "type_of_tax",
-                "tax",
-                "amount",
-                "form" => [
-                    "id",
-                    "branch_id",
-                    "date",
-                    "number",
-                    "edited_number",
-                    "edited_notes",
-                    "notes",
-                    "created_by",
-                    "updated_by",
-                    "done",
-                    "increment",
-                    "increment_group",
-                    "formable_id",
-                    "formable_type",
-                    "request_approval_to",
-                    "approval_by",
-                    "approval_at",
-                    "approval_reason",
-                    "approval_status",
-                    "request_cancellation_to",
-                    "request_cancellation_by",
-                    "request_cancellation_at",
-                    "request_cancellation_reason",
-                    "cancellation_approval_at",
-                    "cancellation_approval_by",
-                    "cancellation_approval_reason",
-                    "cancellation_status",
-                    "created_at",
-                    "updated_at",
-                    "request_close_to",
-                    "request_close_by",
-                    "request_close_at",
-                    "request_close_reason",
-                    "close_approval_at",
-                    "close_approval_by",
-                    "close_status",
-                    "request_approval_at",
-                    "close_approval_reason",
-                ],
-                "supplier" => [
-                    "id",
-                    "code",
-                    "tax_identification_number",
-                    "name",
-                    "address",
-                    "city",
-                    "state",
-                    "country",
-                    "zip_code",
-                    "latitude",
-                    "longitude",
-                    "phone",
-                    "phone_cc",
-                    "email",
-                    "notes",
-                    "branch_id",
-                    "created_by",
-                    "updated_by",
-                    "archived_by",
-                    "created_at",
-                    "updated_at",
-                    "archived_at",
-                    "label",
-                ],
-                "items" => [
-                    "*" => [
-                        "id",
-                        "purchase_order_id",
-                        "purchase_request_item_id",
-                        "item_id",
-                        "item_name",
-                        "quantity",
-                        "price",
-                        "discount_percent",
-                        "discount_value",
-                        "taxable",
-                        "unit",
-                        "converter",
-                        "notes",
-                        "allocation_id",
-                        "item" => [
-                            "id",
-                            "chart_of_account_id",
-                            "code",
-                            "barcode",
-                            "name",
-                            "size",
-                            "color",
-                            "weight",
-                            "notes",
-                            "taxable",
-                            "require_production_number",
-                            "require_expiry_date",
-                            "stock",
-                            "stock_reminder",
-                            "unit_default",
-                            "unit_default_purchase",
-                            "unit_default_sales",
-                            "created_by",
-                            "updated_by",
-                            "archived_by",
-                            "created_at",
-                            "updated_at",
-                            "archived_at",
-                            "label",
-                        ],
-                        "allocation",
-                    ],
-                ],
-            ],
-        ],
-        'links' => [
-            "first",
-            "last",
-            "prev",
-            "next",
-        ],
-        'meta' => [
-            "current_page",
-            "from",
-            "last_page",
-            "path",
-            "per_page",
-            "to",
-            "total",
-        ],
-    ];
-
-    /** @test **/
-    public function create_purchase_request()
+    /**
+     * Test create purchase request to generate sample data for purchase order
+     *
+     * @return void
+     */
+    public function test_create_purchase_request()
     {
         $items = $this->getItems();
 
@@ -451,8 +75,12 @@ class PurchaseOrderTest extends TestCase
         ], 'tenant');
     }
 
-    /** @test **/
-    public function approve_purchase_request()
+    /**
+     * Test purchase request approval
+     *
+     * @return void
+     */
+    public function test_approve_purchase_request()
     {
         $purchaseRequest = $this->getPurchaseRequest();
 
@@ -466,8 +94,12 @@ class PurchaseOrderTest extends TestCase
         $response->assertJsonPath('data.id', $purchaseRequest->id);
     }
 
-    /** @test **/
-    public function create_purchase_order()
+    /**
+     * Test create purchase order using previously generate purchase request
+     *
+     * @return void
+     */
+    public function test_create_purchase_order()
     {
         $supplier = Supplier::first();
         $purchaseRequest = $this->getPurchaseRequest();
@@ -544,8 +176,12 @@ class PurchaseOrderTest extends TestCase
         ], 'tenant');
     }
 
-    /** @test **/
-    public function approve_create_purchase_order()
+    /**
+     * Test approva new purchase order
+     *
+     * @return void
+     */
+    public function test_approve_create_purchase_order()
     {
         $purchaseOrder = $this->getPurchaseOrder();
 
@@ -566,8 +202,12 @@ class PurchaseOrderTest extends TestCase
         ], 'tenant');
     }
 
-    /** @test **/
-    public function reject_create_purchase_order()
+    /**
+     * Test reject new purchase order
+     *
+     * @return void
+     */
+    public function test_reject_create_purchase_order()
     {
         $purchaseOrder = $this->getPurchaseOrder();
 
@@ -588,8 +228,12 @@ class PurchaseOrderTest extends TestCase
         ], 'tenant');
     }
 
-    /** @test **/
-    public function edit_purchase_order()
+    /**
+     * Test edit purchase order
+     *
+     * @return void
+     */
+    public function test_edit_purchase_order()
     {
         $supplier = Supplier::first();
         $purchaseOrder = $this->getPurchaseOrder();
@@ -666,8 +310,12 @@ class PurchaseOrderTest extends TestCase
         ], 'tenant');
     }
 
-    /** @test **/
-    public function approve_edit_purchase_order()
+    /**
+     * Test edited purchase order approval
+     *
+     * @return void
+     */
+    public function test_approve_edit_purchase_order()
     {
         $purchaseOrder = $this->getPurchaseOrder();
 
@@ -688,8 +336,12 @@ class PurchaseOrderTest extends TestCase
         ], 'tenant');
     }
 
-    /** @test **/
-    public function reject_edit_purchase_order()
+    /**
+     * Test reject edited purchase order
+     *
+     * @return void
+     */
+    public function test_reject_edit_purchase_order()
     {
         $purchaseOrder = $this->getPurchaseOrder();
 
@@ -710,8 +362,12 @@ class PurchaseOrderTest extends TestCase
         ], 'tenant');
     }
 
-    /** @test **/
-    public function delete_purchase_order()
+    /**
+     * Test deleting purchase order
+     *
+     * @return void
+     */
+    public function test_delete_purchase_order()
     {
         $purchaseOrder = $this->getPurchaseOrder();
 
@@ -726,8 +382,12 @@ class PurchaseOrderTest extends TestCase
         $response->assertStatus(204);
     }
 
-    /** @test **/
-    public function approve_delete_purchase_order()
+    /**
+     * Test delete purchase order approval
+     *
+     * @return void
+     */
+    public function test_approve_delete_purchase_order()
     {
         $purchaseOrder = $this->getPurchaseOrder();
 
@@ -748,14 +408,18 @@ class PurchaseOrderTest extends TestCase
         ], 'tenant');
     }
 
-    /** @test **/
-    public function reject_delete_purchase_order()
+    /**
+     * Test reject delete purchase order
+     *
+     * @return void
+     */
+    public function test_reject_delete_purchase_order()
     {
         // Create PO
-        $this->create_purchase_order();
+        $this->test_create_purchase_order();
 
         // Delete PO
-        $this->delete_purchase_order();
+        $this->test_delete_purchase_order();
 
         $purchaseOrder = $this->getPurchaseOrder();
 
@@ -776,11 +440,15 @@ class PurchaseOrderTest extends TestCase
         ], 'tenant');
     }
 
-    /** @test **/
-    public function show_purchase_order()
+    /**
+     * Test show details of purchase order
+     *
+     * @return void
+     */
+    public function test_show_purchase_order()
     {
         // Create PO
-        $this->create_purchase_order();
+        $this->test_create_purchase_order();
 
         $purchaseOrder = $this->getPurchaseOrder();
 
@@ -798,15 +466,19 @@ class PurchaseOrderTest extends TestCase
         $response->assertJsonStructure($this->jsonShowPurchaseOrder);
     }
 
-    /** @test **/
-    public function index_purchase_order()
+    /**
+     * Test purchase order index data
+     *
+     * @return void
+     */
+    public function test_index_purchase_order()
     {
         $dateStart = date('Y-m-01');
         $dateEnd = date('Y-m-t');
         $url = "/api/v1/purchase/orders?join=form,supplier,items,item&fields=purchase_order.*&sort_by=-form.number&group_by=form.id&filter_form=notArchived;null&filter_like={}&filter_date_min={\"form.date\":\"{$dateStart} 00:00:00\"}&filter_date_max={\"form.date\":\"{$dateEnd} 23:59:59\"}&limit=10&includes=form;supplier;items.item;items.allocation&page=1";
 
         // Create PO
-        $this->create_purchase_order();
+        $this->test_create_purchase_order();
 
         // API Request
         $response = $this->json('GET', $url, [], [$this->headers]);

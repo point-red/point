@@ -10,14 +10,6 @@ use Illuminate\Support\Facades\Artisan;
 
 trait PurchaseOrderSetup
 {
-    private $permissionsSetup = [
-        'create purchase request',
-    ];
-
-    private $roleSetup = [
-        'super admin',
-    ];
-
     public function setUp(): void
     {
         parent::setUp();

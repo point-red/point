@@ -23,6 +23,7 @@ trait CashOutSetup
     {
         parent::setUp();
         $this->signIn();
+        $this->setRole();
         $this->setProject();
         $this->importChartOfAccount();
     }
@@ -75,7 +76,12 @@ trait CashOutSetup
         if ($onlyGetData) {
             return $form;
         }
-        return PaymentOrder::create($form);
+        $paymentOrder = PaymentOrder::create($form);
+        // Approve payment order
+        $paymentOrder->form->approval_by = auth()->user()->id;
+        $paymentOrder->form->save();
+
+        return $paymentOrder;
     }
 
     public function createCashAdvance($amount)
@@ -138,7 +144,7 @@ trait CashOutSetup
                 ]
             )
         ];
-        
+
         return CashAdvance::create($data);
     }
 
@@ -172,19 +178,57 @@ trait CashOutSetup
     public function getDataPayment($reference)
     {
         $paymentAccount = $this->getChartOfAccountCash();
+        $this->makePaymentCashIn($paymentAccount, $reference->amount);
         $details = [];
         if ($reference::$morphName == 'PaymentOrder') {
             $details = $this->transformPaymentOrderDetails($reference);
         }
 
         return [
+            'amount' => $reference->amount,
+            'payment_type' => $reference->payment_type,
             'date' => date('Y-m-d H:i:s'),
             'increment_group' => date('Ym'),
             'payment_account_id' => $paymentAccount->id,
             'disbursed' => true,
-            'paymentable_id' => $reference->id,
-            'paymentable_type' => $reference::$morphName,
+            'paymentable_id' => $reference->paymentable_id,
+            'paymentable_type' => $reference->paymentable_type,
+            'referenceable_type' => $reference::$morphName,
+            'referenceable_id' => $reference->id,
             'details' => $details,
         ];
+    }
+
+    // Copied from CashAdvanceTest
+    public function makePaymentCashIn($account, $amount_account)
+    {
+        $paymentable = factory(Customer::class)->create();
+        $account_detail = ChartOfAccount::where('name', 'OTHER INCOME')->first();
+        // s: insert cash in
+        $data = [
+            'increment_group' => date('Ym'),
+            'date' => date('Y-m-d H:i:s'),
+            'due_date' => date('Y-m-d H:i:s'),
+            'payment_type' => "cash",
+            'payment_account_id' => $account->id,
+            'paymentable_id' => $paymentable->id,
+            'paymentable_name' => $paymentable->name,
+            'paymentable_type' => $paymentable::$morphName,
+            'disbursed' => false,
+            'notes' => null,
+            'amount' => $amount_account,
+            'details' => array(
+                [
+                    'chart_of_account_id' => $account_detail->id,
+                    'amount' => $amount_account,
+                    'allocation_id' => null,
+                    'allocation_name' => null,
+                    'notes' => "Kas"
+                ]
+            )
+        ];
+
+        Payment::create($data);
+        // e: insert cash in
     }
 }

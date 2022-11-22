@@ -9,6 +9,7 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Master\Supplier;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
+use App\Model\UserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -30,6 +31,21 @@ class PurchaseOrderController extends Controller
         $purchaseOrders = pagination($purchaseOrders, $request->get('limit'));
 
         return new ApiCollection($purchaseOrders);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return ApiCollection
+     */
+    public function history(Request $request)
+    {
+        $userActivity = UserActivity::from(UserActivity::getTableName().' as '.UserActivity::$alias)->eloquentFilter($request);
+
+        $userActivity = pagination($userActivity, $request->get('limit'));
+
+        return new ApiCollection($userActivity);
     }
 
     /**

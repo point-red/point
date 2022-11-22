@@ -113,7 +113,7 @@ class PurchaseOrder extends TransactionModel implements Transaction
         }
     }
 
-    public static function create($data)
+    public static function create($data): PurchaseOrder
     {
         $purchaseOrder = new self;
         $purchaseOrder->fill($data);

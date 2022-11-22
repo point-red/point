@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Purchase\PurchaseReceive;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseReceiveRequest;
+use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\UpdatePurchaseReceiveRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Inventory\Inventory;
@@ -147,7 +148,7 @@ class PurchaseReceiveController extends Controller
      * @return ApiResource
      * @throws Throwable
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePurchaseReceiveRequest $request, $id)
     {
         $purchaseReceive = PurchaseReceive::findOrFail($id);
         $purchaseReceive->isAllowedToUpdate();

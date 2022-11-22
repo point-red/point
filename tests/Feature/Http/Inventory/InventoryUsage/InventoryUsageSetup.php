@@ -155,7 +155,11 @@ trait InventoryUsageSetup {
       $allocation = $inventoryUsageItem->allocation;
       $chartOfAccount = $inventoryUsageItem->account;
       $item = $inventoryUsageItem->item;
-      $unit = $inventoryUsageItem->item->unit;
+
+      if ($itemUnit !== 'pcs') {
+        $unit = ItemUnit::where('label', $inventoryUsageItem->unit)->first();
+      }
+      
       $quantity = $inventoryUsageItem->quantity;
 
       $approver = $inventoryUsage->form->requestApprovalTo;

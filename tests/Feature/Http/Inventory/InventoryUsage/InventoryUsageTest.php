@@ -166,53 +166,55 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    // public function overquantity_update_inventory_usage()
-    // {
-    //     $this->success_create_inventory_usage();
+    public function overquantity_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
 
-    //     $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
         
-    //     $data = $this->getDummyData($inventoryUsage);
-    //     $data = data_set($data, 'id', $inventoryUsage->id, false);
-    //     $data = data_set($data, 'items.0.quantity', 2000);
+        $data = $this->getDummyData($inventoryUsage);
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = data_set($data, 'items.0.quantity', 2000);
 
-    //     $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-    //     $response->assertStatus(422)
-    //         ->assertJson([
-    //             "code" => 422,
-    //             "message" => "Stock {$data['items'][0]['item_name']} not enough"
-    //         ]);
-    // }
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "Stock {$data['items'][0]['item_name']} not enough"
+            ]);
+    }
     /** @test */
-    // public function invalid_update_inventory_usage()
-    // {
-    //     $this->success_create_inventory_usage();
+    public function invalid_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
 
-    //     $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
         
-    //     $data = $this->getDummyData($inventoryUsage);
-    //     $data = data_set($data, 'id', $inventoryUsage->id, false);
-    //     $data = data_set($data, 'request_approval_to', null);
+        $data = $this->getDummyData($inventoryUsage);
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = data_set($data, 'request_approval_to', null);
 
-    //     $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-    //     $response->assertStatus(422);
-    // }
+        $response->assertStatus(422);
+    }
     /** @test */
-    // public function invalid_unit_update_inventory_usage()
-    // {
-    //     $this->setRole();
+    public function invalid_unit_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
 
-    //     $data = $this->getDummyData($itemUnit = 'box');
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        
+        $data = $this->getDummyData($inventoryUsage, $itemUnit = 'box');
 
-    //     $response = $this->json('POST', self::$path, $data, $this->headers);
-    //     $response->assertStatus(422)
-    //         ->assertJson([
-    //             "code" => 422,
-    //             "message" => "there are some item not in 'pcs' unit"
-    //         ]);
-    // }
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "there are some item not in 'pcs' unit"
+            ]);
+    }
     /** @test */
     // public function success_update_inventory_usage()
     // {

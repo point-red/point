@@ -28,7 +28,7 @@ class UpdateRequest extends FormRequest
         $inventoryUsage = InventoryUsage::find($this->id);
 
         $rulesForm = ValidationRule::form();
-        $rulesForm['date'] = 'required|date|after_or_equal:'.$inventoryUsage->form->date;
+        $rulesForm['date'] = 'required|date|after_or_equal:'.optional($inventoryUsage->form)->date;
 
         $rulesUpdate = [
             'warehouse_id' => 'required',

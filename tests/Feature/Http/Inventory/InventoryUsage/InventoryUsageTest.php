@@ -205,8 +205,9 @@ class InventoryUsageTest extends TestCase
         $this->success_create_inventory_usage();
 
         $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
-        
+
         $data = $this->getDummyData($inventoryUsage, $itemUnit = 'box');
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
 
         $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
         $response->assertStatus(422)
@@ -216,26 +217,26 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    // public function success_update_inventory_usage()
-    // {
-    //     $this->success_create_inventory_usage();
+    public function success_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
 
-    //     $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
         
-    //     $data = $this->getDummyData($inventoryUsage);
-    //     $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = $this->getDummyData($inventoryUsage);
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
 
-    //     $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-    //     $response->assertStatus(201);
-    //     $this->assertDatabaseHas('forms', [ 'edited_number' => $response->json('data.form.number') ], 'tenant');
-    //     $this->assertDatabaseHas('user_activities', [
-    //         'number' => $response->json('data.form.number'),
-    //         'table_id' => $response->json('data.id'),
-    //         'table_type' => 'InventoryUsage',
-    //         'activity' => 'Update - 1'
-    //     ], 'tenant');
-    // }
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('forms', [ 'edited_number' => $response->json('data.form.number') ], 'tenant');
+        $this->assertDatabaseHas('user_activities', [
+            'number' => $response->json('data.form.number'),
+            'table_id' => $response->json('data.id'),
+            'table_type' => 'InventoryUsage',
+            'activity' => 'Update - 1'
+        ], 'tenant');
+    }
     /** @test */
     // public function unauthorized_delete_delivery_order()
     // {

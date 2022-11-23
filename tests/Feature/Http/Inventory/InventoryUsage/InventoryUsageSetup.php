@@ -156,7 +156,7 @@ trait InventoryUsageSetup {
       $chartOfAccount = $inventoryUsageItem->account;
       $item = $inventoryUsageItem->item;
 
-      if ($itemUnit !== 'pcs') {
+      if ($itemUnit === 'pcs') {
         $unit = ItemUnit::where('label', $inventoryUsageItem->unit)->first();
       }
       

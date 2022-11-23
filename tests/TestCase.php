@@ -4,6 +4,7 @@ namespace Tests;
 
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\Accounting\ChartOfAccountType;
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\Master\Branch;
 use App\Model\Package;
 use App\Model\Project\Project;
@@ -40,6 +41,8 @@ abstract class TestCase extends BaseTestCase
     protected $user;
 
     protected $account = null;
+    protected $employee = null;
+    protected $role = null;
 
     /**
      *  Set up the test.
@@ -143,6 +146,15 @@ abstract class TestCase extends BaseTestCase
         $this->account = $chartOfAccount;
     }
 
+    protected function createSampleEmployee()
+    {
+        $employee = new Employee;
+        $employee->name = 'John Doe';
+        $employee->personal_identity = 'PASSPORT 940001930211FA';
+        $employee->save();
+        $this->employee = $employee;
+    }
+
     protected function setRole()
     {
         $role = \App\Model\Auth\Role::createIfNotExists('super admin');
@@ -151,6 +163,7 @@ abstract class TestCase extends BaseTestCase
         $hasRole->model_type = 'App\Model\Master\User';
         $hasRole->model_id = $this->user->id;
         $hasRole->save();
+        $this->role = $role;
     }
 
     protected function setPermission()

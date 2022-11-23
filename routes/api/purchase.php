@@ -10,6 +10,11 @@ Route::prefix('purchase')->namespace('Purchase')->group(function () {
     Route::post('requests/{id}/reject', 'PurchaseRequest\\PurchaseRequestApprovalController@reject');
     Route::post('requests/{id}/cancellation-approve', 'PurchaseRequest\\PurchaseRequestCancellationApprovalController@approve');
     Route::post('requests/{id}/cancellation-reject', 'PurchaseRequest\\PurchaseRequestCancellationApprovalController@reject');
+    Route::post('requests/{id}/close', 'PurchaseRequest\\PurchaseRequestCloseController@close');
+    Route::post('requests/{id}/close-approve', 'PurchaseRequest\\PurchaseRequestCloseController@approve');
+    Route::post('requests/{id}/close-reject', 'PurchaseRequest\\PurchaseRequestCloseController@reject');
+    Route::post('requests/send-bulk-request-approval', 'PurchaseRequest\\PurchaseRequestController@sendBulkRequestApproval');
+    Route::post('requests/approval-with-token/bulk', 'PurchaseRequest\\PurchaseRequestApprovalController@bulkApprovalWithToken');
     Route::apiResource('requests', 'PurchaseRequest\\PurchaseRequestController');
     Route::post('orders/{id}/approve', 'PurchaseOrder\\PurchaseOrderApprovalController@approve');
     Route::post('orders/{id}/reject', 'PurchaseOrder\\PurchaseOrderApprovalController@reject');

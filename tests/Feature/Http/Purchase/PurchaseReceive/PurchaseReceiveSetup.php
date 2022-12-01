@@ -180,7 +180,8 @@ trait PurchaseReceiveSetup
             'purchase_order_id' => $purchase->id,
             'driver' => '',
             'license_plate' => '',
-        
+            'date' => now(),
+            'increment_group' => 1,
             'items' => [
                 [
                     'purchase_order_item_id' => $purchaseItem->id,
@@ -189,7 +190,7 @@ trait PurchaseReceiveSetup
                     'more' => false,
                     'unit' => $this->unit->label,
                     'converter' => $purchaseItem->converter,
-                    'quantity' => $quantityDelivered,
+                    'quantity' => 10,
                     'quantity_remaining' => $quantityRemaining,
                     'require_expiry_date' => 0,
                     'require_production_number' => 0,
@@ -204,7 +205,7 @@ trait PurchaseReceiveSetup
                     'warehouse_name' => $this->warehouseSelected->name,
                     'dna' => [
                         [
-                            'quantity' => $quantityDelivered,
+                            'quantity' => 10,
                             'production_number' => 'prod1',
                             'expiry_date' => '2022-05-13 10:38:42',
                             'stock' => $quantityRemaining,

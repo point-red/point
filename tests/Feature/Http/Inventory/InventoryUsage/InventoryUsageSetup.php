@@ -114,17 +114,38 @@ trait InventoryUsageSetup {
     $options['quantity_reference'] = $item->quantity;
     $options['unit_reference'] = $unit->label;
     $options['converter_reference'] = $unit->converter;
-
-    if ($item->require_expiry_date) {
-        $options['expiry_date'] = $item->expiry_date;
-    }
-    if ($item->require_production_number) {
-        $options['production_number'] = $item->production_number;
-    }
+    $options['expiry_date'] = null;
+    $options['production_number'] = null;
 
     InventoryHelper::increase($form, $this->warehouseSelected, $item, 500, $unit->label, 1, $options);
 
     return $item;
+  }
+
+  private function createItemDnaWithStocks($unit)
+  {
+    $item = factory(Item::class)->create([
+      "require_expiry_date" => true,
+      "require_production_number" => true
+    ]);
+    $item->units()->save($unit);
+
+    $form = new Form;
+    $form->date = now()->toDateTimeString();
+    $form->created_by = $this->tenantUser->id;
+    $form->updated_by = $this->tenantUser->id;
+    $form->save();
+
+    $options = [];
+    $options['quantity_reference'] = $item->quantity;
+    $options['unit_reference'] = $unit->label;
+    $options['converter_reference'] = $unit->converter;
+    $options['expiry_date'] = date('Y-m-31 23:59:59');
+    $options['production_number'] = 'TEST001';
+
+    InventoryHelper::increase($form, $this->warehouseSelected, $item, 500, $unit->label, 1, $options);
+
+    return [$item, $options];
   }
 
   private function changeUserDefaultBranch($newBranch = null)
@@ -158,7 +179,7 @@ trait InventoryUsageSetup {
       $this->actingAs($user, 'api');
   }
   
-  private function getDummyData($inventoryUsage = null, $itemUnit = 'pcs')
+  private function getDummyData($inventoryUsage = null, $itemUnit = 'pcs', $isItemDna = false)
   {
     $warehouse = $this->warehouseSelected;
     $unit = new ItemUnit([
@@ -192,27 +213,25 @@ trait InventoryUsageSetup {
         return $query->whereIn('alias', ['BEBAN OPERASIONAL', 'BEBAN NON OPERASIONAL']);
       })->first();
   
-      $item = $this->createItemWithStocks($unit);
+      if ($isItemDna) {
+        $createdItemDna = $this->createItemDnaWithStocks($unit);
+        $item = $createdItemDna[0];
+        $itemDna = [
+          "quantity" => $quantity,
+          "expiry_date" => convert_to_server_timezone($createdItemDna[1]["expiry_date"], 'UTC', 'asia/jakarta'),
+          "production_number" => $createdItemDna[1]["production_number"],
+        ];
+
+      } else {
+        $item = $this->createItemWithStocks($unit);
+      }
   
       $role = Role::createIfNotExists('super admin');
       $approver = factory(TenantUser::class)->create();
       $approver->assignRole($role);
     }
 
-
-    return [
-      "increment_group" => date("Ym"),
-      "date" => date("Y-m-d H:i:s"),
-      "warehouse_id" => $warehouse->id,
-      "warehouse_name" => $warehouse->name,
-      "employee_id" => $employee->id,
-      "employee_name" => $employee->name,
-      "request_approval_to" => $approver->id,
-      "approver_name" => $approver->name,
-      "approver_email" => $approver->email,
-      "notes" => null,
-      "items" => [
-        [
+    $usageItem = [
           "item_id" => $item->id,
           "item_name" => $item->name,
           "item_label" => "[{$item->code}] - {$item->name}",
@@ -227,8 +246,23 @@ trait InventoryUsageSetup {
           "allocation_name" => $allocation->name,
           "notes" => null,
           "more" => false,
-        ]
-      ]
+    ];
+    if ($isItemDna) {
+      $usageItem['dna'] = [$itemDna];
+    }
+    
+    return [
+      "increment_group" => date("Ym"),
+      "date" => date("Y-m-d H:i:s"),
+      "warehouse_id" => $warehouse->id,
+      "warehouse_name" => $warehouse->name,
+      "employee_id" => $employee->id,
+      "employee_name" => $employee->name,
+      "request_approval_to" => $approver->id,
+      "approver_name" => $approver->name,
+      "approver_email" => $approver->email,
+      "notes" => null,
+      "items" => [$usageItem]
     ];
   }
 }

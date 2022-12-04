@@ -112,6 +112,21 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
+    public function invalid_dna_create_inventory_usage()
+    {
+        $this->setRole();
+
+        $data = $this->getDummyData(null, $itemUnit = 'pcs', $isItemDna = true);
+
+        $response = $this->json('POST', self::$path, $data, $this->headers);
+        
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "there are some item not in 'pcs' unit"
+            ]);
+    }
+    /** @test */
     public function success_create_inventory_usage()
     {
         $this->setRole();
@@ -284,18 +299,58 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
+    public function unauthorized_branch_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $this->setRole('inventory');
+        $this->setPermission('update inventory usage');
+
+        $this->branchDefault = null;
+        foreach ($this->tenantUser->branches as $branch) {
+            $branch->pivot->is_default = false;
+            $branch->pivot->save();
+        }
+        
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        $data = $this->getDummyData($inventoryUsage);
+
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "please set default branch to update this form"
+            ]);
+    }
+    /** @test */
+    public function unauthorized_warehouse_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $this->setRole('inventory');
+        $this->setPermission('update inventory usage');
+
+        // make warehouse request difference with use default warehouse 
+        $this->warehouseSelected = $this->createWarehouse($this->branchDefault);
+        
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        $data = $this->getDummyData($inventoryUsage);
+
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "Warehouse Test warehouse not set as default"
+            ]);
+    }
+    /** @test */
     public function unauthorized_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
         $this->unsetUserRole();
-
-        // $this->setRole('inventory');
-        // $this->setPermission('create inventory usage');
-        
-        // $unauthorizedBranch = $this->createBranch();
-        // $this->changeUserDefaultBranch($unauthorizedBranch);
-        
 
         $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
         $data = $this->getDummyData($inventoryUsage);

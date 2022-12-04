@@ -4,11 +4,7 @@ namespace Tests\Feature\Http\Inventory\InventoryUsage;
 
 use Tests\TestCase;
 
-use App\Model\Form;
 use App\Model\Inventory\InventoryUsage\InventoryUsage;
-use App\Model\Sales\DeliveryOrder\DeliveryOrder;
-use App\Model\Sales\DeliveryNote\DeliveryNote;
-use App\Model\Sales\DeliveryNote\DeliveryNoteItem;
 
 class InventoryUsageTest extends TestCase
 {
@@ -16,6 +12,47 @@ class InventoryUsageTest extends TestCase
 
     public static $path = '/api/v1/inventory/usages';
 
+    /** @test */
+    public function unauthorized_branch_create_inventory_usage()
+    {
+        $this->setRole('inventory');
+        $this->setPermission('create inventory usage');
+
+        $this->branchDefault = null;
+        foreach ($this->tenantUser->branches as $branch) {
+            $branch->pivot->is_default = false;
+            $branch->pivot->save();
+        }
+        
+        $data = $this->getDummyData();
+        
+        $response = $this->json('POST', self::$path, $data, $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "please set default branch to create this form"
+            ]);
+    }
+    /** @test */
+    public function unauthorized_warehouse_create_inventory_usage()
+    {
+        $this->setRole('inventory');
+        $this->setPermission('create inventory usage');
+
+        // make warehouse request difference with use default warehouse 
+        $this->warehouseSelected = $this->createWarehouse($this->branchDefault);
+
+        $data = $this->getDummyData();
+        
+        $response = $this->json('POST', self::$path, $data, $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "Warehouse Test warehouse not set as default"
+            ]);
+    }
     /** @test */
     public function unauthorized_create_inventory_usage()
     {
@@ -54,7 +91,11 @@ class InventoryUsageTest extends TestCase
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "The given data was invalid.",
+            ]);
     }
     /** @test */
     public function invalid_unit_create_inventory_usage()
@@ -110,7 +151,7 @@ class InventoryUsageTest extends TestCase
     /** @test */
     public function read_all_inventory_usage()
     {
-        $this->setRole();
+        $this->success_create_inventory_usage();
 
         $data = [
             'join' => 'form,warehouse,items,item',
@@ -122,13 +163,42 @@ class InventoryUsageTest extends TestCase
             'filter_date_min' => '{"form.date":"' . date('Y-m-01') . ' 00:00:00"}',
             'filter_date_max' => '{"form.date":"' . date('Y-m-30') . ' 23:59:59"}',
             'limit' => 10,
-            'includes' => 'form',
+            'includes' => 'form;warehouse;items;items.item',
             'page' => 1
         ];
 
         $response = $this->json('GET', self::$path, $data, $this->headers);
-
-        $response->assertStatus(200);
+        
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                "data" => [
+                    [
+                        "id",
+                        "form" => [
+                            "approval_status",
+                            "date",
+                            "done",
+                            "notes",
+                            "number",
+                        ],
+                        "items" => [
+                            [
+                                "expiry_date",
+                                "id",
+                                "item" => [
+                                    "id",
+                                    "name"
+                                ],
+                                "item_id",
+                                "notes",
+                                "production_number",
+                                "quantity",
+                                "unit",
+                            ]
+                        ]
+                    ],
+                ]
+            ]);
     }
     /** @test */
     public function read_inventory_usage()
@@ -140,12 +210,78 @@ class InventoryUsageTest extends TestCase
         $data = [
             'with_archives' => 'true',
             'with_origin' => 'true',
-            'includes' => 'form'
+            'includes' => 'warehouse;items.account;items.item;items.allocation;form.createdBy;form.requestApprovalTo;form.requestCancellationTo;employee'
         ];
 
         $response = $this->json('GET', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                "data" => [
+                    "employee" => [
+                        "id",
+                        "name",
+                    ],
+                    "employee_id",
+                    "form" => [
+                        "approval_at",
+                        "approval_status",
+                        "created_by" => [
+                            "first_name",
+                            "full_name",
+                            "id",
+                            "last_name",
+                        ],
+                        "date",
+                        "done",
+                        "id",
+                        "notes",
+                        "number",
+                        "request_approval_at",
+                        "request_approval_to" => [
+                            "email",
+                            "first_name",
+                            "full_name",
+                            "id",
+                            "last_name",
+                        ],
+                    ],
+                    "id",
+                    "items" => [
+                        [
+                            "account" => [
+                                "id",
+                                "alias",
+                                "label",
+                                "number"
+                            ],
+                            "allocation" => [
+                                "id",
+                                "name",
+                            ],
+                            "allocation_id",
+                            "expiry_date",
+                            "id",
+                            "item" => [
+                                "code",
+                                "id",
+                                "label",
+                                "name"
+                            ],
+                            "item_id",
+                            "notes",
+                            "production_number",
+                            "quantity",
+                            "unit",
+                        ]
+                    ],
+                    "warehouse" => [
+                        "id",
+                        "name",
+                    ],
+                    "warehouse_id"
+                ],
+            ]);
     }
     /** @test */
     public function unauthorized_update_inventory_usage()
@@ -153,6 +289,13 @@ class InventoryUsageTest extends TestCase
         $this->success_create_inventory_usage();
 
         $this->unsetUserRole();
+
+        // $this->setRole('inventory');
+        // $this->setPermission('create inventory usage');
+        
+        // $unauthorizedBranch = $this->createBranch();
+        // $this->changeUserDefaultBranch($unauthorizedBranch);
+        
 
         $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
         $data = $this->getDummyData($inventoryUsage);
@@ -197,7 +340,11 @@ class InventoryUsageTest extends TestCase
 
         $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "The given data was invalid.",
+            ]);
     }
     /** @test */
     public function invalid_unit_update_inventory_usage()

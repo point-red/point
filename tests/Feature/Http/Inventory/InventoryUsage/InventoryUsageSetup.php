@@ -16,6 +16,7 @@ use App\Model\Form;
 use App\Model\SettingJournal;
 use App\Model\Accounting\ChartOfAccount;
 use App\Model\HumanResource\Employee\Employee;
+use App\Model\Master\Branch;
 use App\User;
 
 trait InventoryUsageSetup {
@@ -61,7 +62,16 @@ trait InventoryUsageSetup {
       ->delete();
   }
 
-  private function createWarehouse($branch = null)
+  protected function createBranch()
+  {
+      $branch = new Branch();
+      $branch->name = 'Test branch';
+      $branch->save();
+
+      return $branch;
+  }
+
+  protected function createWarehouse($branch = null)
   {
       $warehouse = new Warehouse();
       $warehouse->name = 'Test warehouse';
@@ -115,6 +125,17 @@ trait InventoryUsageSetup {
     InventoryHelper::increase($form, $this->warehouseSelected, $item, 500, $unit->label, 1, $options);
 
     return $item;
+  }
+
+  private function changeUserDefaultBranch($newBranch = null)
+  {
+      $this->tenantUser->branches()->syncWithoutDetaching($newBranch);
+      foreach ($this->tenantUser->branches as $branch) {
+        if ($newBranch->id === $branch->id) {
+          $branch->pivot->is_default = true;
+          $branch->pivot->save();
+        }
+      }
   }
 
   private function changeActingAs($tenantUser, $inventoryUsage)

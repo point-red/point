@@ -51,6 +51,7 @@ trait SalesReturnSetup {
     $this->createCustomerUnitItem();
     $this->setUserWarehouse($this->branchDefault);
     $this->setApprover();
+    $_SERVER['HTTP_REFERER'] = 'http://www.example.com/';
   }
 
   private function setUserWarehouse($branch = null)
@@ -130,9 +131,9 @@ trait SalesReturnSetup {
             $this->coa->save();
         }
 
-      $arCoaId = get_setting_journal('sales', 'account receivable');
+      $arCoaId = SettingJournal::where('feature', 'sales')->where('name', 'account receivable')->first();
       if ($arCoaId) {
-          $arCoa = ChartOfAccount::where('id', $arCoaId)->first();
+          $arCoa = ChartOfAccount::where('id', $arCoaId->chart_of_account_id)->first();
           $this->arCoa = $arCoa;
       } else {
           $type = new ChartOfAccountType;
@@ -159,9 +160,9 @@ trait SalesReturnSetup {
           $setting->save();
       }
 
-      $salesIncomeId = get_setting_journal('sales', 'sales income');
+      $salesIncomeId = SettingJournal::where('feature', 'sales')->where('name', 'sales income')->first();
       if ($salesIncomeId) {
-        $salesIncomeCoa = ChartOfAccount::where('id', $salesIncomeId)->first();
+        $salesIncomeCoa = ChartOfAccount::where('id', $salesIncomeId->chart_of_account_id)->first();
           $this->salesIncomeCoa = $salesIncomeCoa;
       } else {
           $type = new ChartOfAccountType;
@@ -188,9 +189,9 @@ trait SalesReturnSetup {
           $setting->save();
       }
 
-      $salesCostCoaId = get_setting_journal('sales', 'cost of sales');
+      $salesCostCoaId = SettingJournal::where('feature', 'sales')->where('name', 'cost of sales')->first();
       if ($salesCostCoaId) {
-          $salesCostCoa = ChartOfAccount::where('id', $salesCostCoaId)->first();
+          $salesCostCoa = ChartOfAccount::where('id', $salesCostCoaId->chart_of_account_id)->first();
           $this->salesCostCoa = $salesCostCoa;
       } else {
           $type = new ChartOfAccountType;
@@ -217,9 +218,9 @@ trait SalesReturnSetup {
           $setting->save();
       }
 
-      $taxCoaId = get_setting_journal('sales', 'income tax payable');
+      $taxCoaId = SettingJournal::where('feature', 'sales')->where('name', 'income tax payable')->first();
       if ($taxCoaId) {
-          $taxCoa = ChartOfAccount::where('id', $taxCoaId)->first();
+          $taxCoa = ChartOfAccount::where('id', $taxCoaId->chart_of_account_id)->first();
           $this->taxCoa = $taxCoa;
       } else {
           $type = new ChartOfAccountType;

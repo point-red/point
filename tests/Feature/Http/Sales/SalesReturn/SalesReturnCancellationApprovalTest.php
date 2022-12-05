@@ -21,7 +21,18 @@ class SalesReturnCancellationApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
-        $response->assertStatus(201);
+        $response->assertStatus(201)
+            ->assertJson([
+                "data" => [
+                    "id" => $response->json('data.id'),
+                    "form" => [
+                        "id" => $response->json('data.form.id'),
+                        "date" => $response->json('data.form.date'),
+                        "number" => $response->json('data.form.number'),
+                        "notes" => $response->json('data.form.notes'),
+                    ]
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
@@ -75,7 +86,11 @@ class SalesReturnCancellationApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/cancellation-approve', [], $this->headers);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "form not in cancellation pending state"
+            ]);
     }
 
     /** @test */
@@ -87,7 +102,19 @@ class SalesReturnCancellationApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/cancellation-approve', [], $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => $salesReturn->id,
+                    "form" => [
+                        "id" => $salesReturn->form->id,
+                        "date" => $salesReturn->form->date,
+                        "number" => $salesReturn->form->number,
+                        "notes" => $salesReturn->form->notes,
+                        "cancellation_status" => 1,
+                    ]
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'number' => $salesReturn->form->number,
             'cancellation_status' => 1,
@@ -127,7 +154,11 @@ class SalesReturnCancellationApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/cancellation-reject', [], $this->headers);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "The given data was invalid."
+            ]);
     }
 
     /** @test */
@@ -141,7 +172,11 @@ class SalesReturnCancellationApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/cancellation-reject', $data, $this->headers);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "form not in cancellation pending state"
+            ]);
     }
 
     /** @test */
@@ -154,7 +189,19 @@ class SalesReturnCancellationApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/cancellation-reject', $data, $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => $salesReturn->id,
+                    "form" => [
+                        "id" => $salesReturn->form->id,
+                        "date" => $salesReturn->form->date,
+                        "number" => $salesReturn->form->number,
+                        "notes" => $salesReturn->form->notes,
+                        "cancellation_status" => -1,
+                    ]
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'number' => $salesReturn->form->number,
             'cancellation_status' => -1,

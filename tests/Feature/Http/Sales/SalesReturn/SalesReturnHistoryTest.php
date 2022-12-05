@@ -22,7 +22,18 @@ class SalesReturnHistoryTest extends TestCase
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
-        $response->assertStatus(201);
+        $response->assertStatus(201)
+            ->assertJson([
+                "data" => [
+                    "id" => $response->json('data.id'),
+                    "form" => [
+                        "id" => $response->json('data.form.id'),
+                        "date" => $response->json('data.form.date'),
+                        "number" => $response->json('data.form.number'),
+                        "notes" => $response->json('data.form.notes'),
+                    ]
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
@@ -42,7 +53,18 @@ class SalesReturnHistoryTest extends TestCase
 
         $response = $this->json('PATCH', self::$path . '/' . $salesReturn->id, $data, $this->headers);
 
-        $response->assertStatus(201);
+        $response->assertStatus(201)
+            ->assertJson([
+                "data" => [
+                    "id" => $response->json('data.id'),
+                    "form" => [
+                        "id" => $response->json('data.form.id'),
+                        "date" => $response->json('data.form.date'),
+                        "number" => $response->json('data.form.number'),
+                        "notes" => $response->json('data.form.notes'),
+                    ]
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [ 'edited_number' => $response->json('data.form.number') ], 'tenant');
         $this->assertDatabaseHas('user_activities', [
             'number' => $response->json('data.form.number'),
@@ -71,6 +93,7 @@ class SalesReturnHistoryTest extends TestCase
         $response = $this->json('GET', self::$path . '/' . $salesReturnUpdated->id . '/histories', $data, $this->headers);
 
         $response->assertStatus(200);
+        $this->assertGreaterThan(0, count($response->json('data')));
         $this->assertDatabaseHas('user_activities', [
             'number' => $salesReturn->form->edited_number,
             'table_id' => $salesReturn->id,
@@ -97,7 +120,16 @@ class SalesReturnHistoryTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/histories', $data, $this->headers);
 
-        $response->assertStatus(201);
+        $response->assertStatus(201)
+            ->assertJson([
+                "data" => [
+                    "table_type" => 'SalesReturn',
+                    "table_id" => $salesReturn->id,
+                    "number" => $salesReturn->form->number,
+                    "activity" => 'Printed',
+                ]
+            ]);
+        
         $this->assertDatabaseHas('user_activities', [
             'number' => $response->json('data.number'),
             'table_id' => $response->json('data.table_id'),

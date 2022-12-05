@@ -55,7 +55,18 @@ class SalesReturnApprovalByEmailTest extends TestCase
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
-        $response->assertStatus(201);
+        $response->assertStatus(201)
+            ->assertJson([
+                "data" => [
+                    "id" => $response->json('data.id'),
+                    "form" => [
+                        "id" => $response->json('data.form.id'),
+                        "date" => $response->json('data.form.date'),
+                        "number" => $response->json('data.form.number'),
+                        "notes" => $response->json('data.form.notes'),
+                    ]
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
@@ -90,7 +101,18 @@ class SalesReturnApprovalByEmailTest extends TestCase
         $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
 
         $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/approve', [], $this->headers);
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => $salesReturn->id,
+                    "form" => [
+                        "id" => $salesReturn->form->id,
+                        "date" => $salesReturn->form->date,
+                        "number" => $salesReturn->form->number,
+                        "notes" => $salesReturn->form->notes,
+                    ]
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
@@ -144,8 +166,21 @@ class SalesReturnApprovalByEmailTest extends TestCase
         ];
 
         $response = $this->json('POST', self::$path . '/approve', $data, $this->headers);
-        
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    [
+                        "id" => $salesReturn->id,
+                        "form" => [
+                            "id" => $salesReturn->form->id,
+                            "date" => $salesReturn->form->date,
+                            "number" => $salesReturn->form->number,
+                            "notes" => $salesReturn->form->notes,
+                            "approval_status" => 1,
+                        ]
+                    ]                    
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'id' => $salesReturn->form->id,
             'number' => $salesReturn->form->number,
@@ -189,7 +224,21 @@ class SalesReturnApprovalByEmailTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/approve', $data, $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    [
+                        "id" => $salesReturn->id,
+                        "form" => [
+                            "id" => $salesReturn->form->id,
+                            "date" => $salesReturn->form->date,
+                            "number" => $salesReturn->form->number,
+                            "notes" => $salesReturn->form->notes,
+                            "cancellation_status" => 1,
+                        ]
+                    ]                    
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'number' => $salesReturn->form->number,
             'cancellation_status' => 1,
@@ -243,7 +292,21 @@ class SalesReturnApprovalByEmailTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/reject', $data, $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    [
+                        "id" => $salesReturn->id,
+                        "form" => [
+                            "id" => $salesReturn->form->id,
+                            "date" => $salesReturn->form->date,
+                            "number" => $salesReturn->form->number,
+                            "notes" => $salesReturn->form->notes,
+                            "approval_status" => -1,
+                        ]
+                    ]                    
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'id' => $salesReturn->form->id,
             'number' => $salesReturn->form->number,
@@ -283,7 +346,21 @@ class SalesReturnApprovalByEmailTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/reject', $data, $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    [
+                        "id" => $salesReturn->id,
+                        "form" => [
+                            "id" => $salesReturn->form->id,
+                            "date" => $salesReturn->form->date,
+                            "number" => $salesReturn->form->number,
+                            "notes" => $salesReturn->form->notes,
+                            "cancellation_status" => -1,
+                        ]
+                    ]                    
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'number' => $salesReturn->form->number,
             'cancellation_status' => -1,

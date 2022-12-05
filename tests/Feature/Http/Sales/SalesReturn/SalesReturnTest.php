@@ -54,7 +54,11 @@ class SalesReturnTest extends TestCase
 
       $response = $this->json('POST', self::$path, $data, $this->headers);
 
-      $response->assertStatus(422);
+      $response->assertStatus(422)
+        ->assertJson([
+            "code" => 422,
+            "message" => "The given data was invalid."
+        ]);
   }
   
   /** @test */
@@ -66,7 +70,19 @@ class SalesReturnTest extends TestCase
 
     $response = $this->json('POST', self::$path, $data, $this->headers);
 
-    $response->assertStatus(201);
+    $response->assertStatus(201)
+        ->assertJson([
+            "data" => [
+                "id" => $response->json('data.id'),
+                "form" => [
+                    "id" => $response->json('data.form.id'),
+                    "date" => $response->json('data.form.date'),
+                    "number" => $response->json('data.form.number'),
+                    "notes" => $response->json('data.form.notes'),
+                ]
+            ]
+        ]);
+
     $this->assertDatabaseHas('forms', [
         'id' => $response->json('data.form.id'),
         'number' => $response->json('data.form.number'),
@@ -84,7 +100,19 @@ class SalesReturnTest extends TestCase
 
       $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/approve', [], $this->headers);
 
-      $response->assertStatus(200);
+      $response->assertStatus(200)
+        ->assertJson([
+            "data" => [
+                "id" => $salesReturn->id,
+                "form" => [
+                    "id" => $salesReturn->form->id,
+                    "date" => $salesReturn->form->date,
+                    "number" => $salesReturn->form->number,
+                    "notes" => $salesReturn->form->notes,
+                ]
+            ]
+        ]);
+
       $this->assertDatabaseHas('forms', [
           'id' => $response->json('data.form.id'),
           'number' => $response->json('data.form.number'),
@@ -137,7 +165,18 @@ class SalesReturnTest extends TestCase
 
       $response = $this->json('GET', self::$path . '/' . $salesReturn->id, $data, $this->headers);
 
-      $response->assertStatus(200);
+      $response->assertStatus(200)
+        ->assertJson([
+            "data" => [
+                "id" => $salesReturn->id,
+                "form" => [
+                    "id" => $salesReturn->form->id,
+                    "date" => $salesReturn->form->date,
+                    "number" => $salesReturn->form->number,
+                    "notes" => $salesReturn->form->notes,
+                ]
+            ]
+        ]);
   }
 
   /** @test */
@@ -211,7 +250,11 @@ class SalesReturnTest extends TestCase
 
       $response = $this->json('PATCH', self::$path . '/' . $salesReturn->id, $data, $this->headers);
 
-      $response->assertStatus(422);
+      $response->assertStatus(422)
+          ->assertJson([
+              "code" => 422,
+              "message" => "The given data was invalid."
+          ]);
   }
 
   /** @test */
@@ -226,7 +269,19 @@ class SalesReturnTest extends TestCase
 
       $response = $this->json('PATCH', self::$path . '/' . $salesReturn->id, $data, $this->headers);
 
-      $response->assertStatus(201);
+      $response->assertStatus(201)
+        ->assertJson([
+            "data" => [
+                "id" => $response->json('data.id'),
+                "form" => [
+                    "id" => $response->json('data.form.id'),
+                    "date" => $response->json('data.form.date'),
+                    "number" => $response->json('data.form.number'),
+                    "notes" => $response->json('data.form.notes'),
+                ]
+            ]
+        ]);
+
       $this->assertDatabaseHas('forms', [ 'edited_number' => $response->json('data.form.number') ], 'tenant');
       $this->assertDatabaseHas('user_activities', [
           'number' => $response->json('data.form.number'),
@@ -282,6 +337,7 @@ class SalesReturnTest extends TestCase
       $response = $this->json('DELETE', self::$path . '/' . $salesReturn->id, $data, $this->headers);
 
       $response->assertStatus(204);
+      
       $this->assertDatabaseHas('forms', [
           'number' => $salesReturn->form->number,
           'request_cancellation_reason' => $data['reason'],

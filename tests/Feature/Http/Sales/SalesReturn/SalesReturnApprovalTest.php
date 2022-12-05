@@ -27,7 +27,18 @@ class SalesReturnApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
-        $response->assertStatus(201);
+        $response->assertStatus(201)
+            ->assertJson([
+                "data" => [
+                    "id" => $response->json('data.id'),
+                    "form" => [
+                        "id" => $response->json('data.form.id'),
+                        "date" => $response->json('data.form.date'),
+                        "number" => $response->json('data.form.number'),
+                        "notes" => $response->json('data.form.notes'),
+                    ]
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
@@ -62,7 +73,19 @@ class SalesReturnApprovalTest extends TestCase
         $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
 
         $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/approve', [], $this->headers);
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => $salesReturn->id,
+                    "form" => [
+                        "id" => $salesReturn->form->id,
+                        "date" => $salesReturn->form->date,
+                        "number" => $salesReturn->form->number,
+                        "notes" => $salesReturn->form->notes,
+                        "approval_status" => 1,
+                    ]
+                ]
+            ]);
         $subTotal = $response->json('data.amount') - $response->json('data.tax');
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
@@ -124,7 +147,11 @@ class SalesReturnApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/reject', [], $this->headers);
 
-        $response->assertStatus(422);
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "The given data was invalid."
+            ]);
     }
 
     /** @test */
@@ -137,7 +164,19 @@ class SalesReturnApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/reject', $data, $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => $salesReturn->id,
+                    "form" => [
+                        "id" => $salesReturn->form->id,
+                        "date" => $salesReturn->form->date,
+                        "number" => $salesReturn->form->number,
+                        "notes" => $salesReturn->form->notes,
+                        "approval_status" => -1,
+                    ]
+                ]
+            ]);
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
@@ -174,6 +213,7 @@ class SalesReturnApprovalTest extends TestCase
         $response = $this->json('GET', self::$path . '/approval', $data, $this->headers);
         
         $response->assertStatus(200);
+        $this->assertGreaterThan(0, count($response->json('data')));
     }
 
     /** @test */
@@ -186,7 +226,15 @@ class SalesReturnApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/approval/send', $data, $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                "input" => [
+                    "ids" => [
+                        [ "id" => $salesReturn->id ]
+                    ]
+                ]
+            ]);
+        
     }
 
     /** @test */
@@ -207,6 +255,11 @@ class SalesReturnApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/approval/send', $data, $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJson([
+                "input" => [
+                    "ids" => $data['ids']
+                ]
+            ]);
     }
 }

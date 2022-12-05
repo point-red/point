@@ -150,13 +150,11 @@ class InventoryUsage extends TransactionModel
         self::checkIsJournalBalance($usage);
     }
 
-    private static function checkIsItemQuantityOver($item, $itemModel, $inventoryUsage)
+    private static function checkIsItemQuantityOver($item, $itemModel, $inventoryUsage, $options = [
+        'expiry_date' => null,
+        'production_number' => null,
+    ])
     {
-        $options = [
-            'expiry_date' => 0,
-            'production_number' => 0,
-        ];
-
         $stock = InventoryHelper::getCurrentStock($itemModel, $inventoryUsage->created_at, $inventoryUsage->warehouse, $options);
         if (abs($item['quantity']) > $stock) {
             throw new StockNotEnoughException($itemModel);
@@ -173,12 +171,16 @@ class InventoryUsage extends TransactionModel
 
             $itemModel = Item::find($item['item_id']);
             
-            self::checkIsItemQuantityOver($item, $itemModel, $inventoryUsage);
-
             if ($itemModel->require_production_number || $itemModel->require_expiry_date) {
                 if ($item['dna']) {
                     foreach ($item['dna'] as $dna) {
                         if ($dna['quantity'] > 0) {
+                            $options  = [
+                                'expiry_date' => $dna['expiry_date'],
+                                'production_number' => $dna['production_number'],
+                            ];
+                            self::checkIsItemQuantityOver($item, $itemModel, $inventoryUsage, $options);
+
                             $dnaItem = $item;
                             $dnaItem['quantity'] = $dna['quantity'];
                             $dnaItem['production_number'] = $dna['production_number'];
@@ -188,6 +190,8 @@ class InventoryUsage extends TransactionModel
                     }
                 }
             } else {
+                self::checkIsItemQuantityOver($item, $itemModel, $inventoryUsage);
+                
                 array_push($array, $item);
             }
         }

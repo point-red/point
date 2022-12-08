@@ -30,7 +30,7 @@ class PurchaseRequestCloseTest extends TestCase
     }
 
     /** @test */
-    public function invalid_state_close_purchase_request()
+    public function invalid_data_close_purchase_request()
     {
         //create purchase request and save to $this->purchase
         $this->success_create_purchase_request();
@@ -39,7 +39,10 @@ class PurchaseRequestCloseTest extends TestCase
             "id" => $this->purchase->id,
         ];
         $response = $this->json('POST', self::$path.'/'.$this->purchase->id.'/close', $data, $this->headers);
-        $response->assertStatus(500);
+        $response->assertStatus(422)->assertJson([
+            "code" => 422,
+            "message" => "The given data was invalid."
+        ]);
     }
 
     /** @test */
@@ -57,7 +60,7 @@ class PurchaseRequestCloseTest extends TestCase
         $response->assertStatus(422)
             ->assertJson([
                 "code" => 422,
-                "message" => "form not approved and not in pending state"
+                "message" => "Form not approved or not in pending state"
             ]);
     }
 
@@ -72,57 +75,65 @@ class PurchaseRequestCloseTest extends TestCase
         ];
         $response = $this->json('POST', self::$path.'/'.$this->purchase->id.'/close', $data, $this->headers);
         $response->assertStatus(204);
+
+        $this->assertDatabaseHas('forms', [
+            'number' => $this->purchase->form->number,
+            'close_status' => true
+        ], 'tenant');
     }
 
-    /** @test */
-    public function invalid_state_close_approve_purchase_request()
-    {
-        //create purchase request and save to $this->purchase
-        $this->success_create_purchase_request();
+    // /** @test */
+    // public function invalid_state_close_approve_purchase_request()
+    // {
+    //     //create purchase request and save to $this->purchase
+    //     $this->success_create_purchase_request();
 
-        $response = $this->json('POST', self::$path . '/' . $this->purchase->id . '/close-approve', [], $this->headers);
-        $response->assertStatus(422);
-    }
+    //     $response = $this->json('POST', self::$path . '/' . $this->purchase->id . '/close-approve', [], $this->headers);
+    //     $response->assertStatus(422)->assertJson([
+    //         "code" => 422,
+    //         "message" => "Form not approved or not in pending state"
+    //     ]);
+    // }
 
-    /** @test */
-    public function success_close_approve_purchase_request()
-    {
-        $this->success_close_purchase_request();
+    // /** @test */
+    // public function success_close_approve_purchase_request()
+    // {
+    //     $this->success_close_purchase_request();
 
-        $response = $this->json('POST', self::$path . '/' . $this->purchase->id . '/close-approve', [], $this->headers);
-        $response->assertStatus(200);
-    }
+    //     $response = $this->json('POST', self::$path . '/' . $this->purchase->id . '/close-approve', [], $this->headers);
+    //     $response->assertStatus(200);
+    // }
 
-    /** @test */
-    public function invalid_close_reject_purchase_request()
-    {
-        $this->success_close_purchase_request();
+    // /** @test */
+    // public function invalid_close_reject_purchase_request()
+    // {
+    //     $this->success_close_purchase_request();
 
-        $response = $this->json('POST', self::$path . '/' . $this->purchase->id . '/close-reject', [], $this->headers);
-        $response->assertStatus(422);
-    }
+    //     $response = $this->json('POST', self::$path . '/' . $this->purchase->id . '/close-reject', [], $this->headers);
+    //     $response->assertStatus(422);
+    // }
 
-    /** @test */
-    public function invalid_state_close_reject_purchase_request()
-    {
-        //create purchase request and save to $this->purchase
-        $this->success_create_purchase_request();
+    // /** @test */
+    // public function invalid_state_close_reject_purchase_request()
+    // {
+    //     //create purchase request and save to $this->purchase
+    //     $this->success_create_purchase_request();
 
-        $data["reason"] = "reject";
-        $response = $this->json('POST', self::$path . '/' . $this->purchase->id . '/close-approve', $data, $this->headers);
-        $response->assertStatus(422);
-    }
+    //     $data["reason"] = "reject";
+    //     $response = $this->json('POST', self::$path . '/' . $this->purchase->id . '/close-approve', $data, $this->headers);
+    //     $response->assertStatus(422);
+    // }
 
-    /** @test */
-    public function success_reject_purchase_request()
-    {
-        $this->success_close_purchase_request();
+    // /** @test */
+    // public function success_reject_purchase_request()
+    // {
+    //     $this->success_close_purchase_request();
 
-        $data['reason'] = $this->faker->text(200);
-        $response = $this->json('POST', self::$path . '/' . $this->purchase->id . '/close-reject', $data, $this->headers);
+    //     $data['reason'] = $this->faker->text(200);
+    //     $response = $this->json('POST', self::$path . '/' . $this->purchase->id . '/close-reject', $data, $this->headers);
 
-        $response->assertStatus(200);
-    }
+    //     $response->assertStatus(200);
+    // }
 
     /** @test */
     public function success_autoclose_purchase_request()

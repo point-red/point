@@ -25,7 +25,12 @@ class PurchaseRequestApprovalTest extends TestCase
         $this->success_create_purchase_request();
         $this->unsetUserRole();
 
-        $response = $this->json('POST', self::$path . '/' . $this->purchase->id . '/reject', [], $this->headers);
+        $data = [
+            'id' => $this->purchase->id,
+            'reason' => 'reason'
+        ];
+
+        $response = $this->json('POST', self::$path.'/'.$this->purchase->id.'/reject', $data, $this->headers);
 
         $response->assertStatus(422)
             ->assertJson([
@@ -35,13 +40,31 @@ class PurchaseRequestApprovalTest extends TestCase
     }
 
     /** @test */
-    public function reject_purchase_request()
+    public function failed_reject_purchase_request()
+    {
+        //create purchase request and save to $this->purchase
+        $this->success_create_purchase_request();
+
+        $data = [
+            'id' => $this->purchase->id,
+        ];
+
+        $response = $this->json('POST', self::$path.'/'.$this->purchase->id.'/reject', $data, $this->headers);
+        $response->assertStatus(422)->assertJson([
+            "code" => 422,
+            "message" => "The given data was invalid."
+        ]);
+    }
+
+    /** @test */
+    public function success_reject_purchase_request()
     {
         //create purchase request and save to $this->purchase
         $this->success_create_purchase_request();
         /* s: reject test */
         $data = [
             'id' => $this->purchase->id,
+            'reason' => 'reason'
         ];
 
         $response = $this->json('POST', self::$path.'/'.$this->purchase->id.'/reject', $data, $this->headers);
@@ -65,7 +88,7 @@ class PurchaseRequestApprovalTest extends TestCase
     }
 
     /** @test */
-    public function approve_purchase_request()
+    public function success_approve_purchase_request()
     {
         //create purchase request and save to $this->purchase
         $this->success_create_purchase_request();
@@ -119,17 +142,20 @@ class PurchaseRequestApprovalTest extends TestCase
         ];
 
         $response = $this->json('POST', self::$path.'/approval-with-token/bulk', $data, $this->headers);
-        $response->assertStatus(422);
+        $response->assertStatus(422)->assertJson([
+            "code" => 422,
+            "message" => "Not Authorized"
+        ]);
         /* e: bulk approval email fail test */
     }
 
     /** @test */
-    public function success_approval_by_email_purchase_request()
+    public function success_reject_by_email_purchase_request()
     {
         $this->success_request_approval_by_email_purchase_request();
 
         /* s: bulk approval email test */
-        $token = Token::take(1)->first();
+        $token = Token::where('user_id', $this->user->id)->first();
         $data = [
             'token' => $token->token, 
             'bulk_id' => array($this->purchase->id), 
@@ -141,4 +167,21 @@ class PurchaseRequestApprovalTest extends TestCase
         /* e: bulk approval email test */
     }
 
+    /** @test */
+    public function success_approve_by_email_purchase_request()
+    {
+        $this->success_request_approval_by_email_purchase_request();
+
+        /* s: bulk approval email test */
+        $token = Token::where('user_id', $this->user->id)->first();
+        $data = [
+            'token' => $token->token, 
+            'bulk_id' => array($this->purchase->id), 
+            'status' => 1
+        ];
+
+        $response = $this->json('POST', self::$path.'/approval-with-token/bulk', $data, $this->headers);
+        $response->assertStatus(200);
+        /* e: bulk approval email test */
+    }
 }

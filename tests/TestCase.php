@@ -39,6 +39,7 @@ abstract class TestCase extends BaseTestCase
      * @var null|User
      */
     protected $user;
+    protected $userPassword;
 
     protected $account = null;
     protected $employee = null;
@@ -76,7 +77,10 @@ abstract class TestCase extends BaseTestCase
 
     protected function signIn()
     {
-        $this->user = factory(User::class)->create();
+        $this->userPassword = 'password';
+        $this->user = factory(User::class)->create([
+            'password' => bcrypt($this->userPassword),
+        ]);
 
         $this->actingAs($this->user, 'api');
 

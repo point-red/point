@@ -184,4 +184,26 @@ class PurchaseRequestApprovalTest extends TestCase
         $response->assertStatus(200);
         /* e: bulk approval email test */
     }
+
+    /** @test */
+    public function failed_approve_by_email_purchase_request_not_default_branch()
+    {
+        $this->success_request_approval_by_email_purchase_request();
+        $this->setDefaultBranch(false);
+
+        /* s: bulk approval email test */
+        $token = Token::where('user_id', $this->user->id)->first();
+        $data = [
+            'token' => $token->token, 
+            'bulk_id' => array($this->purchase->id), 
+            'status' => 1
+        ];
+
+        $response = $this->json('POST', self::$path.'/approval-with-token/bulk', $data, $this->headers);
+        $response->assertStatus(422)->assertJson([
+            'code' => 422,
+            'message' => 'Please set as default branch',
+        ]);
+        /* e: bulk approval email test */
+    }
 }

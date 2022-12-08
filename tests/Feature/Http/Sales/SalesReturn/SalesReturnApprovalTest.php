@@ -212,7 +212,25 @@ class SalesReturnApprovalTest extends TestCase
 
         $response = $this->json('GET', self::$path . '/approval', $data, $this->headers);
         
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+        ->assertJsonStructure([
+                "data" => [
+                    [
+                        "id",
+                        "last_request_date",
+                        "items" => [
+                            [
+                                "item_name",
+                                "quantity",
+                            ]
+                            ],
+                        "form" => [
+                            "number",
+                            "date",
+                        ]
+                    ]                
+                ]
+                ]);
         $this->assertGreaterThan(0, count($response->json('data')));
     }
 

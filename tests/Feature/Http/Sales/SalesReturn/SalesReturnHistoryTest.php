@@ -92,7 +92,22 @@ class SalesReturnHistoryTest extends TestCase
 
         $response = $this->json('GET', self::$path . '/' . $salesReturnUpdated->id . '/histories', $data, $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                "data" => [
+                    [
+                        "id",
+                        "table_type",
+                        "table_id",
+                        "number",
+                        "date",
+                        "user_id",
+                        "activity",
+                        "formable_id",
+                        "user",
+                    ]
+                ]
+            ]);
         $this->assertGreaterThan(0, count($response->json('data')));
         $this->assertDatabaseHas('user_activities', [
             'number' => $salesReturn->form->edited_number,

@@ -89,6 +89,19 @@ class SalesReturnTest extends TestCase
         'approval_status' => 0,
         'done' => 0,
     ], 'tenant');
+
+    $this->assertDatabaseHas('sales_returns', [
+        'id' => $response->json('data.id'),
+        'tax' => $response->json('data.tax'),
+        'customer_id' => $response->json('data.customer_id'),
+        'amount' => $response->json('data.amount'),
+    ], 'tenant');
+
+    $this->assertDatabaseHas('sales_return_items', [
+        'sales_return_id' => $response->json('data.id'),
+        'item_id' => $response->json('data.items.0.item_id'),
+        'quantity' => $response->json('data.items.0.quantity'),
+    ], 'tenant');
   }
 
   /** @test */
@@ -109,6 +122,7 @@ class SalesReturnTest extends TestCase
                     "date" => $salesReturn->form->date,
                     "number" => $salesReturn->form->number,
                     "notes" => $salesReturn->form->notes,
+                    "approval_status" => 1,
                 ]
             ]
         ]);
@@ -136,16 +150,53 @@ class SalesReturnTest extends TestCase
           'fields' => 'sales_return.*',
           'sort_by' => '-form.number',
           'group_by' => 'form.id',
-          'filter_form' => 'notArchived;null',
+          'filter_form' => 'notArchived',
           'filter_like' => '{}',
           'limit' => 10,
-          'includes' => 'form;customer;items.item;items.allocation',
+          'includes' => 'customer;warehouse;items.item;items.allocation;salesInvoice.form;form.createdBy;form.requestApprovalTo;form.branch',
           'page' => 1
       ];
 
       $response = $this->json('GET', self::$path, $data, $this->headers);
-
-      $response->assertStatus(200);
+      $response->assertStatus(200)
+        ->assertJsonStructure([
+            "data" => [
+                [
+                    "id",
+                    "tax",
+                    "amount",
+                    "warehouse" => [
+                        "id",
+                        "name",
+                    ],
+                    "sales_invoice" => [
+                        "form" => [
+                            "number",
+                        ]
+                    ],
+                    "form" => [
+                        "id",
+                        "date",
+                        "number",
+                        "notes",
+                    ],
+                    "items" => [
+                        [
+                            "id",
+                            "item_id",
+                            "item_name",
+                            "quantity",
+                            "quantity_sales",
+                            "price",
+                            "discount_value",
+                            "unit",
+                            "converter",
+                            "allocation"
+                        ]
+                    ]
+                ]                
+            ]
+        ]);
       $this->assertGreaterThan(0, count($response->json('data')));
   }
 
@@ -169,11 +220,36 @@ class SalesReturnTest extends TestCase
         ->assertJson([
             "data" => [
                 "id" => $salesReturn->id,
+                "tax" => $salesReturn->tax,
+                "amount" => $salesReturn->amount,
+                "warehouse" => [
+                    "id" => $salesReturn->warehouse->id,
+                    "name" => $salesReturn->warehouse->name,
+                ],
+                "sales_invoice" => [
+                    "form" => [
+                        "number" => $salesReturn->salesInvoice->form->number,
+                    ]
+                ],
                 "form" => [
                     "id" => $salesReturn->form->id,
                     "date" => $salesReturn->form->date,
                     "number" => $salesReturn->form->number,
                     "notes" => $salesReturn->form->notes,
+                ],
+                "items" => [
+                    [
+                        "id" => $salesReturn->items[0]->id,
+                        "item_id" => $salesReturn->items[0]->item->id,
+                        "item_name" => $salesReturn->items[0]->item->name,
+                        "quantity" => $salesReturn->items[0]->quantity,
+                        "quantity_sales" => $salesReturn->items[0]->quantity_sales,
+                        "price" => $salesReturn->items[0]->price,
+                        "discount_value" => $salesReturn->items[0]->discount_value,
+                        "unit" => $salesReturn->items[0]->unit,
+                        "converter" => $salesReturn->items[0]->converter,
+                        "allocation" => null
+                    ]
                 ]
             ]
         ]);
@@ -288,6 +364,26 @@ class SalesReturnTest extends TestCase
           'table_id' => $response->json('data.id'),
           'table_type' => 'SalesReturn',
           'activity' => 'Update - 1'
+      ], 'tenant');
+
+      $this->assertDatabaseHas('forms', [
+        'id' => $response->json('data.form.id'),
+        'number' => $response->json('data.form.number'),
+        'approval_status' => 0,
+        'done' => 0,
+      ], 'tenant');
+
+      $this->assertDatabaseHas('sales_returns', [
+          'id' => $response->json('data.id'),
+          'tax' => $response->json('data.tax'),
+          'customer_id' => $response->json('data.customer_id'),
+          'amount' => $response->json('data.amount'),
+      ], 'tenant');
+
+      $this->assertDatabaseHas('sales_return_items', [
+          'sales_return_id' => $response->json('data.id'),
+          'item_id' => $response->json('data.items.0.item_id'),
+          'quantity' => $response->json('data.items.0.quantity'),
       ], 'tenant');
   }
 

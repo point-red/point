@@ -2,9 +2,12 @@
 
 namespace Tests\Feature\Http\Inventory\InventoryUsage;
 
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
+use App\Mail\Inventory\InventoryUsageApprovalMail;
 use App\Model\Inventory\InventoryUsage\InventoryUsage;
+use App\Model\Master\Item;
 
 class InventoryUsageTest extends TestCase
 {
@@ -105,21 +108,6 @@ class InventoryUsageTest extends TestCase
         $data = $this->getDummyData(null, $itemUnit = 'box');
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
-        $response->assertStatus(422)
-            ->assertJson([
-                "code" => 422,
-                "message" => "there are some item not in 'pcs' unit"
-            ]);
-    }
-    /** @test */
-    public function invalid_dna_create_inventory_usage()
-    {
-        $this->setRole();
-
-        $data = $this->getDummyData(null, $itemUnit = 'pcs', $isItemDna = true);
-
-        $response = $this->json('POST', self::$path, $data, $this->headers);
-        
         $response->assertStatus(422)
             ->assertJson([
                 "code" => 422,
@@ -299,7 +287,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function unauthorized_branch_update_inventory_usage()
+    public function iu_ef1_unauthorized_branch_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -324,7 +312,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function unauthorized_warehouse_update_inventory_usage()
+    public function iu_ef2_unauthorized_warehouse_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -346,7 +334,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function unauthorized_update_inventory_usage()
+    public function iu_ef5_unauthorized_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -364,7 +352,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function overquantity_update_inventory_usage()
+    public function iu_ef6_invalid_date_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -372,18 +360,21 @@ class InventoryUsageTest extends TestCase
         
         $data = $this->getDummyData($inventoryUsage);
         $data = data_set($data, 'id', $inventoryUsage->id, false);
-        $data = data_set($data, 'items.0.quantity', 2000);
+        $data = data_set($data, 'date', '1970-01-01', true); // date less than create
 
         $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
         $response->assertStatus(422)
             ->assertJson([
                 "code" => 422,
-                "message" => "Stock {$data['items'][0]['item_name']} not enough"
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "date" => ["The date must be a date after or equal to {$inventoryUsage->form->date}."],
+                ]
             ]);
     }
     /** @test */
-    public function invalid_update_inventory_usage()
+    public function iu_ef7_invalid_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -402,7 +393,26 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function invalid_unit_update_inventory_usage()
+    public function iu_ef9_overquantity_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        
+        $data = $this->getDummyData($inventoryUsage);
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = data_set($data, 'items.0.quantity', 2000);
+
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "Stock {$data['items'][0]['item_name']} not enough"
+            ]);
+    }
+    /** @test */
+    public function iu_ef10_invalid_unit_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -419,6 +429,89 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
+    public function iu_ef16_invalid_notes_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+
+        $data = $this->getDummyData($inventoryUsage);
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = data_set($data, 'notes', str_pad('', 500, 'X', STR_PAD_LEFT), true); // over maximum length of notes
+        
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
+        
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "notes" => ["The notes may not be greater than 255 characters."],
+                ]
+            ]);
+    }
+    /** @test */
+    public function iu_ef17_invalid_warehouse_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+
+        $data = $this->getDummyData($inventoryUsage);
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = data_set($data, 'warehouse_id', 99, true); // random warehouse_id
+
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
+        
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "Warehouse Test warehouse not set as default"
+            ]);
+    }
+    /** @test */
+    public function iu_ef18_invalid_item_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+
+        $data = $this->getDummyData($inventoryUsage);
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = data_set($data, 'items.0.item_id', 99, true); // random item_id
+
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);        
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "items.0.item_id" => ["The selected items.0.item_id is invalid."],
+                ]
+            ]);
+    }
+    /** @test */
+    public function iu_ef19_invalid_account_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+
+        $data = $this->getDummyData($inventoryUsage);
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = data_set($data, 'items.0.chart_of_account_id', 99, true); // random item_id
+
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);        
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "items.0.chart_of_account_id" => ["The selected items.0.chart_of_account_id is invalid."],
+                ]
+            ]);
+    }
+    /** @test */
     public function success_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
@@ -428,9 +521,16 @@ class InventoryUsageTest extends TestCase
         $data = $this->getDummyData($inventoryUsage);
         $data = data_set($data, 'id', $inventoryUsage->id, false);
 
+        Mail::fake();
+
         $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
         $response->assertStatus(201);
+
+        $this->assertDatabaseHas('forms', [ 
+            'number' => $response->json('data.form.number'),
+            'approval_status' => 0,
+        ], 'tenant');
         $this->assertDatabaseHas('forms', [ 'edited_number' => $response->json('data.form.number') ], 'tenant');
         $this->assertDatabaseHas('user_activities', [
             'number' => $response->json('data.form.number'),
@@ -438,6 +538,15 @@ class InventoryUsageTest extends TestCase
             'table_type' => 'InventoryUsage',
             'activity' => 'Update - 1'
         ], 'tenant');
+
+        $this->assertDatabaseMissing('journals', [
+            'form_id' => $response->json('data.form.id'),
+            'journalable_type' => Item::$morphName,
+            'journalable_id' => $response->json('data.items.0.item_id'),
+            'chart_of_account_id' => $response->json('data.items.0.chart_of_account_id'),
+        ], 'tenant');
+
+        Mail::assertQueued(InventoryUsageApprovalMail::class);
     }
     /** @test */
     // public function unauthorized_delete_delivery_order()

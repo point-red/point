@@ -31,14 +31,14 @@ class UpdateRequest extends FormRequest
         $rulesForm['date'] = 'required|date|after_or_equal:'.optional($inventoryUsage->form)->date;
 
         $rulesUpdate = [
-            'warehouse_id' => 'required',
+            'warehouse_id' => ValidationRule::foreignKey('warehouses'),
             'request_approval_to' => 'required',
-
+            'notes' => 'nullable|string|max:255',
             'items.*.item_id' => ValidationRule::foreignKey('items'),
             'items.*.quantity' => ValidationRule::quantity(),
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::converter(),
-            'items.*.chart_of_account_id' => 'required',
+            'items.*.chart_of_account_id' => ValidationRule::foreignKey('chart_of_accounts'),
         ];
 
         return array_merge($rulesForm, $rulesUpdate);

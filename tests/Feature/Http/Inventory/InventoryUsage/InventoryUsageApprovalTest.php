@@ -4,6 +4,8 @@ namespace Tests\Feature\Http\Inventory\InventoryUsage;
 
 use Tests\TestCase;
 
+use App\Model\SettingJournal;
+use App\Model\Master\Item;
 use App\Model\Inventory\InventoryUsage\InventoryUsage;
 
 class InventoryUsageApprovalTest extends TestCase
@@ -36,7 +38,7 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function unauthorized_approve_inventory_usage()
+    public function iu_af1_unauthorized_approve_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -52,7 +54,7 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function success_approve_inventory_usage()
+    public function iu_ef13_invalid_journal_approve_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -61,9 +63,42 @@ class InventoryUsageApprovalTest extends TestCase
         $approver = $inventoryUsage->form->requestApprovalTo;
         $this->changeActingAs($approver, $inventoryUsage);
 
+        SettingJournal::where('feature', 'inventory usage')
+            ->where('name', 'difference stock expense')
+            ->update([
+                "chart_of_account_id" => null,
+            ]);
+
+        $response = $this->json('POST', self::$path . '/' . $inventoryUsage->id . '/approve', [], $this->headers);
+        
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "Journal inventory usage account - difference stock expense not found"
+            ]);
+    }
+
+    /** @test */
+    public function success_approve_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        $inventoryUsageItem = $inventoryUsage->items()->first();
+
+        $approver = $inventoryUsage->form->requestApprovalTo;
+        $this->changeActingAs($approver, $inventoryUsage);
+
         $response = $this->json('POST', self::$path . '/' . $inventoryUsage->id . '/approve', [], $this->headers);
 
         $response->assertStatus(200);
+
+        $this->assertDatabaseHas('journals', [
+            'form_id' => $inventoryUsage->form->id,
+            'journalable_type' => Item::$morphName,
+            'journalable_id' => $inventoryUsageItem->item_id,
+            'chart_of_account_id' => $inventoryUsageItem->chart_of_account_id,
+        ], 'tenant');
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
@@ -79,7 +114,7 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function not_found_form_approve_inventory_usage()
+    public function iu_af2_not_found_form_approve_inventory_usage()
     {
         $this->success_approve_inventory_usage();
 
@@ -95,7 +130,31 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function unauthorized_reject_inventory_usage()
+    public function iu_rf1_invalid_reject_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+
+        $approver = $inventoryUsage->form->requestApprovalTo;
+        $this->changeActingAs($approver, $inventoryUsage);
+
+        $response = $this->json('POST', self::$path . '/' . $inventoryUsage->id . '/reject', [], $this->headers);
+        
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "The given data was invalid.",
+                "errors" => [
+                    "reason" => [
+                        "The reason field is required."
+                    ]
+                ]
+            ]);
+    }
+
+    /** @test */
+    public function iu_rf2_unauthorized_reject_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -113,26 +172,12 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function invalid_reject_inventory_usage()
-    {
-        $this->success_create_inventory_usage();
-
-        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
-
-        $approver = $inventoryUsage->form->requestApprovalTo;
-        $this->changeActingAs($approver, $inventoryUsage);
-
-        $response = $this->json('POST', self::$path . '/' . $inventoryUsage->id . '/reject', [], $this->headers);
-
-        $response->assertStatus(422);
-    }
-
-    /** @test */
     public function success_reject_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
         $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        $inventoryUsageItem = $inventoryUsage->items()->first();
 
         $approver = $inventoryUsage->form->requestApprovalTo;
         $this->changeActingAs($approver, $inventoryUsage);
@@ -142,6 +187,13 @@ class InventoryUsageApprovalTest extends TestCase
         $response = $this->json('POST', self::$path . '/' . $inventoryUsage->id . '/reject', $data, $this->headers);
 
         $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('journals', [
+            'form_id' => $inventoryUsage->form->id,
+            'journalable_type' => Item::$morphName,
+            'journalable_id' => $inventoryUsageItem->item_id,
+            'chart_of_account_id' => $inventoryUsageItem->chart_of_account_id,
+        ], 'tenant');
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
@@ -157,7 +209,7 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function not_found_form_reject_inventory_usage()
+    public function iu_rf3_not_found_form_reject_inventory_usage()
     {
         $this->success_reject_inventory_usage();
 

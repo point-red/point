@@ -83,22 +83,33 @@ class InventoryUsageApprovalTest extends TestCase
     {
         $this->success_create_inventory_usage();
 
-        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
-        $inventoryUsageItem = $inventoryUsage->items()->first();
+        $usage = InventoryUsage::orderBy('id', 'asc')->first();
+        $usageItem = $usage->items()->first();
+        $usageItemAmount = $usageItem->item->cogs($usageItem->item_id) * $usageItem->quantity;
 
-        $approver = $inventoryUsage->form->requestApprovalTo;
-        $this->changeActingAs($approver, $inventoryUsage);
+        $approver = $usage->form->requestApprovalTo;
+        $this->changeActingAs($approver, $usage);
 
-        $response = $this->json('POST', self::$path . '/' . $inventoryUsage->id . '/approve', [], $this->headers);
-
+        $response = $this->json('POST', self::$path . '/' . $usage->id . '/approve', [], $this->headers);
         $response->assertStatus(200);
 
+        // check balance and match amount
         $this->assertDatabaseHas('journals', [
-            'form_id' => $inventoryUsage->form->id,
+            'form_id' => $usage->form->id,
             'journalable_type' => Item::$morphName,
-            'journalable_id' => $inventoryUsageItem->item_id,
-            'chart_of_account_id' => $inventoryUsageItem->chart_of_account_id,
+            'journalable_id' => $usageItem->item_id,
+            'chart_of_account_id' => $usageItem->chart_of_account_id,
+            'debit' => $usageItemAmount,
         ], 'tenant');
+        $this->assertDatabaseHas('journals', [
+            'form_id' => $usage->form->id,
+            'journalable_type' => Item::$morphName,
+            'journalable_id' => $usageItem->item_id,
+            'chart_of_account_id' => get_setting_journal('inventory usage', 'difference stock expense'),
+            'credit' => $usageItemAmount,
+        ], 'tenant');
+
+        // change form status changed and logged
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
@@ -111,6 +122,23 @@ class InventoryUsageApprovalTest extends TestCase
             'table_type' => 'InventoryUsage',
             'activity' => 'Approved'
         ], 'tenant');
+
+        $responseRecap = $this->json('GET', '/api/v1/inventory/inventory-recapitulations', [
+            'includes' => 'account',
+            'sort_by' => 'code;name',
+            'limit' => 10,
+            'page' => 1,
+            'date_from' => date('Y-m-01') . ' 00:00:00',
+            'filter_to' => date('Y-m-31') . ' 23:59:59',
+            'filter_like' => '{}',
+        ], $this->headers);
+        $responseRecap->assertStatus(200)
+            ->assertJsonFragment([
+                "name" => $usageItem->item->name,
+                "stock_in" => number_format((float) $this->initialItemQuantity, 30, '.', ''),
+                "stock_out" => number_format((float) $this->initialUsageItemQuantity * -1, 30, '.', ''),
+                "ending_balance" => number_format((float) $this->initialItemQuantity + ($this->initialUsageItemQuantity * -1), 30, '.', '')
+            ]);
     }
 
     /** @test */
@@ -194,6 +222,7 @@ class InventoryUsageApprovalTest extends TestCase
             'journalable_id' => $inventoryUsageItem->item_id,
             'chart_of_account_id' => $inventoryUsageItem->chart_of_account_id,
         ], 'tenant');
+
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
@@ -206,6 +235,21 @@ class InventoryUsageApprovalTest extends TestCase
             'table_type' => 'InventoryUsage',
             'activity' => 'Rejected'
         ], 'tenant');
+
+        $responseRecap = $this->json('GET', '/api/v1/inventory/inventory-recapitulations', [
+            'includes' => 'account',
+            'sort_by' => 'code;name',
+            'limit' => 10,
+            'page' => 1,
+            'date_from' => date('Y-m-01') . ' 00:00:00',
+            'filter_to' => date('Y-m-31') . ' 23:59:59',
+            'filter_like' => '{}',
+        ], $this->headers);
+        $responseRecap->assertStatus(200)
+            ->assertJsonMissing([
+                "stock_out" => number_format((float) $this->initialUsageItemQuantity * -1, 30, '.', ''),
+                "ending_balance" => number_format((float) $this->initialItemQuantity + ($this->initialUsageItemQuantity * -1), 30, '.', '')
+            ]);
     }
 
     /** @test */

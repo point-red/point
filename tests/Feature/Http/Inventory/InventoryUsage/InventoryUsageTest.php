@@ -429,6 +429,52 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
+    public function iu_ef11_invalid_productionnumber_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+
+        $data = $this->getDummyData($inventoryUsage);
+
+        $dataUsageItem = $this->getDummyDataItem($isItemDna = true);
+        $dataUsageItem = data_set($dataUsageItem, 'dna.0.production_number', null, true);
+
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = data_set($data, 'items.1', $dataUsageItem, false); // item dna without production number
+
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);   
+        
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => 'Production Number for Item '.$dataUsageItem['item_name'].' not found'
+            ]);
+    }
+    /** @test */
+    public function iu_ef12_invalid_expirydate_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+
+        $data = $this->getDummyData($inventoryUsage);
+
+        $dataUsageItem = $this->getDummyDataItem($isItemDna = true);
+        $dataUsageItem = data_set($dataUsageItem, 'dna.0.expiry_date', null, true);
+
+        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = data_set($data, 'items.1', $dataUsageItem, false); // item dna without expry date
+
+        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);   
+        
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => "Expiry Date for Item -{$dataUsageItem['item_name']} not found"
+            ]);
+    }
+    /** @test */
     public function iu_ef16_invalid_notes_update_inventory_usage()
     {
         $this->success_create_inventory_usage();

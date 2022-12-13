@@ -24,6 +24,9 @@ trait InventoryUsageSetup {
   private $branchDefault;
   private $warehouseSelected;
 
+  private $initialItemQuantity = 500;
+  private $initialUsageItemQuantity = 5;
+
   public function setUp(): void
   {
     parent::setUp();
@@ -117,7 +120,7 @@ trait InventoryUsageSetup {
     $options['expiry_date'] = null;
     $options['production_number'] = null;
 
-    InventoryHelper::increase($form, $this->warehouseSelected, $item, 500, $unit->label, 1, $options);
+    InventoryHelper::increase($form, $this->warehouseSelected, $item, $this->initialItemQuantity, $unit->label, 1, $options);
 
     return $item;
   }
@@ -143,7 +146,7 @@ trait InventoryUsageSetup {
     $options['expiry_date'] = date('Y-m-31 23:59:59');
     $options['production_number'] = 'TEST001';
 
-    InventoryHelper::increase($form, $this->warehouseSelected, $item, 500, $unit->label, 1, $options);
+    InventoryHelper::increase($form, $this->warehouseSelected, $item, $this->initialItemQuantity, $unit->label, 1, $options);
 
     return [$item, $options];
   }
@@ -178,6 +181,52 @@ trait InventoryUsageSetup {
       $user->save();
       $this->actingAs($user, 'api');
   }
+
+  private function getDummyDataItem($isItemDna = false)
+  {
+    $allocation = factory(Allocation::class)->create();
+    $chartOfAccount = ChartOfAccount::whereHas('type', function ($query) {
+      return $query->whereIn('alias', ['BEBAN OPERASIONAL', 'BEBAN NON OPERASIONAL']);
+    })->first();
+    $unit = new ItemUnit(['label' => 'pcs', 'name' => 'pcs', 'converter' => 1]);
+
+    $quantity = $this->initialItemQuantity;
+
+    if ($isItemDna) {
+      $createdItemDna = $this->createItemDnaWithStocks($unit);
+      $item = $createdItemDna[0];
+      $itemDna = [
+        "quantity" => $quantity,
+        "expiry_date" => convert_to_server_timezone($createdItemDna[1]["expiry_date"], 'UTC', 'asia/jakarta'),
+        "production_number" => $createdItemDna[1]["production_number"],
+      ];
+    } else {
+      $item = $this->createItemWithStocks($unit);
+    }
+
+    $usageItem = [
+      "item_id" => $item->id,
+      "item_name" => $item->name,
+      "item_label" => "[{$item->code}] - {$item->name}",
+      "chart_of_account_id" => $chartOfAccount->id,
+      "chart_of_account_name" => $chartOfAccount->alias,
+      "require_expiry_date" => 0,
+      "require_production_number" => 0,
+      "unit" => $unit->name,
+      "converter" => $unit->converter,
+      "quantity" => $quantity,
+      "allocation_id" => $allocation->id,
+      "allocation_name" => $allocation->name,
+      "notes" => null,
+      "more" => false,
+    ];
+
+    if ($isItemDna) {
+      $usageItem['dna'] = [$itemDna];
+    }
+
+    return $usageItem;
+  }
   
   private function getDummyData($inventoryUsage = null, $itemUnit = 'pcs', $isItemDna = false)
   {
@@ -187,7 +236,7 @@ trait InventoryUsageSetup {
       'name' => $itemUnit,
       'converter' => 1,
     ]);
-    $quantity = 5;
+    $quantity = $this->initialUsageItemQuantity;
 
     if ($inventoryUsage) {
       $inventoryUsageItem = $inventoryUsage->items()->first();

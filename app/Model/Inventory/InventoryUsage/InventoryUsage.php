@@ -4,6 +4,8 @@ namespace App\Model\Inventory\InventoryUsage;
 
 use Exception;
 use App\Exceptions\StockNotEnoughException;
+use App\Exceptions\ExpiryDateNotFoundException;
+use App\Exceptions\ProductionNumberNotFoundException;
 use App\Helpers\Inventory\InventoryHelper;
 use App\Mail\Inventory\InventoryUsageApprovalMail;
 use App\Model\TransactionModel;
@@ -174,6 +176,14 @@ class InventoryUsage extends TransactionModel
             if ($itemModel->require_production_number || $itemModel->require_expiry_date) {
                 if ($item['dna']) {
                     foreach ($item['dna'] as $dna) {
+                        if ($itemModel->require_production_number && !isset($dna['production_number'])) {
+                            throw new ProductionNumberNotFoundException($itemModel);
+                        }
+
+                        if ($itemModel->require_expiry_date && !isset($dna['expiry_date'])) {
+                            throw new ExpiryDateNotFoundException($itemModel);
+                        }
+                        
                         if ($dna['quantity'] > 0) {
                             $options  = [
                                 'expiry_date' => $dna['expiry_date'],

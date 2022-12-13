@@ -6,7 +6,11 @@ use Tests\TestCase;
 
 use App\Model\SettingJournal;
 use App\Model\Master\Item;
+use App\Model\Master\ItemUnit;
+use App\Model\Accounting\ChartOfAccount;
+use App\Model\Inventory\InventoryAudit\InventoryAudit;
 use App\Model\Inventory\InventoryUsage\InventoryUsage;
+use Carbon\Carbon;
 
 class InventoryUsageApprovalTest extends TestCase
 {
@@ -15,6 +19,66 @@ class InventoryUsageApprovalTest extends TestCase
     public static $path = '/api/v1/inventory/usages';
 
     private $previousInventoryUsageData;
+
+    /** @test */
+    public function success_create_inventory_audit()
+    {
+        $chartOfAccount = ChartOfAccount::where('name', 'FACTORY DIFFERENCE STOCK EXPENSE')->first();
+        $settingJournal = SettingJournal::where('feature', 'inventory audit')->where('name', 'difference stock expense')->first();
+        $settingJournal->chart_of_account_id = $chartOfAccount->id;
+        $settingJournal->save();
+
+        $quantity = $this->initialItemQuantity;
+
+        $usage = InventoryUsage::first();
+        $usageItem = $usage->items()->first();
+
+        $warehouse = $usage->warehouse;
+
+        $form = $usage->form;
+        $approver = $form->requestApprovalTo;
+        
+        $item = $usageItem->item;
+        $item->chart_of_account_id = $usageItem->chart_of_account_id;
+        $item->save();
+        
+        $unit = ItemUnit::where('label', $usageItem->unit)->first();
+
+        $allocation = $usageItem->allocation;
+        $chartOfAccount = $usageItem->account;
+
+        $data = [
+            "increment_group" => date("Ym"),
+            "date" => Carbon::now()->addDays(1)->format("Y-m-d H:i:s"),
+            "warehouse_id" => $warehouse->id,
+            "request_approval_to" => $approver->id,
+            "approver_name" => $approver->name,
+            "approver_email" => $approver->email,
+            "notes" => null,
+            "items" => [
+                [
+                    "item_id" => $item->id,
+                    "item_name" => $item->name,
+                    "item_label" => "[{$item->code}] - {$item->name}",
+                    "chart_of_account_id" => $chartOfAccount->id,
+                    "chart_of_account_name" => $chartOfAccount->alias,
+                    "require_expiry_date" => 0,
+                    "require_production_number" => 0,
+                    "unit" => $unit->name,
+                    "converter" => $unit->converter,
+                    "quantity" => $quantity,
+                    "allocation_id" => $allocation->id,
+                    "allocation_name" => $allocation->name,
+                    "notes" => null,
+                    "more" => false
+                ]
+            ]
+        ];
+
+        $response = $this->json('POST', '/api/v1/inventory/audits', $data, $this->headers);
+        
+        $response->assertStatus(201);
+    }
 
     /** @test */
     public function success_create_inventory_usage($isFirstCreate = true)
@@ -50,6 +114,30 @@ class InventoryUsageApprovalTest extends TestCase
             ->assertJson([
                 "code" => 422,
                 "message" => "Unauthorized"
+            ]);
+    }
+
+    /** @test */
+    public function iu_ef3_has_audit_update_inventory_usage()
+    {
+        $this->success_create_inventory_usage();
+
+        $this->success_create_inventory_audit();
+
+        $audit = InventoryAudit::first();
+
+        $usage = InventoryUsage::orderBy('id', 'asc')->first();
+        $usageItem = $usage->items()->first();
+
+        $approver = $usage->form->requestApprovalTo;
+        $this->changeActingAs($approver, $usage);
+
+        $response = $this->json('POST', self::$path . '/' . $usage->id . '/approve', [], $this->headers);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                "code" => 422,
+                "message" => 'Input error because'. $usageItem->item->label.' already audited in '.$audit->form->number.' on '. date('d F Y H:i', strtotime($audit->form->date))
             ]);
     }
 

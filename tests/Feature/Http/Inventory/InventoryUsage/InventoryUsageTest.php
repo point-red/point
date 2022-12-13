@@ -63,10 +63,10 @@ class InventoryUsageTest extends TestCase
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
-        $response->assertStatus(500)
+        $response->assertStatus(422)
             ->assertJson([
-                "code" => 0,
-                "message" => "There is no permission named `create inventory usage` for guard `api`."
+                "code" => 422,
+                "message" => "Unauthorized"
             ]);
     }
     /** @test */
@@ -345,10 +345,10 @@ class InventoryUsageTest extends TestCase
 
         $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
 
-        $response->assertStatus(500)
+        $response->assertStatus(422)
             ->assertJson([
-                "code" => 0,
-                "message" => "There is no permission named `update inventory usage` for guard `api`."
+                "code" => 422,
+                "message" => "Unauthorized"
             ]);
     }
     /** @test */

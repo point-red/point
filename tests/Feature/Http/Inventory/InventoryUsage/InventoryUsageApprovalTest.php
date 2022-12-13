@@ -20,7 +20,6 @@ class InventoryUsageApprovalTest extends TestCase
 
     private $previousInventoryUsageData;
 
-    /** @test */
     public function success_create_inventory_audit()
     {
         $chartOfAccount = ChartOfAccount::where('name', 'FACTORY DIFFERENCE STOCK EXPENSE')->first();

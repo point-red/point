@@ -21,6 +21,7 @@ use App\Model\Sales\SalesReturn\SalesReturn;
 use App\Model\Sales\PaymentCollection\PaymentCollection;
 use App\Model\SettingJournal;
 use App\Model\Accounting\Journal;
+use App\Helpers\Inventory\InventoryHelper;
 
 trait SalesReturnSetup {
   private $tenantUser;
@@ -63,6 +64,14 @@ trait SalesReturnSetup {
         $warehouse->pivot->save();
 
         $this->warehouseSelected = $warehouse;
+    }
+  }
+  
+  private function removeUserWarehouse()
+  {
+    foreach ($this->tenantUser->warehouses as $warehouse) {
+        $warehouse->pivot->is_default = false;
+        $warehouse->pivot->save();
     }
   }
 
@@ -262,10 +271,10 @@ trait SalesReturnSetup {
         $approver = $invoice->form->requestApprovalTo;
 
         return [
-            'increment_group' => date('Ym'),
-            'date' => date('Y-m-d H:i:s'),
+            'increment_group' => '202212',
+            'date' => '2022-12-12 12:17:07',
             'sales_invoice_id' => $invoice->id,
-            "warehouse_id" => $this->warehouseSelected->id,
+            'warehouse_id' => $this->warehouseSelected->id,
             'customer_id' => $customer->id,
             'customer_name' => $customer->name,
             'customer_label' => $customer->code,
@@ -273,22 +282,28 @@ trait SalesReturnSetup {
             'customer_phone' => null,
             'customer_email' => null,
             'notes' => null,
-            'tax' => 3000,
-            'amount' => 33000,
-            'type_of_tax' => 'exclude',
+            'sub_total' => 30000,
+            'tax_base' => 30000,
+            'tax' => 2727.2727272727,
+            'type_of_tax' => 'include',
+            'amount' => 30000,            
             'items' => [
                 [
                     'sales_invoice_item_id' => $invoiceItem->id,
                     'item_id' => $this->item->id,
                     'item_name' => $this->item->name,
-                    'item_label' => "[{$this->item->code}] - {$this->item->name}",
+                    'item_label' => '[{$this->item->code}] - {$this->item->name}',
                     'more' => false,
                     'unit' => $this->unit->label,
+                    'expiry_date' => null,
+                    'production_number' => null,
                     'converter' => $invoiceItem->converter,
                     'quantity_sales' => $quantityInvoice,
+                    'discount_percent' => null,
+                    'discount_value' => 0,
                     'quantity' => 3,
-                    'price' => $invoiceItem->price,
-                    'total' => 3 * $invoiceItem->price,
+                    'price' => 10000,
+                    'total' => 30000,
                     'allocation_id' => null,
                     'notes' => null,
                 ],
@@ -318,7 +333,7 @@ trait SalesReturnSetup {
         'delivery_fee' => 0,
         'discount_percent' => 0,
         'discount_value' => 0,
-        'type_of_tax' => 'exclude',
+        'type_of_tax' => 'include',
         'tax' => 100000,
         'amount' => 1100000,
         'remaining' => 1100000,
@@ -330,7 +345,7 @@ trait SalesReturnSetup {
                 'item_referenceable_type' => 'SalesDeliveryNoteItem',
                 'item_id' => $this->item->id,
                 'item_name' => $this->item->name,
-                'item_label' => "[{$this->item->code}] - {$this->item->name}",
+                'item_label' => '[{$this->item->code}] - {$this->item->name}',
                 'more' => false,
                 'unit' => $this->unit->label,
                 'converter' => 1,
@@ -376,20 +391,20 @@ trait SalesReturnSetup {
         'customer_email' => null,
         'notes' => null,
         'amount' => 30000,
-        "details" => [
+        'details' => [
             [
-                "date" => date("Y-m-d H:i:s"),
-                "chart_of_account_id" => null,
-                "chart_of_account_name" => null,
-                "available" => $salesReturn->amount,
-                "amount" => 30000,
-                "allocation_id" => null,
-                "allocation_name" => null,
-                "referenceable_form_date" => $salesReturn->form->date,
-                "referenceable_form_number" => $salesReturn->form->number,
-                "referenceable_form_notes" => $salesReturn->form->notes,
-                "referenceable_id" => $salesReturn->id,
-                "referenceable_type" => "SalesReturn"
+                'date' => date('Y-m-d H:i:s'),
+                'chart_of_account_id' => null,
+                'chart_of_account_name' => null,
+                'available' => $salesReturn->amount,
+                'amount' => 30000,
+                'allocation_id' => null,
+                'allocation_name' => null,
+                'referenceable_form_date' => $salesReturn->form->date,
+                'referenceable_form_number' => $salesReturn->form->number,
+                'referenceable_form_notes' => $salesReturn->form->notes,
+                'referenceable_id' => $salesReturn->id,
+                'referenceable_type' => 'SalesReturn'
             ],
         ],
         'request_approval_to' => $this->approver->id,

@@ -82,12 +82,58 @@ class PurchaseReceiveControllerTest extends TestCase
         $data = $this->getDummyData();
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
-
         $response->assertStatus(201);
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
             'done' => 0,
+        ], 'tenant');
+
+        $this->assertDatabaseHas('purchase_receives', [
+            "supplier_id" => $response->json('data.supplier_id'),
+            "supplier_name" => $response->json('data.supplier_name'),
+            "warehouse_id" => $response->json('data.warehouse_id'),
+            "warehouse_name" => $response->json('data.warehouse_name'),
+            "purchase_order_id" => $response->json('data.purchase_order_id'),
+            "id" => $response->json('data.id'),
+        ], 'tenant');
+
+        $item = $response->json('data.items')[0]; 
+        $this->assertDatabaseHas('purchase_receive_items', [
+            "id" => $item['id'],
+            "purchase_receive_id" => $item['purchase_receive_id'],
+            "purchase_order_item_id" => $item['purchase_order_item_id'],
+            "item_id" => $item['item_id'],
+            "item_name" => $item['item_name'],
+            "quantity" => $item['quantity'],
+            "price" => $item['price'],
+            "discount_value" => $item['discount_value'],
+            "taxable" => $item['taxable'],
+            "unit" => $item['unit'],
+            "converter" => $item['converter'],
+        ], 'tenant');
+    }
+
+    /** @test */
+    public function updatePurchaseReceive()
+    {
+        $this->createPurchaseReceive();
+
+        $purchaseReceive = PurchaseReceive::orderBy('id', 'asc')->first();
+
+        $data = $this->getDummyData($purchaseReceive);
+        $data = data_set($data, 'id', $purchaseReceive->id, false);
+        $data['items'][0]['unit'] = 1;
+
+        $response = $this->json('PATCH', self::$path.'/'.$purchaseReceive->id, $data, $this->headers);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('forms', ['edited_number' => $response->json('data.form.number')], 'tenant');
+        $this->assertDatabaseHas('user_activities', [
+            'number' => $response->json('data.form.number'),
+            'table_id' => $response->json('data.id'),
+            'table_type' => 'PurchaseReceive',
+            'activity' => 'Update - 1',
         ], 'tenant');
     }
 
@@ -106,6 +152,22 @@ class PurchaseReceiveControllerTest extends TestCase
             'number' => $purchaseReceive->form->number,
             'request_cancellation_reason' => $data['reason'],
             'cancellation_status' => 0,
+        ], 'tenant');
+    }
+
+    /** @test */
+    public function approvalDeletionPurchaseReceiveFormStatusPending()
+    {
+        $this->deletePurchaseReceive();
+
+        $purchaseReceive = PurchaseReceive::orderBy('id', 'asc')->first();
+
+        $response = $this->json('POST', self::$path.'/'.$purchaseReceive->id.'/cancellation-approve', $this->headers);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('forms', [
+            'number' => $purchaseReceive->form->number,
+            'cancellation_status' => 1,
         ], 'tenant');
     }
 
@@ -166,9 +228,9 @@ class PurchaseReceiveControllerTest extends TestCase
         ], 'tenant');
     }
 
-     /** @test */
-     public function deletePurchaseReceiveStatusDone()
-     {
+    /** @test */
+    public function deletePurchaseReceiveStatusDone()
+    {
         $this->createPurchaseInvoice();
         $purchaseReceive = PurchaseReceive::orderBy('id', 'asc')->first();
         $data['reason'] = $this->faker->text(200);
@@ -180,5 +242,5 @@ class PurchaseReceiveControllerTest extends TestCase
             'code' => 422,
             'message' => 'Cannot edit form because referenced by purchase receive',
         ]);
-     }
+    }
 }

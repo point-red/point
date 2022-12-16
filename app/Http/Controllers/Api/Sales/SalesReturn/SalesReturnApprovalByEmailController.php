@@ -13,6 +13,8 @@ use App\Model\UserActivity;
 use App\Model\Sales\SalesReturn\SalesReturn;
 use Exception;
 use App\Model\Sales\SalesInvoice\SalesInvoiceReference;
+use App\Model\Accounting\Journal;
+use App\Model\Inventory\Inventory;
 
 class SalesReturnApprovalByEmailController extends Controller
 {
@@ -42,7 +44,7 @@ class SalesReturnApprovalByEmailController extends Controller
 
             foreach ($salesReturns as $salesReturn) {  
                 try {
-                    if ($salesReturn->form->approval_status === 1) {
+                    if ($salesReturn->form->approval_status === 1 && $salesReturn->form->cancellation_status === null) {
                         throw new Exception('form '.$salesReturn->form->number.' already approved', 422);
                     }
                 } catch (\Throwable $th) {

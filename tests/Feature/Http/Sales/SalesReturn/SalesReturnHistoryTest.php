@@ -111,30 +111,45 @@ class SalesReturnHistoryTest extends TestCase
         $response = $this->json('GET', self::$path . '/' . $salesReturnUpdated->id . '/histories', $data, $this->headers);
         
         $response->assertStatus(200)
-            ->assertJson([
+            ->assertJsonStructure([
                 'data' => [
                     [
-                        'id' => $response->json('data.0.id'),
-                        'table_type' => 'SalesReturn',
-                        'table_id' => $salesReturnUpdated->id,
-                        'number' => $salesReturnUpdated->form->number,
-                        'date' => $response->json('data.0.date'),
-                        'user_id' => $response->json('data.0.user_id'),
-                        'activity' => $response->json('data.0.activity'),
-                        'formable_id' => $salesReturnUpdated->id,
+                        'id',
+                        'table_type',
+                        'table_id',
+                        'number',
+                        'date',
+                        'user_id',
+                        'activity',
+                        'formable_id',
                         'user' => [
-                            'id' => $response->json('data.0.user.id'),
-                            'name' => $response->json('data.0.user.name'),
-                            'first_name' => $response->json('data.0.user.first_name'),
-                            'last_name' => $response->json('data.0.user.last_name'),
-                            'address' => $response->json('data.0.user.address'),
-                            'phone' => $response->json('data.0.user.phone'),
-                            'email' => $response->json('data.0.user.email'),
-                            'branch_id' => $response->json('data.0.user.branch_id'),
-                            'warehouse_id' => $response->json('data.0.user.warehouse_id'),
-                            'full_name' => $response->json('data.0.user.full_name'),
+                            'id',
+                            'name',
+                            'first_name',
+                            'last_name',
+                            'address',
+                            'phone',
+                            'email',
+                            'branch_id',
+                            'warehouse_id',
+                            'full_name',
                         ],
                     ]
+                ],
+                'links' => [
+                    'first',
+                    'last',
+                    'prev',
+                    'next',
+                ],
+                'meta' => [
+                    'current_page',
+                    'from',
+                    'last_page',
+                    'path',
+                    'per_page',
+                    'to',
+                    'total',
                 ]
             ]);
 

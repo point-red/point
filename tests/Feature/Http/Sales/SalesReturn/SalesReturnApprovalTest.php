@@ -3,7 +3,7 @@
 namespace Tests\Feature\Http\Sales\SalesReturn;
 
 use Tests\TestCase;
-
+use App\Model\Token;
 use App\Model\Form;
 use App\Model\Sales\SalesReturn\SalesReturn;
 use App\Helpers\Inventory\InventoryHelper;
@@ -390,6 +390,8 @@ class SalesReturnApprovalTest extends TestCase
   {
     $this->create_sales_return();
 
+    $approverToken = Token::orderBy('id', 'asc')->delete();
+
     $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
     $data['ids'][] = ['id' => $salesReturn->id];
 
@@ -429,5 +431,140 @@ class SalesReturnApprovalTest extends TestCase
                 "ids" => $data['ids']
             ]
         ]);
+  }
+
+  /** @test */
+  public function success_read_approval_sales_return()
+  {
+      $this->create_sales_return();
+
+      $data = [
+          'join' => 'form,customer,items,item',
+          'fields' => 'sales_return.*',
+          'sort_by' => '-form.number',
+          'group_by' => 'form.id',
+          'filter_form'=>'notArchived;null',
+          'filter_like'=>'{}',
+          'filter_date_min'=>'{"form.date":"2022-05-01 00:00:00"}',
+          'filter_date_max'=>'{"form.date":"2022-05-17 23:59:59"}',
+          'includes'=>'form;customer;warehouse;items.item;items.allocation',
+          'limit'=>10,
+          'page' => 1
+      ];
+
+      $response = $this->json('GET', self::$path . '/approval', $data, $this->headers);
+      
+      $response->assertStatus(200)
+        ->assertJsonStructure([
+          'data' => [
+            [
+              'id',
+              'sales_invoice_id',
+              'customer_id',
+              'warehouse_id',
+              'customer_name',
+              'customer_address',
+              'customer_phone',
+              'tax',
+              'amount',
+              'form' => [
+                'id',
+                'date',
+                'number',
+                'edited_number',
+                'edited_notes',
+                'notes',
+                'created_by',
+                'updated_by',
+                'done',
+                'increment',
+                'increment_group',
+                'formable_id',
+                'formable_type',
+                'request_approval_at',
+                'request_approval_to',
+                'approval_by',
+                'approval_at',
+                'approval_reason',
+                'approval_status',
+                'request_cancellation_to',
+                'request_cancellation_by',
+                'request_cancellation_at',
+                'request_cancellation_reason',
+                'cancellation_approval_at',
+                'cancellation_approval_by',
+                'cancellation_approval_reason',
+                'cancellation_status',
+                'request_close_to',
+                'request_close_by',
+                'request_close_at',
+                'request_close_reason',
+                'close_approval_at',
+                'close_approval_by',
+                'close_status'
+              ],
+              'customer' => [
+                'id',
+                'code',
+                'tax_identification_number',
+                'name',
+                'address',
+                'city',
+                'state',
+                'country',
+                'zip_code',
+                'latitude',
+                'longitude',
+                'phone',
+                'phone_cc',
+                'email',
+                'notes',
+                'credit_limit',
+                'branch_id',
+                'created_by',
+                'updated_by',
+                'archived_by',
+                'pricing_group_id',
+                'label'
+              ],
+              'items' => [
+                  [
+                    'id',
+                    'sales_return_id',
+                    'sales_invoice_item_id',
+                    'item_id',
+                    'item_name',
+                    'quantity',
+                    'quantity_sales',
+                    'price',
+                    'discount_percent',
+                    'discount_value',
+                    'unit',
+                    'converter',
+                    'expiry_date',
+                    'production_number',
+                    'notes',
+                    'allocation_id',
+                    'allocation',
+                  ]
+              ]
+            ]                
+          ],
+          'links' => [
+            'first',
+            'last',
+            'prev',
+            'next',
+          ],
+          'meta' => [
+            'current_page',
+            'from',
+            'last_page',
+            'path',
+            'per_page',
+            'to',
+            'total',
+          ]
+      ]);
   }
 }

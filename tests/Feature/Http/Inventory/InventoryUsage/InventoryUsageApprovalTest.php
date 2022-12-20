@@ -79,7 +79,6 @@ class InventoryUsageApprovalTest extends TestCase
         $response->assertStatus(201);
     }
 
-    /** @test */
     public function success_create_inventory_usage($isFirstCreate = true)
     {
         $data = $this->getDummyData();
@@ -101,7 +100,7 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function iu_af1_unauthorized_approve_inventory_usage()
+    public function unauthorized_approve_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -117,7 +116,7 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function iu_ef3_has_audit_update_inventory_usage()
+    public function has_audit_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -141,7 +140,7 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function iu_ef13_invalid_journal_approve_inventory_usage()
+    public function invalid_journal_approve_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -229,7 +228,7 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function iu_af2_not_found_form_approve_inventory_usage()
+    public function not_found_form_approve_inventory_usage()
     {
         $this->success_approve_inventory_usage();
 
@@ -245,7 +244,7 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function iu_rf1_invalid_reject_inventory_usage()
+    public function invalid_reject_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -269,7 +268,7 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function iu_rf2_unauthorized_reject_inventory_usage()
+    public function unauthorized_reject_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -340,7 +339,7 @@ class InventoryUsageApprovalTest extends TestCase
     }
 
     /** @test */
-    public function iu_rf3_not_found_form_reject_inventory_usage()
+    public function not_found_form_reject_inventory_usage()
     {
         $this->success_reject_inventory_usage();
 

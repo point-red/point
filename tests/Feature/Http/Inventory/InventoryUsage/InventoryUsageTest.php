@@ -122,8 +122,39 @@ class InventoryUsageTest extends TestCase
         $data = $this->getDummyData();
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
+        
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                "data" => [
+                    "id",
+                    "warehouse_id",
+                    "employee_id",
+                    "form" => [
+                        "id",
+                        "branch_id",
+                        "approval_status",
+                        "date",
+                        "done",
+                        "notes",
+                        "number",
+                        "request_approval_to",
+                    ],
+                    "items" => [
+                        [
+                            "expiry_date",
+                            "id",
+                            "chart_of_account_id",
+                            "item_id",
+                            "allocation_id",
+                            "notes",
+                            "production_number",
+                            "quantity",
+                            "unit",
+                        ]
+                    ]
+                ],
+            ]);
 
-        $response->assertStatus(201);
         $this->assertDatabaseHas('forms', [
             'id' => $response->json('data.form.id'),
             'number' => $response->json('data.form.number'),
@@ -287,7 +318,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef1_unauthorized_branch_update_inventory_usage()
+    public function unauthorized_branch_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -312,7 +343,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef2_unauthorized_warehouse_update_inventory_usage()
+    public function unauthorized_warehouse_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -334,7 +365,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef5_unauthorized_update_inventory_usage()
+    public function unauthorized_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -352,7 +383,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef6_invalid_date_update_inventory_usage()
+    public function invalid_date_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -374,7 +405,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef7_invalid_update_inventory_usage()
+    public function invalid_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -393,7 +424,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef9_overquantity_update_inventory_usage()
+    public function overquantity_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -412,7 +443,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef10_invalid_unit_update_inventory_usage()
+    public function _invalid_unit_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -429,7 +460,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef11_invalid_productionnumber_update_inventory_usage()
+    public function _invalid_productionnumber_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -452,7 +483,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef12_invalid_expirydate_update_inventory_usage()
+    public function _invalid_expirydate_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -475,7 +506,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef16_invalid_notes_update_inventory_usage()
+    public function _invalid_notes_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -497,7 +528,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef17_invalid_warehouse_update_inventory_usage()
+    public function _invalid_warehouse_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -516,7 +547,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef18_invalid_item_update_inventory_usage()
+    public function _invalid_item_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -537,7 +568,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function iu_ef19_invalid_account_update_inventory_usage()
+    public function _invalid_account_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 

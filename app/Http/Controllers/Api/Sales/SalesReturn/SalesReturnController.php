@@ -12,6 +12,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Sales\SalesReturn\SalesReturn\StoreSalesReturnRequest;
 use App\Http\Requests\Sales\SalesReturn\SalesReturn\UpdateSalesReturnRequest;
+use App\Http\Requests\Sales\SalesReturn\SalesReturn\DeleteSalesReturnRequest;
 use Exception;
 
 class SalesReturnController extends Controller
@@ -45,7 +46,6 @@ class SalesReturnController extends Controller
                 $salesReturn = SalesReturn::create($request->all());
                 $salesReturn
                     ->load('form')
-                    ->load('customer')
                     ->load('items');
     
                 return new ApiResource($salesReturn);
@@ -125,7 +125,10 @@ class SalesReturnController extends Controller
         $request->validate([ 'reason' => 'required']);
         
         $salesReturn->requestCancel($request);
+        SalesReturn::sendApproval($salesReturn);
 
         return response()->json([], 204);
+
+        
     }
 }

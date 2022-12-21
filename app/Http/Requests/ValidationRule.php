@@ -67,6 +67,7 @@ class ValidationRule
             'date' => 'required|date',
             'number'=> 'nullable|string',
             'increment_group' => 'required|integer',
+            'notes' => 'nullable|max:255',
         ];
     }
 

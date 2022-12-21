@@ -49,11 +49,11 @@ class TenantModuleAccessMiddleware
                 throw new UnauthorizedException();
             }
 
+            $this->_hasDefaultBranch();
+
             if ($this->action === 'read') {
                 return $next($request);
             }
-
-            $this->_hasDefaultBranch();
 
             $this->_hasDefaultWarehouse();
 

@@ -32,6 +32,7 @@ class UpdateRequest extends FormRequest
 
         $rulesUpdate = [
             'warehouse_id' => ValidationRule::foreignKey('warehouses'),
+            'employee_id' => ValidationRule::foreignKey('employees'),
             'request_approval_to' => 'required',
             'notes' => 'nullable|string|max:255',
             'items.*.item_id' => ValidationRule::foreignKey('items'),
@@ -39,6 +40,7 @@ class UpdateRequest extends FormRequest
             'items.*.unit' => ValidationRule::unit(),
             'items.*.converter' => ValidationRule::converter(),
             'items.*.chart_of_account_id' => ValidationRule::foreignKey('chart_of_accounts'),
+            'items.*.allocation_id' => ValidationRule::foreignKey('allocations'),
         ];
 
         return array_merge($rulesForm, $rulesUpdate);

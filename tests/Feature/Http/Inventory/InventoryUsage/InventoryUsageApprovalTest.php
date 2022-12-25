@@ -177,7 +177,39 @@ class InventoryUsageApprovalTest extends TestCase
         $this->changeActingAs($approver, $usage);
 
         $response = $this->json('POST', self::$path . '/' . $usage->id . '/approve', [], $this->headers);
-        $response->assertStatus(200);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                "data" => [
+                    "id",
+                    "warehouse_id",
+                    "employee_id",
+                    "form" => [
+                        "id",
+                        "branch_id",
+                        "approval_status",
+                        "date",
+                        "done",
+                        "notes",
+                        "number",
+                        "request_approval_to",
+                        "updated_by",
+                    ],
+                    "items" => [
+                        [
+                            "expiry_date",
+                            "id",
+                            "chart_of_account_id",
+                            "item_id",
+                            "allocation_id",
+                            "notes",
+                            "production_number",
+                            "quantity",
+                            "unit",
+                        ]
+                    ]
+                ],
+            ]);
 
         // check balance and match amount
         $this->assertDatabaseHas('journals', [
@@ -292,6 +324,7 @@ class InventoryUsageApprovalTest extends TestCase
 
         $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
         $inventoryUsageItem = $inventoryUsage->items()->first();
+        $usageItemAmount = $inventoryUsageItem->item->cogs($inventoryUsageItem->item_id) * $inventoryUsageItem->quantity;
 
         $approver = $inventoryUsage->form->requestApprovalTo;
         $this->changeActingAs($approver, $inventoryUsage);
@@ -300,13 +333,39 @@ class InventoryUsageApprovalTest extends TestCase
 
         $response = $this->json('POST', self::$path . '/' . $inventoryUsage->id . '/reject', $data, $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                "data" => [
+                    "id",
+                    "warehouse_id",
+                    "employee_id",
+                    "form" => [
+                        "id",
+                        "branch_id",
+                        "approval_status",
+                        "date",
+                        "done",
+                        "notes",
+                        "number",
+                        "request_approval_to",
+                        "updated_by",
+                    ],
+                ],
+            ]);
 
         $this->assertDatabaseMissing('journals', [
             'form_id' => $inventoryUsage->form->id,
             'journalable_type' => Item::$morphName,
             'journalable_id' => $inventoryUsageItem->item_id,
             'chart_of_account_id' => $inventoryUsageItem->chart_of_account_id,
+            'debit' => $usageItemAmount,
+        ], 'tenant');
+        $this->assertDatabaseMissing('journals', [
+            'form_id' => $inventoryUsage->form->id,
+            'journalable_type' => Item::$morphName,
+            'journalable_id' => $inventoryUsageItem->item_id,
+            'chart_of_account_id' => get_setting_journal('inventory usage', 'difference stock expense'),
+            'credit' => $usageItemAmount,
         ], 'tenant');
 
         $this->assertDatabaseHas('forms', [

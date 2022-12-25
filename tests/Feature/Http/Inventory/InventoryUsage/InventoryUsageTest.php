@@ -85,12 +85,17 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function invalid_create_inventory_usage()
+    public function invalid_required_create_inventory_usage()
     {
         $this->setRole();
 
         $data = $this->getDummyData();
-        $data = data_set($data, 'items.0.chart_of_account_id', null);
+        $data = data_set($data, 'employee_id', null, true);
+        $data = data_set($data, 'request_approval_to', null, true);
+        $data = data_set($data, 'items.0.item_id', null, true);
+        $data = data_set($data, 'items.0.unit', null, true);
+        $data = data_set($data, 'items.0.chart_of_account_id', null, true);
+        $data = data_set($data, 'items.0.allocation_id', null, true);
 
         $response = $this->json('POST', self::$path, $data, $this->headers);
 
@@ -98,6 +103,26 @@ class InventoryUsageTest extends TestCase
             ->assertJson([
                 "code" => 422,
                 "message" => "The given data was invalid.",
+                "errors" => [
+                    "employee_id" => [
+                        "The employee id field is required."
+                    ],
+                    "request_approval_to" => [
+                        "The request approval to field is required."
+                    ],
+                    "items.0.item_id" => [
+                        "The items.0.item_id field is required."
+                    ],
+                    "items.0.unit" => [
+                        "The items.0.unit field is required."
+                    ],
+                    "items.0.chart_of_account_id" => [
+                        "The items.0.chart_of_account_id field is required."
+                    ],
+                    "items.0.allocation_id" => [
+                        "The items.0.allocation_id field is required."
+                    ]
+                ]
             ]);
     }
     /** @test */
@@ -443,7 +468,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function _invalid_unit_update_inventory_usage()
+    public function invalid_unit_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -460,7 +485,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function _invalid_productionnumber_update_inventory_usage()
+    public function invalid_productionnumber_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -483,7 +508,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function _invalid_expirydate_update_inventory_usage()
+    public function invalid_expirydate_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -506,7 +531,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function _invalid_notes_update_inventory_usage()
+    public function invalid_notes_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -528,7 +553,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function _invalid_warehouse_update_inventory_usage()
+    public function invalid_warehouse_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -547,7 +572,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function _invalid_item_update_inventory_usage()
+    public function invalid_item_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -568,7 +593,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function _invalid_account_update_inventory_usage()
+    public function invalid_account_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -593,19 +618,57 @@ class InventoryUsageTest extends TestCase
     {
         $this->success_create_inventory_usage();
 
-        $inventoryUsage = InventoryUsage::orderBy('id', 'asc')->first();
+        $usage = InventoryUsage::orderBy('id', 'asc')->first();
+        $usageItem = $usage->items()->first();
+        $usageItemAmount = $usageItem->item->cogs($usageItem->item_id) * $usageItem->quantity;
         
-        $data = $this->getDummyData($inventoryUsage);
-        $data = data_set($data, 'id', $inventoryUsage->id, false);
+        $data = $this->getDummyData($usage);
+        $data = data_set($data, 'id', $usage->id, false);
 
         Mail::fake();
 
-        $response = $this->json('PATCH', self::$path . '/' . $inventoryUsage->id, $data, $this->headers);
+        $response = $this->json('PATCH', self::$path . '/' . $usage->id, $data, $this->headers);
 
-        $response->assertStatus(201);
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                "data" => [
+                    "id",
+                    "warehouse_id",
+                    "employee_id",
+                    "form" => [
+                        "id",
+                        "branch_id",
+                        "approval_status",
+                        "date",
+                        "done",
+                        "notes",
+                        "number",
+                        "request_approval_to",
+                        "updated_by",
+                    ],
+                    "items" => [
+                        [
+                            "expiry_date",
+                            "id",
+                            "chart_of_account_id",
+                            "item_id",
+                            "allocation_id",
+                            "notes",
+                            "production_number",
+                            "quantity",
+                            "unit",
+                        ]
+                    ]
+                ],
+            ]);
 
-        $this->assertDatabaseHas('forms', [ 
+        $formNumberFormat = $usage->defaultNumberPrefix.date('ym')."000";
+        $formNumber = $response->json('data.form.number');
+        $this->assertStringContainsString($formNumberFormat, $formNumber, "not expected form number format") ;
+
+        $this->assertDatabaseHas('forms', [
             'number' => $response->json('data.form.number'),
+            'request_approval_to' => $response->json('data.form.request_approval_to'),
             'approval_status' => 0,
         ], 'tenant');
         $this->assertDatabaseHas('forms', [ 'edited_number' => $response->json('data.form.number') ], 'tenant');
@@ -616,11 +679,32 @@ class InventoryUsageTest extends TestCase
             'activity' => 'Update - 1'
         ], 'tenant');
 
+        $this->assertDatabaseHas('inventory_usages', [
+            'id' => $response->json('data.id'),
+            'warehouse_id' => $response->json('data.warehouse_id'),
+            'employee_id' => $response->json('data.employee_id'),
+        ], 'tenant');
+        $this->assertDatabaseHas('inventory_usage_items', [
+            'inventory_usage_id' => $response->json('data.id'),
+            'item_id' => $response->json('data.items.0.item_id'),
+            'chart_of_account_id' => $response->json('data.items.0.chart_of_account_id'),
+            'allocation_id' => $response->json('data.items.0.allocation_id'),
+            'quantity' => $response->json('data.items.0.quantity'),
+        ], 'tenant');
+
         $this->assertDatabaseMissing('journals', [
             'form_id' => $response->json('data.form.id'),
             'journalable_type' => Item::$morphName,
             'journalable_id' => $response->json('data.items.0.item_id'),
             'chart_of_account_id' => $response->json('data.items.0.chart_of_account_id'),
+            'debit' => $usageItemAmount,
+        ], 'tenant');
+        $this->assertDatabaseMissing('journals', [
+            'form_id' => $response->json('data.form.id'),
+            'journalable_type' => Item::$morphName,
+            'journalable_id' => $response->json('data.items.0.item_id'),
+            'chart_of_account_id' => get_setting_journal('inventory usage', 'difference stock expense'),
+            'credit' => $usageItemAmount,
         ], 'tenant');
 
         Mail::assertQueued(InventoryUsageApprovalMail::class);

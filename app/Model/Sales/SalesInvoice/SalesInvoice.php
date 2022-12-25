@@ -102,6 +102,11 @@ class SalesInvoice extends TransactionModel
         return $this->morphToMany(Payment::class, 'referenceable', 'payment_details')->active();
     }
 
+    public function references()
+    {
+        return $this->hasMany(SalesInvoiceReference::class);
+    }
+
     public function detachDownPayments()
     {
         $this->downPayments()->detach();
@@ -291,6 +296,18 @@ class SalesInvoice extends TransactionModel
             $salesDownPayment = SalesDownPayment::findOrFail($downPayment['id']);
             $salesDownPayment->updateStatus();
         }
+    }
+
+    /**
+     * Get sales invoice reference.
+     */
+    public static function getAvailable($salesInvoice)
+    {
+        $available = $salesInvoice->amount;
+        foreach ($salesInvoice->references as $reference) {
+            $available = $available - $reference->amount;
+        }
+        return $available;
     }
 
     private static function updateJournal($salesInvoice)

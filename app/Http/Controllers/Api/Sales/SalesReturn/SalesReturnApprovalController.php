@@ -13,7 +13,7 @@ use App\Model\Token;
 use App\Model\Form;
 use App\Model\UserActivity;
 use App\Model\Sales\SalesReturn\SalesReturn;
-
+use Exception;
 use App\Mail\Sales\SalesReturnApprovalRequest;
 
 class SalesReturnApprovalController extends Controller
@@ -68,27 +68,38 @@ class SalesReturnApprovalController extends Controller
      */
     public function approve(Request $request, $id)
     {
-        
         $result = DB::connection('tenant')->transaction(function () use ($id) {
-        $salesReturn = SalesReturn::findOrFail($id);
-        $salesReturn->checkQuantity($salesReturn->items);
-
-        $form = $salesReturn->form;
-        $form->approval_by = auth()->user()->id;
-        $form->approval_at = now();
-        $form->approval_status = 1;
-        $form->save();
-
-        SalesReturn::updateJournal($salesReturn);
-        SalesReturn::updateInventory($salesReturn->form, $salesReturn);
-        SalesReturn::updateInvoiceQuantity($salesReturn, 'update');
+            try {
+                $salesReturn = SalesReturn::findOrFail($id);
+                $salesReturn->checkQuantity($salesReturn->items);
         
+                $form = $salesReturn->form;
+        
+                if ($form->approval_status === 1) {
+                    throw new Exception('form already approved', 422);
+                }
+        
+                $form->approval_by = auth()->user()->id;
+                $form->approval_at = now();
+                $form->approval_status = 1;
+                $form->save();
+        
+                SalesReturn::updateJournal($salesReturn);
+                SalesReturn::updateInventory($salesReturn->form, $salesReturn);
+                SalesReturn::updateInvoiceQuantity($salesReturn, 'update');
+                SalesReturn::updateSalesInvoiceReference($salesReturn);
+                
+        
+                $form->fireEventApproved();
+            
+            } catch (\Throwable $th) {
+                return response_error($th);
+            }
 
-        $form->fireEventApproved();
-    
+            $salesReturn = SalesReturn::findOrFail($id);
+            $salesReturn->load('form');
             return new ApiResource($salesReturn);
         });
-        
 
         return $result;
     }
@@ -100,7 +111,7 @@ class SalesReturnApprovalController extends Controller
      */
     public function reject(Request $request, $id)
     {
-        $validated = $request->validate([ 'reason' => 'required' ]);
+        $validated = $request->validate([ 'reason' => 'required|max:255' ]);
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $validated, $id) {
             $salesReturn = SalesReturn::findOrFail($id);
@@ -112,6 +123,8 @@ class SalesReturnApprovalController extends Controller
     
             $salesReturn->form->fireEventRejected();
     
+            $salesReturn = SalesReturn::findOrFail($id);
+            $salesReturn->load('form');
             return new ApiResource($salesReturn);
         });
 

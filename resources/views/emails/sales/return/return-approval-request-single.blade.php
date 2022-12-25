@@ -138,13 +138,13 @@
                 Check
             </a>
             <a
-                href="{{ $url ?: '-' }}approval?crud-type={{ $salesReturns[0]->action }}&resource-type=salesReturns&action=approve&ids={{ $salesReturns[0]->id }}&approver_id={{ $approver->id }}&token={{ $approver->token }}"
+                href="{{ $url ?: '-' }}approval?crud-type={{ $salesReturns[0]->action }}&resource-type=SalesReturn&action=approve&ids={{ $salesReturns[0]->id }}&approver_id={{ $approver->id }}&token={{ $approver->token }}"
                 target="_blank"
                 style="background-color: #4CAF50; border: none; color: white; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                 Approve
             </a>
             <a
-                href="{{ $url ?: '-' }}approval?crud-type={{ $salesReturns[0]->action }}&resource-type=salesReturns&action=reject&ids={{ $salesReturns[0]->id }}&approver_id={{ $approver->id }}&token={{ $approver->token }}"
+                href="{{ $url ?: '-' }}approval?crud-type={{ $salesReturns[0]->action }}&resource-type=SalesReturn&action=reject&ids={{ $salesReturns[0]->id }}&approver_id={{ $approver->id }}&token={{ $approver->token }}"
                 target="_blank"
                 style="background-color: rgb(255, 0, 0); border: none; color: white; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                 Reject

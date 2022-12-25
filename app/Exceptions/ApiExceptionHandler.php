@@ -94,6 +94,14 @@ trait ApiExceptionHandler
             ], 400);
         }
 
+        /* Handle if contain constraint violation but not instanceof QueryExcepetion */
+        if (strpos($exception->getMessage(), 'Integrity constraint violation') !== false) {
+            return response()->json([
+                'code' => 400,
+                'message' => 'Duplicate data entry',
+            ], 400);
+        }
+
         /* Handle server error or library error */
         if ($exception->getCode() >= 500 || ! $exception->getCode()) {
             return response()->json([

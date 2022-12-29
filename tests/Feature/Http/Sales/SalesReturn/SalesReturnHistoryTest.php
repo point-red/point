@@ -116,12 +116,12 @@ class SalesReturnHistoryTest extends TestCase
                     [
                         'id' => $response->json('data.0.id'),
                         'table_type' => 'SalesReturn',
-                        'table_id' => $salesReturnUpdated->id,
+                        'table_id' => $response->json('data.0.table_id'),
                         'number' => $salesReturnUpdated->form->number,
                         'date' => $response->json('data.0.date'),
                         'user_id' => $response->json('data.0.user_id'),
                         'activity' => $response->json('data.0.activity'),
-                        'formable_id' => $salesReturnUpdated->id,
+                        'formable_id' => $response->json('data.0.formable_id'),
                         'user' => [
                             'id' => $response->json('data.0.user.id'),
                             'name' => $response->json('data.0.user.name'),

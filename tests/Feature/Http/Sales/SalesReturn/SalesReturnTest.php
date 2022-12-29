@@ -11,10 +11,23 @@ use App\Model\Sales\SalesReturn\SalesReturn;
 use App\Model\Sales\SalesInvoice\SalesInvoice;
 use Illuminate\Support\Facades\Mail;
 use App\Helpers\Inventory\InventoryHelper;
+use Throwable;
 
 class SalesReturnTest extends TestCase
 {
   use SalesReturnSetup;
+
+  public function create_sales_return($isFirstCreate = true)
+  {
+      $data = $this->getDummyData();
+      
+      if($isFirstCreate) {
+          $this->setRole();
+          $this->previousSalesReturnData = $data;
+      }
+
+      $this->json('POST', self::$path, $data, $this->headers);
+  }
 
   public static $path = '/api/v1/sales/return';
 
@@ -438,7 +451,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function unauthorized_no_branch_read_all_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $this->branchDefault->pivot->is_default = false;
       $this->branchDefault->pivot->save();
@@ -466,7 +479,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function unauthorized_no_branch_read_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $this->branchDefault->pivot->is_default = false;
       $this->branchDefault->pivot->save();
@@ -491,7 +504,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function unauthorized_read_all_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $this->unsetUserRole();
   
@@ -518,7 +531,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function unauthorized_read_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $this->unsetUserRole();
   
@@ -542,7 +555,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function success_read_all_sales_return()
     {
-        $this->success_create_sales_return();
+        $this->create_sales_return();
   
         $data = [
             'join' => 'form,customer,items,item',
@@ -694,7 +707,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function read_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       $salesReturnItem = $salesReturn->items[0];
@@ -886,7 +899,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function unauthorized_no_default_branch_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $this->branchDefault->pivot->is_default = false;
       $this->branchDefault->pivot->save();
@@ -906,7 +919,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function referenced_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
   
@@ -927,7 +940,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function unauthorized_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $this->unsetUserRole();
   
@@ -946,7 +959,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function invalid_data_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       $data = $this->getDummyData($salesReturn);
@@ -965,7 +978,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function error_form_done_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       $salesReturn->form->done = 1;
@@ -986,7 +999,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function error_notes_more_than_255_character_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1011,7 +1024,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function whitespaces_trimmed_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1030,7 +1043,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function overquantity_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1055,7 +1068,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function invalid_total_item_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1075,7 +1088,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function invalid_sub_total_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1095,7 +1108,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function invalid_tax_base_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1115,7 +1128,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function invalid_type_of_tax_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1135,7 +1148,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function invalid_tax_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1155,7 +1168,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function invalid_amount_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1175,7 +1188,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function error_journal_not_found_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1198,7 +1211,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function check_journal_balance_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1211,11 +1224,35 @@ class SalesReturnTest extends TestCase
       $journal = SalesReturn::checkJournalBalance($salesReturn);
       $this->assertEquals($journal['debit'], $journal['credit']);
     }
+
+    /** @test */
+    public function will_throw_on_data_duplicate()
+    {
+      $this->expectException(Throwable::class);
+      $this->expectedExceptionMessageRegExp('\bIntegrity constraint violation\b');
+  
+      $oldSalesReturn = SalesReturn::orderBy('id', 'asc')->first();
+      
+      $response = $this->json('PATCH', self::$path . '/' . $oldSalesReturn->id, $data, $this->headers);
+  
+      $oldSalesReturn->form->number = $response->json('data.form.number');
+      $oldSalesReturn->form->save();
+    }
+
+  public function approve_sales_return()
+  {
+    $this->create_sales_return();
+
+    $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
+
+    $this->json('POST', self::$path . '/' . $salesReturn->id . '/approve', [], $this->headers);
+
+  }
     
     /** @test */
     public function success_update_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->approve_sales_return();
   
       $oldSalesReturn = SalesReturn::orderBy('id', 'asc')->first();
       
@@ -1362,7 +1399,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function unauthorized_different_default_branch_delete_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $branch = $this->createBranch();
       $this->branchDefault->pivot->branch_id = $branch->id;
@@ -1384,7 +1421,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function unauthorized_no_warehouse_default_branch_delete_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $this->removeUserWarehouse();
   
@@ -1403,7 +1440,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function unauthorized_delete_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $this->unsetUserRole();
   
@@ -1421,7 +1458,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function error_form_done_delete_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       $salesReturn->form->done = 1;
@@ -1441,7 +1478,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function referenced_delete_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       $this->createPaymentCollection($salesReturn);
@@ -1460,7 +1497,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function error_empty_reason_delete_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
   
@@ -1481,7 +1518,7 @@ class SalesReturnTest extends TestCase
     /** @test */
     public function success_delete_sales_return()
     {
-      $this->success_create_sales_return();
+      $this->create_sales_return();
   
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       $data['reason'] = $this->faker->text(200);

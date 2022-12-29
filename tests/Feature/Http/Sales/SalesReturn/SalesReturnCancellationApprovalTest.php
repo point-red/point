@@ -297,6 +297,27 @@ class SalesReturnCancellationApprovalTest extends TestCase
             ]
         ]);
   }
+
+  /** @test */
+  public function error_already_rejected_reject_sales_return()
+  {
+    $this->delete_sales_return();
+
+    $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
+    $salesReturn->form->cancellation_status = -1;
+    $salesReturn->form->save();
+
+    $data['reason'] = $this->faker->text(100);
+
+    $response = $this->json('POST', self::$path . '/' . $salesReturn->id . '/cancellation-reject', $data, $this->headers);
+
+    $response->assertStatus(422)
+      ->assertJson([
+        'code' => 422,
+        'message' => 'form not in cancellation pending state'
+      ]);
+  }
+  
   
   /** @test */
   public function error_empty_reason_reject_cancel_sales_return()

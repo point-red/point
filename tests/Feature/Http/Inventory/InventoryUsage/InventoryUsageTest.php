@@ -430,7 +430,7 @@ class InventoryUsageTest extends TestCase
             ]);
     }
     /** @test */
-    public function invalid_update_inventory_usage()
+    public function invalid_approver_update_inventory_usage()
     {
         $this->success_create_inventory_usage();
 
@@ -446,6 +446,9 @@ class InventoryUsageTest extends TestCase
             ->assertJson([
                 "code" => 422,
                 "message" => "The given data was invalid.",
+                "errors" => [
+                    "request_approval_to" => ["The request approval to field is required."],
+                ]
             ]);
     }
     /** @test */

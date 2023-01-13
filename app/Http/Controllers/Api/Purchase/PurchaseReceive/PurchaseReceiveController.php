@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseReceive;
 
+use App\Exceptions\BranchNullException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseReceiveRequest;
 use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\UpdatePurchaseReceiveRequest;
@@ -153,6 +154,19 @@ class PurchaseReceiveController extends Controller
         $purchaseReceive = PurchaseReceive::findOrFail($id);
         $purchaseReceive->isAllowedToUpdate();
 
+        $branches = tenant(auth()->user()->id)->branches;
+        $userBranch = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $userBranch = $branch->id;
+                break;
+            }
+        }
+        
+        if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNullException();
+        }
+
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseReceive) {
             $purchaseReceive->form->archive();
 
@@ -187,6 +201,18 @@ class PurchaseReceiveController extends Controller
 
         $purchaseReceive = PurchaseReceive::findOrFail($id);
         $purchaseReceive->isAllowedToDelete();
+        $branches = tenant(auth()->user()->id)->branches;
+        $userBranch = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $userBranch = $branch->id;
+                break;
+            }
+        }
+        
+        if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNullException();
+        }
         $purchaseReceive->requestCancel($request);
 
         DB::connection('tenant')->commit();

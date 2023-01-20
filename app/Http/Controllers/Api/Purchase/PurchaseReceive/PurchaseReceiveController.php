@@ -26,10 +26,7 @@ class PurchaseReceiveController extends Controller
      */
     public function index(Request $request)
     {
-        $userBranches = Branch::where('user_id', auth()->user()->id)->pluck('id');
-        $purchaseReceives = PurchaseReceive::from(PurchaseReceive::getTableName().' as '.PurchaseReceive::$alias)->eloquentFilter($request)->where('form', function($q) use($userBranches) {
-            $q->whereIn('branch_id', $userBranches);
-        });
+        $purchaseReceives = PurchaseReceive::from(PurchaseReceive::getTableName().' as '.PurchaseReceive::$alias)->eloquentFilter($request);
         
         $purchaseReceives = PurchaseReceive::joins($purchaseReceives, $request->get('join'));
 

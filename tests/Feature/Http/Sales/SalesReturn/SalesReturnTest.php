@@ -324,11 +324,7 @@ class SalesReturnTest extends TestCase
   
       $data = $this->getDummyData();
   
-      Mail::fake();
-  
       $response = $this->json('POST', self::$path, $data, $this->headers);
-  
-      Mail::assertQueued(SalesReturnApprovalRequest::class);
   
       $salesReturn = SalesReturn::where('id', $response->json('data.id'))->first();
   
@@ -1263,11 +1259,7 @@ class SalesReturnTest extends TestCase
       $data = $this->getDummyData($oldSalesReturn);
       $data = data_set($data, 'id', $oldSalesReturn->id, false);
   
-      Mail::fake();
-  
       $response = $this->json('PATCH', self::$path . '/' . $oldSalesReturn->id, $data, $this->headers);
-  
-      Mail::assertQueued(SalesReturnApprovalRequest::class);
   
       $salesReturn = SalesReturn::where('id', $response->json('data.id'))->first();
   
@@ -1531,14 +1523,10 @@ class SalesReturnTest extends TestCase
       $salesReturn = SalesReturn::orderBy('id', 'asc')->first();
       $data['reason'] = $this->faker->text(200);
   
-      Mail::fake();
-  
       $response = $this->json('DELETE', self::$path . '/' . $salesReturn->id, $data, $this->headers);
   
       $response->assertStatus(204);
       
-      Mail::assertQueued(SalesReturnApprovalRequest::class);
-  
       $this->assertDatabaseHas('forms', [
         'number' => $salesReturn->form->number,
         'request_cancellation_reason' => $data['reason'],

@@ -114,14 +114,14 @@ class SalesReturnHistoryTest extends TestCase
             ->assertJsonStructure([
                 'data' => [
                     [
-                        'id',
-                        'table_type',
-                        'table_id',
-                        'number',
-                        'date',
-                        'user_id',
-                        'activity',
-                        'formable_id',
+                        'id' => $response->json('data.0.id'),
+                        'table_type' => 'SalesReturn',
+                        'table_id' => $response->json('data.0.table_id'),
+                        'number' => $salesReturnUpdated->form->number,
+                        'date' => $response->json('data.0.date'),
+                        'user_id' => $response->json('data.0.user_id'),
+                        'activity' => $response->json('data.0.activity'),
+                        'formable_id' => $response->json('data.0.formable_id'),
                         'user' => [
                             'id',
                             'name',

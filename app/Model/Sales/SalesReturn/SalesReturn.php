@@ -78,8 +78,6 @@ class SalesReturn extends TransactionModel
         $form = new Form;
         $form->saveData($data, $salesReturn);
 
-        self::sendApproval($salesReturn);
-
         return $salesReturn;
     }
 

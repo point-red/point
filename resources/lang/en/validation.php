@@ -100,8 +100,11 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'purchase_order_id' => [
+            'required' => "Purchase Order can't be null",
+        ],
+        'warehouse_id' => [
+            'required' => "Warehouse can't be null",
         ],
     ],
 

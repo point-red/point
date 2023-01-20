@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseReceive;
 
+use App\Exceptions\BranchNotRightException;
 use App\Exceptions\BranchNullException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseReceiveRequest;
@@ -114,8 +115,11 @@ class PurchaseReceiveController extends Controller
             }
         }
         
-        if ($purchaseReceive->form->branch_id != $userBranch) {
+        if($userBranch == null) {
             throw new BranchNullException();
+        }
+        else if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNotRightException();
         }
 
         return new ApiResource($purchaseReceive);
@@ -140,8 +144,11 @@ class PurchaseReceiveController extends Controller
             }
         }
         
-        if ($purchaseReceive->form->branch_id != $userBranch) {
+        if($userBranch == null) {
             throw new BranchNullException();
+        }
+        else if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNotRightException();
         }
 
         $orderItems = optional($purchaseReceive->purchaseOrder)->items;
@@ -190,8 +197,11 @@ class PurchaseReceiveController extends Controller
             }
         }
         
-        if ($purchaseReceive->form->branch_id != $userBranch) {
+        if($userBranch == null) {
             throw new BranchNullException();
+        }
+        else if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNotRightException();
         }
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseReceive) {
@@ -236,9 +246,11 @@ class PurchaseReceiveController extends Controller
                 break;
             }
         }
-        
-        if ($purchaseReceive->form->branch_id != $userBranch) {
+        if($userBranch == null) {
             throw new BranchNullException();
+        }
+        else if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNotRightException();
         }
         $purchaseReceive->requestCancel($request);
 

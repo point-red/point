@@ -103,7 +103,20 @@ class PurchaseReceiveController extends Controller
      */
     public function show(Request $request, $id)
     {
+        
         $purchaseReceive = PurchaseReceive::eloquentFilter($request)->findOrFail($id);
+        $branches = tenant(auth()->user()->id)->branches;
+        $userBranch = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $userBranch = $branch->id;
+                break;
+            }
+        }
+        
+        if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNullException();
+        }
 
         return new ApiResource($purchaseReceive);
     }
@@ -118,6 +131,18 @@ class PurchaseReceiveController extends Controller
     public function edit(Request $request, $id)
     {
         $purchaseReceive = PurchaseReceive::eloquentFilter($request)->findOrFail($id)->load('items');
+        $branches = tenant(auth()->user()->id)->branches;
+        $userBranch = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $userBranch = $branch->id;
+                break;
+            }
+        }
+        
+        if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNullException();
+        }
 
         $orderItems = optional($purchaseReceive->purchaseOrder)->items;
 

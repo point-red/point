@@ -106,6 +106,8 @@ class PurchaseReceiveController extends Controller
     {
         
         $purchaseReceive = PurchaseReceive::eloquentFilter($request)->findOrFail($id);
+
+        //Check branches
         $branches = tenant(auth()->user()->id)->branches;
         $userBranch = null;
         foreach ($branches as $branch) {

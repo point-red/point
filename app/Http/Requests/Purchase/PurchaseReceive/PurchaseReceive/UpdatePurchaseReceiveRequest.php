@@ -30,7 +30,7 @@ class UpdatePurchaseReceiveRequest extends FormRequest
             'supplier_id' => ValidationRule::foreignKey('suppliers'),
             'supplier_name' => 'required|string',
             'warehouse_id' => ValidationRule::foreignKey('warehouses'),
-            'purchase_order_id' => ValidationRule::foreignKeyNullable('purchase_orders'),
+            'purchase_order_id' => ValidationRule::foreignKey('purchase_orders'),
 
             'items' => 'required_without:services|array',
             'services' => 'required_without:items|array',

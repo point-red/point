@@ -9,7 +9,9 @@ use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\UpdatePurchaseRec
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Inventory\Inventory;
+use App\Model\Master\Branch;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use Google\Service\CloudIAP\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -26,7 +28,8 @@ class PurchaseReceiveController extends Controller
     {
         $purchaseReceives = PurchaseReceive::from(PurchaseReceive::getTableName().' as '.PurchaseReceive::$alias)->eloquentFilter($request);
 
-        $purchaseReceives = PurchaseReceive::joins($purchaseReceives, $request->get('join'));
+        $userBranches = Branch::where('user_id', auth()->user()->id)->pluck('id');
+        $purchaseReceives = PurchaseReceive::joins($purchaseReceives, $request->get('join'))->whereIn('form.branch_id', $userBranches);
 
         $purchaseReceives = pagination($purchaseReceives, $request->get('limit'));
 

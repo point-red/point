@@ -125,7 +125,6 @@ class SalesReturnController extends Controller
         $request->validate([ 'reason' => 'required']);
         
         $salesReturn->requestCancel($request);
-        SalesReturn::sendApproval($salesReturn);
 
         return response()->json([], 204);
 

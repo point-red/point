@@ -33,12 +33,6 @@ class SalesReturnApprovalController extends Controller
             ->where(Form::$alias . '.close_status', 0)
             ->orWhere(function ($query) {
                 $query
-                    ->where(Form::$alias . '.cancellation_status', 0)
-                    ->whereNull(Form::$alias . '.close_status')
-                    ->whereNull(Form::$alias . '.edited_number');
-            })
-            ->orWhere(function ($query) {
-                $query
                     ->where(Form::$alias . '.approval_status', 0)
                     ->whereNull(Form::$alias . '.cancellation_status')
                     ->whereNull(Form::$alias . '.close_status')

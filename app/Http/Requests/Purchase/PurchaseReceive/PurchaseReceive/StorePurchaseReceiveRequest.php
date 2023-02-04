@@ -30,7 +30,7 @@ class StorePurchaseReceiveRequest extends FormRequest
             'supplier_id' => ValidationRule::foreignKey('suppliers'),
             'supplier_name' => 'required|string',
             'warehouse_id' => ValidationRule::foreignKey('warehouses'),
-            'purchase_order_id' => ValidationRule::foreignKeyNullable('purchase_orders'),
+            'purchase_order_id' => ValidationRule::foreignKey('purchase_orders'),
             'items' => 'required_without:services|array',
             'services' => 'required_without:items|array',
         ];
@@ -54,5 +54,26 @@ class StorePurchaseReceiveRequest extends FormRequest
         ];
 
         return array_merge($ruleForm, $rulePurchaseReceive, $rulePurchaseReceiveItems, $rulePurchaseReceiveServices);
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $sum = 0;
+            $items = $this->get('items');
+            foreach($items as $item) {
+                if (isset($item['dna'])) {
+                    foreach ($item['dna'] as $dna) {
+                        $sum += $dna['quantity'];
+                    }
+                } else {
+                    $sum += $item['quantity'];
+                }
+            }
+            
+            if ($sum == 0) {
+                $validator->errors()->add("total_quantity", 'quantity must be filled in');
+            }
+        });
     }
 }

@@ -48,7 +48,6 @@ class SalesReturnApprovalRequest extends Mailable
         $user = $this->form->send_by;
         if (count($this->salesReturns) > 1) {
             return $this->subject('Request Approval All')
-                ->from($user->email, $user->getFullNameAttribute())
                 ->view('emails.sales.return.return-approval-request', [
                     'salesReturns' => $this->salesReturns,
                     'approver' => $this->approver,
@@ -57,7 +56,6 @@ class SalesReturnApprovalRequest extends Mailable
                 ]);
         } else {
             return $this->subject('Approval Request')
-                ->from($user->email, $user->getFullNameAttribute())
                 ->view('emails.sales.return.return-approval-request-single', [
                     'salesReturns' => $this->salesReturns,
                     'approver' => $this->approver,

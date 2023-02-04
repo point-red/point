@@ -39,6 +39,12 @@ class SalesReturnApprovalRequest extends Mailable
     {
         $this->approver->token = $this->approverToken;
 
+        if (@$this->urlReferer) {
+            $parsedUrl = parse_url($this->urlReferer);
+            $port = @$parsedUrl['port'] ? ":{$parsedUrl['port']}" : '';
+            $url = "{$parsedUrl['scheme']}://{$parsedUrl['host']}{$port}/";
+        }
+
         $user = $this->form->send_by;
         if (count($this->salesReturns) > 1) {
             return $this->subject('Request Approval All')
@@ -46,22 +52,17 @@ class SalesReturnApprovalRequest extends Mailable
                 ->view('emails.sales.return.return-approval-request', [
                     'salesReturns' => $this->salesReturns,
                     'approver' => $this->approver,
-                    'form' => $this->form
+                    'form' => $this->form,
+                    'url' => @$url
                 ]);
         } else {
-            if (@$this->urlReferer) {
-                $parsedUrl = parse_url($this->urlReferer);
-                $port = @$parsedUrl['port'] ? ":{$parsedUrl['port']}" : '';
-                $url = "{$parsedUrl['scheme']}://{$parsedUrl['host']}{$port}/";
-            }
-
             return $this->subject('Approval Request')
                 ->from($user->email, $user->getFullNameAttribute())
                 ->view('emails.sales.return.return-approval-request-single', [
                     'salesReturns' => $this->salesReturns,
                     'approver' => $this->approver,
                     'form' => $this->form,
-                    'url' => @$url,
+                    'url' => @$url
                 ]);
         }
     }

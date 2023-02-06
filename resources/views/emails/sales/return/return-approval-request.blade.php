@@ -108,19 +108,19 @@
                         <td style="padding: .5rem" rowspan="{{ count($salesReturn->items) }}">
                             <div style="display: flex;">
                                 <a
-                                    href="{{ env('TENANT_DOMAIN') . 'sales/return/'. $salesReturn->id }}"
+                                    href="{{ $url ?: env('TENANT_DOMAIN') }}sales/return/{{ $salesReturn->id }}"
                                     target="_blank"
                                     style="background-color: rgb(192, 192, 192); border: none; color: black; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                                     Check
                                 </a>
                                 <a
-                                    href="{{ env('TENANT_DOMAIN') . 'approval?action=approve&' . http_build_query($urlApprovalQueries) }}"
+                                    href="{{ $url ?: env('TENANT_DOMAIN') }}approval?action=approve&{{ http_build_query($urlApprovalQueries) }}"
                                     target="_blank"
                                     style="background-color: #4CAF50; border: none; color: white; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                                     Approve
                                 </a>
                                 <a
-                                    href="{{ env('TENANT_DOMAIN') . 'approval?action=reject&' . http_build_query($urlApprovalQueries) }}"
+                                    href="{{ $url ?: env('TENANT_DOMAIN') }}approval?action=reject&{{ http_build_query($urlApprovalQueries) }}"
                                     target="_blank"
                                     style="background-color: rgb(255, 0, 0); border: none; color: white; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                                     Reject
@@ -157,13 +157,13 @@
                 $urlApprovalQueries['ids'] = implode(",", Illuminate\Support\Arr::pluck($salesReturns, 'id')); 
             @endphp
             <a
-                href="{{ env('TENANT_DOMAIN') .'approval-all?action=approve&' . http_build_query($urlApprovalQueries) }}"
+                href="{{ $url ?: env('TENANT_DOMAIN') }}approval-all?action=approve&{{ http_build_query($urlApprovalQueries) }}"
                 target="_blank"
                 style="background-color: #4CAF50; border: none; color: white; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                 Approve All
             </a>
             <a
-                href="{{ env('TENANT_DOMAIN') .'approval-all?action=reject&' . http_build_query($urlApprovalQueries) }}"
+                href="{{ $url ?: env('TENANT_DOMAIN') }}approval-all?action=reject&{{ http_build_query($urlApprovalQueries) }}"
                 target="_blank"
                 style="background-color: rgb(238, 238, 238); border: none; color: rgb(83, 83, 83); margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                 Reject All

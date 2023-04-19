@@ -2,6 +2,9 @@
 
 use App\Model\SettingJournal;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 if (! function_exists('log_object')) {
@@ -361,5 +364,28 @@ if (! function_exists('response_error')) {
         if($code !== 0) $httpCode = $code;
 
         return response (['code' => $code, 'message' => $message], $httpCode);
+    }
+}
+
+if (! function_exists('paginate_collection')) {
+    /**
+     * Paginate collection (not from query).
+     *
+     * @param $collection
+     * @param null $limit
+     * @return string
+     */
+    function paginate_collection($collection, $limit = null, $page = null, $options = [])
+    {
+        if (! $limit) {
+            return $collection->paginate(100);
+        }
+
+        // limit call maximum 1000 item per page
+        $limit = $limit > 1000 ? 1000 : $limit;
+
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $collection = $collection instanceof Collection ? $collection : Collection::make($collection);
+        return new LengthAwarePaginator($collection->forPage($page, $limit), $collection->count(), $limit, $page, $options);
     }
 }

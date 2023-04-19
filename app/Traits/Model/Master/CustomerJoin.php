@@ -72,8 +72,23 @@ trait CustomerJoin
         }
 
         if (in_array('branch', $joins)) {
-            $query = $query->leftjoin(Branch::getTableName(), function ($q) {
-                $q->on(Branch::getTableName('id'), '=', Customer::getTableName('branch_id'));
+            $query = $query->leftjoin(Branch::getTableName().' as '.Branch::$alias, function ($q) {
+                $q->on(Branch::$alias.'.id', '=', Customer::$alias.'.branch_id');
+            });
+        }
+
+        if (in_array('pricing_groups', $joins)) {
+            $query = $query->leftjoin('pricing_groups', function ($q) {
+                $q->on('pricing_groups.id', '=', Customer::$alias.'.pricing_group_id');
+            });
+        }
+
+        if (in_array('groups', $joins)) {
+            $query = $query->leftjoin('customer_customer_group', function ($q) {
+                $q->on('customer_customer_group.customer_id', '=', Customer::$alias.'.id');
+            });
+            $query = $query->leftjoin('customer_groups', function ($q) {
+                $q->on('customer_groups.id', '=', 'customer_customer_group.customer_group_id');
             });
         }
 

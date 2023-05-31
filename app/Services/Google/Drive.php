@@ -16,7 +16,7 @@ class Drive
 
         // https://github.com/masbug/flysystem-google-drive-ext#using-with-laravel-framework
         $this->service = new \Google\Service\Drive($this->client);
-        $this->adapter = new \Masbug\Flysystem\GoogleDriveAdapter($this->service);
+        $this->adapter = new GoogleDriveAdapter($this->service);
         $this->driver = new \League\Flysystem\Filesystem($this->adapter);
         $this->disk = new \Illuminate\Filesystem\FilesystemAdapter($this->driver, $this->adapter);
     }

@@ -150,17 +150,6 @@ class InventoryUsage extends TransactionModel
         self::checkIsJournalBalance($usage);
     }
 
-    private static function checkIsItemQuantityOver($item, $itemModel, $inventoryUsage, $options = [
-        'expiry_date' => null,
-        'production_number' => null,
-    ])
-    {
-        $stock = InventoryHelper::getCurrentStock($itemModel, $inventoryUsage->created_at, $inventoryUsage->warehouse, $options);
-        if (abs($item['quantity']) > $stock) {
-            throw new StockNotEnoughException($itemModel);
-        }
-    }
-
     private static function mapItems($items, $inventoryUsage)
     {
         $array = [];
@@ -179,7 +168,6 @@ class InventoryUsage extends TransactionModel
                                 'expiry_date' => $dna['expiry_date'],
                                 'production_number' => $dna['production_number'],
                             ];
-                            self::checkIsItemQuantityOver($item, $itemModel, $inventoryUsage, $options);
 
                             $dnaItem = $item;
                             $dnaItem['quantity'] = $dna['quantity'];
@@ -190,8 +178,6 @@ class InventoryUsage extends TransactionModel
                     }
                 }
             } else {
-                self::checkIsItemQuantityOver($item, $itemModel, $inventoryUsage);
-                
                 array_push($array, $item);
             }
         }

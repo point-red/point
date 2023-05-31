@@ -48,15 +48,8 @@
                         <th style="padding: .5rem">Form Number</th>
                         <th style="padding: .5rem">Form Reference</th>
                         <th style="padding: .5rem">Customer</th>
-                        <th>
-                            <table style="width: 100%; table-layout: fixed;">
-                                <tbody style="height: 100%;"><tr>
-                                        <td style="border-right: 1px solid black; font-weight: bold;padding: .5rem;width: 70px;">Item</td>
-                                        <td style="border-right: 1px solid black; font-weight: bold;padding: .5rem;width: 63.047px;">Quantity Return</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </th>
+                        <th style="padding: .5rem">Item</th>
+                        <th style="padding: .5rem">Quantity Return</th>
                         <th style="padding: .5rem">Note</th>
                         <th style="padding: .5rem">Created By</th>
                         <th style="padding: .5rem">Created At</th>
@@ -72,13 +65,13 @@
                         $urlApprovalQueries['crud-type'] = $salesReturn->action;
                     @endphp
                     <tr>
-                        <td style="padding: .5rem">
+                        <td style="padding: .5rem" rowspan="{{ count($salesReturn->items) }}">
                             {{ $loop->iteration }}
                         </td>
-                        <td style="padding: .5rem">
+                        <td style="padding: .5rem" rowspan="{{ count($salesReturn->items) }}">
                             {{ date('d M Y', strtotime($salesReturnForm->date)) }}
                         </td>
-                        <td style="padding: .5rem">
+                        <td style="padding: .5rem" rowspan="{{ count($salesReturn->items) }}">
                             {{ $salesReturnForm->number }}
                             {{ ' ' }}
                             {{ 
@@ -88,55 +81,46 @@
                                     : '' 
                             }}
                         </td>
-                        <td style="padding: .5rem">
+                        <td style="padding: .5rem" rowspan="{{ count($salesReturn->items) }}">
                             {{ $salesReturn->salesInvoice->form->number }}
                         </td>
-                        <td style="padding: .5rem">
+                        <td style="padding: .5rem" rowspan="{{ count($salesReturn->items) }}">
                             {{ $salesReturn->customer->name }}
                         </td>
-                        <td style="vertical-align: top; padding: 0px">
-                            <table style="width: 100%; table-layout: fixed;">
-                                <tbody style="height: 100%;">
-                                    @foreach($salesReturn->items as $item)
-                                    @php $borderBottom = !$loop->last ? 'border-bottom: 1px solid black' : ''; @endphp
-                                    <tr>
-                                        <td style="border-right: 1px solid black; padding: .5rem;width: 70px; {{ $borderBottom }}">
-                                            {{ $item->item->name }}
-                                        </td>
-                                        <td style="border-right: 1px solid black; padding: .5rem;width: 66.781px; {{ $borderBottom }}">
-                                            {{ $item->quantity }}
-                                        </td>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                        @foreach($salesReturn->items as $item)
+                        <td style="padding: .5rem;">
+                            {{ $item->item->name }}
                         </td>
-                        <td style="padding: .5rem">
-                            {{ $item->note }}
+                        <td style="padding: .5rem;">
+                            {{ $item->quantity }}
                         </td>
-                        <td style="padding: .5rem">
+                        @break
+                        @endforeach
+                        <td style="padding: .5rem" rowspan="{{ count($salesReturn->items) }}">
+                            {{ $salesReturnForm->notes }}
+                        </td>
+                        <td style="padding: .5rem" rowspan="{{ count($salesReturn->items) }}">
                             {{ $salesReturnForm->createdBy->getFullNameAttribute() }}
                         </td>
-                        <td style="padding: .5rem">
+                        <td style="padding: .5rem" rowspan="{{ count($salesReturn->items) }}">
                             {{ date('d M Y, H:i', strtotime($salesReturnForm->created_at)) }}
                         </td>
-                        <td style="padding: .5rem">
-                            <div style="display: flex; justify-content: space-between; text-align: center">
+                        <td style="padding: .5rem" rowspan="{{ count($salesReturn->items) }}">
+                            <div style="display: flex;">
                                 <a
-                                    href="{{ env('TENANT_DOMAIN') . 'sales/return/'. $salesReturn->id }}"
+                                    href="{{ $url ?: env('TENANT_DOMAIN') }}sales/return/{{ $salesReturn->id }}"
                                     target="_blank"
                                     style="background-color: rgb(192, 192, 192); border: none; color: black; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                                     Check
                                 </a>
                                 <a
-                                    href="{{ env('TENANT_DOMAIN') . 'approval?action=approve&' . http_build_query($urlApprovalQueries) }}"
+                                    href="{{ $url ?: env('TENANT_DOMAIN') }}approval?action=approve&{{ http_build_query($urlApprovalQueries) }}"
                                     target="_blank"
                                     style="background-color: #4CAF50; border: none; color: white; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                                     Approve
                                 </a>
                                 <a
-                                    href="{{ env('TENANT_DOMAIN') . 'approval?action=reject&' . http_build_query($urlApprovalQueries) }}"
+                                    href="{{ $url ?: env('TENANT_DOMAIN') }}approval?action=reject&{{ http_build_query($urlApprovalQueries) }}"
                                     target="_blank"
                                     style="background-color: rgb(255, 0, 0); border: none; color: white; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                                     Reject
@@ -144,6 +128,25 @@
                             </div>
                         </td>
                     </tr>
+                    @php 
+                        ($first = true); 
+                    @endphp
+                    @foreach($salesReturn->items as $item)
+                    @if($first)
+                        @php 
+                            ($first = false);
+                        @endphp
+                        @continue
+                    @endif
+                    <tr>
+                        <td style="padding: .5rem;">
+                            {{ $item->item->name }}
+                        </td>
+                        <td style="padding: .5rem;">
+                            {{ $item->quantity }}
+                        </td>
+                    </tr>
+                    @endforeach
                 @endforeach
                 </tbody>
             </table>
@@ -154,13 +157,13 @@
                 $urlApprovalQueries['ids'] = implode(",", Illuminate\Support\Arr::pluck($salesReturns, 'id')); 
             @endphp
             <a
-                href="{{ env('TENANT_DOMAIN') .'approval-all?action=approve&' . http_build_query($urlApprovalQueries) }}"
+                href="{{ $url ?: env('TENANT_DOMAIN') }}approval-all?action=approve&{{ http_build_query($urlApprovalQueries) }}"
                 target="_blank"
                 style="background-color: #4CAF50; border: none; color: white; margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                 Approve All
             </a>
             <a
-                href="{{ env('TENANT_DOMAIN') .'approval-all?action=reject&' . http_build_query($urlApprovalQueries) }}"
+                href="{{ $url ?: env('TENANT_DOMAIN') }}approval-all?action=reject&{{ http_build_query($urlApprovalQueries) }}"
                 target="_blank"
                 style="background-color: rgb(238, 238, 238); border: none; color: rgb(83, 83, 83); margin:8px 0; padding: 8px 16px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; ">
                 Reject All

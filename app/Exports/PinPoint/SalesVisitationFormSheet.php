@@ -2,7 +2,9 @@
 
 namespace App\Exports\PinPoint;
 
+use App\Model\CloudStorage;
 use App\Model\Plugin\PinPoint\SalesVisitation;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -12,7 +14,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeExport;
 
-class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize
+class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize, ShouldQueue
 {
     /**
      * ScaleWeightItemExport constructor.
@@ -20,11 +22,13 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
      * @param string $dateFrom
      * @param string $dateTo
      */
-    public function __construct(string $dateFrom, string $dateTo, $branchId)
+    public function __construct($userId, string $dateFrom, string $dateTo, $branchId, $cloudStorageId)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
         $this->branchId = $branchId;
+        $this->cloudStorageId = $cloudStorageId;
+        $this->userId = $userId;
     }
 
     /**
@@ -40,7 +44,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
                 ->select(SalesVisitation::getTableName('*'))
                 ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo]);
         }
-        if(tenant(auth()->user()->id)->roles[0]->name == 'super admin') {
+        if(tenant($this->userId)->roles[0]->name == 'super admin') {
             return SalesVisitation::query()
                 ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
                 ->with('form')
@@ -49,7 +53,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
         } else {
             return SalesVisitation::query()
                 ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
-                ->whereIn(SalesVisitation::getTableName('branch_id'), tenant(auth()->user()->id)->branches->pluck('id'))
+                ->whereIn(SalesVisitation::getTableName('branch_id'), tenant($this->userId)->branches->pluck('id'))
                 ->with('form')
                 ->select(SalesVisitation::getTableName('*'))
                 ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo]);
@@ -122,7 +126,7 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
             },
 
             AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->getDelegate()->getStyle('A1:K1')->getFont()->setBold(true);
+                $event->sheet->getDelegate()->getStyle('A1:N1')->getFont()->setBold(true);
                 $styleArray = [
                     'borders' => [
                         'allBorders' => [
@@ -131,7 +135,12 @@ class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, 
                         ],
                     ],
                 ];
-                $event->getSheet()->getStyle('A1:K100')->applyFromArray($styleArray);
+                $event->getSheet()->getStyle('A1:N100')->applyFromArray($styleArray);
+                if($this->cloudStorageId) {
+                    $cloudStorage = CloudStorage::find($this->cloudStorageId);
+                    $cloudStorage->percentage = $cloudStorage->percentage + 20;
+                    $cloudStorage->save();
+                }
             },
         ];
     }

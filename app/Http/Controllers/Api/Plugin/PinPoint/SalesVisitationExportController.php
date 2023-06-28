@@ -6,7 +6,9 @@ use App\Exports\PinPoint\ChartInterestReasonExport;
 use App\Exports\PinPoint\ChartNoInterestReasonExport;
 use App\Exports\PinPoint\ChartSimilarProductExport;
 use App\Exports\PinPoint\SalesVisitationFormExport;
+use App\Exports\PinPoint\SalesVisitationFormQueuedExport;
 use App\Http\Controllers\Controller;
+use App\Jobs\FinishingExport;
 use App\Model\CloudStorage;
 use App\Model\Master\Branch;
 use App\Model\Project\Project;
@@ -55,12 +57,16 @@ class SalesVisitationExportController extends Controller
         $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
 
         $branchId = $request->get('branch_id') ?? null;
-        $result = Excel::store($this->exportFile(
-            $fileExport,
-            convert_to_server_timezone($request->get('date_from')), 
-            convert_to_server_timezone($request->get('date_to')),
-            $branchId), 
-            $path, env('STORAGE_DISK'));
+        $result = Excel::store(
+            $this->exportFile(
+                $fileExport,
+                convert_to_server_timezone($request->get('date_from')),
+                convert_to_server_timezone($request->get('date_to')),
+                $branchId
+            ),
+            $path,
+            env('STORAGE_DISK')
+        );
 
         if (! $result) {
             return response()->json([
@@ -68,7 +74,7 @@ class SalesVisitationExportController extends Controller
             ], 422);
         }
 
-        $cloudStorage = new CloudStorage;
+        $cloudStorage = new CloudStorage();
         $cloudStorage->file_name = $fileName;
         $cloudStorage->file_ext = $fileExt;
         $cloudStorage->feature = 'pin point sales visitation form';
@@ -83,6 +89,54 @@ class SalesVisitationExportController extends Controller
 
         return response()->json([
             'data' => [
+                'url' => $cloudStorage->download_url,
+            ],
+        ], 200);
+    }
+
+    public function queuedExport(Request $request)
+    {
+        $fileExport = ! empty($request->get('file_export')) ? $request->get('file_export') : 'SalesVisitationReport';
+
+        $tenant = strtolower($request->header('Tenant'));
+        $key = Str::random(16);
+        $fileName = strtoupper($tenant)
+            .' - '.$fileExport.' - '
+            .date('dMY', strtotime($request->get('date_from')))
+            .'-'
+            .date('dMY', strtotime($request->get('date_to')));
+        $fileExt = 'xlsx';
+        $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
+
+        $cloudStorage = new CloudStorage();
+        $cloudStorage->file_name = $fileName;
+        $cloudStorage->file_ext = $fileExt;
+        $cloudStorage->feature = 'pin point sales visitation form';
+        $cloudStorage->key = $key;
+        $cloudStorage->path = $path;
+        $cloudStorage->disk = env('STORAGE_DISK');
+        $cloudStorage->project_id = Project::where('code', strtolower($tenant))->first()->id;
+        $cloudStorage->owner_id = auth()->user()->id;
+        $cloudStorage->expired_at = Carbon::now()->addDay(1);
+        $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
+        $cloudStorage->file_ready = false;
+        $cloudStorage->percentage = 0;
+        $cloudStorage->save();
+
+        $branchId = $request->get('branch_id') ?? null;
+        (new SalesVisitationFormQueuedExport(
+            auth()->user()->id,
+            convert_to_server_timezone($request->get('date_from')),
+            convert_to_server_timezone($request->get('date_to')),
+            $branchId,
+            $cloudStorage->id
+        ))->queue($path, env('STORAGE_DISK'))->chain([
+            new FinishingExport(auth()->user()->id, $cloudStorage, $request->header('Tenant'), $fileName, $path)
+        ]);
+
+        return response()->json([
+            'data' => [
+                'file_ready' => $cloudStorage->file_ready,
                 'url' => $cloudStorage->download_url,
             ],
         ], 200);

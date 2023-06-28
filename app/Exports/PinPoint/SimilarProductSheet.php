@@ -2,8 +2,10 @@
 
 namespace App\Exports\PinPoint;
 
+use App\Model\CloudStorage;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationSimilarProduct;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -13,7 +15,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeExport;
 
-class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize
+class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize, ShouldQueue
 {
     /**
      * ScaleWeightItemExport constructor.
@@ -21,11 +23,13 @@ class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithT
      * @param string $dateFrom
      * @param string $dateTo
      */
-    public function __construct(string $dateFrom, string $dateTo, $branchId)
+    public function __construct($userId, string $dateFrom, string $dateTo, $branchId, $cloudStorageId)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
         $this->branchId = $branchId;
+        $this->cloudStorageId = $cloudStorageId;
+        $this->userId = $userId;
     }
 
     /**
@@ -42,7 +46,7 @@ class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithT
             ->select(SalesVisitationSimilarProduct::getTableName().'.*')
             ->addSelect(SalesVisitation::getTableName().'.name as customerName');
         }
-        if(tenant(auth()->user()->id)->roles[0]->name != 'super admin') {
+        if(tenant($this->userId)->roles[0]->name != 'super admin') {
             return SalesVisitationSimilarProduct::query()
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationSimilarProduct::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
@@ -54,11 +58,10 @@ class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithT
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationSimilarProduct::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-            ->whereIn(SalesVisitation::getTableName('branch_id'), tenant(auth()->user()->id)->branches->pluck('id'))
+            ->whereIn(SalesVisitation::getTableName('branch_id'), tenant($this->userId)->branches->pluck('id'))
             ->select(SalesVisitationSimilarProduct::getTableName().'.*')
             ->addSelect(SalesVisitation::getTableName().'.name as customerName');
         }
-        
     }
 
     /**
@@ -118,6 +121,11 @@ class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithT
                     ],
                 ];
                 $event->getSheet()->getStyle('A1:E100')->applyFromArray($styleArray);
+                if($this->cloudStorageId) {
+                    $cloudStorage = CloudStorage::find($this->cloudStorageId);
+                    $cloudStorage->percentage = $cloudStorage->percentage + 20;
+                    $cloudStorage->save();
+                }
             },
         ];
     }

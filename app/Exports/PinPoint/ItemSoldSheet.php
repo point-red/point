@@ -2,8 +2,10 @@
 
 namespace App\Exports\PinPoint;
 
+use App\Model\CloudStorage;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationDetail;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -13,7 +15,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeExport;
 
-class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize
+class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize, ShouldQueue
 {
     /**
      * ScaleWeightItemExport constructor.
@@ -21,11 +23,13 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
      * @param string $dateFrom
      * @param string $dateTo
      */
-    public function __construct(string $dateFrom, string $dateTo, $branchId)
+    public function __construct($userId, string $dateFrom, string $dateTo, $branchId, $cloudStorageId)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
         $this->branchId = $branchId;
+        $this->cloudStorageId = $cloudStorageId;
+        $this->userId = $userId;
     }
 
     /**
@@ -46,8 +50,8 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             ->addSelect(SalesVisitation::getTableName().'.phone as customerPhone')
             ->addSelect(SalesVisitation::getTableName().'.payment_method as paymentMethod')
             ->addSelect(SalesVisitation::getTableName().'.due_date as dueDate');
-        }   
-        if(tenant(auth()->user()->id)->roles[0]->name != 'super admin') {
+        }
+        if(tenant($this->userId)->roles[0]->name != 'super admin') {
             return SalesVisitationDetail::query()
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationDetail::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
@@ -64,7 +68,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationDetail::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-            ->whereIn(SalesVisitation::getTableName('branch_id'), tenant(auth()->user()->id)->branches->pluck('id'))
+            ->whereIn(SalesVisitation::getTableName('branch_id'), tenant($this->userId)->branches->pluck('id'))
             ->select(SalesVisitationDetail::getTableName().'.*')
             ->addSelect(SalesVisitationDetail::getTableName().'.production_number as productionNumber')
             ->addSelect(SalesVisitationDetail::getTableName().'.expiry_date as expiryDate')
@@ -73,7 +77,6 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             ->addSelect(SalesVisitation::getTableName().'.payment_method as paymentMethod')
             ->addSelect(SalesVisitation::getTableName().'.due_date as dueDate');
         }
-        
     }
 
     /**
@@ -148,7 +151,7 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
             },
 
             AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->getDelegate()->getStyle('A1:M1')->getFont()->setBold(true);
+                $event->sheet->getDelegate()->getStyle('A1:Q1')->getFont()->setBold(true);
                 $styleArray = [
                     'borders' => [
                         'allBorders' => [
@@ -157,7 +160,12 @@ class ItemSoldSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, 
                         ],
                     ],
                 ];
-                $event->getSheet()->getStyle('A1:M100')->applyFromArray($styleArray);
+                $event->getSheet()->getStyle('A1:Q100')->applyFromArray($styleArray);
+                if($this->cloudStorageId) {
+                    $cloudStorage = CloudStorage::find($this->cloudStorageId);
+                    $cloudStorage->percentage = $cloudStorage->percentage + 20;
+                    $cloudStorage->save();
+                }
             },
         ];
     }

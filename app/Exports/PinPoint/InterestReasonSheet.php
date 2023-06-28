@@ -2,8 +2,10 @@
 
 namespace App\Exports\PinPoint;
 
+use App\Model\CloudStorage;
 use App\Model\Plugin\PinPoint\SalesVisitation;
 use App\Model\Plugin\PinPoint\SalesVisitationInterestReason;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -13,7 +15,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeExport;
 
-class InterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize
+class InterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize, ShouldQueue
 {
     /**
      * ScaleWeightItemExport constructor.
@@ -21,11 +23,13 @@ class InterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithT
      * @param string $dateFrom
      * @param string $dateTo
      */
-    public function __construct(string $dateFrom, string $dateTo, $branchId)
+    public function __construct($userId, string $dateFrom, string $dateTo, $branchId, $cloudStorageId)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
         $this->branchId = $branchId;
+        $this->cloudStorageId = $cloudStorageId;
+        $this->userId = $userId;
     }
 
     /**
@@ -47,7 +51,7 @@ class InterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithT
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationInterestReason::getTableName().'.sales_visitation_id')
             ->join('forms', 'forms.id', '=', SalesVisitation::getTableName().'.form_id')
             ->whereBetween('forms.date', [$this->dateFrom, $this->dateTo])
-            ->whereIn(SalesVisitation::getTableName('branch_id'), tenant(auth()->user()->id)->branches->pluck('id'))
+            ->whereIn(SalesVisitation::getTableName('branch_id'), tenant($this->userId)->branches->pluck('id'))
             ->select(SalesVisitationInterestReason::getTableName().'.*');
     }
 
@@ -100,7 +104,7 @@ class InterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithT
                 $event->writer->setCreator('Point');
             },
             AfterSheet::class => function (AfterSheet $event) {
-                $event->sheet->getDelegate()->getStyle('A1:E1')->getFont()->setBold(true);
+                $event->sheet->getDelegate()->getStyle('A1:F1')->getFont()->setBold(true);
                 $styleArray = [
                     'borders' => [
                         'allBorders' => [
@@ -109,7 +113,12 @@ class InterestReasonSheet implements FromQuery, WithHeadings, WithMapping, WithT
                         ],
                     ],
                 ];
-                $event->getSheet()->getStyle('A1:E100')->applyFromArray($styleArray);
+                $event->getSheet()->getStyle('A1:F100')->applyFromArray($styleArray);
+                if($this->cloudStorageId) {
+                    $cloudStorage = CloudStorage::find($this->cloudStorageId);
+                    $cloudStorage->percentage = $cloudStorage->percentage + 20;
+                    $cloudStorage->save();
+                }
             },
         ];
     }

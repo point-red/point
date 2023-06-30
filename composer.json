@@ -26,11 +26,8 @@
         "maatwebsite/excel": "^3.1",
         "masterro/laravel-xss-filter": "^1.2",
         "milon/barcode": "^7.0",
-        "mk-j/php_xlsxwriter": "^0.39.0",
         "point-red/laravel-database-management": "^1.0",
-        "shuchkin/simplexlsxgen": "^1.3",
         "spatie/laravel-permission": "^3.9",
-        "spatie/simple-excel": "1.13.1",
         "xendit/xendit-php": "^2.0"
     },
     "require-dev": {

@@ -51,7 +51,7 @@ class FinishingExport implements ShouldQueue
         $this->cloudStorage->percentage = 100;
         $this->cloudStorage->save();
         // $project = Project::where('code', $this->tenant)->first();
-        // $user = tenant($this->userId);
-        // Mail::queue(new ExportNotificationMail($project, $user, $this->fileName, $this->path));
+        $user = tenant($this->userId);
+        Mail::queue(new ExportNotificationMail($user, $this->fileName, $this->path));
     }
 }

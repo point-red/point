@@ -10,7 +10,6 @@ use App\Exports\PinPoint\SalesVisitationFormQueuedExport;
 use App\Http\Controllers\Controller;
 use App\Jobs\FinishingExport;
 use App\Model\CloudStorage;
-use App\Model\Master\Branch;
 use App\Model\Project\Project;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -119,7 +118,6 @@ class SalesVisitationExportController extends Controller
         $cloudStorage->owner_id = auth()->user()->id;
         $cloudStorage->expired_at = Carbon::now()->addDay(1);
         $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
-        $cloudStorage->file_ready = false;
         $cloudStorage->percentage = 0;
         $cloudStorage->save();
 
@@ -130,13 +128,13 @@ class SalesVisitationExportController extends Controller
             convert_to_server_timezone($request->get('date_to')),
             $branchId,
             $cloudStorage->id
-        ))->queue($path, env('STORAGE_DISK'))->chain([
+        ))->store($path, env('STORAGE_DISK'))->chain([
             new FinishingExport(auth()->user()->id, $cloudStorage, $request->header('Tenant'), $fileName, $path)
         ]);
 
         return response()->json([
             'data' => [
-                'file_ready' => $cloudStorage->file_ready,
+                'percentage' => $cloudStorage->percentage,
                 'url' => $cloudStorage->download_url,
             ],
         ], 200);

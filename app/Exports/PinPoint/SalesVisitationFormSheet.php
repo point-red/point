@@ -16,6 +16,7 @@ use Maatwebsite\Excel\Events\BeforeExport;
 
 class SalesVisitationFormSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize, ShouldQueue
 {
+    public $timeout = 180;
     /**
      * ScaleWeightItemExport constructor.
      *

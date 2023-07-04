@@ -14,8 +14,7 @@ class AlterCloudStoragesTable extends Migration
     public function up()
     {
         Schema::table('cloud_storages', function (Blueprint $table) {
-            $table->boolean('file_ready')->after('download_url')->default(true);
-            $table->unsignedInteger('percentage')->after('file_ready')->default(100);
+            $table->unsignedInteger('percentage')->after('download_url')->default(100);
         });
     }
 

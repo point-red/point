@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Events\BeforeExport;
 
 class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithTitle, WithEvents, ShouldAutoSize, ShouldQueue
 {
+    public $timeout = 180;
     /**
      * ScaleWeightItemExport constructor.
      *

@@ -46,11 +46,10 @@ class FinishingExport implements ShouldQueue
      */
     public function handle()
     {
+        $this->cloudStorage->updated_at = Carbon::now();
         $this->cloudStorage->expired_at = Carbon::now()->addDay(1);
-        $this->cloudStorage->file_ready = true;
         $this->cloudStorage->percentage = 100;
         $this->cloudStorage->save();
-        // $project = Project::where('code', $this->tenant)->first();
         $user = tenant($this->userId);
         Mail::queue(new ExportNotificationMail($user, $this->fileName, $this->path));
     }

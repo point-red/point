@@ -3,6 +3,7 @@
 Route::prefix('plugin')->namespace('Plugin')->group(function () {
     Route::prefix('pin-point')->namespace('PinPoint')->group(function () {
         Route::post('sales-visitation-forms/export', 'SalesVisitationExportController@export');
+        Route::post('sales-visitation-forms/queued-export', 'SalesVisitationExportController@queuedExport');
         Route::get('sales-visitation-forms', 'SalesVisitationController@index');
         Route::post('sales-visitation-forms', 'SalesVisitationController@store');
         Route::get('similar-products', 'SimilarProductController@index');

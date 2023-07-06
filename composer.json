@@ -1,11 +1,7 @@
 {
     "name": "point-red/point",
     "description": "Point Framework.",
-    "keywords": [
-        "framework",
-        "point",
-        "erp"
-    ],
+    "keywords": ["framework", "point", "erp"],
     "type": "project",
     "require": {
         "php": "^7.2.5",
@@ -14,6 +10,7 @@
         "bugsnag/bugsnag-laravel": "^2.18",
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.0",
+        "google/cloud-firestore": "^1.8",
         "grpc/grpc": "^1.27",
         "laravel/framework": "^7.0",
         "laravel/helpers": "^1.1",
@@ -24,6 +21,7 @@
         "laravel/tinker": "^2.0",
         "league/flysystem-aws-s3-v3": "~1.0",
         "maatwebsite/excel": "^3.1",
+        "masbug/flysystem-google-drive-ext": "^1.0.0",
         "masterro/laravel-xss-filter": "^1.2",
         "milon/barcode": "^7.0",
         "point-red/laravel-database-management": "^1.0",
@@ -60,7 +58,8 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+            ]
         }
     },
     "scripts": {
@@ -78,9 +77,6 @@
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
-        "optimize-autoloader": true,
-        "allow-plugins": {
-            "symfony/thanks": true
-        }
+        "optimize-autoloader": true
     }
 }

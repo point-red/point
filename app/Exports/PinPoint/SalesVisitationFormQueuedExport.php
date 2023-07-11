@@ -14,6 +14,7 @@ class SalesVisitationFormQueuedExport implements WithMultipleSheets, ShouldQueue
     protected $dateTo;
     protected $branchId;
     protected $cloudStorageId;
+    protected $tenant;
 
     /**
      * ScaleWeightItemExport constructor.
@@ -21,13 +22,14 @@ class SalesVisitationFormQueuedExport implements WithMultipleSheets, ShouldQueue
      * @param string $dateFrom
      * @param string $dateTo
      */
-    public function __construct($userId, string $dateFrom, string $dateTo, $branchId, $cloudStorageId)
+    public function __construct($userId, string $dateFrom, string $dateTo, $branchId, $cloudStorageId, string $tenant)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
         $this->branchId = $branchId;
         $this->cloudStorageId = $cloudStorageId;
         $this->userId = $userId;
+        $this->tenant = $tenant;
     }
 
     /**
@@ -37,11 +39,11 @@ class SalesVisitationFormQueuedExport implements WithMultipleSheets, ShouldQueue
     {
         $sheets = [];
 
-        $sheets[] = new SalesVisitationFormSheet($this->userId, $this->dateFrom, $this->dateTo, $this->branchId, $this->cloudStorageId);
-        $sheets[] = new InterestReasonSheet($this->userId, $this->dateFrom, $this->dateTo, $this->branchId, $this->cloudStorageId);
-        $sheets[] = new NoInterestReasonSheet($this->userId, $this->dateFrom, $this->dateTo, $this->branchId, $this->cloudStorageId);
-        $sheets[] = new SimilarProductSheet($this->userId, $this->dateFrom, $this->dateTo, $this->branchId, $this->cloudStorageId);
-        $sheets[] = new ItemSoldSheet($this->userId, $this->dateFrom, $this->dateTo, $this->branchId, $this->cloudStorageId);
+        $sheets[] = new SalesVisitationFormSheet($this->userId, $this->dateFrom, $this->dateTo, $this->branchId, $this->cloudStorageId, $this->tenant);
+        $sheets[] = new InterestReasonSheet($this->userId, $this->dateFrom, $this->dateTo, $this->branchId, $this->cloudStorageId, $this->tenant);
+        $sheets[] = new NoInterestReasonSheet($this->userId, $this->dateFrom, $this->dateTo, $this->branchId, $this->cloudStorageId, $this->tenant);
+        $sheets[] = new SimilarProductSheet($this->userId, $this->dateFrom, $this->dateTo, $this->branchId, $this->cloudStorageId, $this->tenant);
+        $sheets[] = new ItemSoldSheet($this->userId, $this->dateFrom, $this->dateTo, $this->branchId, $this->cloudStorageId, $this->tenant);
 
         return $sheets;
     }

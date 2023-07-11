@@ -24,13 +24,14 @@ class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithT
      * @param string $dateFrom
      * @param string $dateTo
      */
-    public function __construct($userId, string $dateFrom, string $dateTo, $branchId, $cloudStorageId)
+    public function __construct($userId, string $dateFrom, string $dateTo, $branchId, $cloudStorageId, $tenant)
     {
         $this->dateFrom = date('Y-m-d 00:00:00', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d 23:59:59', strtotime($dateTo));
         $this->branchId = $branchId;
         $this->cloudStorageId = $cloudStorageId;
         $this->userId = $userId;
+        $this->tenant = $tenant;
     }
 
     /**
@@ -38,6 +39,9 @@ class SimilarProductSheet implements FromQuery, WithHeadings, WithMapping, WithT
      */
     public function query()
     {
+        if($this->tenant){
+            config()->set('database.connections.tenant.database', env('DB_DATABASE', 'point').'_'.$this->tenant);
+        }
         if ($this->branchId) {
             return SalesVisitationSimilarProduct::query()
             ->join(SalesVisitation::getTableName(), SalesVisitation::getTableName().'.id', '=', SalesVisitationSimilarProduct::getTableName().'.sales_visitation_id')

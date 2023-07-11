@@ -3,15 +3,12 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
 class ExportNotificationMail extends Mailable
 {
     use Queueable;
-    use SerializesModels;
 
     public $fileName;
     public $path;

@@ -26,11 +26,11 @@ class SalesVisitationFormExport implements WithMultipleSheets
     {
         $sheets = [];
 
-        $sheets[] = new SalesVisitationFormSheet(auth()->user()->id, $this->dateFrom, $this->dateTo, $this->branchId, null);
-        $sheets[] = new InterestReasonSheet(auth()->user()->id, $this->dateFrom, $this->dateTo, $this->branchId, null);
-        $sheets[] = new NoInterestReasonSheet(auth()->user()->id, $this->dateFrom, $this->dateTo, $this->branchId, null);
-        $sheets[] = new SimilarProductSheet(auth()->user()->id, $this->dateFrom, $this->dateTo, $this->branchId, null);
-        $sheets[] = new ItemSoldSheet(auth()->user()->id, $this->dateFrom, $this->dateTo, $this->branchId, null);
+        $sheets[] = new SalesVisitationFormSheet(auth()->user()->id, $this->dateFrom, $this->dateTo, $this->branchId, null, null);
+        $sheets[] = new InterestReasonSheet(auth()->user()->id, $this->dateFrom, $this->dateTo, $this->branchId, null, null);
+        $sheets[] = new NoInterestReasonSheet(auth()->user()->id, $this->dateFrom, $this->dateTo, $this->branchId, null, null);
+        $sheets[] = new SimilarProductSheet(auth()->user()->id, $this->dateFrom, $this->dateTo, $this->branchId, null, null);
+        $sheets[] = new ItemSoldSheet(auth()->user()->id, $this->dateFrom, $this->dateTo, $this->branchId, null, null);
 
         return $sheets;
     }

@@ -127,9 +127,10 @@ class SalesVisitationExportController extends Controller
             convert_to_server_timezone($request->get('date_from')),
             convert_to_server_timezone($request->get('date_to')),
             $branchId,
-            $cloudStorage->id
+            $cloudStorage->id,
+            $tenant
         ))->store($path, env('STORAGE_DISK'))->chain([
-            new FinishingExport(auth()->user()->id, $cloudStorage, $request->header('Tenant'), $fileName, $path)
+            new FinishingExport(auth()->user()->id, $cloudStorage, $tenant, $fileName, $path)
         ]);
 
         return response()->json([

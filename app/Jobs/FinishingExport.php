@@ -46,6 +46,7 @@ class FinishingExport implements ShouldQueue
      */
     public function handle()
     {
+        config()->set('database.connections.tenant.database', env('DB_DATABASE', 'point').'_'.$this->tenant);
         $this->cloudStorage->updated_at = Carbon::now();
         $this->cloudStorage->expired_at = Carbon::now()->addDay(1);
         $this->cloudStorage->percentage = 100;

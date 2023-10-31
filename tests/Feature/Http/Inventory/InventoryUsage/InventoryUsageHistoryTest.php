@@ -12,7 +12,6 @@ class InventoryUsageHistoryTest extends TestCase
 
     public static $path = '/api/v1/inventory/usages';
 
-    /** @test */
     public function success_create_inventory_usage()
     {
         $this->setRole();

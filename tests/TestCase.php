@@ -143,9 +143,9 @@ abstract class TestCase extends BaseTestCase
         $this->account = $chartOfAccount;
     }
 
-    protected function setRole()
+    protected function setRole($roleName = 'super admin')
     {
-        $role = \App\Model\Auth\Role::createIfNotExists('super admin');
+        $role = \App\Model\Auth\Role::createIfNotExists($roleName);
         $hasRole = new \App\Model\Auth\ModelHasRole();
         $hasRole->role_id = $role->id;
         $hasRole->model_type = 'App\Model\Master\User';
@@ -153,9 +153,9 @@ abstract class TestCase extends BaseTestCase
         $hasRole->save();
     }
 
-    protected function setPermission()
+    protected function setPermission($permissionName = 'read pin point sales visitation form')
     {
-        $permission = \App\Model\Auth\Permission::createIfNotExists('read pin point sales visitation form');
+        $permission = \App\Model\Auth\Permission::createIfNotExists($permissionName);
         $hasPermission = new \App\Model\Auth\ModelHasPermission();
         $hasPermission->permission_id = $permission->id;
         $hasPermission->model_type = 'App\Model\Master\User';

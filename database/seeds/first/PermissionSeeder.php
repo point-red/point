@@ -258,6 +258,8 @@ class PermissionSeeder extends Seeder
             Permission::createIfNotExists('delete '.$permission);
         }
 
+        Permission::createIfNotExists('export employee assessment');
+
         Permission::createIfNotExists('print employee salary');
     }
 

@@ -45,12 +45,6 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
             ->where('kpis.date', '<=',$this->dateTo)
             ->orderBy('kpis.date', 'desc')->orderBy('kpis.created_at', 'desc')->get();
 
-        $invalidCharacters = array('*', ':', '/', '\\', '?', '[', ']');
-        foreach ($kpis as $kpi) {
-            $kpi->username = str_replace($invalidCharacters, '', $kpi->username);
-            $kpi->name = str_replace($invalidCharacters, '', $kpi->name);
-        }
-
         return $kpis;
     }
 
@@ -71,6 +65,7 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
 
     public function title(): string
     {
-        return $this->employee_name;
+        $invalidCharacters = array('*', ':', '/', '\\', '?', '[', ']');
+        return str_replace($invalidCharacters, '', $this->employee_name);
     }
 }

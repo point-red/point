@@ -7,7 +7,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
-class AssessmentAssessmentSheet implements FromCollection, WithTitle, WithHeadings
+class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
 {
     private $employee_id;
     private $dateFrom;

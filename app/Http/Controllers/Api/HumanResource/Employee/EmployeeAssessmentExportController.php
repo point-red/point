@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Api\HumanResource\Employee;
 
-use App\Exports\Kpi\KpiTemplateExport;
+use App\Exports\Kpi\EmployeeAssessmentExport;
 use App\Http\Controllers\Controller;
 use App\Model\CloudStorage;
-use App\Model\HumanResource\Kpi\KpiTemplate;
 use App\Model\Project\Project;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -16,14 +15,13 @@ class EmployeeAssessmentExportController extends Controller
 {
     public function export(Request $request)
     {
-        $kpiTemplate = KpiTemplate::where('id', $request->get('employee_id'))->first();
 
         $tenant = strtolower($request->header('Tenant'));
         $key = Str::random(16);
         $fileName = strtoupper($tenant) .' - KPI Assessment';
         $fileExt = 'xlsx';
         $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
-        $result = Excel::store(new KpiTemplateExport($request->get('employee_id')), $path, env('STORAGE_DISK'));
+        $result = Excel::store(new EmployeeAssessmentExport($request->get('employee_id'), $request->get('date_start'), $request->get('date_end')), $path, env('STORAGE_DISK'));
 
         if (! $result) {
             return response()->json([

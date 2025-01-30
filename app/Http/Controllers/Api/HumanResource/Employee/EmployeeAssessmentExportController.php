@@ -16,14 +16,14 @@ class EmployeeAssessmentExportController extends Controller
 {
     public function export(Request $request)
     {
-        $kpiTemplate = KpiTemplate::where('id', 5)->first();
+        $kpiTemplate = KpiTemplate::where('id', $request->get('employee_id'))->first();
 
         $tenant = strtolower($request->header('Tenant'));
         $key = Str::random(16);
         $fileName = strtoupper($tenant) .' - KPI Assessment';
         $fileExt = 'xlsx';
         $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
-        $result = Excel::store(new KpiTemplateExport(5), $path, env('STORAGE_DISK'));
+        $result = Excel::store(new KpiTemplateExport($request->get('employee_id')), $path, env('STORAGE_DISK'));
 
         if (! $result) {
             return response()->json([

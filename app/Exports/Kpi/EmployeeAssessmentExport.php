@@ -5,6 +5,7 @@ namespace App\Exports\Kpi;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use App\Model\HumanResource\Employee\Employee;
+use App\Exports\Kpi\EmployeeAssessmentSheet
 
 class EmployeeAssessmentExport implements WithMultipleSheets
 {

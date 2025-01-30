@@ -28,7 +28,9 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
         // return KpiTemplate::where('id', $this->id)->get();
         $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
             ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
+            ->join('employees', 'employees.id', '=', 'kpis.employee_id')
             ->select('kpis.date')
+            ->addSelect('employees.name')
             ->addSelect('kpis.created_at')
             ->addSelect('kpis.name')
             ->addSelect(DB::raw('sum(kpi_indicators.weight) / count(DISTINCT kpis.id) as weight'))
@@ -51,6 +53,7 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
         return [
             'date',
             'created_at',
+            'employee',
             'kpi template',
             'weight',
             'max score',

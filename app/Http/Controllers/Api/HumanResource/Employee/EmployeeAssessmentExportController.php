@@ -23,7 +23,7 @@ class EmployeeAssessmentExportController extends Controller
         $fileName = strtoupper($tenant) .' - KPI Assessment';
         $fileExt = 'xlsx';
         $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
-        $result = Excel::store(new KpiTemplateExport($request->get('employee_id')), $path, env('STORAGE_DISK'));
+        $result = Excel::store(new KpiTemplateExport(5, $path, env('STORAGE_DISK'));
 
         if (! $result) {
             return response()->json([

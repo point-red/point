@@ -35,7 +35,7 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
             ->addSelect(DB::raw('sum(kpi_indicators.target) / count(DISTINCT kpis.id) as target'))
             ->addSelect(DB::raw('sum(kpi_indicators.score) / count(DISTINCT kpis.id) as score'))
             ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
-            ->addSelect('kpis.status')
+            ->addSelect('kpis.status');
         
         $kpis = $kpis->where('employee_id', $this->employee_id)
             ->groupBy('kpis.id')

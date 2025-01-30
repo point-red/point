@@ -15,7 +15,7 @@ class EmployeeAssessmentExport implements WithMultipleSheets
     protected $dateFrom;
     protected $dateTo;
 
-    public function __construct(int $employee_id, string $dateFrom, string $dateTo)
+    public function __construct($employee_id, string $dateFrom, string $dateTo)
     {
         $this->employee_id = $employee_id;
         $this->dateFrom = date('Y-m-d H:i:s', strtotime($dateFrom));

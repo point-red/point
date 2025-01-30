@@ -35,7 +35,7 @@ class EmployeeAssessmentExport implements WithMultipleSheets
         }
 
         foreach ($employees as $employee) {
-            $sheets[] = new EmployeeAssessmentSheet($employee->id, $dateFrom, $dateTo);
+            $sheets[] = new EmployeeAssessmentSheet($employee->id, $this->dateFrom, $this->dateTo);
         }
 
         return $sheets;

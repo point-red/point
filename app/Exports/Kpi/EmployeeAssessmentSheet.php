@@ -45,6 +45,13 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
             ->where('kpis.date', '<=',$this->dateTo)
             ->orderBy('kpis.date', 'desc')->orderBy('kpis.created_at', 'desc')->get();
 
+        foreach ($kpis as $kpi) {
+            $kpi->weight = floatval($kpi->weight)
+            $kpi->target = floatval($kpi->target)
+            $kpi->score = floatval($kpi->score)
+            $kpi->percentage = floatval($kpi->percentage)
+        }
+
         \Log::info($kpis);
 
         return $kpis;

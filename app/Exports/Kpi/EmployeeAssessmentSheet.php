@@ -66,6 +66,6 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
     public function title(): string
     {
         $invalidCharacters = array('*', ':', '/', '\\', '?', '[', ']');
-        return str_replace($invalidCharacters, '', $this->employee_name);
+        return substr(str_replace($invalidCharacters, '', $this->employee_name), 0, 30);
     }
 }

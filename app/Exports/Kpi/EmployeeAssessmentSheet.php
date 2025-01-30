@@ -2,7 +2,7 @@
 
 namespace App\Exports\Kpi;
 
-use App\Model\HumanResource\Kpi\KpiTemplate;
+use App\Model\HumanResource\Kpi\Kpi;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -32,7 +32,10 @@ class AssessmentAssessmentSheet implements FromCollection, WithTitle, WithHeadin
             ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
             ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'));
 
-        $kpis = $kpis->where('employee_id', $employeeId)->orderBy('kpis.date', 'desc')->orderBy('kpis.created_at', 'desc');
+        $kpis = $kpis->where('employee_id', $employee_id)
+        ->where('date', '>=',$dateFrom)
+        ->where('date', '<=',$dateTo)
+        ->orderBy('kpis.date', 'desc')->orderBy('kpis.created_at', 'desc');
 
         $kpis = pagination($kpis, 1000);
 

@@ -6,6 +6,7 @@ use App\Model\HumanResource\Kpi\Kpi;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
 {

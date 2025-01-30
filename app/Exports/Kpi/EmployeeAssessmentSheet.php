@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\DB;
 class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
 {
     private $employee_id;
+    private $employee_name;
     private $dateFrom;
     private $dateTo;    
 
-    public function __construct(int $employee_id, string $dateFrom, string $dateTo)
+    public function __construct(int $employee_id, string $employee_name, string $dateFrom, string $dateTo)
     {
         $this->employee_id = $employee_id;
+        $this->employee_name = $employee_name;
         $this->dateFrom = date('Y-m-d H:i:s', strtotime($dateFrom));
         $this->dateTo = date('Y-m-d H:i:s', strtotime($dateTo));
     }
@@ -34,11 +36,9 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
             ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'));
         
         $kpis = $kpis->where('employee_id', $this->employee_id)
-        ->where('date', '>=',$this->dateFrom)
-        ->where('date', '<=',$this->dateTo)
+        ->where('kpis.date', '>=',$this->dateFrom)
+        ->where('kpis.date', '<=',$this->dateTo)
         ->orderBy('kpis.date', 'desc')->orderBy('kpis.created_at', 'desc')->get();
-
-        \Log::info($kpis);
 
         return $kpis;
     }
@@ -57,6 +57,6 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
 
     public function title(): string
     {
-        return 'Kpi Template';
+        return $this->employee_name;
     }
 }

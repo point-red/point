@@ -28,7 +28,7 @@ class EmployeeAssessmentExport implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets = [];
-        if ($this->employee_id) {
+        if (!$this->employee_id) {
             $employees = Employee::all();
         } else {
             $employees = Employee::where('id', $this->employee_id)->get();

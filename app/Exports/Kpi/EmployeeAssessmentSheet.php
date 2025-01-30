@@ -36,9 +36,7 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
         $kpis = $kpis->where('employee_id', $this->employee_id)
         ->where('date', '>=',$this->dateFrom)
         ->where('date', '<=',$this->dateTo)
-        ->orderBy('kpis.date', 'desc')->orderBy('kpis.created_at', 'desc');
-
-        $kpis = pagination($kpis, 1000);
+        ->orderBy('kpis.date', 'desc')->orderBy('kpis.created_at', 'desc')->get();
 
         return $kpis;
     }

@@ -28,12 +28,14 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
         // return KpiTemplate::where('id', $this->id)->get();
         $kpis = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
             ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
-            ->select('kpis.*')
+            ->select('kpis.date')
+            ->addSelect('kpis.created_at')
+            ->addSelect('kpis.name')
             ->addSelect(DB::raw('sum(kpi_indicators.weight) / count(DISTINCT kpis.id) as weight'))
             ->addSelect(DB::raw('sum(kpi_indicators.target) / count(DISTINCT kpis.id) as target'))
             ->addSelect(DB::raw('sum(kpi_indicators.score) / count(DISTINCT kpis.id) as score'))
             ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
-            ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'));
+            ->addSelect('kpis.status')
         
         $kpis = $kpis->where('employee_id', $this->employee_id)
             ->groupBy('kpis.id')
@@ -47,12 +49,14 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
     public function headings(): array
     {
         return [
-            'id',
-            'name',
-            'created_by',
-            'updated_by',
+            'date',
             'created_at',
-            'updated_at',
+            'kpi template',
+            'weight',
+            'max score',
+            'score',
+            'percentage',
+            'status',
         ];
     }
 

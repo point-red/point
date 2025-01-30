@@ -36,6 +36,7 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
             ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'));
         
         $kpis = $kpis->where('employee_id', $this->employee_id)
+            ->group_by('kpis.id')
             ->where('kpis.date', '>=',$this->dateFrom)
             ->where('kpis.date', '<=',$this->dateTo)
             ->orderBy('kpis.date', 'desc')->orderBy('kpis.created_at', 'desc')->get();

@@ -7,8 +7,6 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\HumanResource\Kpi\Kpi\KpiCollection;
-use App\Http\Resources\HumanResource\Kpi\Kpi\KpiResource;
 
 class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
 {
@@ -48,21 +46,9 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
             array_push($scores, number_format($kpi->score_percentage, 2));
         }
 
-        \Log::info( (new KpiCollection($kpis))
-        ->additional([
-            'data_set' => [
-                'dates' => $dates,
-                'scores' => $scores,
-            ],
-        ]));
+        \Log::info($kpis);
 
-        return (new KpiCollection($kpis))
-            ->additional([
-                'data_set' => [
-                    'dates' => $dates,
-                    'scores' => $scores,
-                ],
-            ]);
+        return $kpis;
     }
 
     public function headings(): array

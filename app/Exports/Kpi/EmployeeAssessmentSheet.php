@@ -60,8 +60,8 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
     public function headings(): array
     {
         return [
-            'date',
-            'created_at',
+            'assessment period',
+            'created at',
             'scorer',
             'kpi template',
             'weight',

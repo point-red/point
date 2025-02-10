@@ -68,6 +68,7 @@ class DueDateContractNotificationCommand extends Command
             foreach ($reviewers as $reviewer) {
                 $reviewer = User::find($reviewer->user_id);
                 if ($reviewer->email) {
+                    $this->info('Sending due date contract notification to ' . $reviewer->email);
                     Mail::to($reviewer->email)->send(new DueDateReminderContractEmail(
                         $employee,
                         $reviewer,

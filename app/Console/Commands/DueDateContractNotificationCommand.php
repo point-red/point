@@ -6,6 +6,7 @@ use App\Mail\DueDateReminderContractEmail;
 use App\Model\HumanResource\Employee\Employee;
 use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\Employee\EmployeeReviewer;
+use App\Model\Project\Project;
 use App\Model\Master\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -45,40 +46,50 @@ class DueDateContractNotificationCommand extends Command
      */
     public function handle()
     {
-        $startOfDay = Carbon::now()->setTimezone('Asia/Jakarta')->startOfDay();
-        $endOfDay = Carbon::now()->setTimezone('Asia/Jakarta')->endOfDay();
+        $projects = Project::where('is_generated', true)->get();
 
-        $this->info('Current time: ' . $startOfDay);
+        $this->line('Total Project : '.$projects->count());
 
-        $contract_reminders = EmployeeContract::whereBetween('contract_due_date', [$startOfDay, $endOfDay])->get();
+        foreach ($projects as $project) {
+            $this->line(++$increment.'. Seed : '.$project->code);
+            config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
+            DB::connection('tenant')->reconnect();
 
-        if ($contract_reminders->isEmpty()) {
-            $this->info('No contract due date today');
-            return;
-        }
+            $startOfDay = Carbon::now()->setTimezone('Asia/Jakarta')->startOfDay();
+            $endOfDay = Carbon::now()->setTimezone('Asia/Jakarta')->endOfDay();
 
-        foreach ($contract_reminders as $contract) {
-            $employee = Employee::find($contract->employee_id);
-            $reviewers = EmployeeReviewer::where('employee_id', $contract->employee_id)->get();
+            $this->info('Current time: ' . $startOfDay);
 
-            if ($reviewers->isEmpty()) {
-                $this->info('No reviewer for employee ' . $contract->employee->name);
+            $contract_reminders = EmployeeContract::whereBetween('contract_due_date', [$startOfDay, $endOfDay])->get();
+
+            if ($contract_reminders->isEmpty()) {
+                $this->info('No contract due date today');
+                return;
             }
 
-            foreach ($reviewers as $reviewer) {
-                $reviewer = User::find($reviewer->user_id);
-                if ($reviewer->email) {
-                    $this->info('Sending due date contract notification to ' . $reviewer->email);
-                    Mail::to($reviewer->email)->send(new DueDateReminderContractEmail(
-                        $employee,
-                        $reviewer,
-                        $contract
-                    ));
+            foreach ($contract_reminders as $contract) {
+                $employee = Employee::find($contract->employee_id);
+                $reviewers = EmployeeReviewer::where('employee_id', $contract->employee_id)->get();
+
+                if ($reviewers->isEmpty()) {
+                    $this->info('No reviewer for employee ' . $contract->employee->name);
+                }
+
+                foreach ($reviewers as $reviewer) {
+                    $reviewer = User::find($reviewer->user_id);
+                    if ($reviewer->email) {
+                        $this->info('Sending due date contract notification to ' . $reviewer->email);
+                        Mail::to($reviewer->email)->send(new DueDateReminderContractEmail(
+                            $employee,
+                            $reviewer,
+                            $contract
+                        ));
+                    }
                 }
             }
-        }
 
-        $this->info('Due date contract notification sent');
-        return;
+            $this->info('Due date contract notification sent');
+            return;
+        }
     }
 }

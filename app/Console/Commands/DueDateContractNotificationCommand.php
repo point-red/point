@@ -50,10 +50,12 @@ class DueDateContractNotificationCommand extends Command
 
         $this->line('Total Project : '.$projects->count());
 
+        $increment = 0;
+
         foreach ($projects as $project) {
             $this->line(++$increment.'. Seed : '.$project->code);
             config()->set('database.connections.tenant.database', env('DB_DATABASE').'_'.strtolower($project->code));
-            DB::connection('tenant')->reconnect();
+            \DB::connection('tenant')->reconnect();
 
             $startOfDay = Carbon::now()->setTimezone('Asia/Jakarta')->startOfDay();
             $endOfDay = Carbon::now()->setTimezone('Asia/Jakarta')->endOfDay();
@@ -64,7 +66,7 @@ class DueDateContractNotificationCommand extends Command
 
             if ($contract_reminders->isEmpty()) {
                 $this->info('No contract due date today');
-                return;
+                continue;
             }
 
             foreach ($contract_reminders as $contract) {
@@ -87,9 +89,7 @@ class DueDateContractNotificationCommand extends Command
                     }
                 }
             }
-
-            $this->info('Due date contract notification sent');
-            return;
         }
+        $this->info('finish');
     }
 }

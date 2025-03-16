@@ -25,8 +25,47 @@ class UpdateEmployeeJobLocationRequest extends FormRequest
     {
         return [
             'name' => 'required|unique:tenant.employee_job_locations,name,'.$this->id,
-            'base_salary' => 'required',
+            // 'base_salary' => 'required',
             'multiplier_kpi' => 'required',
+
+            'area_values' => 'required|array',
+            'area_values.*.year' => [
+                'required',
+                'integer',
+                'min:1900',
+                'max:' . date('Y'),
+                function ($attribute, $value, $fail) {
+                    $years = array_column(request()->input('area_values', []), 'year');
+
+                    // Check if the year appears more than once
+                    if (count(array_filter($years, fn($y) => $y == $value)) > 1) {
+                        $fail('The Year field must be unique within the area values.');
+                    }
+                },
+            ],
+            'area_values.*.value' => 'required|numeric',
+            'area_values.*.notes' => 'nullable|string',
+        ];
+    }
+
+    /**
+     * Get custom error messages for validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'area_values.required' => 'Area Values are required.',
+            'area_values.*.year.required' => 'The Year field is required.',
+            'area_values.*.year.integer' => 'The Year must be a number.',
+            'area_values.*.year.min' => 'The Year must be at least 1900.',
+            'area_values.*.year.max' => 'The Year cannot be in the future.',
+
+            'area_values.*.value.required' => 'The Value field is required.',
+            'area_values.*.value.numeric' => 'The Value must be a number.',
+
+            'area_values.*.notes.string' => 'The Notes must be valid text.',
         ];
     }
 }

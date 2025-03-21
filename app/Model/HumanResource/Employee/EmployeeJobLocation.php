@@ -24,6 +24,6 @@ class EmployeeJobLocation extends MasterModel
 
     public function areaValues()
     {
-        return $this->hasMany(EmployeeAreaValue::class, 'job_location_id')->orderBy('year', 'asc');;
+        return $this->hasMany(EmployeeAreaValue::class, 'job_location_id')->orderBy('year', 'asc');
     }
 }

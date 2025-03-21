@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\Project\Project;
 use App\Model\Project\ProjectUser;
 use Illuminate\Http\Request;
@@ -48,6 +49,7 @@ class FetchController extends Controller
                 $response->is_owner = $project->owner_id == $request->user()->id;
                 $response->plugins = Arr::pluck($project->plugins, 'name');
                 $response->permissions = tenant($request->user()->id)->getPermissions();
+                $response->employee = Employee::where('user_id', $request->user()->id)->first();
                 $response->branches = tenant($request->user()->id)->branches;
                 $response->branch = null;
                 $response->warehouses = tenant($request->user()->id)->warehouses;

@@ -24,7 +24,7 @@ class CreateEmployeeJobValueAssessmentScore extends Migration
             $table->timestamps();
 
             $table->foreign('job_value_assessment_id')->references('id')->on('job_value_assessments')->onDelete('cascade');
-            $table->foreign('criteria_id')->references('id')->on('job_value_criterias')->onDelete('cascade');
+            $table->foreign('criteria_id')->references('id')->on('job_value_criterias')->onDelete('restrict');
         });
     }
 

@@ -31,9 +31,9 @@ class CreateEmployeeJobValueAssessment extends Migration
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
-            $table->foreign('approved_by')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('request_approval_to')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('restrict');
+            $table->foreign('approved_by')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('request_approval_to')->references('id')->on('users')->onDelete('restrict');
         });
     }
 

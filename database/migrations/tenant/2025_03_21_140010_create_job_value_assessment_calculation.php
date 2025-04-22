@@ -32,10 +32,10 @@ class CreateJobValueAssessmentCalculation extends Migration
             $table->unsignedDecimal('prev_fee', '65', 30);
             $table->timestamps();
 
-            $table->foreign('assessment_id')->references('id')->on('job_value_assessments')->onDelete('cascade');
-            $table->foreign('prev_assessment_id')->references('id')->on('job_value_assessments')->onDelete('cascade');
-            $table->foreign('area_value_id')->references('id')->on('employee_area_values')->onDelete('cascade');
-            $table->foreign('prev_area_value_id')->references('id')->on('employee_area_values')->onDelete('cascade');
+            $table->foreign('assessment_id')->references('id')->on('job_value_assessments')->onDelete('restrict');
+            $table->foreign('prev_assessment_id')->references('id')->on('job_value_assessments')->onDelete('restrict');
+            $table->foreign('area_value_id')->references('id')->on('employee_area_values')->onDelete('restrict');
+            $table->foreign('prev_area_value_id')->references('id')->on('employee_area_values')->onDelete('restrict');
         });
     }
 

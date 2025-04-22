@@ -123,7 +123,20 @@ class EmployeeJobLocationController extends Controller
      */
     public function destroy($id)
     {
-        $employeeJobLocation = EmployeeJobLocation::findOrFail($id);
+        $employeeJobLocation = EmployeeJobLocation::with('areaValues.jobValue')->findOrFail($id);
+
+        foreach ($employeeJobLocation->areaValues as $areaValue) {
+            if ($areaValue->jobValue()->exists()) {
+                return response()->json([
+                    'message' => 'Cannot delete Employee Job Location as some area values have associated job values.'
+                ], 400);
+            }
+            if ($areaValue->prevJobValue()->exists()) {
+                return response()->json([
+                    'message' => 'Cannot delete Employee Job Location as some area values have associated previous job values.'
+                ], 400);
+            }
+        }
 
         $employeeJobLocation->delete();
 

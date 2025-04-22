@@ -22,15 +22,18 @@ class CreateEmployeeJobValueAssessment extends Migration
             $table->unsignedDecimal('total_score', '65', 30);
             $table->string('status')->nullable();
             $table->string('approval_status')->nullable();
+            $table->unsignedInteger('request_approval_to')->index()->nullable();
+            $table->unsignedInteger('approved_by')->index()->nullable();
+            $table->timestamp('approved_at')->nullable();
             $table->unsignedInteger('created_by')->index()->nullable();
             $table->unsignedInteger('updated_by')->index()->nullable();
-            $table->unsignedInteger('approved_by')->index()->nullable();
             $table->timestamps();
 
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
             $table->foreign('approved_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('request_approval_to')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

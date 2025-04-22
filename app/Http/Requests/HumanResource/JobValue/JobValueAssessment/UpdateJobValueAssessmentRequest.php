@@ -25,6 +25,7 @@ class UpdateJobValueAssessmentRequest extends FormRequest
     {
         return [
             'employee_id' => 'required|integer|exists:tenant.employees,id',
+            'request_approval_to' => 'required|integer',
             'period_from' => 'required|date',
             'period_to' => 'required|date|after_or_equal:period_from',
             'status' => 'required|string|max:255',

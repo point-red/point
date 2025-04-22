@@ -6,11 +6,13 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::patch('score-setting', 'JobValueScoreSettingController@update');
         Route::apiResource('criteria', 'JobValueCriteriaController');
         Route::apiResource('assessment', 'JobValueAssessmentController');
+        Route::get('assessment-coc', 'JobValueAssessmentController@getCocValue');
         Route::put('assessment/{id}/approve', 'JobValueAssessmentApprovalController@approve');
         Route::patch('assessment/{id}/approve', 'JobValueAssessmentApprovalController@approve');
         Route::put('assessment/{id}/reject', 'JobValueAssessmentApprovalController@reject');
         Route::patch('assessment/{id}/reject', 'JobValueAssessmentApprovalController@reject');
         Route::get('assessment/{id}/calculation', 'JobValueAssessmentController@showCalculation');
+        Route::apiResource('categories', 'JobValueCategoryController');
     });
 
     Route::prefix('kpi')->namespace('Kpi')->group(function () {

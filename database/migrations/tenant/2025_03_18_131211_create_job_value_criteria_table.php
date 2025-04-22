@@ -15,7 +15,6 @@ class CreateJobValueCriteriaTable extends Migration
     {
         Schema::create('job_value_criterias', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('category');
             $table->string('criteria_factor');
             $table->unsignedDecimal('total_score', '65', 30);
             $table->unsignedInteger('created_by')->index()->nullable();

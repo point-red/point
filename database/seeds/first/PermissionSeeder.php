@@ -249,7 +249,7 @@ class PermissionSeeder extends Seeder
 
         $allPermission = [
             'employee', 'employee kpi', 'employee assessment', 'employee salary', 'employee salary additional component',
-            'employee master job value', 'employee job value assessment',
+            'employee master job value', 'employee job value assessment', 'employee job value score',
         ];
 
         foreach ($allPermission as $permission) {

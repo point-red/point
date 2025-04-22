@@ -24,7 +24,7 @@ class UpdateJobValueCriteriaRequest extends FormRequest
     public function rules()
     {
         return [
-            'category' => 'required|unique:tenant.job_value_criterias,category,'.$this->id,
+            'category' => 'required',
             'criteria_factor' => 'required',
             'scales' => 'required|array',
             'scales.*.description' => 'required',

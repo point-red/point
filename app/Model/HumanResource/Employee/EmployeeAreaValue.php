@@ -3,6 +3,7 @@
 namespace App\Model\HumanResource\Employee;
 
 use App\Model\TransactionModel;
+use App\Model\HumanResource\JobValue\JobValueAssessment;
 
 class EmployeeAreaValue extends TransactionModel
 {
@@ -24,5 +25,15 @@ class EmployeeAreaValue extends TransactionModel
     public function jobLocation()
     {
         return $this->belongsTo(EmployeeJobLocation::class, 'job_location_id');
+    }
+
+    public function jobValue()
+    {
+        return $this->hasMany(JobValueAssessment::class, 'area_value_id');
+    }
+
+    public function prevJobValue()
+    {
+        return $this->hasMany(JobValueAssessment::class, 'prev_area_value_id');
     }
 }

@@ -7,9 +7,13 @@ use App\Http\Requests\HumanResource\JobValue\JobValueAssessment\StoreJobValueAss
 use App\Http\Requests\HumanResource\JobValue\JobValueAssessment\UpdateJobValueAssessmentRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Model\HumanResource\Employee\Employee;
 use App\Model\HumanResource\JobValue\JobValueAssessment;
 use App\Model\HumanResource\JobValue\JobValueAssessmentCalculation;
 use App\Model\HumanResource\JobValue\JobValueAssessmentScore;
+use App\Model\HumanResource\JobValue\JobValueCategory;
+use App\Model\HumanResource\JobValue\JobValueCriteria;
+use App\Model\HumanResource\Kpi\Kpi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -26,8 +30,19 @@ class JobValueAssessmentController extends Controller
      */
     public function index(Request $request)
     {
+        $permissions = tenant($request->user()->id)->getPermissions();
+        $employee = Employee::where('user_id', $request->user()->id)->first();
+
         $assessment = JobValueAssessment::eloquentFilter($request)
             ->select('job_value_assessments.*');
+
+        if (!tenant($request->user()->id)->hasPermissionTo('create employee job value assessment', 'api')) {
+            if ($employee) {
+                $assessment->where('employee_id', $employee->id);
+            } else {
+                $assessment->where('employee_id', null);
+            }
+        }
 
         $assessment = pagination($assessment, $request->get('limit'));
 
@@ -50,19 +65,24 @@ class JobValueAssessmentController extends Controller
             $assessment->period_to = $request->input('period_to');
             $assessment->status = $request->input('status');
             $assessment->approval_status = 'pending';
+            $assessment->request_approval_to = $request->input('request_approval_to');
             $assessment->total_value = $request->input('total_value');
             $assessment->total_score = $request->input('total_score');
             $assessment->save();
 
             if ($request->has('scores')) {
                 foreach ($request->scores as $scores) {
-                    try {
-                        $assessment->scores()->create($scores);
-                    } catch (\Exception $e) {
-                        \Log::error('Error saving scale:', ['error' => $e->getMessage(), 'scores' => $scores]);
-                    }
+                    if ($scores['score'] > 0) {
+                        try {
+                            $assessment->scores()->create($scores);
+                        } catch (\Exception $e) {
+                            \Log::error('Error saving scale:', ['error' => $e->getMessage(), 'scores' => $scores]);
+                        }
+                    }                    
                 }
             }
+
+            $assessment = JobValueAssessment::calculateFee($assessment);
 
             return new ApiResource($assessment->load('scores'));
         });
@@ -77,10 +97,23 @@ class JobValueAssessmentController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $assessment = JobValueAssessment::eloquentFilter($request)
-            ->select('job_value_assessments.*')
-            ->where('id', $id)
-            ->first();
+        $assessment = JobValueAssessment::with([
+            'scores' => function($query) {
+                $query->select('job_value_assessment_scores.*')
+                    ->join('job_value_criterias as criteria', 'criteria.id', '=', 'job_value_assessment_scores.criteria_id')
+                    ->join('job_value_categories as category', 'category.id', '=', 'criteria.category_id')
+                    ->orderBy('category.id');
+            },
+            'scores.criteria.category',
+            'scores.criteria',
+            'employee',
+            'employee.scorers',
+            'requestApprover',
+            'prevAssessment',
+            'approvedBy'
+        ])
+        ->where('id', $id)
+        ->first();
 
         return new ApiResource($assessment);
     }
@@ -101,6 +134,7 @@ class JobValueAssessmentController extends Controller
         $assessment->period_to = $request->input('period_to');
         $assessment->status = $request->input('status');
         $assessment->approval_status = 'pending';
+        $assessment->request_approval_to = $request->input('request_approval_to');
         $assessment->total_value = $request->input('total_value');
         $assessment->total_score = $request->input('total_score');
         $assessment->save();
@@ -119,16 +153,19 @@ class JobValueAssessmentController extends Controller
                     ]);
                 }
             } else {
-                // Create new area value
-                $assessment->scores()->create([
-                    'criteria_id' => $score['criteria_id'],
-                    'score' => $score['score'],
-                    'description' => $score['description'],
-                    'value' => $score['value'],
-                    'note' => $score['note'],
-                ]);
+                if ($score['score'] > 0) {
+                    $assessment->scores()->create([
+                        'criteria_id' => $score['criteria_id'],
+                        'score' => $score['score'],
+                        'description' => $score['description'],
+                        'value' => $score['value'],
+                        'note' => $score['note'],
+                    ]);
+                }
             }
         }
+
+        $assessment = JobValueAssessment::calculateFee($assessment);
 
         return new ApiResource($assessment);
     }
@@ -143,6 +180,14 @@ class JobValueAssessmentController extends Controller
     public function destroy($id)
     {
         $assessment = JobValueAssessment::findOrFail($id);
+        
+        $nextAssessment = JobValueAssessment::where('prev_assessment_id', $id)->first();
+
+        if ($nextAssessment) {
+            return response()->json([
+                'message' => 'Cannot delete because this assessment is used in the next assessment.'
+            ], 400);
+        }
 
         $assessment->delete();
 
@@ -164,5 +209,35 @@ class JobValueAssessmentController extends Controller
             ->first();
 
         return new ApiResource($assessment);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     *
+     * @return \App\Http\Resources\ApiResource
+     */
+    public function getCocValue(Request $request)
+    {
+        $kpi = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
+            ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
+            ->select('kpis.*')
+            ->addSelect(DB::raw('sum(kpi_indicators.weight) / count(DISTINCT kpis.id) as weight'))
+            ->addSelect(DB::raw('sum(kpi_indicators.target) / count(DISTINCT kpis.id) as target'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score) / count(DISTINCT kpis.id) as score'))
+            ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
+            ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'))
+            ->where('status', 'COMPLETED')
+            ->whereIn(DB::raw('LOWER(kpi_groups.name)'), ['solusi', 'andalan', 'emas', 'besar', 'besar (1)', 'besar (2)', 'terus terang'])
+            ->whereBetween('kpis.date', [
+                $request->start_date,
+                $request->end_date
+            ])
+            ->where('employee_id', $request->employee_id)->orderBy('kpis.date', 'desc')->orderBy('kpis.created_at', 'desc')
+            ->groupBy('kpis.date')
+            ->first();
+
+        return new ApiResource($kpi);
     }
 }

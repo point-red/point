@@ -27,4 +27,9 @@ class JobValueCriteria extends MasterModel
     {
         return $this->hasMany(JobValueCriteriaScale::class, 'criteria_id')->orderBy('value', 'asc');
     }
+
+    public function category()
+    {
+        return $this->belongsTo(JobValueCategory::class);
+    }
 }

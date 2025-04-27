@@ -31,4 +31,9 @@ trait TenantUserRelation
     {
         return $this->belongsToMany(Branch::class, 'branch_user')->withPivot(['is_default']);
     }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'user_id');
+    }
 }

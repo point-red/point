@@ -9,7 +9,10 @@ use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Http\Resources\HumanResource\Employee\EmployeeJobLocation\EmployeeJobLocationResource;
 use App\Model\HumanResource\Employee\EmployeeJobLocation;
+use App\Model\HumanResource\Employee\EmployeeAreaValue;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeJobLocationController extends Controller
 {
@@ -41,11 +44,18 @@ class EmployeeJobLocationController extends Controller
     {
         $employeeJobLocation = new EmployeeJobLocation();
         $employeeJobLocation->name = $request->input('name');
-        $employeeJobLocation->base_salary = $request->input('base_salary');
+        $employeeJobLocation->base_salary = 0;
         $employeeJobLocation->multiplier_kpi = $request->input('multiplier_kpi');
         $employeeJobLocation->save();
 
-        return new EmployeeJobLocationResource($employeeJobLocation);
+
+        if ($request->has('area_values')) {
+            foreach ($request->area_values as $area) {
+                $employeeJobLocation->areaValues()->create($area);
+            }
+        }
+
+        return new EmployeeJobLocationResource($employeeJobLocation->load('areaValues'));
     }
 
     /**
@@ -61,7 +71,7 @@ class EmployeeJobLocationController extends Controller
             ->where('employee_job_locations.id', $id)
             ->first();
 
-        return new ApiResource($employeeJobLocation);
+        return new ApiResource($employeeJobLocation->load('areaValues'));
     }
 
     /**
@@ -76,9 +86,30 @@ class EmployeeJobLocationController extends Controller
     {
         $employeeJobLocation = EmployeeJobLocation::findOrFail($id);
         $employeeJobLocation->name = $request->input('name');
-        $employeeJobLocation->base_salary = $request->input('base_salary');
+        // $employeeJobLocation->base_salary = $request->input('base_salary');
         $employeeJobLocation->multiplier_kpi = $request->input('multiplier_kpi');
         $employeeJobLocation->save();
+
+        foreach ($request->input('area_values') as $area) {
+            if (isset($area['id'])) {
+                // Update existing area value
+                $areaValue = EmployeeAreaValue::find($area['id']);
+                if ($areaValue) {
+                    $areaValue->update([
+                        'year' => $area['year'],
+                        'value' => $area['value'],
+                        'notes' => $area['notes'] ?? null,
+                    ]);
+                }
+            } else {
+                // Create new area value
+                $employeeJobLocation->areaValues()->create([
+                    'year' => $area['year'],
+                    'value' => $area['value'],
+                    'notes' => $area['notes'] ?? null,
+                ]);
+            }
+        }
 
         return new EmployeeJobLocationResource($employeeJobLocation);
     }
@@ -92,7 +123,20 @@ class EmployeeJobLocationController extends Controller
      */
     public function destroy($id)
     {
-        $employeeJobLocation = EmployeeJobLocation::findOrFail($id);
+        $employeeJobLocation = EmployeeJobLocation::with('areaValues.jobValue')->findOrFail($id);
+
+        foreach ($employeeJobLocation->areaValues as $areaValue) {
+            if ($areaValue->jobValue()->exists()) {
+                return response()->json([
+                    'message' => 'Cannot delete Employee Job Location as some area values have associated job values.'
+                ], 400);
+            }
+            if ($areaValue->prevJobValue()->exists()) {
+                return response()->json([
+                    'message' => 'Cannot delete Employee Job Location as some area values have associated previous job values.'
+                ], 400);
+            }
+        }
 
         $employeeJobLocation->delete();
 

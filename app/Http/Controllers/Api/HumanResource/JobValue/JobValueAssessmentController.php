@@ -36,7 +36,7 @@ class JobValueAssessmentController extends Controller
         $assessment = JobValueAssessment::eloquentFilter($request)
             ->select('job_value_assessments.*');
 
-        if (!tenant($request->user()->id)->hasPermissionTo('create employee job value assessment', 'api')) {
+        if (!tenant($request->user()->id)->hasPermissionTo('approve employee job value assessment', 'api')) {
             if ($employee) {
                 $assessment->where('employee_id', $employee->id);
             } else {

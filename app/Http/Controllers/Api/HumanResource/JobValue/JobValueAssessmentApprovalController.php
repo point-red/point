@@ -25,9 +25,8 @@ class JobValueAssessmentApprovalController extends Controller
     public function approve(Request $request, $id)
     {
         $assessment = JobValueAssessment::findOrFail($id);
-        $assessment = $assessment->load('employee');
-        $assessment->approval_by = auth()->user()->id;
-        $assessment->approval_at = now();
+        $assessment->approved_by = auth()->user()->id;
+        $assessment->approved_at = now();
         $assessment->approval_status = 'approved';
         $assessment->save();
 
@@ -43,12 +42,12 @@ class JobValueAssessmentApprovalController extends Controller
      */
     public function reject(Request $request, $id)
     {
-        $calculation = JobValueAssessment::findOrFail($id);
-        $calculation->approval_by = auth()->user()->id;
-        $calculation->approval_at = now();
-        $calculation->approval_status = 'rejected';
-        $calculation->save();
+        $assessment = JobValueAssessment::findOrFail($id);
+        $assessment->approved_by = auth()->user()->id;
+        $assessment->approved_at = now();
+        $assessment->approval_status = 'rejected';
+        $assessment->save();
 
-        return new ApiResource($calculation);
+        return new ApiResource($assessment);
     }
 }

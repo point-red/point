@@ -18,7 +18,7 @@ class Firestore
         // https://cloud.google.com/docs/authentication/getting-started
         try {
             return new FirestoreClient([
-                'keyFilePath' => storage_path('firebase-service-account.json'),
+                'keyFilePath' => storage_path('app/firebase/firebase-service-account.json'),
             ]);
         } catch (GoogleException $e) {
         }

@@ -70,6 +70,8 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         require base_path('routes/api/project.php');
         Route::apiResource('invoices', 'InvoiceController');
 
+        Route::apiResource('notifications', 'NotificationController')->only(['index', 'update']);
+
         // Global Transaction
         Route::resource('transactions', 'TransactionController');
         Route::apiResource('firebase-token', 'FirebaseTokenController');

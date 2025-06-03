@@ -3,6 +3,9 @@
 use App\Model\SettingJournal;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
 
 if (! function_exists('log_object')) {
     /**
@@ -361,5 +364,26 @@ if (! function_exists('response_error')) {
         if($code !== 0) $httpCode = $code;
 
         return response (['code' => $code, 'message' => $message], $httpCode);
+    }
+}
+
+if (! function_exists('sendFcmNotification')) {
+    /**
+     * Send FCM Notification.
+     *
+     * @param $title
+     * @param $body
+     * @param $token
+     * @return mixed
+     */
+    function sendFcmNotification($token, $title, $body)
+    {
+        $factory = (new Factory)->withServiceAccount(storage_path('app/firebase/firebase-service-account.json'));
+        $messaging = $factory->createMessaging();
+
+        $message = CloudMessage::withTarget('token', $token)
+            ->withNotification(Notification::create($title, $body));
+
+        $messaging->send($message);
     }
 }

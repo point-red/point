@@ -20,7 +20,15 @@ class NotificationController extends Controller
 
         $result = pagination($notifications, $perPage ? $perPage : 10);
 
-        return new ApiCollection($result);
+        // Hitung jumlah notifikasi belum dibaca
+        $unreadCount = Notification::where('user_id', $userId)
+            ->where('status', 'UNREAD')
+            ->count();
+
+        return response()->json([
+            'data' => new ApiCollection($result),
+            'unread_count' => $unreadCount
+        ]);
     }
 
     public function update(Request $request, $id)

@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
+use App\Helpers\Firebase\Firestore;
 
 if (! function_exists('log_object')) {
     /**
@@ -376,14 +377,68 @@ if (! function_exists('sendFcmNotification')) {
      * @param $token
      * @return mixed
      */
-    function sendFcmNotification($token, $title, $body)
+    function sendFcmNotification($token, $title, $body, $redirectUrl = null)
     {
         $factory = (new Factory)->withServiceAccount(storage_path('app/firebase/firebase-service-account.json'));
         $messaging = $factory->createMessaging();
 
+        // Gunakan $redirectUrl jika diberikan, jika tidak gunakan default
+        $clickActionUrl = $redirectUrl ?? url('/notification-action?token=' . urlencode($token));
+
         $message = CloudMessage::withTarget('token', $token)
-            ->withNotification(Notification::create($title, $body));
+            ->withData([
+                'title' => $title,
+                'body' => $body,
+                'click_action' => $clickActionUrl
+            ]);
 
         $messaging->send($message);
+    }
+}
+
+if (! function_exists('sendNotification')) {
+    /**
+     * Send Notification.
+     *
+     * @param $userId
+     * @param $projectId
+     * @param $clickAction
+     * @param $token
+     * @param $subject
+     * @param $message
+     * @return mixed
+     */
+    function sendNotification($userId, $project, $clickAction, $token, $subject, $message)
+    {
+        try {
+            $notif = new \App\Model\Notification;
+
+            sendFcmNotification(
+                $token,
+                $subject,
+                $message,        
+                $clickAction
+            );
+
+            Firestore::set('notifications', null, [
+                'userId' => $userId,
+                'projectId' => $project->id,
+                'message' => $message,
+                'clickAction' => $clickAction,
+                'createdAt' => Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->timezone($project->timezone)->toDateTimeString(),
+            ]);
+
+            $notif->user_id = $userId;
+            $notif->project_id = $project->id;
+            $notif->message = $message;
+            $notif->link = $clickAction;
+            $notif->status = 'UNREAD';
+            $notif->created_at = Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->timezone($project->timezone)->toDateTimeString();
+            $notif->updated_at = Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->timezone($project->timezone)->toDateTimeString();
+            $notif->save();
+        } catch (\Exception $e) {
+            // Log the error message
+            \Log::error('Error sending notification: ' . $e->getMessage());
+        }
     }
 }

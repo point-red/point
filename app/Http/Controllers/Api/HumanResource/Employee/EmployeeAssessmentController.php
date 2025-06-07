@@ -217,45 +217,22 @@ class EmployeeAssessmentController extends Controller
         DB::connection('tenant')->commit();
 
         if ($kpi->status === 'COMPLETED') {
-            // insert notification
-            $notif = new Notification;
 
-            $userTokens = FirebaseToken::where('user_id', $kpi->scorer_id)->pluck('token')->toArray();
+            $user = Employee::where('id', $employeeId)->first();
+
+            $userTokens = FirebaseToken::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->pluck('token')
+                ->first();
 
             $tenant = strtolower($request->header('Tenant'));
             $project = Project::where('code', $tenant)->first();
 
-            $clickAction = $project->code.'.'.env('TENANT_DOMAIN').'human-resource/kpi/kpi-assessment/1/assessment/'.$id;
+            $clickAction = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').'human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$id;
             $message = 'There\'s new submitted KPI from '. auth()->user()->firstname.' '.auth()->user()->lastname;
             $title = "New KPI Report Submitted";
 
-            // Artisan::call('push-notification', [
-            //     'token' => $userTokens,
-            //     'title' => $title,
-            //     'body' => $message,
-            //     'click_action' => $clickAction,
-            // ]);
-
-            // sendFcmNotification(
-            //     "ccDNNWkaQiSwF8FufxoDCj:APA91bErb2DUPOvtYluFxCHn0tVlbRyvRCfIV298EVaF5bGUazaZY0PhverERTLhjOkROq2t7htjCufCwQFi49CnzUyIiE1mMA6EeXm2i9lFuHcbwI278dQ",
-            //     'Penilaian Baru',
-            //     'Ada penilaian baru untuk Anda.'
-            // );
-
-            Firestore::set('notifications', null, [
-                'userId' => $kpi->scorer_id,
-                'projectId' => $project->id,
-                'message' => $message,
-                'clickAction' => $clickAction,
-                'createdAt' => Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->timezone($project->timezone)->toDateTimeString(),
-            ]);
-
-            $notif->user_id = $kpi->scorer_id;
-            $notif->project_id = $project->id;
-            $notif->message = $message;
-            $notif->link = $clickAction;
-            $notif->status = 'UNREAD';
-            $notif->save();
+            sendNotification($user->id, $project->id, $clickAction, $userTokens, $title, $message);
         }
 
         return $data;
@@ -538,46 +515,23 @@ class EmployeeAssessmentController extends Controller
 
         DB::connection('tenant')->commit();
 
-        if ($kpi->status === 'COMPLETED') {
-            // insert notification
-            $notif = new Notification;
-
-            $userTokens = FirebaseToken::where('user_id', $kpi->scorer_id)->pluck('token')->toArray();
+        if ($kpi->status === 'COMPLETED') {    
 
             $tenant = strtolower($request->header('Tenant'));
             $project = Project::where('code', $tenant)->first();
 
-            $clickAction = $project->code.'.'.env('TENANT_DOMAIN').'human-resource/kpi/kpi-assessment/1/assessment/'.$id;
+            $clickAction = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').'human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$id;
             $message = 'There\'s new update from '. auth()->user()->firstname.' '.auth()->user()->lastname;
             $title = "Update on Your KPI Report";
 
-            // Artisan::call('push-notification', [
-            //     'token' => $userTokens,
-            //     'title' => $title,
-            //     'body' => $message,
-            //     'click_action' => $clickAction,
-            // ]);
+            $user = Employee::where('id', $employeeId)->first();
+            $userTokens = FirebaseToken::where('user_id', $user->id)
+                ->where('project_id', $project->id)
+                ->orderBy('created_at', 'desc')
+                ->pluck('token')
+                ->first();
 
-            // sendFcmNotification(
-            //     "ccDNNWkaQiSwF8FufxoDCj:APA91bErb2DUPOvtYluFxCHn0tVlbRyvRCfIV298EVaF5bGUazaZY0PhverERTLhjOkROq2t7htjCufCwQFi49CnzUyIiE1mMA6EeXm2i9lFuHcbwI278dQ",
-            //     'Penilaian Baru',
-            //     'Ada penilaian baru untuk Anda.'
-            // );
-
-            Firestore::set('notifications', null, [
-                'userId' => $kpi->scorer_id,
-                'projectId' => $project->id,
-                'message' => $message,
-                'clickAction' => $clickAction,
-                'createdAt' => Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->timezone($project->timezone)->toDateTimeString(),
-            ]);
-
-            $notif->user_id = $kpi->scorer_id;
-            $notif->project_id = $project->id;
-            $notif->message = $message;
-            $notif->link = $clickAction;
-            $notif->status = 'UNREAD';
-            $notif->save();
+            sendNotification($user->id, $project, $clickAction, $userTokens, $title, $message);
         }
 
         return new KpiResource($kpi);

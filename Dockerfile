@@ -1,20 +1,41 @@
-FROM richarvey/nginx-php-fpm:3.1.6
+FROM php:8.0-fpm
 
-COPY . .
+ARG user=appuser
+ARG uuid=1000
 
-# Image config
-ENV SKIP_COMPOSER 1
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
+# install system dependecies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    default-mysql-client \
+    zip \
+    unzip
 
-# Laravel config
-ENV APP_ENV production
-ENV APP_DEBUG false
-ENV LOG_CHANNEL stderr
+# clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Allow composer to run as root
-ENV COMPOSER_ALLOW_SUPERUSER 1
+# install PHP extentions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-CMD ["/start.sh"]
+RUN pecl install xdebug grpc \
+    && docker-php-ext-enable xdebug \
+    && docker-php-ext-enable grpc
+
+RUN echo xdebug.mode=coverage > /usr/local/etc/php/conf.d/xdebug.ini 
+
+# get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# create system user to run Composer and Artisan Commands
+RUN useradd -G www-data,root -u "$uuid" -d "/home/$user" "$user"
+RUN mkdir -p /home/$user/.composer && \
+    chown -R $user:$user /home/$user
+
+# set working directory
+WORKDIR /var/www
+
+USER $user

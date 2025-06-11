@@ -377,7 +377,7 @@ if (! function_exists('sendFcmNotification')) {
      * @param $token
      * @return mixed
      */
-    function sendFcmNotification($token, $title, $body, $redirectUrl = null)
+    function sendFcmNotification($token, $title, $botdy, $redirectUrl = null)
     {
         $serviceAccount = env('FIREBASE_SERVICE_ACCOUNT_JSON');
         $factory = (new Factory)->withServiceAccount($serviceAccount);

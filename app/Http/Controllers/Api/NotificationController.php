@@ -46,4 +46,18 @@ class NotificationController extends Controller
             'data' => $notification
         ]);
     }
+
+    public function markAllAsRead(Request $request)
+    {
+        $userId = auth()->id();
+
+        $updated = Notification::where('user_id', $userId)
+            ->where('status', 'UNREAD')
+            ->update(['status' => 'READ']);
+
+        return response()->json([
+            'message' => 'All notifications marked as read.',
+            'updated_count' => $updated
+        ]);
+    }
 }

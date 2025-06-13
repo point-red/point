@@ -71,6 +71,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
         Route::apiResource('invoices', 'InvoiceController');
 
         Route::apiResource('notifications', 'NotificationController')->only(['index', 'update']);
+        Route::post('notifications/mark-all-as-read', 'NotificationController@markAllAsRead');
 
         // Global Transaction
         Route::resource('transactions', 'TransactionController');

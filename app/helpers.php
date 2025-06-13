@@ -377,10 +377,9 @@ if (! function_exists('sendFcmNotification')) {
      * @param $token
      * @return mixed
      */
-    function sendFcmNotification($token, $title, $botdy, $redirectUrl = null)
+    function sendFcmNotification($token, $title, $body, $redirectUrl = null)
     {
-        $serviceAccount = env('FIREBASE_SERVICE_ACCOUNT_JSON');
-        $factory = (new Factory)->withServiceAccount($serviceAccount);
+        $factory = (new Factory)->withServiceAccount(storage_path('app/firebase/firebase-service-account.json'));
         $messaging = $factory->createMessaging();
 
         // Gunakan $redirectUrl jika diberikan, jika tidak gunakan default

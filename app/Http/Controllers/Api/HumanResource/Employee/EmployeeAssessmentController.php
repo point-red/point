@@ -14,6 +14,7 @@ use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
 use App\Model\HumanResource\Kpi\KpiIndicator;
 use App\Model\HumanResource\Kpi\KpiScore;
+use App\Model\HumanResource\Employee\EmployeeScorer;
 use App\Model\Notification;
 use App\Model\FirebaseToken;
 use App\Model\Project\Project;
@@ -112,6 +113,7 @@ class EmployeeAssessmentController extends Controller
         $kpi->date = date('Y-m-d', strtotime($dateTo));
         $kpi->employee_id = $employeeId;
         $kpi->scorer_id = auth()->user()->id;
+
         $comment = '';
         if (array_key_exists('comment', $template)) {
             $comment = $template['comment'];
@@ -218,9 +220,16 @@ class EmployeeAssessmentController extends Controller
 
         if ($kpi->status === 'COMPLETED') {
 
-            $user = Employee::where('id', $employeeId)->first();
+            $scorer = EmployeeScorer::where('employee_id', $employeeId)->first();
 
-            $userTokens = FirebaseToken::where('user_id', $user->id)
+            if ($scorer->user_id != auth()->user()->id) {
+                $userId = $scorer->user_id;
+            } else {
+                $user = Employee::where('id', $employeeId)->first();
+                $userId = $user->user_id;
+            }            
+
+            $userTokens = FirebaseToken::where('user_id', $userId)
                 ->orderBy('created_at', 'desc')
                 ->pluck('token')
                 ->first();
@@ -228,11 +237,11 @@ class EmployeeAssessmentController extends Controller
             $tenant = strtolower($request->header('Tenant'));
             $project = Project::where('code', $tenant)->first();
 
-            $clickAction = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').'human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$id;
-            $message = 'There\'s new submitted KPI from '. auth()->user()->firstname.' '.auth()->user()->lastname;
-            $title = "New KPI Report Submitted";
+            $clickAction = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').'human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$kpi->id;
+            $message = auth()->user()->first_name.' '.auth()->user()->last_name . ' submitted a KPI';
+            $title = "New KPI Submission Alert!";
 
-            sendNotification($user->id, $project->id, $clickAction, $userTokens, $title, $message);
+            sendNotification($userId, $project, $clickAction, $userTokens, $title, $message);
         }
 
         return $data;
@@ -441,6 +450,9 @@ class EmployeeAssessmentController extends Controller
     {
         DB::connection('tenant')->beginTransaction();
 
+        $isFeedback = false;
+        $isComment = false;
+
         $kpi = Kpi::findOrFail($id);
         $kpi->comment = $request->get('comment');
 
@@ -469,18 +481,21 @@ class EmployeeAssessmentController extends Controller
                         $notes = substr($notes, 0, 4001);
                     }
                     $kpiIndicator->notes = $notes;
+                    $isFeedback = true;
                 } else {
                     $kpiIndicator->notes = '';
                 }
 
                 if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
                     $kpiIndicator->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                    $isComment = true;
                 } else {
                     $kpiIndicator->comment = '';
                 }
 
                 if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['attachment'])) {
                     $kpiIndicator->attachment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['attachment'];
+                    $isUpdate = true;
                 } else {
                     $kpiIndicator->attachment = '';
                 }
@@ -517,21 +532,40 @@ class EmployeeAssessmentController extends Controller
 
         if ($kpi->status === 'COMPLETED') {    
 
-            $tenant = strtolower($request->header('Tenant'));
-            $project = Project::where('code', $tenant)->first();
+            $scorer = EmployeeScorer::where('employee_id', $employeeId)->first();
 
-            $clickAction = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').'human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$id;
-            $message = 'There\'s new update from '. auth()->user()->firstname.' '.auth()->user()->lastname;
-            $title = "Update on Your KPI Report";
+            if ($scorer->user_id != auth()->user()->id) {
+                $userId = $scorer->user_id;
+            } else {
+                $user = Employee::where('id', $employeeId)->first();
+                $userId = $user->user_id;
+            }            
 
-            $user = Employee::where('id', $employeeId)->first();
-            $userTokens = FirebaseToken::where('user_id', $user->id)
-                ->where('project_id', $project->id)
+            $userTokens = FirebaseToken::where('user_id', $userId)
                 ->orderBy('created_at', 'desc')
                 ->pluck('token')
                 ->first();
 
-            sendNotification($user->id, $project, $clickAction, $userTokens, $title, $message);
+            $tenant = strtolower($request->header('Tenant'));
+            $project = Project::where('code', $tenant)->first();
+
+            $clickAction = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').'human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$id;
+    
+
+            $message = 'There\'s new update from '. auth()->user()->first_name.' '.auth()->user()->last_name;
+            $title = "Update on Your KPI Report";
+
+            if ($isComment) {
+                $title = "Comment on Your KPI Submission";
+                $message = auth()->user()->first_name.' '.auth()->user()->last_name. ' has commented on your KPI submission';
+            }
+
+            if ($isFeedback) {
+                $message = auth()->user()->first_name.' '.auth()->user()->last_name. ' has left feedback';
+                $title = "KPI Feedback Received";
+            }            
+
+            sendNotification($userId, $project, $clickAction, $userTokens, $title, $message);
         }
 
         return new KpiResource($kpi);

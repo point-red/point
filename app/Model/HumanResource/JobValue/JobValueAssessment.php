@@ -69,7 +69,7 @@ class JobValueAssessment extends MasterModel
 
     public function approvedBy()
     {
-        return $this->belongsTo(User::class, 'approval_by');
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     public function prevAssessment()

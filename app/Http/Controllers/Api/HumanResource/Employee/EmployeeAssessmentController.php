@@ -68,6 +68,8 @@ class EmployeeAssessmentController extends Controller
         $dates = [];
         $scores = [];
 
+        \Log::info($kpis);
+
         foreach ($kpis as $key => $kpi) {
             array_push($dates, date('dMY', strtotime($kpi->date)));
             array_push($scores, number_format($kpi->score_percentage, 2));

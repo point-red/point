@@ -377,7 +377,7 @@ if (! function_exists('sendFcmNotification')) {
      * @param $token
      * @return mixed
      */
-    function sendFcmNotification($token, $title, $body, $redirectUrl = null)
+    function sendFcmNotification($token, $title, $body, $redirectUrl = null, $notificationId = null)
     {
         $factory = (new Factory)->withServiceAccount(storage_path('app/firebase/firebase-service-account.json'));
         $messaging = $factory->createMessaging();
@@ -387,9 +387,29 @@ if (! function_exists('sendFcmNotification')) {
 
         $message = CloudMessage::withTarget('token', $token)
             ->withData([
+                'notificationId' => $notificationId,
                 'title' => $title,
                 'body' => $body,
                 'click_action' => $clickActionUrl
+            ])
+            ->withNotification([
+                'title' => $title,
+                'body' => $body,
+                'click_action' => $clickActionUrl,
+                'actions' => [
+                    [
+                        'action' => 'mark-as-read',
+                        'title' => 'Mark as Read'
+                    ]
+                ]
+            ])
+            ->withAndroidConfig([
+                'priority' => 'high',
+            ])
+            ->withApnsConfig([
+                'headers' => [
+                    'apns-priority' => '10',
+                ],
             ]);
 
         $messaging->send($message);
@@ -413,13 +433,6 @@ if (! function_exists('sendNotification')) {
         try {
             $notif = new \App\Model\Notification;
 
-            sendFcmNotification(
-                $token,
-                $subject,
-                $message,        
-                $clickAction
-            );
-
             Firestore::set('notifications', null, [
                 'userId' => $userId,
                 'projectId' => $project->id,
@@ -436,6 +449,14 @@ if (! function_exists('sendNotification')) {
             $notif->created_at = Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->timezone($project->timezone)->toDateTimeString();
             $notif->updated_at = Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->timezone($project->timezone)->toDateTimeString();
             $notif->save();
+
+            sendFcmNotification(
+                $token,
+                $subject,
+                $message,        
+                $clickAction,
+                $notif->id
+            );
         } catch (\Exception $e) {
             // Log the error message
             \Log::error('Error sending notification: ' . $e->getMessage());

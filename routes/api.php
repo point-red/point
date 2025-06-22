@@ -72,6 +72,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
 
         Route::apiResource('notifications', 'NotificationController')->only(['index', 'update']);
         Route::post('notifications/mark-all-as-read', 'NotificationController@markAllAsRead');
+        Route::post('notifications/mark-as-read/{id}', 'NotificationController@markAsRead');
 
         // Global Transaction
         Route::resource('transactions', 'TransactionController');

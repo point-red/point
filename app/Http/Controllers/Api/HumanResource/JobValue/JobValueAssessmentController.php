@@ -17,6 +17,7 @@ use App\Model\HumanResource\Kpi\Kpi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Throwable;
 
 class JobValueAssessmentController extends Controller
@@ -220,6 +221,8 @@ class JobValueAssessmentController extends Controller
      */
     public function getCocValue(Request $request)
     {
+        $date = Carbon::parse($request->start_date);
+        $currentYear = $date->format('Y');
         $kpi = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
             ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
             ->select('kpis.*')
@@ -230,10 +233,7 @@ class JobValueAssessmentController extends Controller
             ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'))
             ->where('status', 'COMPLETED')
             ->whereIn(DB::raw('LOWER(kpi_groups.name)'), ['solusi', 'andalan', 'emas', 'besar', 'besar (1)', 'besar (2)', 'terus terang'])
-            ->whereBetween('kpis.date', [
-                $request->start_date,
-                $request->end_date
-            ])
+            ->whereYear('kpis.date', '=', $currentYear)
             ->where('employee_id', $request->employee_id)->orderBy('kpis.date', 'desc')->orderBy('kpis.created_at', 'desc')
             ->groupBy('kpis.date')
             ->first();

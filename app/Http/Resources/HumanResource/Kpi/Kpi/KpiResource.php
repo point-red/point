@@ -22,6 +22,7 @@ class KpiResource extends JsonResource
             'comment' => $this->comment,
             'date' => $this->date,
             'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
             'employee' => new ApiResource($this->employee),
             'weight' => $this->weight,
             'target' => $this->target,

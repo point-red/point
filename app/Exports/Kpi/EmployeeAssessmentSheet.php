@@ -30,7 +30,7 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
             ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
             ->join('users', 'users.id', '=', 'kpis.scorer_id')
             ->select('kpis.date')
-            ->addSelect('kpis.created_at')
+            ->addSelect('kpis.updated_at')
             ->addSelect(DB::raw('CONCAT(users.first_name, " ", users.last_name) AS username'))
             ->addSelect('kpis.name')
             ->addSelect(DB::raw('sum(kpi_indicators.weight) / count(DISTINCT kpis.id) as weight'))
@@ -61,7 +61,7 @@ class EmployeeAssessmentSheet implements FromCollection, WithTitle, WithHeadings
     {
         return [
             'assessment period',
-            'created at',
+            'updated at',
             'scorer',
             'kpi template',
             'weight',

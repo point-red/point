@@ -456,9 +456,9 @@ class EmployeeAssessmentController extends Controller
 
         $kpi = Kpi::findOrFail($id);
         $kpi->comment = $request->get('comment');
-
+      
         $template = $request->post('template');
-
+      
         $kpi->status = 'COMPLETED';
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
             for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {

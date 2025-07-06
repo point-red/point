@@ -63,10 +63,7 @@ class NotificationController extends Controller
 
     public function markAsRead(Request $request, $id)
     {
-        $userId = auth()->id();
-        $notification = Notification::where('id', $id)
-            ->where('user_id', $userId)
-            ->firstOrFail();
+        $notification = Notification::where('id', $id)->firstOrFail();
 
         $notification->status = 'READ';
         $notification->save();

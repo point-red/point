@@ -232,7 +232,7 @@ class EmployeeAssessmentController extends Controller
             $project = Project::where('code', $tenant)->first();
 
             $userTokens = FirebaseToken::where('user_id', $userId)
-                ->where('project_id', $project->id)
+                // ->where('project_id', $project->id)
                 ->orderBy('created_at', 'desc')
                 ->pluck('token')
                 ->first();
@@ -240,8 +240,9 @@ class EmployeeAssessmentController extends Controller
             $clickAction = '/human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$kpi->id; // (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').
             $message = auth()->user()->first_name.' '.auth()->user()->last_name . ' submitted a KPI';
             $title = "New KPI Submission Alert!";
+            $domainProject = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN');
 
-            sendNotification($userId, $project, $clickAction, $userTokens, $title, $message);
+            sendNotification($userId, $project, $clickAction, $userTokens, $title, $message, $domainProject);
         }
 
         return $data;
@@ -644,14 +645,15 @@ class EmployeeAssessmentController extends Controller
         $project = Project::where('code', $tenant)->first();  
 
         $userTokens = FirebaseToken::where('user_id', $userId)
-            ->where('project_id', $project->id)
+            // ->where('project_id', $project->id)
             ->orderBy('created_at', 'desc')
             ->pluck('token')
             ->first();
+        $domainProject = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN');
 
         $clickAction = '/human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$id; //(env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').          
         
-        sendNotification($userId, $project, $clickAction, $userTokens, $title, $message);
+        sendNotification($userId, $project, $clickAction, $userTokens, $title, $message, $domainProject);
 
         return response()->json([
             'success' => true,

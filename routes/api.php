@@ -72,7 +72,6 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
 
         Route::apiResource('notifications', 'NotificationController')->only(['index', 'update']);
         Route::post('notifications/mark-all-as-read', 'NotificationController@markAllAsRead');
-        Route::post('notifications/mark-as-read/{id}', 'NotificationController@markAsRead');
 
         // Global Transaction
         Route::resource('transactions', 'TransactionController');
@@ -114,6 +113,7 @@ Route::prefix('v1')->namespace('Api')->middleware('api-middleware')->group(funct
     Route::get('oauth/login/google/drive', 'OAuthController@requestGoogleDrive');
     Route::post('oauth/login/google/drive', 'OAuthController@storeGoogleAccessToken');
     Route::delete('oauth/login/google/drive', 'OAuthController@unlinkGoogleDrive');
+    Route::post('notifications/mark-as-read/{id}', 'NotificationController@markAsRead');
     
     //Approve/reject with token
     Route::prefix('approval-with-token')->group(function () {

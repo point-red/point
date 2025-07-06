@@ -377,7 +377,7 @@ if (! function_exists('sendFcmNotification')) {
      * @param $token
      * @return mixed
      */
-    function sendFcmNotification($token, $title, $body, $redirectUrl = null, $notificationId = null)
+    function sendFcmNotification($token, $title, $body, $redirectUrl = null, $notificationId = null, $domainProject = '')
     {
         $factory = (new Factory)->withServiceAccount(storage_path('app/firebase/firebase-service-account.json'));
         $messaging = $factory->createMessaging();
@@ -390,7 +390,8 @@ if (! function_exists('sendFcmNotification')) {
                 'notificationId' => $notificationId,
                 'title' => $title,
                 'body' => $body,
-                'click_action' => $clickActionUrl
+                'click_action' => $clickActionUrl,
+                'domain_project' => $domainProject
             ])
             ->withNotification([
                 'title' => $title,
@@ -428,7 +429,7 @@ if (! function_exists('sendNotification')) {
      * @param $message
      * @return mixed
      */
-    function sendNotification($userId, $project, $clickAction, $token, $subject, $message)
+    function sendNotification($userId, $project, $clickAction, $token, $subject, $message, $domainProject = '')
     {
         try {
             $notif = new \App\Model\Notification;
@@ -455,7 +456,8 @@ if (! function_exists('sendNotification')) {
                 $subject,
                 $message,        
                 $clickAction,
-                $notif->id
+                $notif->id,
+                $domainProject
             );
         } catch (\Exception $e) {
             // Log the error message

@@ -28,10 +28,14 @@ class EmployeeAssessmentExport implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets = [];
+        \Log::info('sheet');
+        \Log::info($this->employee_id);
+
         if (!$this->employee_id) {
             $employees = Employee::all();
         } else {
-            $employees = Employee::where('id', $this->employee_id)->get();
+            $ids = explode(',', $this->employee_id);
+            $employees = Employee::whereIn('id', $ids)->get();
         }
 
         foreach ($employees as $employee) {

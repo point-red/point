@@ -626,6 +626,13 @@ class EmployeeAssessmentController extends Controller
         $kpi = Kpi::findOrFail($id);
         $employeeId = $kpi->employee_id;
 
+        if ($kpi->status != 'COMPLETED') {
+            return response()->json([
+                'success' => false,
+                'message' => 'KPI assessment is not completed. Notification cannot be sent.',
+            ], 200);
+        }
+
         $scorer = EmployeeScorer::where('employee_id', $employeeId)->first();
 
         if ($scorer->user_id != auth()->user()->id) {

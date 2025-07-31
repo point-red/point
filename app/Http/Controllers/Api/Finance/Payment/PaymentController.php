@@ -7,10 +7,19 @@ use App\Http\Requests\Finance\Payment\Payment\StorePaymentRequest;
 use App\Http\Requests\Finance\Payment\Payment\UpdatePaymentRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
+use App\Mail\Finance\Payment\PaymentCancellationApprovalRequest;
+use App\Model\Auth\Role;
 use App\Model\Finance\Payment\Payment;
+use App\Model\Finance\PaymentOrder\PaymentOrder;
+use App\Model\Master\User;
+use App\Model\Purchase\PurchaseDownPayment\PurchaseDownPayment;
+use App\Model\Token;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class PaymentController extends Controller
@@ -23,7 +32,7 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $payment = Payment::from(Payment::getTableName().' as '.Payment::$alias)->eloquentFilter($request);
+        $payment = Payment::from(Payment::getTableName() . ' as ' . Payment::$alias)->eloquentFilter($request);
 
         $payment = Payment::joins($payment, $request->get('join'));
 
@@ -47,7 +56,8 @@ class PaymentController extends Controller
                 ->load('form')
                 ->load('paymentable')
                 ->load('details.allocation')
-                ->load('details.referenceable.form');
+                ->load('details.referenceable.form')
+                ->load('cashAdvance.cashAdvance.form');
 
             return new ApiResource($payment);
         });
@@ -83,7 +93,7 @@ class PaymentController extends Controller
             $payment->form->archive();
 
             foreach ($payment->details as $paymentDetail) {
-                if (! $paymentDetail->isDownPayment()) {
+                if (!$paymentDetail->isDownPayment()) {
                     $reference = $paymentDetail->referenceable;
                     $reference->remaining += $paymentDetail->amount;
                     $reference->save();
@@ -114,23 +124,123 @@ class PaymentController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        $request->validate([
+            'reason' => 'required'
+        ]);
+
         $payment = Payment::findOrFail($id);
         $payment->isAllowedToDelete();
 
-        $response = $payment->requestCancel($request);
+        DB::connection('tenant')->transaction(function () use ($payment, $request) {
+            $payment->requestCancel($request);
 
-        if (! $response) {
-            foreach ($payment->details as $paymentDetail) {
-                if (! $paymentDetail->isDownPayment()) {
-                    $reference = $paymentDetail->referenceable;
-                    $reference->remaining += $payment->amount;
-                    $reference->save();
-                    $reference->form->done = false;
-                    $reference->form->save();
+            // Kirim notifikasi by program & email
+            $superAdminRole = Role::where('name', 'super admin')->first();
+            $emailUsers = User::whereHas('roles', function (Builder $query) use ($superAdminRole) {
+                $query->where('role_id', '=', $superAdminRole->id);
+            })->get();
+
+            foreach ($emailUsers as $recipient) {
+                // create token based on request_approval_to
+                $token = Token::where('user_id', $recipient->id)->first();
+
+                if (!$token) {
+                    $token = new Token([
+                        'user_id' => $recipient->id,
+                        'token' => md5($recipient->email . '' . now()),
+                    ]);
+                    $token->save();
                 }
+
+                Mail::to([
+                    $recipient->email,
+                ])->queue(new PaymentCancellationApprovalRequest(
+                    $payment,
+                    $recipient,
+                    $payment->form,
+                    $token->token
+                ));
+            }
+
+            // if (!$response) {
+            //     foreach ($payment->details as $paymentDetail) {
+            //         if (!$paymentDetail->isDownPayment()) {
+            //             $reference = $paymentDetail->referenceable;
+            //             $reference->remaining += $payment->amount;
+            //             $reference->save();
+            //             $reference->form->done = false;
+            //             $reference->form->save();
+            //         }
+            //     }
+            // }
+        });
+
+        return response()->json([], 204);
+    }
+
+    public function getReferences(Request $request)
+    {
+        // Split request filter for each reference type
+        $paymentOrderRequest = new Request();
+        $downPaymentRequest = new Request();
+        $paymentOrderString = 'paymentorder';
+        $downPaymentString = 'downpayment';
+        foreach ($request->all() as $key => $value) {
+            if (in_array($key, ['limit', 'page'])) {
+                $paymentOrderRequest->merge([
+                    $key => $value
+                ]);
+                $downPaymentRequest->merge([
+                    $key => $value
+                ]);
+                continue;
+            }
+            $explodedKey = explode('_', $key);
+
+            switch ($explodedKey[0]) {
+                case $paymentOrderString:
+                    $keyAttribute = substr($key, strlen($paymentOrderString) + 1); //+1 for _
+                    $paymentOrderRequest->merge([
+                        $keyAttribute => $value
+                    ]);
+                    break;
+
+                case $downPaymentString:
+                    $keyAttribute = substr($key, strlen($downPaymentString) + 1); //+1 for _
+                    $downPaymentRequest->merge([
+                        $keyAttribute => $value
+                    ]);
+                    break;
+
+                default:
+                    # code...
+                    break;
             }
         }
 
-        return response()->json([], 204);
+        $references = new Collection();
+
+        $paymentOrders = PaymentOrder::from(PaymentOrder::getTableName() . ' as ' . PaymentOrder::$alias)->eloquentFilter($paymentOrderRequest);
+        $paymentOrders = PaymentOrder::joins($paymentOrders, $paymentOrderRequest->get('join'))->get();
+        $references = $references->concat($paymentOrders);
+
+        $downPayments = PurchaseDownPayment::from(PurchaseDownPayment::getTableName() . ' as ' . PurchaseDownPayment::$alias)->eloquentFilter($downPaymentRequest);
+        $downPayments = PurchaseDownPayment::joins($downPayments, $downPaymentRequest->get('join'))->get();
+        $references = $references->concat($downPayments);
+
+        $references = $references->sortBy($request->get('sort_by'));
+        $paginatedReferences = paginate_collection($references, $request->get('limit'), $request->get('page'));
+
+        return new ApiCollection($paginatedReferences);
+    }
+
+    public function getPaymentables(Request $request)
+    {
+        $paymentables = Payment::from(Payment::getTableName() . ' as ' . Payment::$alias)
+            ->select(['paymentable_id', 'paymentable_type', 'paymentable_name'])
+            ->eloquentFilter($request);
+        $paymentables = pagination($paymentables, $request->get('limit'));
+
+        return new ApiCollection($paymentables);
     }
 }

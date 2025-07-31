@@ -3,6 +3,9 @@
 namespace App\Traits\Model\Finance;
 
 use App\Model\Accounting\ChartOfAccount;
+use App\Model\AllocationReport;
+use App\Model\Finance\CashAdvance\CashAdvance;
+use App\Model\Finance\CashAdvance\CashAdvancePayment;
 use App\Model\Finance\Payment\PaymentDetail;
 use App\Model\Form;
 use App\Model\Purchase\PurchaseOrder\PurchaseOrder;
@@ -44,5 +47,23 @@ trait PaymentRelation
                 $q->whereNull(Form::getTableName('cancellation_status'))
                     ->orWhere(Form::getTableName('cancellation_status'), '!=', '1');
             });
+    }
+
+    /**
+     * Get all related cash advances
+     */
+    public function cashAdvances()
+    {
+        return $this->belongsToMany(CashAdvance::class, 'cash_advance_payment', 'payment_id', 'cash_advance_id');
+    }
+
+    public function cashAdvance()
+    {
+        return $this->hasOne(CashAdvancePayment::class);
+    }
+
+    public function allocationReports()
+    {
+        return $this->morphMany(AllocationReport::class, 'allocationable');
     }
 }

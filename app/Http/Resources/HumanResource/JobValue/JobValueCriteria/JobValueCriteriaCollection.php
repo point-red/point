@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\HumanResource\JobValue\JobValueMaster;
+namespace App\Http\Resources\HumanResource\JobValue\JobValueCriteria;
 
 use App\Model\HumanResource\JobValue\JobValueCriteria;
 use Illuminate\Http\Resources\Json\ResourceCollection;

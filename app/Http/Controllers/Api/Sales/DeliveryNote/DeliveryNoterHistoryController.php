@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Sales\deliveryNote;
+namespace App\Http\Controllers\Api\Sales\DeliveryNote;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiCollection;

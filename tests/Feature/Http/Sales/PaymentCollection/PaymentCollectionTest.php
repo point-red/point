@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Http\Sales\PaymentCollectionV2;
+namespace Tests\Feature\Http\Sales\PaymentCollection;
 
 use Tests\Feature\Http\Sales\PaymentCollection\PaymentCollectionSetup;
 use App\Model\Sales\PaymentCollection\PaymentCollection;

@@ -12,6 +12,7 @@
         "fideloper/proxy": "^4.0",
         "google/cloud-firestore": "^1.8",
         "grpc/grpc": "^1.27",
+        "kreait/firebase-php": "5.0",
         "laravel/framework": "^7.0",
         "laravel/helpers": "^1.1",
         "laravel/horizon": "^4.0",
@@ -19,6 +20,7 @@
         "laravel/socialite": "^4.3",
         "laravel/telescope": "^3.1",
         "laravel/tinker": "^2.0",
+        "lcobucci/jwt": "3.3.3",
         "league/flysystem-aws-s3-v3": "~1.0",
         "maatwebsite/excel": "^3.1",
         "masbug/flysystem-google-drive-ext": "^1.0.0",
@@ -77,6 +79,9 @@
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "symfony/thanks": true
+        }
     }
 }

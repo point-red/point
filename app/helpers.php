@@ -3,6 +3,10 @@
 use App\Model\SettingJournal;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
+use App\Helpers\Firebase\Firestore;
 
 if (! function_exists('log_object')) {
     /**
@@ -361,5 +365,103 @@ if (! function_exists('response_error')) {
         if($code !== 0) $httpCode = $code;
 
         return response (['code' => $code, 'message' => $message], $httpCode);
+    }
+}
+
+if (! function_exists('sendFcmNotification')) {
+    /**
+     * Send FCM Notification.
+     *
+     * @param $title
+     * @param $body
+     * @param $token
+     * @return mixed
+     */
+    function sendFcmNotification($token, $title, $body, $redirectUrl = null, $notificationId = null, $domainProject = '')
+    {
+        $factory = (new Factory)->withServiceAccount(storage_path('firebase-service-account.json'));
+        $messaging = $factory->createMessaging();
+
+        // Gunakan $redirectUrl jika diberikan, jika tidak gunakan default
+        $clickActionUrl = $redirectUrl ?? url('/notification-action?token=' . urlencode($token));
+
+        $message = CloudMessage::withTarget('token', $token)
+            ->withData([
+                'notificationId' => $notificationId,
+                'title' => $title,
+                'body' => $body,
+                'click_action' => $clickActionUrl,
+                'domain_project' => $domainProject
+            ])
+            ->withNotification([
+                'title' => $title,
+                'body' => $body,
+                'click_action' => $clickActionUrl,
+                'actions' => [
+                    [
+                        'action' => 'mark-as-read',
+                        'title' => 'Mark as Read'
+                    ]
+                ]
+            ])
+            ->withAndroidConfig([
+                'priority' => 'high',
+            ])
+            ->withApnsConfig([
+                'headers' => [
+                    'apns-priority' => '10',
+                ],
+            ]);
+
+        $messaging->send($message);
+    }
+}
+
+if (! function_exists('sendNotification')) {
+    /**
+     * Send Notification.
+     *
+     * @param $userId
+     * @param $projectId
+     * @param $clickAction
+     * @param $token
+     * @param $subject
+     * @param $message
+     * @return mixed
+     */
+    function sendNotification($userId, $project, $clickAction, $token, $subject, $message, $domainProject = '')
+    {
+        try {
+            $notif = new \App\Model\Notification;
+
+            Firestore::set('notifications', null, [
+                'userId' => $userId,
+                'projectId' => $project->id,
+                'message' => $message,
+                'clickAction' => $clickAction,
+                'createdAt' => Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->timezone($project->timezone)->toDateTimeString(),
+            ]);
+
+            $notif->user_id = $userId;
+            $notif->project_id = $project->id;
+            $notif->message = $message;
+            $notif->link = $clickAction;
+            $notif->status = 'UNREAD';
+            $notif->created_at = Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->timezone($project->timezone)->toDateTimeString();
+            $notif->updated_at = Carbon::parse(date('Y-m-d H:i:s'), 'UTC')->timezone($project->timezone)->toDateTimeString();
+            $notif->save();
+
+            sendFcmNotification(
+                $token,
+                $subject,
+                $message,        
+                $clickAction,
+                $notif->id,
+                $domainProject
+            );
+        } catch (\Exception $e) {
+            // Log the error message
+            \Log::error('Error sending notification: ' . $e->getMessage());
+        }
     }
 }

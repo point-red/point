@@ -31,14 +31,20 @@ class FirebaseTokenController extends Controller
         $project = Project::where('code', $request->header('Tenant'))->first();
 
         $firebaseToken = new FirebaseToken;
+        $firebaseToken->user_id = auth()->user()->id;
+        // $firebaseToken->project_id = optional($project)->id;
+        $firebaseToken->token = $request->get('token');
 
-        if (! FirebaseToken::where('user_id', auth()->user()->id)
-            ->where('project_id', optional($project)->id)
-            ->where('token', $request->get('token'))
-            ->first()) {
-            $firebaseToken->user_id = auth()->user()->id;
-            $firebaseToken->project_id = optional($project)->id;
-            $firebaseToken->token = $request->get('token');
+        // Upsert: update if exists, otherwise insert
+        $existing = FirebaseToken::where('user_id', $firebaseToken->user_id)
+            // ->where('project_id', $firebaseToken->project_id)
+            ->first();
+
+        if ($existing) {
+            $existing->token = $firebaseToken->token;
+            $existing->save();
+            $firebaseToken = $existing;
+        } else {
             $firebaseToken->save();
         }
 

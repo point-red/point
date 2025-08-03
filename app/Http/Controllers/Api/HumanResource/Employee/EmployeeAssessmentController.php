@@ -14,9 +14,16 @@ use App\Model\HumanResource\Kpi\Kpi;
 use App\Model\HumanResource\Kpi\KpiGroup;
 use App\Model\HumanResource\Kpi\KpiIndicator;
 use App\Model\HumanResource\Kpi\KpiScore;
+use App\Model\HumanResource\Employee\EmployeeScorer;
+use App\Model\Notification;
+use App\Model\FirebaseToken;
+use App\Model\Project\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Artisan;
+use App\Helpers\Firebase\Firestore;
+use Carbon\Carbon;
 
 // kpi reminder
 
@@ -106,6 +113,7 @@ class EmployeeAssessmentController extends Controller
         $kpi->date = date('Y-m-d', strtotime($dateTo));
         $kpi->employee_id = $employeeId;
         $kpi->scorer_id = auth()->user()->id;
+
         $comment = '';
         if (array_key_exists('comment', $template)) {
             $comment = $template['comment'];
@@ -209,6 +217,33 @@ class EmployeeAssessmentController extends Controller
             'indicator_id_attach' => $idIndicatorForAttach
         ];
         DB::connection('tenant')->commit();
+
+        if ($kpi->status === 'COMPLETED') {
+
+            $scorer = EmployeeScorer::where('employee_id', $employeeId)->first();
+            if ($scorer->user_id != auth()->user()->id) {
+                $userId = $scorer->user_id;
+            } else {
+                $user = Employee::where('id', $employeeId)->first();
+                $userId = $user->user_id;
+            }            
+
+            $tenant = strtolower($request->header('Tenant'));
+            $project = Project::where('code', $tenant)->first();
+
+            $userTokens = FirebaseToken::where('user_id', $userId)
+                // ->where('project_id', $project->id)
+                ->orderBy('created_at', 'desc')
+                ->pluck('token')
+                ->first();
+
+            $clickAction = '/human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$kpi->id; // (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').
+            $message = auth()->user()->first_name.' '.auth()->user()->last_name . ' submitted a KPI';
+            $title = "New KPI Submission Alert!";
+            $domainProject = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN');
+
+            sendNotification($userId, $project, $clickAction, $userTokens, $title, $message, $domainProject);
+        }
 
         return $data;
     }
@@ -414,13 +449,16 @@ class EmployeeAssessmentController extends Controller
      */
     public function update(Request $request, $employeeId, $id)
     {
-        $template = $request->post('template');
-
         DB::connection('tenant')->beginTransaction();
+
+        $isFeedback = false;
+        $isComment = false;
 
         $kpi = Kpi::findOrFail($id);
         $kpi->comment = $request->get('comment');
-        $kpi->touch();
+      
+        $template = $request->post('template');
+      
         $kpi->status = 'COMPLETED';
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
             for ($indicatorIndex = 0; $indicatorIndex < count($template['groups'][$groupIndex]['indicators']); $indicatorIndex++) {
@@ -444,18 +482,21 @@ class EmployeeAssessmentController extends Controller
                         $notes = substr($notes, 0, 4001);
                     }
                     $kpiIndicator->notes = $notes;
+                    $isFeedback = true;
                 } else {
                     $kpiIndicator->notes = '';
                 }
 
                 if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
                     $kpiIndicator->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
+                    $isComment = true;
                 } else {
                     $kpiIndicator->comment = '';
                 }
 
                 if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['attachment'])) {
                     $kpiIndicator->attachment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['attachment'];
+                    $isUpdate = true;
                 } else {
                     $kpiIndicator->attachment = '';
                 }
@@ -490,6 +531,45 @@ class EmployeeAssessmentController extends Controller
 
         DB::connection('tenant')->commit();
 
+        // if ($kpi->status === 'COMPLETED') {    
+
+        //     $scorer = EmployeeScorer::where('employee_id', $employeeId)->first();
+
+        //     if ($scorer->user_id != auth()->user()->id) {
+        //         $userId = $scorer->user_id;
+        //     } else {
+        //         $user = Employee::where('id', $employeeId)->first();
+        //         $userId = $user->user_id;
+        //     }            
+
+        //     $tenant = strtolower($request->header('Tenant'));
+        //     $project = Project::where('code', $tenant)->first();  
+
+        //     $userTokens = FirebaseToken::where('user_id', $userId)
+        //         ->where('project_id', $project->id)
+        //         ->orderBy('created_at', 'desc')
+        //         ->pluck('token')
+        //         ->first();
+
+        //     $clickAction = '/human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$id; //(env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').
+    
+
+        //     $message = 'There\'s new update from '. auth()->user()->first_name.' '.auth()->user()->last_name;
+        //     $title = "Update on Your KPI Report";
+
+        //     if ($isComment) {
+        //         $title = "Comment on Your KPI Submission";
+        //         $message = auth()->user()->first_name.' '.auth()->user()->last_name. ' has commented on your KPI submission';
+        //     }
+
+        //     if ($isFeedback) {
+        //         $message = auth()->user()->first_name.' '.auth()->user()->last_name. ' has left feedback';
+        //         $title = "KPI Feedback Received";
+        //     }            
+
+        //     sendNotification($userId, $project, $clickAction, $userTokens, $title, $message);
+        // }
+
         return new KpiResource($kpi);
     }
 
@@ -517,5 +597,74 @@ class EmployeeAssessmentController extends Controller
     {
         Mail::to($request->get('to'))->send(new KpiReminderEmail());
         return response()->json(['message' => 'message sent to ' . $request->get('to')], 200);
+    }
+
+    // create function to send notification to user from kpi assessment
+    /**
+     * Send notification to user for KPI assessment.
+     * This function is intended to be called via API, based on existing assessment data.
+     *
+     * @param int $userId
+     * @param \App\Model\Project\Project $project
+     * @param string $clickAction
+     * @param string $userTokens
+     * @param string $title
+     * @param string $message
+     * @param int|null $kpiId
+     * @param int|null $employeeId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    /**
+     * Send notification to user for KPI assessment based on assessmentId.
+     *
+     * @param int $assessmentId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function sendNotificationKpiAssessment(Request $request, $id)
+    {
+        // Get KPI assessment
+        $kpi = Kpi::findOrFail($id);
+        $employeeId = $kpi->employee_id;
+
+        if ($kpi->status != 'COMPLETED') {
+            return response()->json([
+                'success' => false,
+                'message' => 'KPI assessment is not completed. Notification cannot be sent.',
+            ], 200);
+        }
+
+        $scorer = EmployeeScorer::where('employee_id', $employeeId)->first();
+
+        if ($scorer->user_id != auth()->user()->id) {
+            $userId = $scorer->user_id;
+
+            $message = 'There\'s new update from '. auth()->user()->first_name.' '.auth()->user()->last_name;
+            $title = "Update on Your KPI Report";
+        } else {
+            $user = Employee::where('id', $employeeId)->first();
+            $userId = $user->user_id;
+
+            $message = auth()->user()->first_name.' '.auth()->user()->last_name. ' has left feedback';
+            $title = "KPI Feedback Received";
+        }            
+
+        $tenant = strtolower($request->header('Tenant'));
+        $project = Project::where('code', $tenant)->first();  
+
+        $userTokens = FirebaseToken::where('user_id', $userId)
+            // ->where('project_id', $project->id)
+            ->orderBy('created_at', 'desc')
+            ->pluck('token')
+            ->first();
+        $domainProject = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN');
+
+        $clickAction = '/human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$id; //(env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').          
+        
+        sendNotification($userId, $project, $clickAction, $userTokens, $title, $message, $domainProject);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification sent successfully.',
+        ]);
     }
 }

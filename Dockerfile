@@ -1,7 +1,7 @@
-FROM php:7.4-fpm
+FROM php:8.0-fpm
 
-ARG user
-ARG uuid
+ARG user=appuser
+ARG uuid=1000
 
 # install system dependecies
 RUN apt-get update && apt-get install -y \
@@ -31,7 +31,7 @@ RUN echo xdebug.mode=coverage > /usr/local/etc/php/conf.d/xdebug.ini
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # create system user to run Composer and Artisan Commands
-RUN useradd -G www-data,root -u $uuid -d /home/$user $user
+RUN useradd -G www-data,root -u "$uuid" -d "/home/$user" "$user"
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 

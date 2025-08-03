@@ -33,11 +33,11 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         if (env('APP_ENV') === 'production') {
-            $this->app->alias('bugsnag.logger', Log::class);
-            $this->app->alias('bugsnag.logger', LoggerInterface::class);
+            // $this->app->alias('bugsnag.logger', Log::class);
+            // $this->app->alias('bugsnag.logger', LoggerInterface::class);
         }
         if (env('APP_ENV') === 'production') {
-            \URL::forceScheme('https');
+            // \URL::forceScheme('https');
         }
     }
 }

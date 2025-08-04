@@ -61,6 +61,9 @@ return [
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
+            'options' => [
+                'suppress_php_deprecation_warning' => true,
+            ],
         ],
 
     ],

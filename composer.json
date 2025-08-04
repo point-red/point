@@ -4,8 +4,9 @@
     "keywords": ["framework", "point", "erp"],
     "type": "project",
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.4",
         "ext-pdo": "*",
+        "aws/aws-sdk-php": "^3.273",
         "barryvdh/laravel-dompdf": "^0.8.5",
         "bugsnag/bugsnag-laravel": "^2.18",
         "doctrine/dbal": "^2.10",

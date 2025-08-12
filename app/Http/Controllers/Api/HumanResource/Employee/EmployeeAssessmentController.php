@@ -218,33 +218,6 @@ class EmployeeAssessmentController extends Controller
         ];
         DB::connection('tenant')->commit();
 
-        if ($kpi->status === 'COMPLETED') {
-
-            $scorer = EmployeeScorer::where('employee_id', $employeeId)->first();
-            if ($scorer->user_id != auth()->user()->id) {
-                $userId = $scorer->user_id;
-            } else {
-                $user = Employee::where('id', $employeeId)->first();
-                $userId = $user->user_id;
-            }            
-
-            $tenant = strtolower($request->header('Tenant'));
-            $project = Project::where('code', $tenant)->first();
-
-            $userTokens = FirebaseToken::where('user_id', $userId)
-                // ->where('project_id', $project->id)
-                ->orderBy('created_at', 'desc')
-                ->pluck('token')
-                ->first();
-
-            $clickAction = '/human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$kpi->id; // (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').
-            $message = auth()->user()->first_name.' '.auth()->user()->last_name . ' submitted a KPI';
-            $title = "New KPI Submission Alert!";
-            $domainProject = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN');
-
-            sendNotification($userId, $project, $clickAction, $userTokens, $title, $message, $domainProject);
-        }
-
         return $data;
     }
 
@@ -633,16 +606,26 @@ class EmployeeAssessmentController extends Controller
             ], 200);
         }
 
-        $scorer = EmployeeScorer::where('employee_id', $employeeId)->first();
+        $scorer = EmployeeScorer::where('employee_id', $employeeId)->pluck('user_id')->toArray();
+        $userIdCurrent = Employee::where('id', $employeeId)->first();
 
-        if ($scorer->user_id != auth()->user()->id) {
-            $userId = $scorer->user_id;
+        if ($userIdCurrent->user_id == auth()->user()->id) {
+            // $userId = $scorer->user_id;
+            $userId = $scorer;
 
-            $message = 'There\'s new update from '. auth()->user()->first_name.' '.auth()->user()->last_name;
-            $title = "Update on Your KPI Report";
+            $isNew = $request->get('isNew');
+
+            if ($isNew) {
+                $message = auth()->user()->first_name.' '.auth()->user()->last_name. ' has submitted a new KPI';
+                $title = "New KPI Submission Alert!";
+            } else {
+                $message = 'There\'s new update from '. auth()->user()->first_name.' '.auth()->user()->last_name;
+                $title = "Update on Your KPI Report";
+            }
+
+            
         } else {
-            $user = Employee::where('id', $employeeId)->first();
-            $userId = $user->user_id;
+            $userId = [$userIdCurrent->user_id];
 
             $message = auth()->user()->first_name.' '.auth()->user()->last_name. ' has left feedback';
             $title = "KPI Feedback Received";
@@ -651,17 +634,20 @@ class EmployeeAssessmentController extends Controller
         $tenant = strtolower($request->header('Tenant'));
         $project = Project::where('code', $tenant)->first();  
 
-        $userTokens = FirebaseToken::where('user_id', $userId)
+        $userTokens = FirebaseToken::whereIn('user_id', $userId)
             // ->where('project_id', $project->id)
             ->orderBy('created_at', 'desc')
-            ->pluck('token')
-            ->first();
+            ->get();
+        
         $domainProject = (env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN');
 
         $clickAction = '/human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$id; //(env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').          
         
-        sendNotification($userId, $project, $clickAction, $userTokens, $title, $message, $domainProject);
-
+        foreach ($userTokens as $userToken) {
+            // dd($userToken->token)
+            sendNotification($userToken->user_id, $project, $clickAction, $userToken->token, $title, $message, $domainProject);
+        }
+        
         return response()->json([
             'success' => true,
             'message' => 'Notification sent successfully.',

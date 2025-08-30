@@ -152,6 +152,16 @@ class EmployeeAssessmentController extends Controller
                     $kpiIndicator->notes = '';
                 }
 
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['plan'])) {
+                    $plan = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['plan'];
+                    if (strlen($plan) > 4000) {
+                        $plan = substr($plan, 0, 4001);
+                    }
+                    $kpiIndicator->plan = $plan;
+                } else {
+                    $kpiIndicator->plan = '';
+                }
+
                 if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
                     $kpiIndicator->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
                 } else {
@@ -460,6 +470,17 @@ class EmployeeAssessmentController extends Controller
                     $kpiIndicator->notes = '';
                 }
 
+                if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['plan'])) {
+                    $plan = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['plan'];
+                    if (strlen($plan) > 4000) {
+                        $plan = substr($plan, 0, 4001);
+                    }
+                    $kpiIndicator->plan = $plan;
+                    $isFeedback = true;
+                } else {
+                    $kpiIndicator->plan = '';
+                }
+
                 if (get_if_set($template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'])) {
                     $kpiIndicator->comment = $template['groups'][$groupIndex]['indicators'][$indicatorIndex]['selected']['comment'];
                     $isComment = true;
@@ -503,45 +524,6 @@ class EmployeeAssessmentController extends Controller
         }
 
         DB::connection('tenant')->commit();
-
-        // if ($kpi->status === 'COMPLETED') {    
-
-        //     $scorer = EmployeeScorer::where('employee_id', $employeeId)->first();
-
-        //     if ($scorer->user_id != auth()->user()->id) {
-        //         $userId = $scorer->user_id;
-        //     } else {
-        //         $user = Employee::where('id', $employeeId)->first();
-        //         $userId = $user->user_id;
-        //     }            
-
-        //     $tenant = strtolower($request->header('Tenant'));
-        //     $project = Project::where('code', $tenant)->first();  
-
-        //     $userTokens = FirebaseToken::where('user_id', $userId)
-        //         ->where('project_id', $project->id)
-        //         ->orderBy('created_at', 'desc')
-        //         ->pluck('token')
-        //         ->first();
-
-        //     $clickAction = '/human-resource/kpi/kpi-assessment/'.$employeeId.'/assessment/'.$id; //(env('APP_ENV') === 'local' ? 'http://' : 'https://').$project->code.'.'.env('TENANT_DOMAIN').
-    
-
-        //     $message = 'There\'s new update from '. auth()->user()->first_name.' '.auth()->user()->last_name;
-        //     $title = "Update on Your KPI Report";
-
-        //     if ($isComment) {
-        //         $title = "Comment on Your KPI Submission";
-        //         $message = auth()->user()->first_name.' '.auth()->user()->last_name. ' has commented on your KPI submission';
-        //     }
-
-        //     if ($isFeedback) {
-        //         $message = auth()->user()->first_name.' '.auth()->user()->last_name. ' has left feedback';
-        //         $title = "KPI Feedback Received";
-        //     }            
-
-        //     sendNotification($userId, $project, $clickAction, $userTokens, $title, $message);
-        // }
 
         return new KpiResource($kpi);
     }

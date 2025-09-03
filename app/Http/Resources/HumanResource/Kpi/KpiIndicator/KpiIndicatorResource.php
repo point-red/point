@@ -23,6 +23,7 @@ class KpiIndicatorResource extends JsonResource
             'target' => $this->target,
             'score' => $this->score,
             'notes' => $this->notes,
+            'plan' => $this->plan,
             'comment' => $this->comment,
             'score_percentage' => $this->score_percentage,
             'score_description' => $this->score_description,

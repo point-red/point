@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Model\Notification;
 use App\Http\Resources\ApiCollection;
+use App\Model\Project\Project;
 
 class NotificationController extends Controller
 {
@@ -14,14 +15,17 @@ class NotificationController extends Controller
     {
         $userId = auth()->id();
         $perPage = $request->get('per_page', 10);
+        $project = $this->getProject($request->header('Tenant'));
 
         $notifications = Notification::where('user_id', $userId)
+            ->where('project_id', $project->id)
             ->orderBy('created_at', 'desc');
 
         $result = pagination($notifications, $perPage ? $perPage : 10);
 
         // Hitung jumlah notifikasi belum dibaca
         $unreadCount = Notification::where('user_id', $userId)
+            ->where('project_id', $project->id)
             ->where('status', 'UNREAD')
             ->count();
 
@@ -34,7 +38,10 @@ class NotificationController extends Controller
     public function update(Request $request, $id)
     {
         $userId = auth()->id();
+        $project = $this->getProject($request->header('Tenant'));
+
         $notification = Notification::where('id', $id)
+            ->where('project_id', $project->id)
             ->where('user_id', $userId)
             ->firstOrFail();
 
@@ -50,8 +57,10 @@ class NotificationController extends Controller
     public function markAllAsRead(Request $request)
     {
         $userId = auth()->id();
+        $project = $this->getProject($request->header('Tenant'));
 
         $updated = Notification::where('user_id', $userId)
+            ->where('project_id', $project->id)
             ->where('status', 'UNREAD')
             ->update(['status' => 'READ']);
 
@@ -63,7 +72,8 @@ class NotificationController extends Controller
 
     public function markAsRead(Request $request, $id)
     {
-        $notification = Notification::where('id', $id)->firstOrFail();
+        $project = $this->getProject($request->header('Tenant'));
+        $notification = Notification::where('id', $id)->where('project_id', $project->id)->firstOrFail();
 
         $notification->status = 'READ';
         $notification->save();
@@ -72,5 +82,11 @@ class NotificationController extends Controller
             'message' => 'Notification marked as read.',
             'data' => $notification
         ]);
+    }
+
+    public function getProject($tenantCode) 
+    {
+        $project = Project::where('code', $tenantCode)->first();
+        return $project;
     }
 }

@@ -617,7 +617,7 @@ class EmployeeAssessmentController extends Controller
         $project = Project::where('code', $tenant)->first();  
 
         $userTokens = FirebaseToken::whereIn('user_id', $userId)
-            // ->where('project_id', $project->id)
+            ->where('project_id', $project->id)
             ->orderBy('created_at', 'desc')
             ->get();
         

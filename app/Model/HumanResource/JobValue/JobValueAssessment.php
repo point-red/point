@@ -90,7 +90,9 @@ class JobValueAssessment extends MasterModel
     public static function calculateFee($assessment){
         $assessment = $assessment->load('employee');
 
-        $previousAssessment = JobValueAssessment::where('period_from', '<', $assessment->period_from)
+        $previousAssessment = JobValueAssessment::where('employee_id', $assessment->employee_id)
+            ->where('id', '!=', $assessment->id)
+            ->where('period_from', '<', $assessment->period_from)
             ->where('approval_status', 'approved')
             ->orderBy('period_from', 'desc')
             ->first();

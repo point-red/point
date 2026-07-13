@@ -8,11 +8,13 @@ use App\Http\Requests\HumanResource\JobValue\JobValueAssessment\UpdateJobValueAs
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\HumanResource\Employee\Employee;
+use App\Model\HumanResource\Employee\EmployeeContract;
 use App\Model\HumanResource\JobValue\JobValueAssessment;
 use App\Model\HumanResource\JobValue\JobValueAssessmentCalculation;
 use App\Model\HumanResource\JobValue\JobValueAssessmentScore;
 use App\Model\HumanResource\JobValue\JobValueCategory;
 use App\Model\HumanResource\JobValue\JobValueCriteria;
+use App\Model\HumanResource\JobValue\JobValueScoreSetting;
 use App\Model\HumanResource\Kpi\Kpi;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -59,6 +61,10 @@ class JobValueAssessmentController extends Controller
      */
     public function store(StoreJobValueAssessmentRequest $request)
     {
+        if ($error = $this->checkEligibility($request->input('employee_id'), $request->input('period_from'), $request->input('status'))) {
+            return response()->json(['message' => $error], 422);
+        }
+
         return DB::connection('tenant')->transaction(function () use ($request) {
             $assessment = new JobValueAssessment();
             $assessment->employee_id = $request->input('employee_id');
@@ -129,6 +135,10 @@ class JobValueAssessmentController extends Controller
      */
     public function update(UpdateJobValueAssessmentRequest $request, $id)
     {
+        if ($error = $this->checkEligibility($request->input('employee_id'), $request->input('period_from'), $request->input('status'))) {
+            return response()->json(['message' => $error], 422);
+        }
+
         $assessment = JobValueAssessment::findOrFail($id);
         $assessment->employee_id = $request->input('employee_id');
         $assessment->period_from = $request->input('period_from');
@@ -210,6 +220,59 @@ class JobValueAssessmentController extends Controller
             ->first();
 
         return new ApiResource($assessment);
+    }
+
+    /**
+     * Validate that an employee is eligible to submit (save as completed) a
+     * job value assessment. Business rules (per PMO):
+     *   - COC value must be >= minimum_coc setting (Excel default: 17)
+     *   - Latest contract must still run for >= 6 months from the period start
+     *
+     * Only enforced when the assessment is being saved as 'completed'.
+     *
+     * @return string|null  error message, or null when eligible
+     */
+    private function checkEligibility($employeeId, $periodFrom, $status)
+    {
+        if (strtolower((string) $status) !== 'completed') {
+            return null;
+        }
+
+        $date = Carbon::parse($periodFrom);
+
+        // --- COC check ---
+        $setting = JobValueScoreSetting::first();
+        $minimumCoc = $setting ? $setting->minimum_coc : 17;
+
+        $coc = Kpi::join('kpi_groups', 'kpi_groups.kpi_id', '=', 'kpis.id')
+            ->join('kpi_indicators', 'kpi_groups.id', '=', 'kpi_indicators.kpi_group_id')
+            ->select('kpis.*')
+            ->addSelect(DB::raw('sum(kpi_indicators.score) / count(DISTINCT kpis.id) as score'))
+            ->where('status', 'COMPLETED')
+            ->whereIn(DB::raw('LOWER(kpi_groups.name)'), ['solusi', 'andalan', 'emas', 'besar', 'besar (1)', 'besar (2)', 'terus terang'])
+            ->whereYear('kpis.date', '=', $date->format('Y'))
+            ->where('employee_id', $employeeId)
+            ->orderBy('kpis.date', 'desc')
+            ->orderBy('kpis.created_at', 'desc')
+            ->groupBy('kpis.date')
+            ->first();
+
+        $cocValue = $coc ? $coc->score : 0;
+
+        if ($cocValue < $minimumCoc) {
+            return 'Cannot submit: COC value ('.round($cocValue, 2).') is below the minimum ('.$minimumCoc.').';
+        }
+
+        // --- Contract check: latest contract must last >= 6 months from period start ---
+        $contract = EmployeeContract::where('employee_id', $employeeId)
+            ->orderBy('contract_end', 'desc')
+            ->first();
+
+        if (! $contract || $date->copy()->addMonths(6)->gt(Carbon::parse($contract->contract_end))) {
+            return 'Cannot submit: employee contract must remain valid for at least 6 months.';
+        }
+
+        return null;
     }
 
     /**

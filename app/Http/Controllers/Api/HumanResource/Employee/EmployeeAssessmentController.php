@@ -290,7 +290,15 @@ class EmployeeAssessmentController extends Controller
      */
     public function showBy(Request $request, $employeeId, $group)
     {
-        $type = $request->get('type');
+        return $this->buildAssessmentData($employeeId, $group, $request->get('type'));
+    }
+
+    /**
+     * Build the per-template assessment table (per-assessor columns, TOTAL and
+     * AVERAGE rows). Shared by showBy (JSON) and the monthly Excel export.
+     */
+    private function buildAssessmentData($employeeId, $group, $type)
+    {
         $kpi = Kpi::find($group);
         $dateFilter = $kpi->date;
         $date = $kpi->getOriginal('date');
@@ -391,6 +399,32 @@ class EmployeeAssessmentController extends Controller
                     }
                 }
             }
+            // Insert an "Average" column pair (score, score_percentage) right
+            // after Target on every row, computed as the mean across assessors.
+            // A synthetic "Average" scorer is prepended so the UI/export render
+            // it as the first assessor column (matching the agreed mockup).
+            $numScorer = max(count($scorer), 1);
+            $insertAverage = function (array $row) use ($numScorer) {
+                $head = array_slice($row, 0, 3);   // label, weight, target
+                $pairs = array_slice($row, 3);     // score/pct pairs per assessor
+                $sumScore = 0;
+                $sumPct = 0;
+                $count = intdiv(count($pairs), 2);
+                for ($i = 0; $i < $count; $i++) {
+                    $sumScore += (float) ($pairs[$i * 2] ?? 0);
+                    $sumPct += (float) ($pairs[$i * 2 + 1] ?? 0);
+                }
+                $avg = [round($sumScore / $numScorer, 2), round($sumPct / $numScorer, 2)];
+                return array_merge($head, $avg, $pairs);
+            };
+            foreach ($cols as $group => $col) {
+                $cols[$group]['data'] = $insertAverage($col['data']);
+                foreach ($col['indicator'] as $key => $indRow) {
+                    $cols[$group]['indicator'][$key] = $insertAverage($indRow);
+                }
+            }
+            array_unshift($scorer, ['name' => 'Average', 'full_name' => 'Average']);
+
             $groupNames = array_keys($cols);
             $colsSum[0] = '';
             foreach ($groupNames as $i => $group) {
@@ -420,6 +454,47 @@ class EmployeeAssessmentController extends Controller
         }
 
         return $response;
+    }
+
+    /**
+     * Export the monthly assessment table to Excel (one sheet per template).
+     */
+    public function exportBy(Request $request, $employeeId, $group)
+    {
+        $templates = $this->buildAssessmentData($employeeId, $group, $request->get('type'));
+
+        $tenant = strtolower($request->header('Tenant'));
+        $key = \Illuminate\Support\Str::random(16);
+        $fileName = strtoupper($tenant).' - KPI Monthly Assessment';
+        $fileExt = 'xlsx';
+        $path = 'tmp/'.$tenant.'/'.$key.'.'.$fileExt;
+
+        $result = \Maatwebsite\Excel\Facades\Excel::store(
+            new \App\Exports\Kpi\KpiMonthlyAssessmentExport($templates),
+            $path,
+            env('STORAGE_DISK')
+        );
+
+        if (! $result) {
+            return response()->json(['message' => 'Failed to export'], 422);
+        }
+
+        $cloudStorage = new \App\Model\CloudStorage();
+        $cloudStorage->file_name = $fileName;
+        $cloudStorage->file_ext = $fileExt;
+        $cloudStorage->feature = 'kpi assessment';
+        $cloudStorage->key = $key;
+        $cloudStorage->path = $path;
+        $cloudStorage->disk = env('STORAGE_DISK');
+        $cloudStorage->project_id = Project::where('code', $tenant)->first()->id;
+        // owner_id references users.id; use the requester, not a hardcoded 1
+        // (which FK-fails on tenants where user #1 doesn't exist).
+        $cloudStorage->owner_id = optional($request->user())->id;
+        $cloudStorage->expired_at = \Carbon\Carbon::now()->addDay(1);
+        $cloudStorage->download_url = env('API_URL').'/download?key='.$key;
+        $cloudStorage->save();
+
+        return response()->json(['data' => ['url' => $cloudStorage->download_url]], 200);
     }
 
     /**

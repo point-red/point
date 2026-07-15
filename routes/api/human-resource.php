@@ -64,6 +64,7 @@ Route::prefix('human-resource')->namespace('HumanResource')->group(function () {
         Route::apiResource('employees/{employee_id}/assessment', 'EmployeeAssessmentController');
         Route::post('employees/assessment/export', 'EmployeeAssessmentExportController@export');
         Route::get('employees/{employee_id}/assessment-by/{group}', 'EmployeeAssessmentController@showBy');
+        Route::get('employees/{employee_id}/assessment-by/{group}/export', 'EmployeeAssessmentController@exportBy');
         Route::get('employees/{employee_id}/assessment-by-periode/{date}', 'EmployeeAssessmentController@getByPeriode');
         Route::get('employees/{employee_id}/salary/assessment', 'EmployeeSalaryController@assessment');
         Route::get('employees/{employee_id}/salary/achievement', 'EmployeeSalaryController@achievement');

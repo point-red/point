@@ -90,11 +90,20 @@ class JobValueAssessment extends MasterModel
     public static function calculateFee($assessment){
         $assessment = $assessment->load('employee');
 
+        // "Previous" = this employee's most recent approved assessment created
+        // before the current one. Ordering by period_from alone breaks when two
+        // assessments share the same period_from (e.g. re-assessing the same
+        // period): a strict `period_from <` would skip the newer one and pick an
+        // older period instead. So we also exclude the current row by id and
+        // tie-break on id to always land on the latest prior assessment.
         $previousAssessment = JobValueAssessment::where('employee_id', $assessment->employee_id)
-            ->where('id', '!=', $assessment->id)
-            ->where('period_from', '<', $assessment->period_from)
+            ->when($assessment->id, function ($query) use ($assessment) {
+                $query->where('id', '<', $assessment->id);
+            })
+            ->where('period_from', '<=', $assessment->period_from)
             ->where('approval_status', 'approved')
             ->orderBy('period_from', 'desc')
+            ->orderBy('id', 'desc')
             ->first();
 
         if ($previousAssessment) {

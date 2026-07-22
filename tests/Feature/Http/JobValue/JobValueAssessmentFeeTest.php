@@ -155,6 +155,26 @@ class JobValueAssessmentFeeTest extends TestCase
         $this->assertNull($result->prev_assessment_id);
     }
 
+    /** @test */
+    public function prev_assessment_picks_latest_when_periods_are_equal()
+    {
+        $data = $this->seedDummyData();
+
+        // Budi: period 1 (older) then period 2 & 3 sharing the same period_from.
+        $this->makeAssessment($data['helmi'], '2025-01-01', '2025-12-31', 390.54, 'approved');
+        $period2 = $this->makeAssessment($data['helmi'], '2026-07-01', '2026-12-31', 660.20, 'approved');
+
+        // Period 3 reuses the same period_from as period 2 — the previous JV must
+        // be period 2 (660.20), not the older period 1 (390.54).
+        $period3 = $this->makeAssessment($data['helmi'], '2026-07-01', '2026-12-31', 700.00, 'pending');
+
+        JobValueAssessment::calculateFee($period3);
+
+        $result = JobValueAssessment::find($period3->id);
+        $this->assertEquals($period2->id, $result->prev_assessment_id);
+        $this->assertEquals(660.20, $result->prevAssessment->total_value);
+    }
+
     /** Give an employee a valid contract + COC so a 'completed' submit passes eligibility. */
     private function makeEligible(Employee $employee, string $periodFrom): void
     {

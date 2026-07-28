@@ -68,14 +68,6 @@ class EmployeeAssessmentController extends Controller
             $kpis = $kpis->groupBy(DB::raw('year(kpis.date)'));
         }
 
-        // ponytail: MySQL picks an arbitrary row per GROUP BY when a
-        // non-aggregated column (kpis.*) is selected; force it to the
-        // latest-dated row in each group so the id sent to the detail
-        // view (showBy) always falls inside the period being displayed.
-        if (in_array($type, ['weekly', 'monthly', 'yearly'], true)) {
-            $kpis = $kpis->orderBy('kpis.date', 'desc');
-        }
-
         $kpis = $kpis->where('employee_id', $employeeId)->orderBy('kpis.date', 'desc')->orderBy('kpis.created_at', 'desc');
 
         $kpis = pagination($kpis, 15);

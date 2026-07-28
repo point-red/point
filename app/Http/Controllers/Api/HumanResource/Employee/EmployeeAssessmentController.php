@@ -311,6 +311,7 @@ class EmployeeAssessmentController extends Controller
             ->addSelect(DB::raw('sum(kpi_indicators.score_percentage) / count(DISTINCT kpis.id) as score_percentage'))
             ->addSelect(DB::raw('count(DISTINCT kpis.id) as num_of_scorer'))
             ->where('employee_id', $employeeId)
+            ->where('kpis.status', 'COMPLETED')
             ->groupBy('kpis.id');
         if ($type === 'daily') {
             $kpis = $kpis->where('kpis.date', $group);

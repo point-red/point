@@ -177,7 +177,7 @@ class InventoryHelper
         $inventoryExist = InventoryAuditItem::join(InventoryAudit::getTableName(), InventoryAudit::getTableName('id'), '=', InventoryAuditItem::getTableName('inventory_audit_id'))
             ->join(Form::getTableName(), function ($query) {
                 $query->on(Form::getTableName('formable_id'), '=', InventoryAudit::getTableName('id'))
-                    ->where(Form::getTableName('formable_type'), '=', InventoryAudit::class);
+                    ->where(Form::getTableName('formable_type'), '=', InventoryAudit::$morphName);
             })
             ->where(Form::getTableName('date'), '>=', $date)
             // check if form is not canceled

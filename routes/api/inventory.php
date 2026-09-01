@@ -23,6 +23,7 @@ Route::prefix('inventory')->namespace('Inventory')->group(function () {
 
             Route::get('usages/{id}/histories', 'InventoryUsageHistoryController@index');
 
+            Route::get('usages/export', 'InventoryUsageController@export');
             Route::apiResource('usages', 'InventoryUsageController');
         });
     });

@@ -38,7 +38,7 @@ class CustomEmail extends Mailable
         $user = $this->user;
         $request = $this->request;
 
-        $this->from($user->email, $user->getFullNameAttribute());
+        $this->replyTo($user->email, $user->getFullNameAttribute());
         $this->to($request->to);
 
         if (optional($request)->cc) {
@@ -46,9 +46,6 @@ class CustomEmail extends Mailable
         }
         if (optional($request)->bcc) {
             $this->bcc($request->bcc);
-        }
-        if (optional($request)->reply_to) {
-            $this->replyTo($request->reply_to, $request->reply_to_name);
         }
 
         $this->subject($request->subject);

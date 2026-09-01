@@ -71,6 +71,7 @@ class PermissionSeeder extends Seeder
             'purchase invoice',
             'purchase down payment',
             'purchase return',
+            'purchase payment order',
         ];
 
         foreach ($allPermission as $permission) {

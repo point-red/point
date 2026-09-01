@@ -49,9 +49,9 @@ class CustomerController extends Controller
         }
 
         if ($request->get('is_archived')) {
-            $customers = $customers->whereNotNull('archived_at');
+            $customers = $customers->whereNotNull('customer.archived_at');
         } else {
-            $customers = $customers->whereNull('archived_at');
+            $customers = $customers->whereNull('customer.archived_at');
         }
 
         $customers->whereIn('customer.branch_id', $user->branches->pluck('id'));

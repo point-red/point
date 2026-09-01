@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Api\Purchase\PurchaseReceive;
 
+use App\Exceptions\BranchNotRightException;
+use App\Exceptions\BranchNullException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\StorePurchaseReceiveRequest;
+use App\Http\Requests\Purchase\PurchaseReceive\PurchaseReceive\UpdatePurchaseReceiveRequest;
 use App\Http\Resources\ApiCollection;
 use App\Http\Resources\ApiResource;
 use App\Model\Inventory\Inventory;
+use App\Model\Master\Branch;
 use App\Model\Purchase\PurchaseReceive\PurchaseReceive;
+use Google\Service\CloudIAP\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -23,7 +28,7 @@ class PurchaseReceiveController extends Controller
     public function index(Request $request)
     {
         $purchaseReceives = PurchaseReceive::from(PurchaseReceive::getTableName().' as '.PurchaseReceive::$alias)->eloquentFilter($request);
-
+        
         $purchaseReceives = PurchaseReceive::joins($purchaseReceives, $request->get('join'));
 
         $purchaseReceives = pagination($purchaseReceives, $request->get('limit'));
@@ -99,7 +104,25 @@ class PurchaseReceiveController extends Controller
      */
     public function show(Request $request, $id)
     {
+        
         $purchaseReceive = PurchaseReceive::eloquentFilter($request)->findOrFail($id);
+
+        //Check branches
+        $branches = tenant(auth()->user()->id)->branches;
+        $userBranch = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $userBranch = $branch->id;
+                break;
+            }
+        }
+        
+        if($userBranch == null) {
+            throw new BranchNullException();
+        }
+        else if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNotRightException();
+        }
 
         return new ApiResource($purchaseReceive);
     }
@@ -114,6 +137,21 @@ class PurchaseReceiveController extends Controller
     public function edit(Request $request, $id)
     {
         $purchaseReceive = PurchaseReceive::eloquentFilter($request)->findOrFail($id)->load('items');
+        $branches = tenant(auth()->user()->id)->branches;
+        $userBranch = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $userBranch = $branch->id;
+                break;
+            }
+        }
+        
+        if($userBranch == null) {
+            throw new BranchNullException();
+        }
+        else if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNotRightException();
+        }
 
         $orderItems = optional($purchaseReceive->purchaseOrder)->items;
 
@@ -147,10 +185,26 @@ class PurchaseReceiveController extends Controller
      * @return ApiResource
      * @throws Throwable
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePurchaseReceiveRequest $request, $id)
     {
         $purchaseReceive = PurchaseReceive::findOrFail($id);
         $purchaseReceive->isAllowedToUpdate();
+
+        $branches = tenant(auth()->user()->id)->branches;
+        $userBranch = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $userBranch = $branch->id;
+                break;
+            }
+        }
+        
+        if($userBranch == null) {
+            throw new BranchNullException();
+        }
+        else if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNotRightException();
+        }
 
         $result = DB::connection('tenant')->transaction(function () use ($request, $purchaseReceive) {
             $purchaseReceive->form->archive();
@@ -186,6 +240,20 @@ class PurchaseReceiveController extends Controller
 
         $purchaseReceive = PurchaseReceive::findOrFail($id);
         $purchaseReceive->isAllowedToDelete();
+        $branches = tenant(auth()->user()->id)->branches;
+        $userBranch = null;
+        foreach ($branches as $branch) {
+            if ($branch->pivot->is_default) {
+                $userBranch = $branch->id;
+                break;
+            }
+        }
+        if($userBranch == null) {
+            throw new BranchNullException();
+        }
+        else if ($purchaseReceive->form->branch_id != $userBranch) {
+            throw new BranchNotRightException();
+        }
         $purchaseReceive->requestCancel($request);
 
         DB::connection('tenant')->commit();

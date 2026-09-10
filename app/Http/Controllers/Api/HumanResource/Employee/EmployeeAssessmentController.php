@@ -528,10 +528,7 @@ class EmployeeAssessmentController extends Controller
             }
         }
 
-        if (strtolower($request->header('Tenant')) == 'demo1234') { 
-            $kpi->updated_at = now();
-        }
-        
+        $kpi->updated_at = now();
         $kpi->save();
 
         for ($groupIndex = 0; $groupIndex < count($template['groups']); $groupIndex++) {
